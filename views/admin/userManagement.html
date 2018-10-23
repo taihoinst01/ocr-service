@@ -1,0 +1,196 @@
+﻿<!doctype html>
+<html lang="kr">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, minimal-ui">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+
+    <title>ICR</title>
+
+    <%include  ../common/commonLib.html%>
+
+    <!-- 공통 js -->
+    <script type="text/javascript" src="js/common.client.js"></script>
+    <!-- // 공통 js -->
+    <!-- 문서 조회 학습 전용 js -->
+    <script type="text/javascript" src="js/admin/userManagement.js"></script>
+    <!-- // 문서 조회 전용 js -->
+
+    <style>
+    </style>
+</head>
+<body>
+    <div id="mask"></div>
+    <div id="wrap">
+        <!--로딩바-->
+        <div id="ocrProgress">
+            <div id="ocrBarBg">
+                <div id="ocrBar">
+                    <span>1%</span>
+                </div>
+            </div>
+            <!-- 호출하는 ajax에 따라 로딩바 이벤트를 호출 할 때 아래 progressMsgTitle, progressMsgDetail 메시지도 수정-->
+            <div id="progressMsgTitle">
+                <!-- 로딩바 바로 아래 메시지 -->
+            </div>
+            <div id="progressMsgDetail">
+                <!-- 로딩바 아래아래 메시지-->
+            </div>
+        </div>
+        <!--로딩바-->
+        <!-- skip navi -->
+        <%include  ../common/header.html%>
+        <!-- //skip navi -->
+        <!-- Content -->
+        <div id="container">
+            <!-- LNB -->
+            <%include  ../common/leftSideBar.html%>
+            <!-- // LNB -->
+            <!-- 본문영역 -->
+            <div id="content">
+                <h2 class="subtit subtit_st01 blind"><span>사용자관리</span></h2>
+
+                <!-- 부서구분 목록  -->
+                <div class="box_stsearch">
+                    <h3 class="tits"><span>부서구분</span></h3>
+
+                    <div class="box_txt_st01 st00_sh">
+                        <dl>
+                            <dd>
+                                <div class="select_style wh300">
+                                    <span class="ctrl"><span class="arrow"></span></span>
+                                    <button type="button" class="btnSelector">부서구분</button>
+                                    <ul class="aList">
+                                        <li><a>글로벌사업팀</a></li>
+                                    </ul>
+                                </div>
+                            </dd>
+                        </dl>
+                    </div>
+
+                    <div class="btn_rt">
+                        <button type="button" id="btn_search" class="button_st3">조회</button>
+                    </div>
+                </div>
+                <!-- // 부서구분 목록 -->
+                <!-- 사용자관리 목록  -->
+                <div class="box_stsearch titcolor01">
+                    <h3 class="tits"><span>사용자관리</span></h3>
+
+                    <div class="table_style02">
+                        <table>
+                            <caption>사용자관리 타이틀</caption>
+                            <colgroup>
+                                <col style="width:5%" />
+                                <col style="width:11%" />
+                                <col style="width:11%" />
+                                <col style="width:11%" />
+                                <col style="width:7%" />
+                                <col style="width:7%" />
+                                <col style="width:7%" />
+                                <col style="width:7%" />
+                                <col style="width:12%" />
+                                <col style="width:10%" />
+                                <col style="width:6%" />
+                                <col style="width:6%" />
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th scope="row">번호</th>
+                                    <th scope="row">사번</th>
+                                    <th scope="row">이메일</th>
+                                    <th scope="row">비고</th>
+                                    <th scope="row">스캔결재자</th>
+                                    <th scope="row">ICR결재자</th>
+                                    <th scope="row">중간결재자</th>
+                                    <th scope="row">최종결재자</th>
+                                    <th scope="row">관리자</th>
+                                    <th scope="row">최종접속일</th>
+                                    <th scope="row">OCR이용횟수</th>
+                                    <th scope="row">삭제</th>
+                                </tr>
+                            </thead>
+                        </table>
+                        <div class="mCustomScrollbar box_scroll_st5" data-mcs-axis="yx" data-mcs-theme="dark-3">
+                            <table>
+                                <caption>사용자관리 정보</caption>
+                                <colgroup>
+                                    <col style="width:5%" />
+                                    <col style="width:11%" />
+                                    <col style="width:11%" />
+                                    <col style="width:11%" />
+                                    <col style="width:7%" />
+                                    <col style="width:7%" />
+                                    <col style="width:7%" />
+                                    <col style="width:7%" />
+                                    <col style="width:12%" />
+                                    <col style="width:10%" />
+                                    <col style="width:6%" />
+                                    <col style="width:6%" />
+                                </colgroup>
+                                <tbody id="tbody_user"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- // 사용자관리 목록 -->
+                <!-- 사용자관리 목록  -->
+                <div class="box_stsearch titcolor01 mb0">
+                    <h3 class="tits"><span>사용자관리</span></h3>
+
+                    <div class="box_txt_st01 st00_us">
+                        <dl>
+                            <dt><label for="intxt_01">사번</label></dt>
+                            <dd>
+                                <input type="hidden" name="seqNum" id="seqNum" />
+                                <input type="text" name="userId" id="userId" class="inputst_box01" maxlength="30" value="" />
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><label for="intxt_03">Password</label></dt>
+                            <dd>
+                                <input type="password" name="userPw" id="userPw" class="inputst_box01" value="" />
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><label for="intxt_01">이메일</label></dt>
+                            <dd>
+                                <input type="text" name="email" id="email" class="inputst_box01" value="" />
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><label for="intxt_01">비고</label></dt>
+                            <dd>
+                                <input type="text" name="note" id="note" class="inputst_box01" value="" />
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt><label for="">결재자</label></dt>
+                            <dd>
+                                <div class="checkbox-options">
+                                    <input type="checkbox" value="1" id="approval1" name="approval" /><label for="approval1"><span>스캔결재자</span></label>
+                                    <input type="checkbox" value="2" id="approval2" name="approval" /><label for="approval2"><span>ICR결재자</span></label>
+                                    <input type="checkbox" value="3" id="approval3" name="approval" /><label for="approval3"><span>중간결재자</span></label>
+                                    <input type="checkbox" value="4" id="approval4" name="approval" /><label for="approval4"><span>최종결재자</span></label>
+                                    <input type="checkbox" value="5" id="admin" name="admin" /><label for="admin"><span>관리자</span></label>
+                                </div>
+                            </dd>
+                        </dl>
+                    </div>
+
+                    <div class="btn_rt">
+                        <button type="button" class="button_st1" id="btn_insert">등록</button>
+                        <button type="button" class="button_st1" id="btn_update" style="display:none">수정</button>
+                    </div>
+                </div>
+                <!-- // 사용자관리 목록 -->
+
+            </div>
+            <!-- // 본문영역 -->
+
+        </div>
+    </div>
+</body>
+</html>
