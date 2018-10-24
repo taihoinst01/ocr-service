@@ -67,24 +67,31 @@
             <!-- 본문영역 -->
             <div id="content">
                 <h2 class="subtit subtit_st01 blind"><span>청약서입력</span></h2>
+                <div class="content_sub_title">개별학습 - 문서 학습 예측</div>
+                <div class="content_sub_document_title" style="display: none;">
+                    <div class="content_sub_document_title_name">문서양식 예측</div>
+                    <div class="float_right">
+                        <button type="button" id="uiTrainBtn" class="button_st1">Add Training</button>
+                    </div>
+                </div>
 
                 <!-- 양식이미지 업로드폼-->
                 <div id="uploadForm" class="box_content_L">
 
                     <div class="st_infortext_01">
-                        <span id="uploadInfoText" class="ui_uploadText">Drag & Drop files here</span>
                         <form id="uploadFileForm" action="" method="post" enctype="multipart/form-data">
                             <p class="attach_btn">
-                                <input type="file" id="uploadFile" name="file" value="upload"/>
+                                <input type="file" id="uploadFile" name="file" value="upload" />
                                 <label id="uploadFileBtn" for="customer_file">계산서 업로드</label>
                             </p>
                         </form>
+                        <div id="uploadInfoText" class="ui_uploadText">Drag and drop or click here.</div>
                     </div>
 
                 </div>
                 <!-- 양식이미지 업로드폼-->
                 <!-- 양식이미지 -->
-                <div id="uploadSucessForm" style="display:none">
+                <div id="uploadSucessForm" style="display: none;">
                     <div class="box_content_L box_content_bg">
                         <h3 class="tits"><span>양식이미지</span></h3>
 
@@ -100,15 +107,15 @@
                             <div id="touchSlider">
                                 <ul id="imageBox">
                                     <!--
-                                    <li class="on">
-                                        <div class="box_img"><i><img src="publish/image/sample02.jpg" title="샘플이미지"></i></div>
-                                        <span>sample02.png</span>
-                                    </li>
-                                    <li>
-                                        <div class="box_img"><i><img src="publish/image/sample01.jpg" title="샘플이미지"></i></div>
-                                        <span>sample01.png</span>
-                                    </li>
-                                    -->
+                        <li class="on">
+                            <div class="box_img"><i><img src="publish/image/sample02.jpg" title="샘플이미지"></i></div>
+                            <span>sample02.png</span>
+                        </li>
+                        <li>
+                            <div class="box_img"><i><img src="publish/image/sample01.jpg" title="샘플이미지"></i></div>
+                            <span>sample01.png</span>
+                        </li>
+                        -->
                                 </ul>
                             </div>
                             <button type="button" id="thumb-next" class="button_control button_control2"><span class="blind">오른쪽이동</span></button>
@@ -120,20 +127,13 @@
                     <!-- 양식분석상세 -->
                     <div class="box_content_R st_last">
                         <div class="box_content_bg">
-                            <h3 class="tits11">
-                                <span>문서 양식 예측<b id="docName"></b><b id="docPredictionScore"></b></span>
-                            </h3>
-                            <button type="button" id="docCompareBtn" class="tits11_btn01"></button>
-                            <div class="btn_rt">
-                                <button type="button" id="uiTrainBtn" class="button_st1">ADD Training</button>
-                            </div>
                             <div class="table_style100">
                                 <table>
                                     <caption>양식 분석 상세 정보</caption>
                                     <colgroup>
-                                        <col style="width:54.5%" />
-                                        <col style="width:5%" />
-                                        <col style="width:42.5%" />
+                                        <col style="width:52%" />
+                                        <col style="width:8%" />
+                                        <col style="width:40%" />
                                     </colgroup>
                                     <thead>
                                         <tr>
@@ -149,37 +149,51 @@
                                     <div id="textResultTbl" class="box_table_st box_table_st04">
                                         <!--
                                         <dl>
-                                            <dt>
-                                                <label class="iclick">
-                                                    <input type="text" name="intxt_0" id="intxt_001" class="inputst_box01" value="Your Contract Ref Your Contract Ref Your Contract Ref Your Contract RefYour Contract Ref" />
+                                            <dt onclick="zoomImg()">
+                                                <label for="langDiv0" class="tip" style="width:343px;">
+                                                    <input type="text" value="test is test is test" style="width:100%; border:0;" />
+                                                    <input type="hidden" value="" />
+                                                    <input type="hidden" value="" />
                                                 </label>
-                                                <span>99.999%</span>
                                             </dt>
                                             <dd>
-                                                <div class="select_style">
-                                                    <span class="ctrl"><span class="arrow"></span></span>
-                                                    <button type="button" class="myValue">체크 테스트</button>
-                                                    <ul class="aList">
-                                                        <li><a href="#none">체크 테스트</a></li>
-                                                    </ul>
-                                                </div>
+                                                <input type="checkbox" class="entryChk">
+                                            </dd>
+                                            <dd class="columnSelect">
+                                                <select>
+                                                    <option>test</option>
+                                                    <option>test2</option>
+                                                </select>
+                                            </dd>
+                                            <dd class="entrySelect" style="display:none">
+                                                <select>
+                                                    <option>test</option>
+                                                    <option>test2</option>
+                                                </select>
                                             </dd>
                                         </dl>
                                         <dl>
-                                            <dt>
-                                                <label class="">
-                                                    <input type="text" name="intxt_0" id="intxt_01" class="inputst_box01" value="Your Contract Ref" />
+                                            <dt onclick="zoomImg()">
+                                                <label for="langDiv0" class="tip" style="width:343px;">
+                                                    <input type="text" value="test is test is test" style="width:100%; border:0;" />
+                                                    <input type="hidden" value="" />
+                                                    <input type="hidden" value="" />
                                                 </label>
-                                                <span>99.999%</span>
                                             </dt>
                                             <dd>
-                                                <div class="select_style">
-                                                    <span class="ctrl"><span class="arrow"></span></span>
-                                                    <button type="button" class="myValue">계약번호</button>
-                                                    <ul class="aList">
-                                                        <li><a href="#none">계약번호</a></li>
-                                                    </ul>
-                                                </div>
+                                                <input type="checkbox" class="entryChk">
+                                            </dd>
+                                            <dd class="columnSelect" style="display:none">
+                                                <select>
+                                                    <option>test</option>
+                                                    <option>test2</option>
+                                                </select>
+                                            </dd>
+                                            <dd class="entrySelect">
+                                                <select>
+                                                    <option>test</option>
+                                                    <option>test2</option>
+                                                </select>
                                             </dd>
                                         </dl>
                                         -->

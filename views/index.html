@@ -24,18 +24,20 @@
             <form action="login" method="post" id="loginfrm">
                 <div class="box_login_01">
                     <dl>
-                        <dt><label for="userId">ID</label></dt>
-                        <dd><input type="text" id="userId" name="userId" class="input_searchbox eng" spellcheck="false" placeholder="아이디" /></dd>
+                        <dt><label for="userId">Login</label></dt>
+                        <dd><div><input type="text" id="userId" name="userId" class="input_searchbox eng" spellcheck="false" placeholder="" /></div></dd>
                     </dl>
                     <dl>
                         <dt><label for="password">Password</label></dt>
-                        <dd><input type="password" id="userPw" name="userPw" class="input_searchbox" placeholder="비밀번호" /></dd>
+                        <dd><div><input type="password" id="userPw" name="userPw" class="input_searchbox" placeholder="" /></div></dd>
                     </dl>
                     <div class="row" style="text-align:center">
                         <span id="errors" style="color:red;font-weight:bold;text-align:center"><%= messages.error %></span>
                     </div>
-                    <div class="txts_01 checkbox-options"><input type="checkbox" id="remember_me" name="remember_me" /><label for="remember_me"><span>ID 저장하기</span></label></div>
-                    <button type="submit" class="button_login" id="sendLoginBtn" title="login">로그인</button>
+                    <div class="remeber_id_div">
+                        <input type="checkbox" id="remember_me" name="remember_me" /><label for="remember_me"><span>ID 저장하기</span></label>
+                    </div>
+                    <button type="submit" class="button_login" id="sendLoginBtn" title="login">Log In</button>
                 </div>
             </form>
         </div>
