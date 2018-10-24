@@ -3161,6 +3161,7 @@
     <Content Include="public\js\import\treeview\images\treeview-red.gif" />
     <Content Include="public\js\import\treeview\jquery.treeview.css" />
     <Content Include="public\publish\css\common.css" />
+    <Content Include="public\publish\css\font.css" />
     <Content Include="public\publish\font\notokr-bold.eot" />
     <Content Include="public\publish\font\notokr-bold.svg" />
     <Content Include="public\publish\font\notokr-bold.ttf" />
@@ -3193,6 +3194,9 @@
     <Content Include="public\publish\image\sample01.jpg" />
     <Content Include="public\publish\image\sample02.jpg" />
     <Content Include="public\publish\image\sync_btn.png" />
+    <Content Include="public\publish\img\bg_img.png" />
+    <Content Include="public\publish\img\bg_login.png" />
+    <Content Include="public\publish\img\login_logo.png" />
     <Content Include="README.md" />
     <Content Include="sample\apex.jpg" />
     <Content Include="sample\nasco.jpg" />
@@ -3420,6 +3424,7 @@
     <Folder Include="public\publish\css\" />
     <Folder Include="public\publish\font\" />
     <Folder Include="public\publish\image\" />
+    <Folder Include="public\publish\img\" />
     <Folder Include="public\publish\js\" />
     <Folder Include="routes\" />
     <Folder Include="routes\admin\" />

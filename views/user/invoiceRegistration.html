@@ -66,52 +66,49 @@
                     <!-- 양식이미지 업로드폼-->
                     <div id="uploadForm" class="box_content_T_01">
                         <div class="st_infortext_01">
-                            <span id="uploadInfoText" class="invoiceR_uploadText">Drag & Drop files here</span>
                             <form id="uploadFileForm" action="/invoiceRegistration/uploadFile" method="post" enctype="multipart/form-data">
                                 <p class="attach_btn attach_btn_k01">
                                     <%
                                     if(currentUser.scanApproval == 'Y') {
                                     %>
                                     <input type="file" id="uploadFile" name="file" value="upload" multiple />
-                                    <label id="uploadFileBtn" for="customer_file">계산서 업로드</label>
+                                    <label id="uploadFileBtn" for="customer_file">계산서</label>
                                     <%
                                     } else {
                                     %>
                                     <input type="file" id="uploadFile" name="file" value="upload" multiple />
-                                    <label id="uploadFileBtn" for="customer_file" >계산서 업로드</label>
+                                    <label id="uploadFileBtn" for="customer_file">계산서</label>
                                     <%
                                     }
                                     %>
+
                                 </p>
                             </form>
+                            <span id="uploadInfoText" class="invoiceR_uploadText">Drag and drop or click here.</span>
                         </div>
                     </div>
                     <!-- // 양식이미지 업로드폼-->
                     <!-- 조회조건 목록  -->
                     <div class="box_content_T_02">
-                        <h3 class="tits titsK00"><span>조회조건</span></h3>
                         <div class="box_txt_st01 st00_sh">
                             <dl class="kDl01">
                                 <dt>
-                                    <label for="intxt_01">
-                                        문서번호
-                                    </label>
                                 </dt>
                                 <dd>
                                     <input type="text" name="docNum" id="docNum" class="inputst_box01" value="" />
                                 </dd>
                             </dl>
                             <dl class="kDl02">
-                                <dt><label for="intxt_02">문서담당자</label></dt>
+                                <dt></dt>
                                 <dd>
                                     <%
                                     if ( currentUser.scanApproval == 'Y' && currentUser.adminApproval == 'N' ) {
                                     %>
-                                    <input type="text" name="documentManager" id="documentManager" class="inputst_box01" value="" placeholder="<%=currentUser.userId%>"  />
+                                    <input type="text" name="documentManager" id="documentManager" class="inputst_box01" value="" placeholder="<%=currentUser.userId%>" />
                                     <%
                                     } else {
                                     %>
-                                    <input type="text" name="documentManager" id="documentManager" class="inputst_box01" value="" placeholder="홍길동" />
+                                    <select id="userDepartment"><option>글로벌사업팀</option></select>
                                     <%
                                     }
                                     %>
@@ -136,7 +133,7 @@
                         </div>
                     </div>
                     <!-- // 조회조건 목록 -->
-                    <!-- 문서 기본정보 영역 -->
+                    <!-- 문서 기본정보 영역 -->                    
                     <div id="div_base" class="box_content_T_03 invocieR_div03" style="display:none">
                         <h3 class="tits titsK00"><span id="span_document_base">문서 기본정보</span></h3>
                         <table class="invoiceR_tblBackground" cellspacing="0">
@@ -190,52 +187,52 @@
                                                 <tbody id="tbody_baseList">
 
                                                     <!--<tr>
-                                                        <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="" id="" class="sta00 stck_tr" name="st_ck01" /></div></th>
-                                                        <td>ICR2018071000000123</td>
-                                                        <td>27</td>
-                                                        <td>201807</td>
-                                                        <td class="selectTd">
-                                                            <div class="select_style select_style_K">
-                                                                <input type="hidden" id="select_onesTeam" class="liSelectValue" value="" />
-                                                                <span class="ctrl"><span class="arrow"></span></span>
-                                                                <button type="button" class="myValue btnSelector">전 체</button>
-                                                                <ul class="aList">
-                                                                    <li class="select_li"><a>전체</a></li>
-                                                                    <li class="select_li"><a>테스트파트X</a></li>
-                                                                    <li class="select_li"><a>테스트파트Y</a></li>
-                                                                    <li class="select_li"a>테스트파트Z</a></li>
-                                                                </ul>
-                                                            </div>
-                                                        </td>
-                                                        <td class="selectTd">
-                                                            <div class="select_style select_style_K">
-                                                                <input type="hidden" id="select_onesTeam" class="liSelectValue" value="" />
-                                                                <span class="ctrl"><span class="arrow"></span></span>
-                                                                <button type="button" class="myValue btnSelector">전 체</button>
-                                                                <ul class="aList">
-                                                                    <li class="select_li"><a>전체</a></li>
-                                                                    <li class="select_li"><a>테스트파트X</a></li>
-                                                                    <li class="select_li"><a>테스트파트Y</a></li>
-                                                                    <li class="select_li"><a>테스트파트Z</a></li>
-                                                                </ul>
-                                                            </div>
-                                                        </td>
-                                                        <td class="selectTd">
-                                                            <div class="select_style select_style_K">
-                                                                <input type="hidden" id="select_onesTeam" class="liSelectValue" value="" />
-                                                                <span class="ctrl"><span class="arrow"></span></span>
-                                                                <button type="button" class="myValue btnSelector">전 체</button>
-                                                                <ul class="aList">
-                                                                    <li class="select_li"><a>전체</a></li>
-                                                                    <li class="select_li"><a>테스트파트X</a></li>
-                                                                    <li class="select_li"><a>테스트파트Y</a></li>
-                                                                    <li class="select_li"><a>테스트파트Z</a></li>
-                                                                </ul>
-                                                            </div>
-                                                        </td>
-                                                        <td><label for="intxt_001" class="blind">마감년월</label><input type="text" name="" id="" class="inputst_box01" value="" /></td>
-                                                        <td><label for="intxt_001" class="blind">메모1</label><input type="text" name="" id="" class="inputst_box01" value="" /></td>
-                                                    </tr>-->
+                                        <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="" id="" class="sta00 stck_tr" name="st_ck01" /></div></th>
+                                        <td>ICR2018071000000123</td>
+                                        <td>27</td>
+                                        <td>201807</td>
+                                        <td class="selectTd">
+                                            <div class="select_style select_style_K">
+                                                <input type="hidden" id="select_onesTeam" class="liSelectValue" value="" />
+                                                <span class="ctrl"><span class="arrow"></span></span>
+                                                <button type="button" class="myValue btnSelector">전 체</button>
+                                                <ul class="aList">
+                                                    <li class="select_li"><a>전체</a></li>
+                                                    <li class="select_li"><a>테스트파트X</a></li>
+                                                    <li class="select_li"><a>테스트파트Y</a></li>
+                                                    <li class="select_li"a>테스트파트Z</a></li>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                        <td class="selectTd">
+                                            <div class="select_style select_style_K">
+                                                <input type="hidden" id="select_onesTeam" class="liSelectValue" value="" />
+                                                <span class="ctrl"><span class="arrow"></span></span>
+                                                <button type="button" class="myValue btnSelector">전 체</button>
+                                                <ul class="aList">
+                                                    <li class="select_li"><a>전체</a></li>
+                                                    <li class="select_li"><a>테스트파트X</a></li>
+                                                    <li class="select_li"><a>테스트파트Y</a></li>
+                                                    <li class="select_li"><a>테스트파트Z</a></li>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                        <td class="selectTd">
+                                            <div class="select_style select_style_K">
+                                                <input type="hidden" id="select_onesTeam" class="liSelectValue" value="" />
+                                                <span class="ctrl"><span class="arrow"></span></span>
+                                                <button type="button" class="myValue btnSelector">전 체</button>
+                                                <ul class="aList">
+                                                    <li class="select_li"><a>전체</a></li>
+                                                    <li class="select_li"><a>테스트파트X</a></li>
+                                                    <li class="select_li"><a>테스트파트Y</a></li>
+                                                    <li class="select_li"><a>테스트파트Z</a></li>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                        <td><label for="intxt_001" class="blind">마감년월</label><input type="text" name="" id="" class="inputst_box01" value="" /></td>
+                                        <td><label for="intxt_001" class="blind">메모1</label><input type="text" name="" id="" class="inputst_box01" value="" /></td>
+                                    </tr>-->
 
                                                 </tbody>
                                             </table>
