@@ -1,0 +1,15 @@
+@font-face{
+    font-family:'NanumGothicR';
+    src:url(NanumGothic-Regular.eot) format('embedded-opentype'),
+        url(NanumGothic-Regular),
+        url(NanumGothic-Regular.woff) format('woff'),
+        url(NanumGothic-Regular.woff2) format('woff2')
+}
+
+@font-face{
+    font-family:'NanumGothicB';
+    src:url(NanumGothic-Bold.eot) format('embedded-opentype'),
+        url(NanumGothic-Bold),
+        url(NanumGothic-Bold.woff) format('woff'),
+        url(NanumGothic-Bold.woff2) format('woff2'),
+}
