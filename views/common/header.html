@@ -7,13 +7,10 @@
             <!-- GNB -->
             <div class="gnb_box">
                 <div class="gnb_connectionday">
-                    <dl>
-                        <dt>최종접속일</dt>
-                        <dd><%=currentUser.lastLoginDate%></dd>
-                    </dl>
+                    <input type="text" class="totalSearch" id="totalSearch" placeholder="Search.." />
                 </div>
                 <div class="gnb_setting">
-                    <a href="#" title="서비스설정">서비스 설정</a>
+                    <a href="#" title="서비스설정">Settings</a>
                 </div>
                 <% if(currentUser != null) { %>
                 <div class="gnb_infor">
@@ -21,8 +18,9 @@
                         <span><%=currentUser.userId%></span>
                     </a>
                 </div>
-                <a href="/logout" title="로그아웃">
-                    <div class="btn_logout">
+                <a href="/logout" title="로그아웃">     
+                    <b class="b_logout">Logout</b>
+                    <div class="btn_logout">                       
                         <span class="blind">로그아웃</span>
                     </div>
                 </a>
