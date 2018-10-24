@@ -2,12 +2,12 @@
 
 $(document).ready(function () {
     if ($('#adminApproval').val() == 'Y') { //관리자일 경우
-        fn_loadLeftSideBarInvoiceRegistration();
-        fn_loadLeftSideBarMyApproval()
+        //fn_loadLeftSideBarInvoiceRegistration();
+        //fn_loadLeftSideBarMyApproval()
     } else if ( ($('#scanApproval').val() == 'Y' && $('#adminApproval').val() == 'N') || ($('#icrApproval').val() == 'Y' && $('#adminApproval').val() == 'N') ) {
-        fn_loadLeftSideBarInvoiceRegistration();    // 레프트사이드바 계산서등록(진행 수) 표시
+        //fn_loadLeftSideBarInvoiceRegistration();    // 레프트사이드바 계산서등록(진행 수) 표시
     } else if ( ($('#middleApproval').val() == 'Y' && $('#adminApproval').val() == 'N') || ($('#lastApproval').val() == 'Y' && $('#adminApproval').val() == 'N') ) {
-        fn_loadLeftSideBarMyApproval();             // 레프트사이드바 내결재(진행 수) 표시
+        //fn_loadLeftSideBarMyApproval();             // 레프트사이드바 내결재(진행 수) 표시
     }
 });
 

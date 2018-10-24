@@ -67,9 +67,10 @@
 
 <h2 class="blind">LNB</h2>
 <div class="lnb_menu">
-    <div style="padding-top: 70px;">
+    <div>
         <ul>
-            <li><a href="/uiLearning"><img/>개별 학습</a></li>
+            <li><a href="/invoiceRegistration"><img />계산서 등록</a></li>
+            <li><a href="/uiLearning"><img />개별 학습</a></li>
             <li><a href="/batchLearning"><img />일괄 학습</a></li>
             <li><a href="/userManagement"><img />사용자 관리</a></li>
             <li><a href="/documentCheck"><img />문서 조회</a></li>
@@ -109,6 +110,7 @@
 
 <script>
     $(window).on('load', function () {
+        /*
         var pageTitle = $.trim($('title').attr('alt')).replace(/ /gi, "");
         $('.lnb_menu > ul > li').each(function (i, el) {
             var menuName = $.trim(el.childNodes[0].title).replace(/ /gi, "");
@@ -117,5 +119,6 @@
                 return;
             }
         });
+        */
     });
 </script>
