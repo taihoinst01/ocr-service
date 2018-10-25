@@ -117,6 +117,8 @@ width: 100%;height: 100%}
     documentCheck.html (문서 조회)
 */
 .box_stsearch input[type="text"], .box_stsearch .select_style, .box_stsearch .btnSelector  { border: 1px solid #EA7169; border-radius: 20px; color: #EA7169; }
+#btn_baseList_return, #btn_baseList_forward, #btn_baseList_approval { background: #EA7169; }
+
 
 html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
@@ -3210,7 +3212,7 @@ h3.tits span {
     height: 28px;
     text-indent: -999em;
     vertical-align: 0px;
-    background-position: 0px -550px;
+    background-position: 0px -543px;
 }
 
 .ui-helper-clearfix {
