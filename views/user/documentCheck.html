@@ -45,25 +45,20 @@
             <!-- // LNB -->
             <!-- 본문영역 -->
             <div id="content">
-                <h2 class="subtit subtit_st01 blind"><span>문서 조회</span></h2>
-
+                <div class="content_sub_title">문서 조회</div>
                 <!-- 조회조건 목록  -->
                 <div class="box_stsearch">
-                    <h3 class="tits"><span>조회조건</span></h3>
 
                     <div class="box_txt_st01 st00_sh">
                         <dl>
                             <dt>
-                                <label for="intxt_01">
-                                    문서번호
-                                </label>
                             </dt>
                             <dd>
                                 <input type="text" name="docNum" id="docNum" class="inputst_box01" value="" />
                             </dd>
                         </dl>
                         <dl>
-                            <dt><label>소속팀</label></dt>
+                            <dt></dt>
                             <dd>
                                 <div class="select_style w100">
                                     <input type="hidden" id="select_faoTeam" value="" />
@@ -78,7 +73,7 @@
                             </dd>
                         </dl>
                         <dl>
-                            <dt><label>소속파트</label></dt>
+                            <dt></dt>
                             <dd>
                                 <div class="select_style w100">
                                     <input type="hidden" id="select_faoPart" value="" />
@@ -93,7 +88,7 @@
                             </dd>
                         </dl>
                         <dl>
-                            <dt><label for="intxt_02">문서담당자</label></dt>
+                            <dt></dt>
                             <dd>
                                 <div class="select_style w100">
                                     <input type="hidden" id="select_docManager" value="" />
@@ -108,21 +103,22 @@
                             </dd>
                         </dl>
                         <dl>
-                            <dt><label for="intxt_03">마감년월</label></dt>
+                            <dt></dt>
                             <dd>
                                 <input type="text" name="deadLineDt" id="deadLineDt" class="inputst_box01" value="" placeholder="201801" />
                             </dd>
                         </dl>
 
                         <dl>
-                            <dt><label>문서등록일자</label></dt>
+                            <dt></dt>
                             <dd>
                                 <div class="clearfix inputst_box01">
+                                    <span class="demi">FROM</span>
                                     <span class="dset">
                                         <input type="text" class="datepicker inpType" name="searchStartDate" id="searchStartDate" readonly />
                                         <a href="#none" class="btncalendar dateclick">달력</a>
                                     </span>
-                                    <span class="demi">-</span>
+                                    <span class="demi">TO</span>
                                     <span class="dset dset2">
                                         <input type="text" class="datepicker inpType" name="searchEndDate" id="searchEndDate" readonly />
                                         <a href="#none" class="btncalendar dateclick">달력</a>
@@ -131,7 +127,7 @@
                             </dd>
                         </dl>
                         <dl>
-                            <dt><label for="intxt_01">결재상태</label></dt>
+                            <dt></dt>
                             <dd>
                                 <div class="checkbox-options">
                                     <input type="checkbox" value="P" id="st1" name="approvalState" checked /><label for="st1"><span>진행</span></label>
@@ -279,18 +275,16 @@
                     </div>
 
                     <div class="box_imgtmb">
-                        <button type="button" class="button_control button_control1"><span class="blind">왼쪽이동</span></button>
                         <div id="touchSlider">
                             <ul id="ul_image">
                                 <!--
-                    <li class="on">
-                        <div class="box_img"><i><img src="publish/image/sample01.jpg" title="샘플이미지"></i></div>
-                        <span>Filename_Filename_0001.jpg</span>
-                    </li>
-                    -->
+                        <li class="on">
+                            <div class="box_img"><i><img src="publish/image/sample01.jpg" title="샘플이미지"></i></div>
+                            <span>Filename_Filename_0001.jpg</span>
+                        </li>
+                        -->
                             </ul>
                         </div>
-                        <button type="button" class="button_control button_control2"><span class="blind">오른쪽이동</span></button>
                         <div id="count" class="count"><!--<span>1</span> / 1--></div>
                     </div>
                 </div>

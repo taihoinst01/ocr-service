@@ -99,6 +99,11 @@ width: 100%;height: 100%}
 .bl_btn_div { margin: 20px 0 10px 0; }
 #content-6 { border-left: 1px solid #D8D8D8; border-bottom: 1px solid #D8D8D8; border-radius: 10px 0 0 10px; }
 
+/*
+    documentCheck.html (문서 조회)
+*/
+.box_stsearch input[type="text"], .box_stsearch .select_style, .box_stsearch .btnSelector  { border: 1px solid #EA7169; border-radius: 20px; color: #EA7169; }
+
 html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
     margin: 0;
@@ -1511,6 +1516,7 @@ select:disabled + ul.idealSelect:before {
     text-align: center;
     margin: 10px 0 10px 0;
     border-radius: 20px;
+    background: #FFFFFF;
 }
 
     .imgtmb_b img {
@@ -1523,14 +1529,8 @@ select:disabled + ul.idealSelect:before {
     width: calc(100% - 46px);
     width: -webkit-calc(100% - 46px);
     width: -moz-calc(100% - 46px);
-    height: 4x;
     padding: 14px 22px;
     margin: 0 0 20px 0;
-    background-color: #fff;
-    border: 1px solid #dadbdd;
-    -webkit-box-shadow: 0px 0px 8px 1px rgba(120,120,120,.1);
-    -moz-box-shadow: 0px 0px 8px 1px rgba(120,120,120,.1);
-    box-shadow: 0px 0px 8px 1px rgba(120,120,120,.1);
 }
 
     .box_stsearch .btn_rt {
@@ -2207,7 +2207,8 @@ h3.tits span {
         height: 40px;
         line-height: 38px;
         text-indent: 8px;
-        padding-right: 8px
+        padding-right: 8px;
+        color: #EA7169;
     }
 
         .select_style button.btnSelector:hover {
@@ -2226,7 +2227,6 @@ h3.tits span {
         width: 24px;
         height: 31px;
         border-bottom: 0px;
-        background: #fff;
         border-radius: 10px;
         z-index: 2;
     }
@@ -3131,7 +3131,7 @@ h3.tits span {
         display: table-cell;
         position: relative;
         vertical-align: top;
-        width: 50%;
+        width: 35%;
     }
 
         .inputst_box01 .dset .datepicker {
@@ -3155,6 +3155,8 @@ h3.tits span {
         width: 10px;
         text-align: center;
         vertical-align: middle;
+        padding: 0 10px;
+        color: #909090;
     }
 
     .inputst_box01.st_coupon {
