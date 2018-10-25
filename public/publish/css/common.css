@@ -25,14 +25,25 @@ body{font-family:NanumGothicR,sans-serif,³ª´®°íµñ;}
 /*
     header.html (»ó´Ü¹Ù)
 */
-#header { position: absolute; top: 0px; left: 0px; overflow: hidden; width: 100%; min-width: 1899px; height: 70px; background-color: #EA7169; z-index: 2; }
+#header {position: absolute; top: 0px; left: 0px; overflow: hidden; width: 100%; min-width: 1899px; height: 70px; background-color: #EA7169; z-index: 2; }
+
+
 .totalSearch { background: transparent; border: 0 !important; color: #FFFFFF !important; }
 #header ::placeholder { color: #C9C9C9; }
-.gnb_box .gnb_connectionday { float: left; line-height: 30px; padding: 3px 30px; margin: 13px 14px 0 0; background: rgba(255, 255, 255, .1); border-radius: 15px; }
-.gnb_box .gnb_setting { float: left; line-height: 30px; padding: 3px 12px; margin: 16px 14px 0 0; border-radius: 15px;}
-.gnb_box .gnb_infor { float: left; line-height: 30px; padding: 0 30px 0 30px; margin: 16px 14px 0 0; border-radius: 15px; }
-.b_logout { float:left; margin: 22px 0 0 0; }
-.gnb_box .btn_logout { float: left; line-height: 30px; padding: 3px 5px; margin: 16px 20px 0 0; border-radius: 5px; }
+.gnb_box .gnb_connectionday { float: left; line-height: 30px; padding: 3px 30px; margin: 13px 14px 0 0; background-color:#d3635c ; border-radius:30px;width: 293px;height: 35px; }
+.gnb_box .gnb_setting { float: left; line-height: 30px; padding: 3px 30px; margin: 16px 0 0 0; border-radius: 15px;}
+.gnb_box .gnb_infor { float: left; line-height: 30px; margin: 16px 14px 0 0; border-radius: 15px;padding-right: 30px; }
+.gnb_infor_img{
+    width: 33px;
+    height: 33px;
+    display:inline-block;
+    background-color: #d3635c;
+    border-radius: 50%;    
+    margin-top: 4px;
+    margin-left: 6px;
+}
+.b_logout { float:left; margin: 23px 30px 0 0; }
+/*.gnb_box .btn_logout {line-height: 30px; padding: 3px 5px;  border-radius: 5px; }*/
 
 /*
     leftSideBar.html (ÁÂÃø ¸Þ´º¹Ù)
@@ -56,10 +67,13 @@ width: 100%;height: 100%}
 .box_login_01 > dl > dd div { width: 100%; height: 46px; background-color: rgb(255, 255, 255, .2); border-radius: 30px;}
 .box_login_01 > dl > dd input { height: inherit; line-height: 32px; border-radius: 20px; background: transparent; color: #FFFFFF; border: 0; padding: 0 10px;}
 .button_login { display: inline-block; width: 100%; height: 46px; line-height: 16px; padding: 9px 15px 11px; margin: 60px 0 0; font-size: 16px; font-family: 'NanumGothicB'; color: #D4635B; background: #FFFFFF; border-radius: 5px; cursor: pointer; }
-.remember_id_div { padding-left: 20px; }
+.remember_id_div { padding-left: 10px; }
 .remember_id_div label { padding: 0 0 0 5px; font-size: 16px; vertical-align: 3px;}
 
-.l_logo{ text-align: center; }
+.l_logo{
+     text-align: center;
+    
+}
 /*.login_top h1 { display: block; width: 200px; height: 40px; margin: 0 auto; }*/
 
 /*
@@ -407,7 +421,8 @@ thead .ez-checkbox,
 .box_st02 .canvas_flie,
 .box_table_st04 > dl > dt label.iclick:before,
 .gnb_box .gnb_setting:after,
-.gnb_box .btn_logout:before,
+.gnb_box .b_logout:after,
+.gnb_infor_img:after,
 .lnb_menu li a i:before,
 .st_infortext_01:before,
 h3.tits:before,
@@ -857,27 +872,24 @@ select:disabled + ul.idealSelect:before {
     min-height: 900px;
 }
 
-    #header h1 {
+#header h1 {
         width: 290px;
         height: 60px;
-        margin: 6px 0 0 12px;
+        margin: 6px 0 0 20px;
         background-position: 0px -270px;
     }
 
 .gnb_box {
     float: right;
-    font-size: 15px;
+    font-size: 16px;
     color: #fff;
-    font-family: 'notokr-medium', sans-serif;
+    font-family:'NanumGothicR';
 }
 
     .gnb_box a {
         color: #fff;
     }
-
-        .gnb_box a:hover {
-            color: #0075bb !important;
-        }
+.gnb_connectionday
 
         .gnb_box .gnb_connectionday dt {
             display: inline-block;
@@ -937,6 +949,7 @@ select:disabled + ul.idealSelect:before {
             background-position: center;
         }
 
+/*
         .gnb_box .gnb_setting:after {
             content: '';
             display: inline-block;
@@ -945,23 +958,38 @@ select:disabled + ul.idealSelect:before {
             vertical-align: -1px;
             background-position: -60px -550px;
         }
+*/
 
         .gnb_box .gnb_setting:hover:after {
             background-position: -60px -570px;
         }
 
-        .gnb_box .btn_logout:before {
+        .gnb_box .b_logout:after {
             content: '';
             display: inline-block;
-            width: 18px;
-            height: 14px;
-            vertical-align: -1px;
-            margin: 0px;
+            width: 20px;
+            height: 18px;
             background-position: -90px -550px;
+            margin-left: 10px;
+            vertical-align: middle;
         }
 
+
+/*
         .gnb_box .btn_logout:hover:before {
             background-position: -90px -570px;
+        }
+*/
+        .gnb_infor_img:after{
+            content: '';
+            display: inline-block;
+            width: 10px;
+            height: 5px;
+            background-position: -48px -123px;
+            margin-left: 42px;
+            margin-top: 13px
+            
+
         }
 
 /* lnb */
@@ -2951,6 +2979,7 @@ h3.tits span {
         background: #FFF;
         border-bottom: 1px solid #D8D8D8;
     }   
+
     .table_style02 table > tbody > tr > th {
         padding: 8px 10px 9px;
         color: #666;
