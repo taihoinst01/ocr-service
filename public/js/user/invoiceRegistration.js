@@ -51,13 +51,13 @@ var initForm = function ({ type }) {
     $("#main_image").prop("alt", "");
     $("#ul_image").html("");
 
-    $("#div_image").fadeOut("fast");
-    $("#div_dtl").fadeOut("fast");
+    //$("#div_image").fadeOut("fast");
+    //$("#div_dtl").fadeOut("fast");
 
     if (type == 1) {
 
         $("#tbody_baseList").html("");
-        $("#div_base").fadeOut("fast");
+        //$("#div_base").fadeOut("fast");
     } else if (type == 2) {
 
     }

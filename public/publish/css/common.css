@@ -65,19 +65,33 @@ width: 100%;height: 100%}
 /*
     uiLearning.html css (개별학습)
 */
-#uploadForm { border: 2px dashed #D4635B; background-color: #E1E1E1; border-radius: 10px; }
+#uploadForm { border: 2px dashed #D4635B; background-color: #E1E1E1; border-radius: 10px; margin: 20px 0 0 0;}
 .ui_uploadText { font: 300 20px arial; width: 350px !important; color: #D4635B; text-align: center; }
 .content_sub_title { font: bold 20px arial; color: #4C5059; margin: 0 0 20px 0; }
 .box_content_R { float: right; display: table; position: relative; width: 48%; width: calc(50% - 16px); width: -webkit-calc(40% - 16px); height: 800px; padding: 0px; margin: 0; }
-.box_content_bg { background-color: #fff; border: 1px solid #D2D2D2; border-radius: 7px; -webkit-box-shadow: 0px 0px 8px 1px rgba(120,120,120,.1); -moz-box-shadow: 0px 0px 8px 1px rgba(120,120,120,.1); box-shadow: 0px 0px 8px 1px rgba(120,120,120,.1); height: 823px; }
+.box_content_bg { height: 350px; }
 .table_style100 table > thead > tr > th { height: 44px; font-size: 13px; color: #000000; background: #E1E1E1; font-family: 'notokr-medium', sans-serif; }
 .box_scroll_st100 { display: block; height: 760px; overflow: auto; }
 .columnSelect > select , .entrySelect > select { height: 35px; width: 85%; border-radius: 15px; padding: 0 3px 0 3px; font-size: 13px; border: 1px solid #EA7169; color: #EA7169; outline: none; text-align-last:center; }
+#textResultTbl { background: #FFF; }
 #textResultTbl input[type="text"] { text-align: center; color: #8C8C8C; }
 .content_sub_title { float: left; width:-webkit-calc(60% - 16px); }
 .content_sub_document_title { float: right; width:-webkit-calc(40% - 16px); height:47px; }
 .content_sub_document_title_name { float: left; font: 600 15px arial; padding: 20px 0 0 0; }
 .float_right { float: right; }
+
+/*
+    invoiceRegistration.html (계산서 등록)
+*/
+.kDl01 .inputst_box01 { border: 1px solid #EA7169; border-radius: 20px; color: #EA7169; }
+#userDepartment {  border: 1px solid #EA7169; border-radius: 20px; height: 40px; width: 100%; color: #EA7169; padding: 0 10px; }
+.fr.mt10 { width: 100%; }
+.button_ocr { display: inline-block; min-width: 80px; height: 40px; line-height: 16px; padding: 9px 15px 11px; margin: 0; font-size: 15px; color: #fff; background: #EA7169; border-radius: 5px;  cursor: pointer; }
+.content_title { font-weight: bold; font-family: 'NanumGothicR'; font-size: 20px; }
+li.on img { border: 3px solid #EA7169; }
+#ul_image > li { text-align: center; }
+#tbody_dtlList > tr { background: #FFF; border-bottom: 1px solid #e1e0e0; }
+
 
 html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
@@ -1489,6 +1503,8 @@ select:disabled + ul.idealSelect:before {
     overflow: auto;
     height: 574px;
     text-align: center;
+    margin: 10px 0 10px 0;
+    border-radius: 20px;
 }
 
     .imgtmb_b img {
@@ -1637,7 +1653,9 @@ select:disabled + ul.idealSelect:before {
     width: 100%;
     max-height: 130px;
     padding: 10px 0;
-    background: #605f5d
+    background: #605f5d;
+    border: 1px solid #605f5d;
+    border-radius: 10px;
 }
 
     .box_imgtmb .ui_touchSlider {
@@ -1653,7 +1671,7 @@ select:disabled + ul.idealSelect:before {
         overflow: hidden;
         width: 660px;
         height: 130px;
-        margin: 0 auto
+        /*margin: 0 auto*/
     }
 
     .box_imgtmb ul li {
@@ -1773,9 +1791,6 @@ select:disabled + ul.idealSelect:before {
         }
 
 h3.tits {
-    padding: 14px 0;
-    margin: 0 18px 10px;
-    border-bottom: 1px solid #d8dfe8;
     font-size: 14px;
     font-family: 'notokr-medium', sans-serif;
 }
@@ -2893,6 +2908,8 @@ h3.tits span {
 .table_style02 {
     /*display: table;*/
     width: 100%;
+    border: 1px solid #D8D8D8;
+    border-radius: 7px;
 }
 
     .table_style02 table {
@@ -2922,11 +2939,14 @@ h3.tits span {
     .table_style02 table > thead > tr > th {
         height: 44px;
         font-size: 13px;
-        color: #fff;
-        background: #2f2e2a;
+        color: #000;
+        background: #D8D8D8;
         font-family: 'notokr-medium', sans-serif;
     }
-
+    table.ivoiceR_tblHead2 > thead > tr > th {
+        background: #FFF;
+        border-bottom: 1px solid #D8D8D8;
+    }   
     .table_style02 table > tbody > tr > th {
         padding: 8px 10px 9px;
         color: #666;
@@ -2954,7 +2974,10 @@ h3.tits span {
 
     .table_style02 table > tbody > tr.on,
     .table_style02 table > tbody > tr:hover {
-        background-color: #e5e5e5;
+        background-color: #EA7169;
+    }
+    .table_style02 table > tbody > tr:hover > td {
+        color: #FFF;
     }
 
     .table_style02 table input[type='text'] {
@@ -4833,7 +4856,7 @@ thead .ez-checked {
     width: calc(58% - -2px);
     width: -webkit-calc(100% - 16px);
     width: -moz-calc(100% - 16px);
-    height: 97px !important;
+    height: 80px !important;
     padding: 0;
     margin: 0 0 0 0 !important;
 }
@@ -4854,15 +4877,9 @@ thead .ez-checked {
     position: relative;
     width: 100%;
     width: calc(100% - 46px);
-    width: -webkit-calc(100% - 46px);
-    width: -moz-calc(100% - 46px);
+    width: -webkit-calc(100% - 0px);
+    width: -moz-calc(100% - 0px);
     height: 275px !important;
-    padding: 14px 22px;
-    background-color: #fff;
-    border: 1px solid #dadbdd;
-    -webkit-box-shadow: 0px 0px 8px 1px rgba(120,120,120,.1);
-    -moz-box-shadow: 0px 0px 8px 1px rgba(120,120,120,.1);
-    box-shadow: 0px 0px 8px 1px rgba(120,120,120,.1);
     clear: both;
 }
 
@@ -5236,7 +5253,7 @@ label[disabled] {
     width: 300px !important;
 }
 .kDl03 {
-    width: 152px !important;
+    width: 140px !important;
     margin: 0 0 0 0 !important;
 }
 
@@ -5260,7 +5277,7 @@ label[disabled] {
     }
 
 .box_content_bg_K01 {
-    min-height: 499px !important;
+    min-height: 350px !important;
 }
 
     .box_content_bg_K01 .imgtmb_b {
@@ -5651,6 +5668,7 @@ label[disabled] {
     width: 100%;
     table-layout: fixed;
 	background: white;
+    border-radius: 7px;
 }
 
 .invoiceR_divHeadScroll {
@@ -5738,6 +5756,7 @@ label[disabled] {
     height: 150px;
     overflow-x: scroll;
     overflow-y: scroll;
+    background: #FFF;
 }
 
 .invoiceR_tblBody2 {
@@ -6139,9 +6158,13 @@ input:disabled {
         cursor: pointer;
     }
 #div_invoice_view_image {
-    height: 305px !important;
+    height: 325px !important;
     overflow-y: scroll;
     width: 1620px;
+    background: #FFF;
+    border: 1px solid #FFF;
+    border-radius: 10px;
+    margin: 0 0 10px 0;
 }
 
 .box_table_st04_01 > dl > dt input {
