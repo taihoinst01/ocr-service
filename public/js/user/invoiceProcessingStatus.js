@@ -11,13 +11,12 @@ var _init = function () {
 		var config = {
             type: 'line',
 			data: {
-                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September',
-                    'October', 'November', 'December'],
+                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
 				datasets: [{
                     label: '',
                     backgroundColor: 'rgba(255,255,255,1)',
                     borderColor: 'rgba(234,113,105,1)',
-                    data: [5,4,7,8,7,8,6,10,8,4, 3,1],
+                    data: [5,4,7,8,3,3,0],
                     fill: false,
                 }]
             },
@@ -38,7 +37,9 @@ var _init = function () {
 				scales: {
                     yAxes: [{
                         ticks: {
-                            stepSize: 1
+                            stepSize: 1,
+                            suggestedMin: 0,
+                            suggestedMax: 10,
                         }
                     }]
                 }
