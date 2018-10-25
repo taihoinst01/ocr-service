@@ -119,6 +119,24 @@ width: 100%;height: 100%}
 .box_stsearch input[type="text"], .box_stsearch .select_style, .box_stsearch .btnSelector  { border: 1px solid #EA7169; border-radius: 20px; color: #EA7169; }
 #btn_baseList_return, #btn_baseList_forward, #btn_baseList_approval { background: #EA7169; }
 
+/*
+    invoiceProcessingStatus (계산서 처리현황)
+*/
+.ips_content_title { font-weight: bold; font-family: 'NanumGothicR'; font-size: 20px; margin: 0 0 20px 0; }
+.ips_content_sub { width: 100%; height: 850px; }
+.ips_content_sub span { font: bold 15px arial; color: #000; }
+.ips_content_sub_top { width: 100%; height: 60%; }
+.ips_content_sub_bottom { width: 100%; height: 40%; }
+.ips_line_graph { float:left; height: 100%; width: 45%; }
+.ips_tot_document_count { float:left; height: 100%; width: 20%; background: blue;}
+.ips_date { float:left; height: 100%; width: 35%; background: green;}
+.ips_user_status { float:left; height: 100%; width: 35%; background: yellow; }
+.ips_pie_graph { float:left; height: 100%; width: 30%; background: black; }
+.ips_bar_graph { float:left; height: 100%; width: 35%; background: gray; }
+.ips_line_graph_comment { width: 100%; height: 5%; }
+.ips_line_graph_comment > span { float: left; }
+.ips_line_graph_comment > p { float: right; width:auto; font-size: 15px; }
+
 
 html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {

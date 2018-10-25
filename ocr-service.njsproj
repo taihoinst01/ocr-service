@@ -840,6 +840,8 @@
     <Compile Include="public\js\user\myApproval.js" />
     <Compile Include="public\js\user\result.js" />
     <Compile Include="public\js\user\uiLearning.js" />
+    <Compile Include="public\publish\js\chart\Chart.bundle.min.js" />
+    <Compile Include="public\publish\js\chart\utils.js" />
     <Compile Include="public\publish\js\jquery-1.9.1.min.js" />
     <Compile Include="public\publish\js\jquery-ui.js" />
     <Compile Include="public\publish\js\jquerys.js" />
@@ -3426,6 +3428,7 @@
     <Folder Include="public\publish\image\" />
     <Folder Include="public\publish\img\" />
     <Folder Include="public\publish\js\" />
+    <Folder Include="public\publish\js\chart\" />
     <Folder Include="routes\" />
     <Folder Include="routes\admin\" />
     <Folder Include="routes\proxy\" />
