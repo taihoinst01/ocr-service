@@ -126,7 +126,16 @@
             <!-- // LNB -->
             <!-- 본문영역 -->
             <div id="content">
-
+                <div class="bl_content_title">일괄 학습</div>
+                <form id="multiUploadForm" action="/batchLearning/multiUpload" method="post" enctype="multipart/form-data">
+                    <div class="bl_btn_div">
+                        <p class="attach_btn fl"><input type="file" id="document_file" name="file" multiple /><label for="document_file">Document Upload</label></p>
+                        <button type="button" id="btn_imageDelete" class="button_st5">Document Delete</button>
+                        <button type="button" id="btn_batchTraining" * class="button_st5">Batch Training</button>
+                        <button type="button" id="btn_uiTraining" class="button_st5">UI Training</button>
+                        <button type="button" id="btn_AddTraining" class="button_st5">Add Training</button>
+                    </div>
+                </form>
                 <!-- TEP 상단영역 -->
                 <div class="tep_tit">
                     <ul class="bt_tep">
@@ -135,36 +144,15 @@
                     </ul>
                     <!-- Looks like select box-->
                     <input type="hidden" id="select_view_count" value="12" />
-                    <div class="select_style">
-                        <span class="ctrl"><span class="arrow"></span></span>
-                        <button type="button" class="myValue btnSelector">선택하기</button>
-                        <ul class="aList">
-                            <li><a onclick="selectViewCount(20)">행표시 : 20</a></li>
-                            <li><a onclick="selectViewCount(100)">행표시 : 100</a></li>
-                            <li><a onclick="selectViewCount(1000)">행표시 : 1000</a></li>
-                        </ul>
-                    </div>
                     <!--<button type="button" id="btn_sync" class="button_st1 ml5 fl">Sync</button>-->
                     <!--<button type="button" id="btn_sync" class="bgColor ml5 fl"><img src="publish/image/sync_btn.png" /></button>-->
                     <!-- // Looks like select box-->
-                    <form id="multiUploadForm" action="/batchLearning/multiUpload" method="post" enctype="multipart/form-data">
-                        <div class="fr">
-                            <!--<p class="attach_btn fl"><input type="file" id="excel_file" name="excel_file" /><label for="excel_file">Excel Upload</label></p>-->
-                            <!--<button type="button" id="btn_excelUpload" class="button_st5">Excel Upload</button>-->
-                            <div class="fl mr10 outDIv">
-                                <div class="innerDiv">
-                                    <input type="checkbox" value="" class="fl" id="uiTrainingChk" name="" /><span>UI Training</span>
-                                </div>
-                            </div>
-                            <!--<button type="button" id="btn_excelUpload" class="button_st5 button_st5_01 fl">Excel Upload</button>-->
-                            <p class="attach_btn fl"><input type="file" id="document_file" name="file" multiple /><label for="document_file">Document Upload</label></p>
-                            <button type="button" id="btn_imageDelete" class="button_st5">Document Delete</button>
-                            <button type="button" id="btn_batchTraining" * class="button_st5">Batch Training</button>
-                            <button type="button" id="btn_uiTraining" class="button_st5">UI Training</button>
-                            <button type="button" id="btn_AddTraining" class="button_st5">Add Training</button>
+                    <div class="fl mr10 outDIv">
+                        <div class="innerDiv">
+                            <input type="checkbox" value="" class="fl" id="uiTrainingChk" name="" /><span>UI Training</span>
                         </div>
-                    </form>
-                </div>
+                    </div>
+                </div>               
                 <!-- // TEP 상단영역 -->
                 <!-- Before Training 영역 -->
                 <div class="tep_content tep_st01">
@@ -547,26 +535,26 @@
                 </div>
                 <!-- After Training 영역 -->
                 <!--
-                <script>
-                    (function ($) {
-                        $(window).on("load", function () {
-                            $("#content-6").mCustomScrollbar({
-                                axis: "x",
-                                theme: "light-3",
-                                advanced: { autoExpandHorizontalScroll: true }
-                            });
+    <script>
+        (function ($) {
+            $(window).on("load", function () {
+                $("#content-6").mCustomScrollbar({
+                    axis: "x",
+                    theme: "light-3",
+                    advanced: { autoExpandHorizontalScroll: true }
+                });
 
-                            $("#content-7").mCustomScrollbar({
-                                axis: "x",
-                                theme: "light-3",
-                                advanced: { autoExpandHorizontalScroll: true }
-                            });
+                $("#content-7").mCustomScrollbar({
+                    axis: "x",
+                    theme: "light-3",
+                    advanced: { autoExpandHorizontalScroll: true }
+                });
 
-                        });
-                    })(jQuery);
+            });
+        })(jQuery);
 
-                </script>
-                -->
+    </script>
+    -->
             </div>
             <!-- // 본문영역 -->
         </div>

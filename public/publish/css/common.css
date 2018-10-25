@@ -88,10 +88,16 @@ width: 100%;height: 100%}
 .fr.mt10 { width: 100%; }
 .button_ocr { display: inline-block; min-width: 80px; height: 40px; line-height: 16px; padding: 9px 15px 11px; margin: 0; font-size: 15px; color: #fff; background: #EA7169; border-radius: 5px;  cursor: pointer; }
 .content_title { font-weight: bold; font-family: 'NanumGothicR'; font-size: 20px; }
-li.on img { border: 3px solid #EA7169; }
+#touchSlider li.on img { border: 3px solid #EA7169; }
 #ul_image > li { text-align: center; }
 #tbody_dtlList > tr { background: #FFF; border-bottom: 1px solid #e1e0e0; }
 
+/*
+    batchLearning.html (ÀÏ°ý ÇÐ½À)
+*/
+.bl_content_title { font-weight: bold; font-family: 'NanumGothicR'; font-size: 20px; margin-bottom: 10px; }
+.bl_btn_div { margin: 20px 0 10px 0; }
+#content-6 { border-left: 1px solid #D8D8D8; border-bottom: 1px solid #D8D8D8; border-radius: 10px 0 0 10px; }
 
 html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
@@ -2351,10 +2357,7 @@ h3.tits span {
         }
 
         .tep_tit > ul > li.on a {
-            color: #666;
-            background: #fff;
-            border: 1px solid #ccc;
-            border-bottom: 1px solid #fff;
+            border-bottom: 2px solid #EA7169;
             font-weight: bold;
         }
 
@@ -2625,23 +2628,24 @@ h3.tits span {
     padding: 7px 20px 8px;
     margin: 0;
     font-size: 14px;
-    color: #666;
-    background: transparent;
+    color: #FFF;
+    background: #565656;
     border-radius: 5px;
     cursor: pointer;
     border: 1px solid #666;
+    margin: 0 5px 0 5px;
 }
 
     .button_st5.on {
         color: #fff;
         background: #0075bb;
     }
-
+    /*
     .button_st5:hover {
         background-color: #0370b2;
         color: #fff;
     }
-
+    */
 .button_st6 {
     display: inline-block;
     width: 27px;
@@ -2703,9 +2707,9 @@ h3.tits span {
         padding: 7px 20px 8px;
         margin: 0;
         font-size: 14px;
-        color: #666;
+        color: #FFF;
         text-align: center;
-        background: transparent;
+        background: #565656;
         border-radius: 5px;
         cursor: pointer;
         border: 1px solid #666
@@ -2717,8 +2721,8 @@ h3.tits span {
         }
 
     .attach_btn.fl {
-        padding-right: 5px;
-        padding-left: 5px;
+        padding-right: 10px;
+        padding-left: 10px;
     }
 
 #canvas-holder {
@@ -4740,6 +4744,7 @@ h3.tits span {
     display: table-cell;
     vertical-align: middle;
     text-align: center;
+    padding-top: 5px;
 }
 
 .menuIcon01 {
@@ -5253,7 +5258,7 @@ label[disabled] {
     width: 300px !important;
 }
 .kDl03 {
-    width: 140px !important;
+    width: 143px !important;
     margin: 0 0 0 0 !important;
 }
 
@@ -6004,7 +6009,7 @@ input:disabled {
 }
 
 .mlTr {
-    background-color: #e3f2fd;
+    background-color: #D8D8D8;
 }
 
 .batchListTbody > tr > td {
@@ -6048,15 +6053,19 @@ input:disabled {
         width: calc(100% - 15px);
         width: -webkit-calc(100% - 15px);
         width: -moz-calc(100% - 15px);
+    }    
+
+    .batch_tbl_left_head > thead > tr > th:first-child {
+        border-radius: 10px 0 0 0;
     }
-
-
-
+    .right_header > table > thead > tr > th:last-child {
+        border-radius: 0 10px 0 0;
+    }
     .table_style03 table > thead > tr > th {
         height: 44px;
         font-size: 13px;
-        color: #fff;
-        background: #2f2e2a;
+        color: #000;
+        background: #D8D8D8;
         font-family: 'notokr-medium', sans-serif;
     }
 
