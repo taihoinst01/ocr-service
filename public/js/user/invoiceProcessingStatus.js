@@ -75,7 +75,7 @@ var _init = function () {
         labels: ['January', 'February', 'March', 'April', 'May'],
         datasets: [{
             label: '',
-            backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
+            backgroundColor: color(window.chartColors.red).alpha(0.3).rgbString(),
             borderColor: 'rgba(234,113,105,1)',
             borderWidth: 1,
             data: [

@@ -6,7 +6,7 @@ $(function () {
 });
 
 var _init = function () {
-    
+    $('select').stbDropdown();
 };
 
 /***************************************************

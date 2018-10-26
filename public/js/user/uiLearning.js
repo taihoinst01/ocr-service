@@ -1021,6 +1021,7 @@ function detailTable(fileName) {
     $('#textResultTbl input[type=checkbox]').ezMark();
     new $.Zebra_Tooltips($('.tip'));
     dbSelectClickEvent();
+    $('select').stbDropdown();
 
     $(".entryChk").change(function () {
 

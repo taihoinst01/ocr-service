@@ -845,6 +845,7 @@
     <Compile Include="public\publish\js\jquery-1.9.1.min.js" />
     <Compile Include="public\publish\js\jquery-ui.js" />
     <Compile Include="public\publish\js\jquerys.js" />
+    <Compile Include="public\publish\js\stb.dropdown.min.js" />
     <Compile Include="routes\admin\adminDashboard.js" />
     <Compile Include="routes\admin\userManagement.js" />
     <Compile Include="routes\index.js" />
@@ -3164,6 +3165,7 @@
     <Content Include="public\js\import\treeview\jquery.treeview.css" />
     <Content Include="public\publish\css\common.css" />
     <Content Include="public\publish\css\font.css" />
+    <Content Include="public\publish\css\stb.dropdown.min.css" />
     <Content Include="public\publish\font\notokr-bold.eot" />
     <Content Include="public\publish\font\notokr-bold.svg" />
     <Content Include="public\publish\font\notokr-bold.ttf" />

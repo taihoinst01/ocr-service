@@ -64,6 +64,7 @@ var initForm = function ({ type }) {
 };
 
 $(function () {
+    $('#userDepartment').stbDropdown();
     _init();
 });
 
@@ -971,7 +972,7 @@ var fn_search = function () {
             $("#span_document_base").empty().html("문서 기본정보 - " + data.length + "건");
             $("#div_base").fadeIn();
             fn_clickEvent();
-            endProgressBar();
+            endProgressBar();           
         },
         error: function (err) {
             endProgressBar();
@@ -1824,6 +1825,7 @@ function fn_processFinish(mlData, imgId) {
     $("#tbody_dtlList").empty().append(dtlHtml);
     $("#tbody_dtlList input[type=checkbox]").ezMark();
     $("#div_dtl").css("display", "block");
+    $('#tbody_dtlList select').stbDropdown();
     $("#btn_pop_ui_close").click();
 
     function makeMLSelect(mlData, colnum, entry) {

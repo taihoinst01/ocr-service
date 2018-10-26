@@ -1423,6 +1423,8 @@ var searchBatchLearnDataList = function (addCond) {
             checkboxEvent(); // refresh checkbox event
             $('input[type=checkbox]').ezMark();
             imgPopupEvent();
+            $('#batch_left_contents_after select').stbDropdown();
+            $('#batch_right_contents_after select').stbDropdown();
         },
         error: function (err) {
             endProgressBar(progressId); // end progressbar
