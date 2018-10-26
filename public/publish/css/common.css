@@ -130,9 +130,9 @@ width: 100%;height: 100%}
 .ips_line_graph { float:left; height: 100%; width: 50%; }
 .ips_tot_document_count { float:left; height: 100%; width: 15%; }
 .ips_date { float:left; height: 100%; width: 35%; }
-.ips_user_status { float:left; height: 100%; width: 35%; background: yellow; }
-.ips_pie_graph { float:left; height: 100%; width: 30%; background: black; }
-.ips_bar_graph { float:left; height: 100%; width: 35%; background: gray; }
+.ips_user_status { float:left; height: 100%; width: 33%; margin:0 2% 0 0; }
+.ips_pie_graph { float:left; height: 100%; width: 28%; margin:0 2% 0 0; }
+.ips_bar_graph { float:left; height: 100%; width: 35%; }
 .ips_top_comment { width: 100%; height: 5%; }
 .ips_top_comment > span { float: left; }
 .ips_top_comment > p { float: right; width:auto; font-size: 15px; }
@@ -140,7 +140,12 @@ width: 100%;height: 100%}
 .ips_box_document { width: 80%; background: #FFF; height: 38.5%; margin: 10px 15px 25px 25px; border-radius: 5px; }
 .ips_box_last { margin: 50px 15px 25px 25px; }
 .ips_data_count { width:100%; height:83%; background: #FFF; border-radius: 5px; padding: 10px 0 10px 0; margin: 10px 0; }
-
+.ips_user_tbody { background: #FFF; }
+.ips_user_status .table_style02 { margin-top: 15px; }
+#pie_convas { width: 100%; margin-top: 15px; }
+#pie { background: #FFF; border-radius: 5px; padding: 6% 0 6.7% 0; }
+#bar_convas { width: 100%; margin-top: 15px; }
+#bar { background: #FFF; border-radius: 5px; }
 
 html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
