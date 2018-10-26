@@ -64,16 +64,17 @@ body.bg_login { background-image: url(../img/bg_login.png);
 width: 100%;height: 100%}
 .box_login { width: auto; height: 254px; padding: 20px 40px; border-radius: 15px; }
 .box_login_01 label { color:white; }
+.box_login_01 div { color:white; }
 .box_login_01 > dl > dt label { padding-left: 15px; border-radius: 20px; font-size: 16px; font-family: 'NanumGothicR' }
 .box_login_01 > dl > dd div { width: 100%; height: 46px; background-color: rgb(255, 255, 255, .2); border-radius: 30px;}
 .box_login_01 > dl > dd input { height: inherit; line-height: 32px; border-radius: 20px; background: transparent; color: #FFFFFF; border: 0; padding: 0 10px;}
 .button_login { display: inline-block; width: 100%; height: 46px; line-height: 16px; padding: 9px 15px 11px; margin: 60px 0 0; font-size: 16px; font-family: 'NanumGothicB'; color: #D4635B; background: #FFFFFF; border-radius: 5px; cursor: pointer; }
 .remember_id_div { padding-left: 10px; }
-.remember_id_div label { padding: 0 0 0 5px; font-size: 16px; vertical-align: 3px;}
+.remember_id_div div { padding: 0 0 0 5px; font-size: 16px; vertical-align: 3px;}
+.remeber_id_div .ez-checkbox { float: left; }
 
-.l_logo{
-     text-align: center;
-    
+.l_logo {
+    text-align: center;
 }
 /*.login_top h1 { display: block; width: 200px; height: 40px; margin: 0 auto; }*/
 
@@ -106,6 +107,7 @@ width: 100%;height: 100%}
 #touchSlider li.on img { border: 3px solid #EA7169; }
 #ul_image > li { text-align: center; }
 #tbody_dtlList > tr { background: #FFF; border-bottom: 1px solid #e1e0e0; }
+.st_infortext_01.ir_upload #uploadFileBtn { margin: 0 0 0 60px !important; }
 
 /*
     batchLearning.html (ÀÏ°ý ÇÐ½À)
@@ -469,7 +471,8 @@ h3.tits:before,
 .button_control14:before,
 .searchIcon:before,
 #content h2:before,
-.alert_icon:before {
+.alert_icon:before,
+#uploadFileBtn {
     display: inline-block;
     background: url('../image/bg_img.png') no-repeat;
 }
@@ -4886,17 +4889,17 @@ thead .ez-checked {
 #uploadFileBtn {
     display: block;
     /* min-width: 60px; */
-    /* height: 23px; */
+    width: 50px;
+    height: 43px;
     /* line-height: 25px; */
-    padding: 7px 29px 8px;
-    margin: 0;
+    padding: 20px 29px 8px;
+    margin: 0 0 0 120px;
     font-size: 14px;
-    color: #fff;
     text-align: center;
-    background: #0370b2;
     border-radius: 5px;
     cursor: pointer;
     border: 0;
+    background-position: 21px -700px;
 }
 
 .box_content_T_01 {

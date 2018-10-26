@@ -67,19 +67,19 @@
                 <div class="box_content st_stsh box_content_K01">
                     <!-- 양식이미지 업로드폼-->
                     <div id="uploadForm" class="box_content_T_01">
-                        <div class="st_infortext_01">
+                        <div class="st_infortext_01 ir_upload">
                             <form id="uploadFileForm" action="/invoiceRegistration/uploadFile" method="post" enctype="multipart/form-data">
                                 <p class="attach_btn attach_btn_k01">
                                     <%
                                     if(currentUser.scanApproval == 'Y') {
                                     %>
                                     <input type="file" id="uploadFile" name="file" value="upload" multiple />
-                                    <label id="uploadFileBtn" for="customer_file">계산서</label>
+                                    <div id="uploadFileBtn" for="customer_file"></div>
                                     <%
                                     } else {
                                     %>
                                     <input type="file" id="uploadFile" name="file" value="upload" multiple />
-                                    <label id="uploadFileBtn" for="customer_file">계산서</label>
+                                    <div id="uploadFileBtn" for="customer_file"></div>
                                     <%
                                     }
                                     %>
