@@ -133,7 +133,7 @@ width: 100%;height: 100%}
 */
 .ips_content_title { font-weight: bold; font-family: 'NanumGothicR'; font-size: 20px; margin: 0 0 20px 0; }
 .ips_content_sub { width: 100%; height: 850px; }
-.ips_content_sub span { font: bold 15px arial; color: #000; }
+.ips_content_sub span { font: bold 15px arial; color: #000; float: left; }
 .ips_content_sub_top { width: 100%; height: 60%; }
 .ips_content_sub_bottom { width: 100%; height: 40%; }
 .ips_line_graph { float:left; height: 100%; width: 50%; }
@@ -156,6 +156,7 @@ width: 100%;height: 100%}
 #bar_convas { width: 100%; margin-top: 15px; }
 #bar { background: #FFF; border-radius: 5px; }
 .red { color: red !important; }
+.doc_text { margin: 0 0 0 25px; }
 
 html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
@@ -483,7 +484,9 @@ h3.tits:before,
 .content_title_icon_ui,
 .content_title_icon_bl,
 .content_title_icon_dc,
-.content_title_icon_ips {
+.content_title_icon_ips,
+.wait_doc_icon,
+.success_doc_icon {
     display: inline-block;
     background: url('../image/bg_img.png') no-repeat;
 }
@@ -492,8 +495,8 @@ h3.tits:before,
 .content_title_icon_bl { width:40px; height: 30px; float:left; background-position: -140px -472px; }
 .content_title_icon_dc { width:40px; height: 35px; float:left; background-position: -280px -472px; }
 .content_title_icon_ips { width:40px; height: 35px; float:left; background-position: -345px -475px; }
-
-
+.wait_doc_icon { width:40px; height: 40px; float:left; background-position: -8px -645px; margin: 4px 0 0 62px; }
+.success_doc_icon { width:40px; height: 40px; float:left; background-position: -75px -646px; margin: 4px 0 0 62px; }
 /* input */
 input[type='text'].inputst_box01,
 input[type='password'].inputst_box01 {
