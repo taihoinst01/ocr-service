@@ -133,7 +133,7 @@ width: 100%;height: 100%}
 */
 .ips_content_title { font-weight: bold; font-family: 'NanumGothicR'; font-size: 20px; margin: 0 0 20px 0; }
 .ips_content_sub { width: 100%; height: 850px; }
-.ips_content_sub span { font: bold 15px arial; color: #000; float: left; }
+.ips_content_sub span { font: bold 15px arial; color: #000; }
 .ips_content_sub_top { width: 100%; height: 60%; }
 .ips_content_sub_bottom { width: 100%; height: 40%; }
 .ips_line_graph { float:left; height: 100%; width: 50%; }
