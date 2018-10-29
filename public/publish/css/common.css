@@ -323,6 +323,16 @@ width: 100%;height: 100%}
     float: right;
 }
 
+.page-wrap.ir_page {
+    float: right;
+    margin: 10px 0 0 0;
+}
+
+.page-wrap.ir_page_02 {
+    float: right;
+    margin: 0;
+}
+
 .page-wrap.ips_page > .page {
     font-weight:100;
 }
@@ -1560,7 +1570,7 @@ select:disabled + ul.idealSelect:before {
     }
 
     .box_content.st_stsh .imgtmb_b {
-        height: 430px;
+        height: 445px;
     }
 
     .box_content.st_stsh .btn_rt .checkbox-options {
@@ -6461,7 +6471,7 @@ input:disabled {
         cursor: pointer;
     }
 #div_invoice_view_image {
-    height: 325px !important;
+    height: 340px !important;
     overflow-y: scroll;
     width: 1620px;
     background: #FFF;
