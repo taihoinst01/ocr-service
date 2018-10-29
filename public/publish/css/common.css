@@ -230,13 +230,7 @@ width: 100%;height: 100%}
 /*
     invoiceProcessingStatus (계산서 처리현황)
 */
-.ips_content_title {
-    font-weight: bold;
-    font-family: 'NanumGothicR';
-    font-size: 20px;
-    margin: 0 0 20px 0;
-    color: #4C5059;
-}
+.ips_content_title { font-weight: bold; font-family: 'NanumGothicR'; font-size: 20px; margin: 0 0 20px 0; color: #4C5059; }
 .ips_content_sub { width: 100%; height: 850px; }
 .ips_content_sub span { font: bold 15px arial; color: #000; }
 .ips_content_sub_top { width: 100%; height: 60%; }
@@ -255,7 +249,13 @@ width: 100%;height: 100%}
 .ips_box_document { width: 80%; background: #FFF; height: 38.5%; margin: 10px 15px 25px 25px; border-radius: 5px; }
 .ips_box_document span { color: #4C5059; }
 .ips_box_last { margin: 50px 15px 25px 25px; }
-.ips_data_count { width:100%; height:83%; background: #FFF; border-radius: 5px; padding: 10px 0 10px 0; margin: 10px 0; }
+.ips_date_count { width:100%; height:79%; background: #FFF; border-radius: 5px; padding: 5% 0 10px 0; margin: 10px 0; }
+.ips_date_top { width: 100%; height: 70%; }
+.ips_date_bottom { width: 100%; height: 30%; }
+.ips_date_bottom button { float: right; margin: 40px 5% 0 0;  width: 150px; height: 40px; border-radius: 5px; background: #525250; color: #FFF; }
+.ips_date_year { width: 28%; height: 100%; float:left; margin: 0 2% 2% 4%; }
+.ips_date_month { width: 28%; height: 100%; float:left; margin: 0 2% 2% 2%; }
+.ips_date_day { width: 28%; height: 100%; float:left; margin: 0 2% 2% 2%; }
 .ips_user_tbody { background: #FFF; }
 .ips_user_status .table_style02 { margin-top: 15px; }
 #pie_convas { width: 100%; margin-top: 15px; }
@@ -264,11 +264,28 @@ width: 100%;height: 100%}
 #bar { background: #FFF; border-radius: 5px; }
 .red { color: red !important; }
 .doc_text { margin: 0 0 0 25px; }
+.date_content { width: 100%; height: 70%; }
+.before_div { padding-top: 16%; height: 20%; color: #BDBDBD; font: bold 23px arial; }
+.main_div { height: 30%; color: #000; font: bold 40px arial; }
+.after_div { height: 30%; color: #BDBDBD; font: bold 23px arial; padding-top: 12px; }
+.before_div p { text-align: center; }
+.main_div p { text-align: center; }
+.ips_date_year .main_div p { padding-top: 13px; }
+.after_div p { text-align: center; }
+.ips_date_count span { color: #BDBDBD; font: bold 23px arial; }
+.bottom_line { border-bottom: 1px solid red; padding-bottom: 8px; display:inline-block; width: 52px; height: 27px; }
+.top_line { border-top: 1px solid red; padding-top: 8px; display:inline-block; width: 52px; height: 36px; }
 
 /*
     userManagement.html (사용자관리)
 */
-.um_content_title { font-weight: bold; font-family: 'NanumGothicR'; font-size: 20px; margin-bottom: 10px; color: #4C5059; }
+.um_content_title {
+    font-weight: bold;
+    font-family: 'NanumGothicR';
+    font-size: 20px;
+    margin-bottom: 10px;
+    color: #4C5059;
+}
 .btn.btn_delete { width: 80%; padding: 6px 0; border-radius: 5px; background: #9898A2; color: #FFF; }
 .um_select .stb-select-container { background: #FFF; margin-right: 10px; padding: 10px 0 10px 5px; }
 .btn_rt .button_st1 { background: #EA7169; }
@@ -606,7 +623,9 @@ h3.tits:before,
 .content_title_icon_ips,
 .wait_doc_icon,
 .success_doc_icon,
-.content_title_icon_um {
+.content_title_icon_um,
+.date_up_btn,
+.date_down_btn {
     display: inline-block;
     background: url('../image/bg_img.png') no-repeat;
 }
@@ -618,6 +637,8 @@ h3.tits:before,
 .wait_doc_icon { width:40px; height: 40px; float:left; background-position: -8px -645px; margin: 4px 0 0 62px; }
 .success_doc_icon { width:40px; height: 40px; float:left; background-position: -75px -646px; margin: 4px 0 0 62px; }
 .content_title_icon_um { width:40px; height: 30px; float:left; background-position: -214px -476px; }
+.date_up_btn { width:100%; height: 15%; background-position: -143px -643px; cursor: pointer; }
+.date_down_btn { width:100%; height: 15%; background-position: -143px -720px; cursor: pointer; }
 /* input */
 input[type='text'].inputst_box01,
 input[type='password'].inputst_box01 {
@@ -1050,7 +1071,7 @@ select:disabled + ul.idealSelect:before {
         width: 290px;
         height: 60px;
         margin: 6px 0 0 20px;
-        background-position: 0px -270px;
+        background-position: 0px -274px;
     }
 
 .gnb_box {

@@ -1,8 +1,12 @@
 ﻿//import { identifier } from "babel-types";
 "use strict";
+var monthEngNames = ['January', 'Febuary', 'March', 'April', 'May', 'June', 'July', 'August', 'September',
+    'October', 'November', 'December'];
+var dayEngNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday','Saturday'];
 
 $(function () {
     _init();
+    dateEvent();
 });
 
 var _init = function () {
@@ -121,4 +125,148 @@ var _init = function () {
         window.myBar = new Chart(barCtx, barConfig);
     };
 
+};
+
+var dateEvent = function () {    
+
+    $('#year_up_btn').click(function (e) {
+        var currentYear = $(e.target).next().find('.main_div').eq(0).children(0).text();
+
+        $(e.target).next().find('.bottom_line').text(Number(currentYear) - 2);
+        $(e.target).next().find('.main_div').find(':first-child').text(Number(currentYear) - 1);
+        $(e.target).next().find('.top_line').text(currentYear);
+    });
+    $('#year_down_btn').click(function (e) {
+        var currentYear = $(e.target).prev().find('.main_div').eq(0).children(0).text();
+
+        $(e.target).prev().find('.bottom_line').text(currentYear);
+        $(e.target).prev().find('.main_div').find(':first-child').text(Number(currentYear) + 1);
+        $(e.target).prev().find('.top_line').text(Number(currentYear) + 2);
+    });
+
+    $('#month_up_btn').click(function (e) {
+        var currentMonth = $(e.target).next().find('.main_div').eq(0).children().eq(0).text();
+
+        if ((Number(currentMonth) - 1) > 0 && (Number(currentMonth) - 1) < 13) {
+            var year = $('.ips_date_year .main_div > p').text();
+            var day = $('.ips_date_day .main_div > p:eq(0)').text();
+            var today = new Date(year + '-' + (Number(currentMonth) - 1) + '-' + day).getDay();
+
+            if ((Number(currentMonth) - 1) != 1) {
+                $(e.target).next().find('.bottom_line').text(Number(currentMonth) - 2);
+            } else {
+                $(e.target).next().find('.bottom_line').text('');
+            }
+            $(e.target).next().find('.main_div').find(':first-child').text(Number(currentMonth) - 1);
+            $(e.target).next().find('.main_div').children().eq(1).text(monthEngNames[Number(currentMonth) - 2]);
+            $('.ips_date_day .main_div > p:eq(1)').text(dayEngNames[today]);
+            if ((Number(currentMonth) - 1) != 12) {
+                $(e.target).next().find('.top_line').text(currentMonth);
+            } else {
+                $(e.target).next().find('.top_line').text('');
+            }            
+        }
+    });
+    $('#month_down_btn').click(function (e) {    
+        var currentMonth = $(e.target).prev().find('.main_div').eq(0).children().eq(0).text();
+
+        if ((Number(currentMonth) + 1) > 0 && (Number(currentMonth) + 1) < 13) {
+            var year = $('.ips_date_year .main_div > p').text();
+            var day = $('.ips_date_day .main_div > p:eq(0)').text();
+            var today = new Date(year + '-' + (Number(currentMonth) + 1) + '-' + day).getDay();
+
+            if ((Number(currentMonth) + 1) != 1) {
+                $(e.target).prev().find('.bottom_line').text(currentMonth);
+            } else {
+                $(e.target).prev().find('.bottom_line').text('');
+            }
+            $(e.target).prev().find('.main_div').find(':first-child').text(Number(currentMonth) + 1);
+            $(e.target).prev().find('.main_div').children().eq(1).text(monthEngNames[Number(currentMonth)]);
+            $('.ips_date_day .main_div > p:eq(1)').text(dayEngNames[today]);
+            if ((Number(currentMonth) + 1) != 12) {
+                $(e.target).prev().find('.top_line').text(Number(currentMonth) + 2);
+            } else {
+                $(e.target).prev().find('.top_line').text('');
+            }
+        }
+    });
+
+    $('#day_up_btn').click(function (e) {
+        var currentday = $(e.target).next().find('.main_div').eq(0).children().eq(0).text();
+
+        if ((Number(currentday) - 1) > 0 && (Number(currentday) - 1) < 32) {
+            var year = $('.ips_date_year .main_div > p').text();
+            var month = $('.ips_date_month .main_div > p:eq(0)').text();
+            var today = new Date(year + '-' + month + '-' + (Number(currentday) - 1)).getDay();
+
+            if ((Number(currentday) - 1) != 1) {
+                $(e.target).next().find('.bottom_line').text(Number(currentday) - 2);
+            } else {
+                $(e.target).next().find('.bottom_line').text('');
+            }
+            $(e.target).next().find('.main_div').find(':first-child').text(Number(currentday) - 1);
+            $(e.target).next().find('.main_div').children().eq(1).text(dayEngNames[today]);
+            if ((Number(currentday) - 1) != 31) {
+                $(e.target).next().find('.top_line').text(currentday);
+            } else {
+                $(e.target).next().find('.top_line').text('');
+            }
+        }
+    });
+    $('#day_down_btn').click(function (e) {
+        var currentday = $(e.target).prev().find('.main_div').eq(0).children().eq(0).text();
+
+        if ((Number(currentday) + 1) > 0 && (Number(currentday) + 1) < 32) {
+            var year = $('.ips_date_year .main_div > p').text();
+            var month = $('.ips_date_month .main_div > p:eq(0)').text();
+            var today = new Date(year + '-' + month + '-' + (Number(currentday) + 1)).getDay();
+
+            if ((Number(currentday) + 1) != 1) {
+                $(e.target).prev().find('.bottom_line').text(currentday);
+            } else {
+                $(e.target).prev().find('.bottom_line').text('');
+            }
+            $(e.target).prev().find('.main_div').find(':first-child').text(Number(currentday) + 1);
+            $(e.target).prev().find('.main_div').children().eq(1).text(dayEngNames[today]);
+            if ((Number(currentday) + 1) != 31) {
+                $(e.target).prev().find('.top_line').text(Number(currentday) + 2);
+            } else {
+                $(e.target).prev().find('.top_line').text('');
+            }
+        }
+    });
+
+    $('#roll_back_btn').click(function (e) {
+        var d = new Date();
+        $('.ips_date_year .bottom_line:eq(0)').text(d.getFullYear() - 1);
+        $('.ips_date_year .main_div > p').text(d.getFullYear());
+        $('.ips_date_year .top_line:eq(0)').text(d.getFullYear() + 1);
+
+        if (d.getMonth() != 0) {
+            $('.ips_date_month .bottom_line:eq(0)').text(d.getMonth());
+        } else {
+            $('.ips_date_month .bottom_line:eq(0)').text('');
+        }
+        $('.ips_date_month .main_div > p:eq(0)').text(d.getMonth() + 1);
+        $('.ips_date_month .main_div > p:eq(1)').text(monthEngNames[d.getMonth()]);
+        if (d.getMonth() != 11) {
+            $('.ips_date_month .top_line:eq(0)').text(d.getMonth() + 2);
+        } else {
+            $('.ips_date_month .top_line:eq(0)').text('');
+        }
+
+        if (d.getDate() != 1) {
+            $('.ips_date_day .bottom_line:eq(0)').text(d.getDate() - 1);
+        } else {
+            $('.ips_date_day .bottom_line:eq(0)').text('');
+        }
+        $('.ips_date_day .main_div > p:eq(0)').text(d.getDate());
+        $('.ips_date_day .main_div > p:eq(1)').text(dayEngNames[d.getDay()]);
+
+        if (d.getDate() != 31) {
+            $('.ips_date_day .top_line:eq(0)').text(d.getDate() + 1);
+        } else {
+            $('.ips_date_day .top_line:eq(0)').text('');
+        }
+    });
 };
