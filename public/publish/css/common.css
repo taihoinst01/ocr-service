@@ -203,6 +203,9 @@ width: 100%;height: 100%}
 .st_infortext_01.ir_upload #uploadFileBtn { margin: 0 0 0 60px !important; }
 #uploadInfoText { color: #EA7169; }
 .stb-select li { margin: 10px 0; }
+.invoiceR_tblBody2 #tbody_dtlList .stb-select-container { border-radius: 5px !important; padding: 5px 0 5px 5px; }
+.invoiceR_tblBody2 #tbody_dtlList .stb-select { top: 21px !important; width: -webkit-calc(100% - 5px) !important; }
+
 /*
     batchLearning.html (일괄 학습)
 */
@@ -3190,7 +3193,7 @@ h3.tits span {
         color: #666;
         border-bottom: solid 1px #e1e0e0;
         max-width: 80%;
-        overflow: hidden;
+        /*overflow: hidden;*/
         text-overflow: ellipsis;
         white-space: nowrap;
     }
@@ -3206,7 +3209,9 @@ h3.tits span {
     .table_style02 table > tbody > tr:hover > td {
         color: #FFF;
     }
-
+    .invoiceR_tblBackground2 .table_style02 table > tbody > tr:hover > td {
+        color: #666;
+    }
     .table_style02 table input[type='text'] {
         height: 30px;
         line-height: 28px;
@@ -5471,7 +5476,7 @@ label[disabled] {
 
 .titsK00 {
     border-bottom: none !important;
-    padding: 0 0 14px 0 !important;
+    padding: 10px 0 14px 0 !important;
     margin: 0px !important;
 }
 
@@ -5930,7 +5935,7 @@ label[disabled] {
          *  세로길이를 잡아주지 않으면 overflow-y가 걸리지 않습니다.
          */
     width: 100%;
-    height: 180px;
+    height: 200px;
     overflow-x: scroll;
     overflow-y: scroll;
 }

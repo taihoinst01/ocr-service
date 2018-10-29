@@ -1991,6 +1991,7 @@ function fn_ContractNumExtraction() {
                         $("#tbody_dtlList input[type=checkbox]").ezMark();
                         $("#div_dtl").css("display", "block");
                         endProgressBar(progressId);
+                        $('.table_style02 #tbody_dtlList select').stbDropdown();
 
                         if (l == cdnNm.length -1 && k == ttyYy.length - 1) {
                             if ($("#tbody_dtlList").length == 1) {
