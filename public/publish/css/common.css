@@ -188,11 +188,15 @@ width: 100%;height: 100%}
 .content_sub_document_title { float: right; width:-webkit-calc(40% - 16px); height:47px; }
 .content_sub_document_title_name { float: left; font: 600 15px arial; padding: 20px 0 0 0; }
 .float_right { float: right; }
-
+.ui_image_div { height: 637px !important; }
 /*
     invoiceRegistration.html (계산서 등록)
 */
-.kDl01 .inputst_box01 { border: 1px solid #EA7169; border-radius: 10px; color: #EA7169; }
+.kDl01 .inputst_box01 {
+    border: 1px solid #EA7169;
+    border-radius: 10px;
+    color: #EA7169;
+}
 #userDepartment {  border: 1px solid #EA7169; border-radius: 10px; height: 40px; width: 100%; color: #EA7169; padding: 0 10px; }
 .fr.mt10 { width: 100%; }
 .button_ocr { display: inline-block; min-width: 80px; height: 40px; line-height: 16px; padding: 9px 15px 11px; margin: 0; font-size: 15px; color: #fff; background: #EA7169; border-radius: 5px;  cursor: pointer; }
@@ -227,7 +231,6 @@ width: 100%;height: 100%}
 .box_stsearch input[type="text"], .box_stsearch input[type="password"], .box_stsearch .select_style, .box_stsearch .btnSelector  { border: 1px solid #EA7169; border-radius: 10px; color: #EA7169; }
 #btn_baseList_return, #btn_baseList_forward, #btn_baseList_approval { background: #EA7169; }
 #div_base, #div_dtl { padding-left: 0 !important; }
-#div_image { margin-top: 22px; }
 .table_style02.table_K02 { background:#FFF; }
 .myApproval_divBodyScroll.divBodyScroll { background:#FFF; }
 /*
@@ -3276,6 +3279,7 @@ h3.tits span {
         background-color: #e5e5e5;
     }
 
+    /*
     .table_style02 table > tbody > tr.on,
     .table_style02 table > tbody > tr:hover {
         background-color: #EA7169;
@@ -3283,6 +3287,7 @@ h3.tits span {
     .table_style02 table > tbody > tr:hover > td {
         color: #FFF;
     }
+    */
     .invoiceR_tblBackground2 .table_style02 table > tbody > tr:hover > td {
         color: #666;
     }
@@ -5261,6 +5266,7 @@ label[disabled] {
 
 .dcmtChkImg {
     min-height: 674px !important;
+    margin-top: 22px;
 }
 
 .tits11 {
@@ -6471,7 +6477,7 @@ input:disabled {
         cursor: pointer;
     }
 #div_invoice_view_image {
-    height: 340px !important;
+    height: 360px !important;
     overflow-y: scroll;
     width: 1620px;
     background: #FFF;
