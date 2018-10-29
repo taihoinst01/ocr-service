@@ -47,6 +47,99 @@ body{font-family:NanumGothicR,sans-serif,나눔고딕;}
 /*.gnb_box .btn_logout {line-height: 30px; padding: 3px 5px;  border-radius: 5px; }*/
 
 /*
+    leftSideBar.html (좌측 메뉴바 ver 2)
+*/
+#lnb-wrap {
+    position: absolute;
+    width: 125px;
+    height: 1008px;
+    background-color: #61646d;
+    display: flex;
+    flex-direction: column;
+    margin-top: 69px;
+}
+
+.lnb-box {
+}
+
+.lnb-box ul {
+}
+
+.lnb-box ul a li {
+    display: block;
+    width: 125px;
+    padding-top: 30px;
+    padding-bottom: 5px;
+    color: white;
+    font-family: 'NanumGothicB';
+    text-align: center;
+}
+
+.lnb-box ul a .menu01:before {
+    content: '';
+    display: block;
+    background: url(../image/bg_img.png)-10px -421px no-repeat;
+    width: 27px;
+    height: 27px;
+    margin: 0 auto;
+    margin-bottom: 20px;
+}
+
+.lnb-box ul a .menu02:before {
+    content: '';
+    display: block;
+    background: url(../image/bg_img.png)-70px -421px no-repeat;
+    width: 40px;
+    height: 27px;
+    margin: 0 auto;
+    margin-bottom: 20px;
+}
+
+.lnb-box ul a .menu03:before {
+    content: '';
+    display: block;
+    background: url(../image/bg_img.png)-147px -421px no-repeat;
+    width: 32px;
+    height: 27px;
+    margin: 0 auto;
+    margin-bottom: 20px;
+}
+
+.lnb-box ul a .menu04:before {
+    content: '';
+    display: block;
+    background: url(../image/bg_img.png)-218px -420px no-repeat;
+    width: 31px;
+    height: 29px;
+    margin: 0 auto;
+    margin-bottom: 20px;
+}
+
+.lnb-box ul a .menu05:before {
+    content: '';
+    display: block;
+    background: url(../image/bg_img.png)-289px -420px no-repeat;
+    width: 22px;
+    height: 29px;
+    margin: 0 auto;
+    margin-bottom: 20px;
+}
+
+.lnb-box ul a .menu06:before {
+    content: '';
+    display: block;
+    background: url(../image/bg_img.png)-351px -420px no-repeat;
+    width: 29px;
+    height: 29px;
+    margin: 0 auto;
+    margin-bottom: 20px;
+}
+
+.lnb-box ul a li:hover {
+    background-color: #4d5059;
+}
+
+/*
     leftSideBar.html (좌측 메뉴바)
 */
 #container .lnb_menu { position: absolute; display: table-cell; width: 164px; height: 100%; background-color: #565656; border-right: 1px solid #e2e3e5; z-index: 0; }
@@ -109,7 +202,7 @@ width: 100%;height: 100%}
 #tbody_dtlList > tr { background: #FFF; border-bottom: 1px solid #e1e0e0; }
 .st_infortext_01.ir_upload #uploadFileBtn { margin: 0 0 0 60px !important; }
 #uploadInfoText { color: #EA7169; }
-
+.stb-select li { margin: 10px 0; }
 /*
     batchLearning.html (일괄 학습)
 */
@@ -118,9 +211,12 @@ width: 100%;height: 100%}
     font-family: 'NanumGothicR';
     font-size: 20px;
     margin-bottom: 10px;
+    color: #4C5059;
 }
 .bl_btn_div { margin: 20px 0 10px 0; }
 #content-6 { border-left: 1px solid #D8D8D8; border-bottom: 1px solid #D8D8D8; border-radius: 10px 0 0 10px; }
+.batchListTbody .mlTr ul { top: 15px !important; width:-webkit-calc(100% - 5px) !important; border-radius: 0 0 10px 10px !important;}
+.batchListTbody .mlTr li { margin-left: 5px; }
 
 /*
     documentCheck.html (문서 조회)
@@ -131,7 +227,7 @@ width: 100%;height: 100%}
 /*
     invoiceProcessingStatus (계산서 처리현황)
 */
-.ips_content_title { font-weight: bold; font-family: 'NanumGothicR'; font-size: 20px; margin: 0 0 20px 0; }
+.ips_content_title { font-weight: bold; font-family: 'NanumGothicR'; font-size: 20px; margin: 0 0 20px 0; color: #4C5059; }
 .ips_content_sub { width: 100%; height: 850px; }
 .ips_content_sub span { font: bold 15px arial; color: #000; }
 .ips_content_sub_top { width: 100%; height: 60%; }
@@ -143,10 +239,12 @@ width: 100%;height: 100%}
 .ips_pie_graph { float:left; height: 100%; width: 28%; margin:0 2% 0 0; }
 .ips_bar_graph { float:left; height: 100%; width: 35%; }
 .ips_top_comment { width: 100%; height: 5%; }
-.ips_top_comment > span { float: left; }
-.ips_top_comment > p { float: right; width:auto; font-size: 15px; }
+.ips_top_comment > span { float: left; color: #4C5059; }
+.ips_top_comment > p { float: right; width:auto; font-size: 15px; color: #4C5059; }
+.ips_top_comment > p > span { color: #4C5059; }
 .ips_line_convas { width:100%; background: #FFF; border-radius: 5px; padding: 10px 0 10px 0; margin: 10px 0; }
 .ips_box_document { width: 80%; background: #FFF; height: 38.5%; margin: 10px 15px 25px 25px; border-radius: 5px; }
+.ips_box_document span { color: #4C5059; }
 .ips_box_last { margin: 50px 15px 25px 25px; }
 .ips_data_count { width:100%; height:83%; background: #FFF; border-radius: 5px; padding: 10px 0 10px 0; margin: 10px 0; }
 .ips_user_tbody { background: #FFF; }
@@ -6169,7 +6267,7 @@ input:disabled {
         color: #666;
         border-bottom: solid 1px #e1e0e0;
         max-width: 80%;
-        overflow: hidden;
+        /*overflow: hidden;*/
         text-overflow: ellipsis;
         white-space: nowrap;
     }
