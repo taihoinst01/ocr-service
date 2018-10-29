@@ -51,23 +51,34 @@
             <!-- 본문영역 -->
             <div id="content">
                 <h2 class="subtit subtit_st01 blind"><span>사용자관리</span></h2>
+                <div class="content_title_icon_um"></div>
+                <div class="um_content_title">사용자관리</div>
 
                 <!-- 부서구분 목록  -->
                 <div class="box_stsearch">
-                    <h3 class="tits"><span>부서구분</span></h3>
+                    <!--<h3 class="tits"><span>부서구분</span></h3>-->
 
-                    <div class="box_txt_st01 st00_sh">
-                        <dl>
-                            <dd>
-                                <div class="select_style wh300">
-                                    <span class="ctrl"><span class="arrow"></span></span>
-                                    <button type="button" class="btnSelector">부서구분</button>
-                                    <ul class="aList">
-                                        <li><a>글로벌사업팀</a></li>
-                                    </ul>
-                                </div>
-                            </dd>
-                        </dl>
+                    <div class="box_txt_st01 st00_sh um_select">
+                        <select>
+                            <option value="">글로벌사업팀</option>
+                            <option value="">영업팀</option>
+                            <option value="">인사팀</option>
+                        </select>
+                        <select>
+                            <option value="">소속팀</option>
+                            <option value="">사업1팀</option>
+                            <option value="">사업2팀</option>
+                        </select>
+                        <select>
+                            <option value="">소속파트</option>
+                            <option value="">국내파트</option>
+                            <option value="">해외파트</option>
+                        </select>
+                        <select>
+                            <option value="">문서등록일자</option>
+                            <option value="">오늘</option>
+                            <option value="">어제</option>
+                        </select>
                     </div>
 
                     <div class="btn_rt">
@@ -77,7 +88,6 @@
                 <!-- // 부서구분 목록 -->
                 <!-- 사용자관리 목록  -->
                 <div class="box_stsearch titcolor01">
-                    <h3 class="tits"><span>사용자관리</span></h3>
 
                     <div class="table_style02">
                         <table>
@@ -113,7 +123,7 @@
                                 </tr>
                             </thead>
                         </table>
-                        <div class="mCustomScrollbar box_scroll_st5" data-mcs-axis="yx" data-mcs-theme="dark-3">
+                        <div class="mCustomScrollbar box_scroll_st5" data-mcs-axis="yx" data-mcs-theme="dark-3" style="background: #FFF; height: 585px;">
                             <table>
                                 <caption>사용자관리 정보</caption>
                                 <colgroup>
@@ -137,45 +147,40 @@
                 </div>
                 <!-- // 사용자관리 목록 -->
                 <!-- 사용자관리 목록  -->
-                <div class="box_stsearch titcolor01 mb0">
-                    <h3 class="tits"><span>사용자관리</span></h3>
+                <div class="box_stsearch titcolor01 mb0 um_list">
 
-                    <div class="box_txt_st01 st00_us">
+                    <div class="box_txt_st01 st00_us um_select">
                         <dl>
-                            <dt><label for="intxt_01">사번</label></dt>
                             <dd>
                                 <input type="hidden" name="seqNum" id="seqNum" />
                                 <input type="text" name="userId" id="userId" class="inputst_box01" maxlength="30" value="" />
                             </dd>
                         </dl>
                         <dl>
-                            <dt><label for="intxt_03">Password</label></dt>
                             <dd>
-                                <input type="password" name="userPw" id="userPw" class="inputst_box01" value="" />
+                                <input type="password" name="userPw" id="userPw" class="inputst_box01" value="" placeholder="Password" />
                             </dd>
                         </dl>
                         <dl>
-                            <dt><label for="intxt_01">이메일</label></dt>
                             <dd>
-                                <input type="text" name="email" id="email" class="inputst_box01" value="" />
+                                <input type="text" name="email" id="email" class="inputst_box01" value="" placeholder="E-mail"/>
                             </dd>
                         </dl>
                         <dl>
-                            <dt><label for="intxt_01">비고</label></dt>
                             <dd>
                                 <input type="text" name="note" id="note" class="inputst_box01" value="" />
                             </dd>
                         </dl>
                         <dl>
-                            <dt><label for="">결재자</label></dt>
                             <dd>
-                                <div class="checkbox-options">
-                                    <input type="checkbox" value="1" id="approval1" name="approval" /><label for="approval1"><span>스캔결재자</span></label>
-                                    <input type="checkbox" value="2" id="approval2" name="approval" /><label for="approval2"><span>ICR결재자</span></label>
-                                    <input type="checkbox" value="3" id="approval3" name="approval" /><label for="approval3"><span>중간결재자</span></label>
-                                    <input type="checkbox" value="4" id="approval4" name="approval" /><label for="approval4"><span>최종결재자</span></label>
-                                    <input type="checkbox" value="5" id="admin" name="admin" /><label for="admin"><span>관리자</span></label>
-                                </div>
+                                <select>
+                                    <option value="" selected>상위결재자</option>
+                                    <option>스캔결재자</option>
+                                    <option>ICR결재자</option>
+                                    <option>중간결재자</option>
+                                    <option>최종결재자</option>
+                                    <option>관리자</option>
+                                </select>              
                             </dd>
                         </dl>
                     </div>

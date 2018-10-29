@@ -78,7 +78,7 @@ body{font-family:NanumGothicR,sans-serif,나눔고딕;}
 .lnb-box ul a .menu01:before {
     content: '';
     display: block;
-    background: url(../image/bg_img.png)-10px -421px no-repeat;
+    background: url(../image/bg_img.png)-6px -420px no-repeat;
     width: 27px;
     height: 27px;
     margin: 0 auto;
@@ -221,8 +221,9 @@ width: 100%;height: 100%}
 /*
     documentCheck.html (문서 조회)
 */
-.box_stsearch input[type="text"], .box_stsearch .select_style, .box_stsearch .btnSelector  { border: 1px solid #EA7169; border-radius: 10px; color: #EA7169; }
+.box_stsearch input[type="text"], .box_stsearch input[type="password"], .box_stsearch .select_style, .box_stsearch .btnSelector  { border: 1px solid #EA7169; border-radius: 10px; color: #EA7169; }
 #btn_baseList_return, #btn_baseList_forward, #btn_baseList_approval { background: #EA7169; }
+#div_base, #div_dtl { padding-left: 0 !important; }
 
 /*
     invoiceProcessingStatus (계산서 처리현황)
@@ -255,6 +256,18 @@ width: 100%;height: 100%}
 #bar { background: #FFF; border-radius: 5px; }
 .red { color: red !important; }
 .doc_text { margin: 0 0 0 25px; }
+
+/*
+    userManagement.html (사용자관리)
+*/
+.um_content_title { font-weight: bold; font-family: 'NanumGothicR'; font-size: 20px; margin-bottom: 10px; color: #4C5059; }
+.btn.btn_delete { width: 80%; padding: 6px 0; border-radius: 5px; background: #9898A2; color: #FFF; }
+.um_select .stb-select-container { background: #FFF; margin-right: 10px; padding: 10px 0 10px 5px; }
+.btn_rt .button_st1 { background: #EA7169; }
+.box_stsearch.titcolor01.mb0 { background: #FFF; }
+.um_list { padding: 22px 0 !important; border-radius: 5px; border: 1px solid #D8D8D8; }
+.um_list dd:first-child { margin-left: 20px; }
+.btn_rt .button_st1 { margin-bottom: 6px; }
 
 html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
@@ -584,7 +597,8 @@ h3.tits:before,
 .content_title_icon_dc,
 .content_title_icon_ips,
 .wait_doc_icon,
-.success_doc_icon {
+.success_doc_icon,
+.content_title_icon_um {
     display: inline-block;
     background: url('../image/bg_img.png') no-repeat;
 }
@@ -595,6 +609,7 @@ h3.tits:before,
 .content_title_icon_ips { width:40px; height: 35px; float:left; background-position: -345px -475px; }
 .wait_doc_icon { width:40px; height: 40px; float:left; background-position: -8px -645px; margin: 4px 0 0 62px; }
 .success_doc_icon { width:40px; height: 40px; float:left; background-position: -75px -646px; margin: 4px 0 0 62px; }
+.content_title_icon_um { width:40px; height: 30px; float:left; background-position: -214px -476px; }
 /* input */
 input[type='text'].inputst_box01,
 input[type='password'].inputst_box01 {
@@ -1708,8 +1723,7 @@ select:disabled + ul.idealSelect:before {
     width: calc(100% - 46px);
     width: -webkit-calc(100% - 46px);
     width: -moz-calc(100% - 46px);
-    padding: 14px 22px;
-    margin: 0 0 20px 0;
+    padding: 14px 22px 14px 0;
 }
 
     .box_stsearch .btn_rt {
