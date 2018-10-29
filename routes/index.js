@@ -45,7 +45,7 @@ router.get('/', function (req, res) {
             if (!fs.existsSync(propertiesConfig.filepath.createImgconvertedDirPath)) {
                 fs.mkdir(propertiesConfig.filepath.createImgconvertedDirPath);
             }
-            res.render('user/uiLearning', { currentUser: req.user });
+            res.render('user/invoiceRegistration', { currentUser: req.user });
         } else {
             res.render("index", {
                 messages: { error: req.flash('errors') }
