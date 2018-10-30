@@ -64,7 +64,7 @@ var initForm = function ({ type }) {
 };
 
 $(function () {
-    $('#userDepartment').stbDropdown();
+    $('#userDepartment, .invoice_Dl_03 select, .invoice_Dl_04 select').stbDropdown();
     _init();
 });
 

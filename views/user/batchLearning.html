@@ -131,11 +131,15 @@
                 <div class="clear_both"></div>
                 <form id="multiUploadForm" action="/batchLearning/multiUpload" method="post" enctype="multipart/form-data">
                     <div class="bl_btn_div">
-                        <p class="attach_btn fl"><input type="file" id="document_file" name="file" multiple /><label for="document_file">Document Upload</label></p>
-                        <button type="button" id="btn_imageDelete" class="button_st5">Document Delete</button>
-                        <button type="button" id="btn_batchTraining" * class="button_st5">Batch Training</button>
-                        <button type="button" id="btn_uiTraining" class="button_st5">UI Training</button>
-                        <button type="button" id="btn_AddTraining" class="button_st5">Add Training</button>
+                        <p class="attach_btn fl">
+                            <i class="upload_icon"></i>
+                            <input type="file" id="document_file" name="file" multiple />
+                            <label for="document_file">Document Upload</label>
+                        </p>
+                        <button type="button" id="btn_imageDelete" class="button_st5"><i class="delete_icon"></i><p>Document Delete</p></button>
+                        <button type="button" id="btn_batchTraining" class="button_st5"><i class="train_icon_01"></i><p>Batch Training</p></button>
+                        <button type="button" id="btn_uiTraining" class="button_st5"><i class="train_icon_02"></i><p>UI Training</p></button>
+                        <button type="button" id="btn_AddTraining" class="button_st5"><i class="train_icon_03"></i><p>Add Training</p></button>
                     </div>
                 </form>
                 <!-- TEP 상단영역 -->
@@ -1053,8 +1057,8 @@
                                     </colgroup>
                                     <thead>
                                         <tr>
-                                            <th><input type="checkbox" id="allCheckClassifySentenses"></th>
-                                            <th>분류 제외문장</th>
+                                            <th class="batch_layer4_tblHead_title_chk"><input type="checkbox" id="allCheckClassifySentenses"></th>
+                                            <th class="batch_layer4_tblHead_title">분류 제외문장</th>
                                         </tr>
                                     </thead>
                                 </table>

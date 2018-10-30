@@ -166,9 +166,7 @@ width: 100%;height: 100%}
 .remember_id_div div { padding: 0 0 0 5px; font-size: 16px; vertical-align: 3px;}
 .remeber_id_div .ez-checkbox { float: left; }
 
-.l_logo {
-    text-align: center;
-}
+.l_logo { text-align: center; }
 /*.login_top h1 { display: block; width: 200px; height: 40px; margin: 0 auto; }*/
 
 /*
@@ -189,14 +187,13 @@ width: 100%;height: 100%}
 .content_sub_document_title_name { float: left; font: 600 15px arial; padding: 20px 0 0 0; }
 .float_right { float: right; }
 .ui_image_div { height: 637px !important; }
+#uiTrainBtn { padding-left: 0; min-width: 150px; }
+#uiTrainBtn p { margin-top: 5px; }
+
 /*
     invoiceRegistration.html (계산서 등록)
 */
-.kDl01 .inputst_box01 {
-    border: 1px solid #EA7169;
-    border-radius: 10px;
-    color: #EA7169;
-}
+.kDl01 .inputst_box01 { border: 1px solid #EA7169; border-radius: 10px; color: #EA7169; }
 #userDepartment {  border: 1px solid #EA7169; border-radius: 10px; height: 40px; width: 100%; color: #EA7169; padding: 0 10px; }
 .fr.mt10 { width: 100%; }
 .button_ocr { display: inline-block; min-width: 80px; height: 40px; line-height: 16px; padding: 9px 15px 11px; margin: 0; font-size: 15px; color: #fff; background: #EA7169; border-radius: 5px;  cursor: pointer; }
@@ -209,22 +206,36 @@ width: 100%;height: 100%}
 .stb-select li { margin: 10px 0; }
 .invoiceR_tblBody2 #tbody_dtlList .stb-select-container { border-radius: 5px !important; padding: 5px 0 5px 5px; }
 .invoiceR_tblBody2 #tbody_dtlList .stb-select { top: 21px !important; width: -webkit-calc(100% - 5px) !important; }
+.invoice_Dl_03 .select_style.select_style_K01 { background: none; }
+.invoice_Dl_04 .select_style.select_style_K01 { background: none; }
+.invoice_Dl_03 .stb-select-container, .invoice_Dl_04 .stb-select-container { width: 100%; height: 26px; border-radius: 5px; background: #FFF;  padding-top: 12px; }
+.invoice_Dl_03 .stb-select-container span, .invoice_Dl_04 .stb-select-container span { font-size: 14px; }
+.invoice_Dl_03 .select_style.select_style_K01 .stb-select,
+.invoice_Dl_04 .select_style.select_style_K01 .stb-select { width: -webkit-calc(100% - 5px) !important; border-radius: 0 0 5px 5px; }
+.invoice_Dl_03 .select_style.select_style_K01 .stb-select li,
+.invoice_Dl_04 .select_style.select_style_K01 .stb-select li { border:0; }
+.search_header { border-radius: 5px 5px 0 0; }
 
 /*
     batchLearning.html (일괄 학습)
 */
-.bl_content_title {
-    font-weight: bold;
-    font-family: 'NanumGothicR';
-    font-size: 20px;
-    margin-bottom: 10px;
-    color: #4C5059;
-}
+.bl_content_title { font-weight: bold; font-family: 'NanumGothicR'; font-size: 20px; margin-bottom: 10px; color: #4C5059; }
 .bl_btn_div { margin: 20px 0 10px 0; }
 #content-6 { border-left: 1px solid #D8D8D8; border-bottom: 1px solid #D8D8D8; border-radius: 10px 0 0 10px; }
 .batchListTbody .mlTr ul { top: 15px !important; width:-webkit-calc(100% - 5px) !important; border-radius: 0 0 10px 10px !important;}
 .batchListTbody .mlTr li { margin-left: 5px; }
 .td_bannedword { text-align: initial; }
+.inputst_box01.ui_doc_pop_ipt { border-radius: 5px; }
+.batch_layer4_tblHead_title { border-radius: 0 5px 0 0; }
+.batch_layer4_tblHead_title_chk { border-radius: 5px 0 0 0; }
+canvas.preview { border-radius: 5px; }
+#allCheckClassifySentenses { border:1px solid #000; }
+#mCSB_3_container { width: 495px !important; }
+.upload_icon, .delete_icon, .train_icon_01, .train_icon_02, .train_icon_03 { display:inline-block; width: 25px; height: 25px; }
+.delete_icon, .train_icon_01, .train_icon_02, .train_icon_03 { float: left; }
+.button_st5 p { margin-top: 5px; }
+#btn_uiTraining { min-width: 140px !important; }
+#btn_AddTraining { min-width: 150px !important; }
 /*
     documentCheck.html (문서 조회)
 */
@@ -709,7 +720,12 @@ h3.tits:before,
 .success_doc_icon,
 .content_title_icon_um,
 .date_up_btn,
-.date_down_btn {
+.date_down_btn,
+.upload_icon,
+.delete_icon,
+.train_icon_01,
+.train_icon_02,
+.train_icon_03 {
     display: inline-block;
     background: url('../image/bg_img.png') no-repeat;
 }
@@ -723,6 +739,11 @@ h3.tits:before,
 .content_title_icon_um { width:40px; height: 30px; float:left; background-position: -214px -476px; }
 .date_up_btn { width:100%; height: 15%; background-position: -143px -643px; cursor: pointer; }
 .date_down_btn { width:100%; height: 15%; background-position: -143px -720px; cursor: pointer; }
+.upload_icon { float:left; margin: 8px 0 0 5px; background-position: -60px -346px; }
+.delete_icon { float:left; margin: 0 0 0 5px; background-position: -115px -346px; }
+.train_icon_01 { float:left; margin: 0 0 0 15px; background-position: -3px -346px; }
+.train_icon_02 { float:left; margin: 0 0 0 15px; background-position: -3px -346px; }
+.train_icon_03 { float:left; margin: 0 0 0 15px; background-position: -3px -346px; }
 
 /* input */
 input[type='text'].inputst_box01,
@@ -842,14 +863,14 @@ input[type='password'].inputst_box01 {
     display: inline-block;
     height: 23px;
     width: 23px;
-    background-position: -200px -150px;
+    background-position: -42px -190px !important
 }
 
 .inputst_role .ez-selected {
-    background-position: -230px -150px !important;
+    background-position: -85px -190px !important;
 }
 
-label:hover - .ez-radio {
+label:hover .ez-radio {
     background-position: -300px -150px;
 }
 
@@ -897,7 +918,7 @@ input[type='checkbox'] {
 .ez-checkbox {
     width: 22px;
     margin-right: 0px;
-    background-position: -42px -148px;
+    background-position: -42px -148.8px;
 }
 
 .ez-checked {
@@ -2929,9 +2950,9 @@ h3.tits span {
 
 .button_st5 {
     display: inline-block;
-    min-width: 80px;
+    min-width: 160px;
     height: 40px;
-    padding: 7px 20px 8px;
+    padding: 7px 10px 8px 0;
     margin: 0;
     font-size: 14px;
     color: #FFF;
@@ -3007,10 +3028,10 @@ h3.tits span {
 
 .attach_btn label {
     display: block;
-    min-width: 60px;
+    min-width: 150px;
     height: 23px;
     line-height: 25px;
-    padding: 7px 20px 8px;
+    padding: 7px 10px 8px 0px;
     margin: 0;
     font-size: 14px;
     color: #FFF;
@@ -3022,7 +3043,7 @@ h3.tits span {
 }
 
 .attach_btn label:hover {
-    background-color: #0370b2;
+    background-color: #EA7169;
     color: #fff;
 }
 
@@ -5073,11 +5094,11 @@ table.ivoiceR_tblHead2 > thead > tr > th {
 }
 
 thead .ez-checkbox {
-    background-position: -70px -148px;
+    background-position: -42px -148.8px;
 }
 
 thead .ez-checked {
-    background-position: -129px -148px;
+    background-position: -130px -148px;
 }
 
 #ocrProgress {
@@ -5316,7 +5337,7 @@ label[disabled] {
     margin: 0;
     font-size: 15px;
     color: #fff;
-    background: #0370b2;
+    background: #EA7169;
     border-radius: 5px;
     cursor: pointer;
 }
@@ -5343,7 +5364,7 @@ label[disabled] {
     margin: 0;
     font-size: 15px;
     color: #fff;
-    background: #2f2e2a;
+    background: #565656;
     border-radius: 5px;
     cursor: pointer;
     margin-left: 13px;
@@ -5387,6 +5408,7 @@ label[disabled] {
 .ui_doc_pop_div01 input[type=text] {
     width: 100%;
     text-align: center;
+    border-radius: 5px;
 }
 
 .ipt83 {
@@ -5416,6 +5438,8 @@ label[disabled] {
     display: block;
     height: 537px;
     overflow: auto;
+    background: #FFF;
+    border-radius: 0 0 5px 5px;
 }
 
 #uploadSucessForm #touchSlider {
@@ -5451,7 +5475,7 @@ label[disabled] {
 }
 
 .button_control11:before {
-    background-position: -260px -100px;
+    background-position: -43px -56.8px;
     content: '';
     display: block;
     width: 24px;
@@ -5473,7 +5497,7 @@ label[disabled] {
 }
 
 .button_control12:before {
-    background-position: -285px -100px;
+    background-position: -68px -56.8px;
     content: '';
     display: block;
     width: 24px;
@@ -5572,7 +5596,7 @@ label[disabled] {
     width: 300px !important;
 }
 .kDl03 {
-    width: 143px !important;
+    width: 138px !important;
     margin: 0 0 0 0 !important;
 }
 
@@ -6511,12 +6535,17 @@ input:disabled {
     width: 150px !important;
 }
 
+.invoice_Dl_02 input {
+    border: 1px solid #EA7169;
+    border-radius: 5px;
+}
+
 .invoice_Dl_03 {
-    width: 200px !important;
+    width: 150px !important;
 }
 
 .invoice_Dl_04 {
-    width: 200px !important;
+    width: 150px !important;
 }
 
 .invoice_Dl_05 {
@@ -6551,6 +6580,8 @@ input:disabled {
 .searchManagerResultDiv {
     height: 250px;
     overflow: overlay;
+    background: #FFF;
+    border-radius: 0 0 5px 5px;
 }
 
 .pop_popup_alert {
