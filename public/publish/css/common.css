@@ -3279,7 +3279,7 @@ h3.tits span {
         background-color: #e5e5e5;
     }
 
-    /*
+    
     .table_style02 table > tbody > tr.on,
     .table_style02 table > tbody > tr:hover {
         background-color: #EA7169;
@@ -3287,7 +3287,7 @@ h3.tits span {
     .table_style02 table > tbody > tr:hover > td {
         color: #FFF;
     }
-    */
+    
     .invoiceR_tblBackground2 .table_style02 table > tbody > tr:hover > td {
         color: #666;
     }

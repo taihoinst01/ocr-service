@@ -307,7 +307,7 @@ def classifyDocument(sentences):
         if maxNum > 0.5:
             return maxNum, row
         else:
-            return '',''
+            return 0,''
 
     except Exception as e:
         raise Exception(str({'code': 500, 'message': 'TBL_NOTINVOICE_DATA table select fail', 'error': str(e).replace("'", "").replace('"', '')}))

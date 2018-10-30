@@ -242,7 +242,7 @@ if __name__ == '__main__':
 
         # TBL_OCR_BANNED_WORD 에 WORD칼럼 배열로 전부 가져오기
         bannedWords = bUtil.selectBannedWord()
-
+        
         # 20180911 ocr데이터 정렬 y축 기준
         ocrData = bUtil.sortArrLocation(ocrData)
 
@@ -255,21 +255,21 @@ if __name__ == '__main__':
             similarSentence.append(item)
             if len(similarSentence) == 5:
                 break
-
+        
         if flag == "LEARN_N":
             # 5개 문장으로 DB와 일치하는 notInvoice 확률 측정
             ratio, notInvoiceData = bUtil.classifyDocument(similarSentence)
 
             # notInvoice 확률이 0.5 이상일경우 notInvoice로 doctype변경후 종료
-            if ratio > 0.5 and notInvoiceData == "1":
-                obj["docCategory"] = bUtil.selectDocCategory(notInvoiceData)
+            if ratio > 0.5 and notInvoiceData == "1":               
+                obj["docCategory"] = bUtil.selectDocCategory(notInvoiceData)           
                 insertBatchLearnList(obj["docCategory"]["DOCTYPE"], flag)
                 print(re.sub('None', "null", json.dumps(obj)))
                 sys.exit(1)
 
         # 최종 5개 문장이 추출되면 각문장의 단어를 TBL_OCR_SYMSPELL 에 조회후 없으면 INSERT
         bUtil.insertOcrSymspell(sentences)
-
+        
         # 5개문장의 SID를 EXPORT_SENTENCE_SID 함수를 통해 SID 추출
         sentencesSid = bUtil.getDocSid(sentences)
 
