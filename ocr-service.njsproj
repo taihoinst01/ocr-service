@@ -3166,6 +3166,14 @@
     <Content Include="public\publish\css\common.css" />
     <Content Include="public\publish\css\font.css" />
     <Content Include="public\publish\css\stb.dropdown.min.css" />
+    <Content Include="public\publish\font\NanumGothic-Bold.eot" />
+    <Content Include="public\publish\font\NanumGothic-Bold.ttf" />
+    <Content Include="public\publish\font\NanumGothic-Bold.woff" />
+    <Content Include="public\publish\font\NanumGothic-Bold.woff2" />
+    <Content Include="public\publish\font\NanumGothic-Regular.eot" />
+    <Content Include="public\publish\font\NanumGothic-Regular.ttf" />
+    <Content Include="public\publish\font\NanumGothic-Regular.woff" />
+    <Content Include="public\publish\font\NanumGothic-Regular.woff2" />
     <Content Include="public\publish\font\notokr-bold.eot" />
     <Content Include="public\publish\font\notokr-bold.svg" />
     <Content Include="public\publish\font\notokr-bold.ttf" />

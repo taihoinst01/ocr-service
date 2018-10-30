@@ -1,15 +1,15 @@
 @font-face{
     font-family:'NanumGothicR';
-    src:url(NanumGothic-Regular.eot) format('embedded-opentype'),
-        url(NanumGothic-Regular),
-        url(NanumGothic-Regular.woff) format('woff'),
-        url(NanumGothic-Regular.woff2) format('woff2')
+    src:url('../font/NanumGothic-Regular.eot') format('embedded-opentype'),
+        url('../font/NanumGothic-Regular.ttf'),
+        url('../font/NanumGothic-Regular.woff') format('woff'),
+        url('../font/NanumGothic-Regular.woff2') format('woff2')
 }
 
 @font-face{
     font-family:'NanumGothicB';
-    src:url(NanumGothic-Bold.eot) format('embedded-opentype'),
-        url(NanumGothic-Bold),
-        url(NanumGothic-Bold.woff) format('woff'),
-        url(NanumGothic-Bold.woff2) format('woff2'),
+    src:url('../font/NanumGothic-Bold.eot') format('embedded-opentype'),
+        url('../font/NanumGothic-Bold.ttf'),
+        url('../font/NanumGothic-Bold.woff') format('woff'),
+        url('../font/NanumGothic-Bold.woff2') format('woff2'),
 }
