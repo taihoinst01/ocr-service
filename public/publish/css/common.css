@@ -173,7 +173,7 @@ width: 100%;height: 100%}
     uiLearning.html css (개별학습)
 */
 #uploadForm { border: 2px dashed #D4635B; background-color: #E1E1E1; border-radius: 10px; margin: 20px 0 0 0;}
-.ui_uploadText { font: 300 20px ari'NanumGothicR'; width: 350px !important; color: #D4635B; text-align: center; }
+.ui_uploadText { font: 300 20px 'NanumGothicR'; width: 350px !important; color: #D4635B; text-align: center; }
 .content_sub_title { font: bold 20px 'NanumGothicR'; color: #4C5059; margin: 5px 0 20px 5px; }
 .box_content_R { float: right; display: table; position: relative; width: 48%; width: calc(50% - 16px); width: -webkit-calc(40% - 16px); height: 800px; padding: 0px; margin: 0; }
 .box_content_bg { height: 350px; }
@@ -216,6 +216,7 @@ width: 100%;height: 100%}
 .invoice_Dl_04 .select_style.select_style_K01 .stb-select li { border:0; }
 .search_header { border-radius: 5px 5px 0 0; }
 .box_content_bg_K01 .tits span, #span_document_base, #span_document_dtl  { color: #4C5059; }
+.invoice_Dl_01 input[type="checkbox"] { height: 20.5px; }
 
 /*
     batchLearning.html (일괄 학습)
@@ -237,6 +238,8 @@ canvas.preview { border-radius: 5px; }
 .button_st5 p { margin-top: 5px; }
 #btn_uiTraining { min-width: 140px !important; }
 #btn_AddTraining { min-width: 150px !important; }
+#docSearchResultMask { border-radius: 5px; }
+
 /*
     documentCheck.html (문서 조회)
 */
