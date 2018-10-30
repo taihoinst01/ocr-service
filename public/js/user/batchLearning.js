@@ -2199,6 +2199,7 @@ function uiLayerHtml(data) {
     }
 
     $('#textResultTbl').append(tblTag).append(tblSortTag);
+    $('#textResultTbl select').stbDropdown();
     // input 태그 마우스오버 말풍선 Tooltip 적용
     $('input[type=checkbox]').ezMark();
     new $.Zebra_Tooltips($('.tip'));
