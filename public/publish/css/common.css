@@ -224,7 +224,7 @@ width: 100%;height: 100%}
 #content-6 { border-left: 1px solid #D8D8D8; border-bottom: 1px solid #D8D8D8; border-radius: 10px 0 0 10px; }
 .batchListTbody .mlTr ul { top: 15px !important; width:-webkit-calc(100% - 5px) !important; border-radius: 0 0 10px 10px !important;}
 .batchListTbody .mlTr li { margin-left: 5px; }
-
+.td_bannedword { text-align: initial; }
 /*
     documentCheck.html (문서 조회)
 */
@@ -6422,6 +6422,7 @@ input:disabled {
 .batch_tbl_left_contetnsDiv {
     height: 630px !important;
     overflow-y: hidden;
+    overflow-x: hidden;
 }
 
 .batch_tb_divBodyScroll {
@@ -6540,7 +6541,7 @@ input:disabled {
 }
 
 #searchManagerResult tr.on {
-    background-color: #939393 !important;
+    background-color: #EA7169 !important;
 }
 
 #searchManagerResult tr.on td{
