@@ -19,32 +19,21 @@
 }
 
 /*common*/
-body{font-family:NanumGothicR,sans-serif,³ª´®°íµñ;}
+body{ font-family:NanumGothicR,sans-serif,³ª´®°íµñ; }
 .selected { color: #EA7169 !important; opacity: 1 !important; }
 .clear_both { clear: both; }
 
 /*
     header.html (»ó´Ü¹Ù)
 */
-#header {position: absolute; top: 0px; left: 0px; overflow: hidden; width: 100%; min-width: 1899px; height: 70px; background-color: #EA7169; z-index: 2; }
-
-
+#header { position: absolute; top: 0px; left: 0px; overflow: hidden; width: 100%; min-width: 1899px; height: 70px; background-color: #EA7169; z-index: 2; }
 .totalSearch { background: transparent; border: 0 !important; color: #FFFFFF !important; }
 #header ::placeholder { color: #C9C9C9; }
 .gnb_box .gnb_connectionday { float: left; line-height: 30px; padding: 3px 30px; margin: 13px 14px 0 0; background-color:#d3635c ; border-radius:30px;width: 293px;height: 35px; }
-.gnb_box .gnb_setting { float: left; line-height: 30px; padding: 3px 30px; margin: 16px 0 0 0; border-radius: 15px;}
+.gnb_box .gnb_setting { float: left; line-height: 30px; padding: 3px 30px; margin: 16px 0 0 0; border-radius: 15px; }
 .gnb_box .gnb_infor { float: left; line-height: 30px; margin: 16px 14px 0 0; border-radius: 15px;padding-right: 30px; }
-.gnb_infor_img{
-    width: 33px;
-    height: 33px;
-    display:inline-block;
-    background-color: #d3635c;
-    border-radius: 50%;    
-    margin-top: 4px;
-    margin-left: 6px;
-}
+.gnb_infor_img{ width: 33px; height: 33px; display:inline-block; background-color: #d3635c; border-radius: 50%; margin-top: 4px; margin-left: 6px; }
 .b_logout { float:left; margin: 23px 30px 0 0; }
-/*.gnb_box .btn_logout {line-height: 30px; padding: 3px 5px;  border-radius: 5px; }*/
 
 /*
     leftSideBar.html (ÁÂÃø ¸Þ´º¹Ù ver 2)
@@ -153,8 +142,7 @@ body{font-family:NanumGothicR,sans-serif,³ª´®°íµñ;}
 /*
     index.html css (·Î±×ÀÎ)
 */
-body.bg_login { background-image: url(../img/bg_login.png);
-width: 100%;height: 100%}
+body.bg_login { background-image: url(../img/bg_login.png); width: 100%;height: 100%}
 .box_login { width: auto; height: 254px; padding: 20px 40px; border-radius: 15px; }
 .box_login_01 label { color:white; }
 .box_login_01 div { color:white; }
@@ -165,9 +153,7 @@ width: 100%;height: 100%}
 .remember_id_div { padding-left: 10px; }
 .remember_id_div div { padding: 0 0 0 5px; font-size: 16px; vertical-align: 3px;}
 .remeber_id_div .ez-checkbox { float: left; }
-
 .l_logo { text-align: center; }
-/*.login_top h1 { display: block; width: 200px; height: 40px; margin: 0 auto; }*/
 
 /*
     uiLearning.html css (°³º°ÇÐ½À)
@@ -252,6 +238,7 @@ canvas.preview { border-radius: 5px; }
 #div_base, #div_dtl { padding-left: 0 !important; }
 .table_style02.table_K02 { background:#FFF; }
 .myApproval_divBodyScroll.divBodyScroll { background:#FFF; }
+
 /*
     invoiceProcessingStatus (°è»ê¼­ Ã³¸®ÇöÈ²)
 */
