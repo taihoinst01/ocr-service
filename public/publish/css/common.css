@@ -5136,9 +5136,7 @@ thead .ez-checked {
     width: 1%;
     height: 35px;
     border-radius: 6px;
-    /*
-            background: linear-gradient(135deg, #E6E6E6 7%, #56b9f4 0, #56b9f4 50%, #E6E6E6 0, #E6E6E6 57%, #56b9f4 0);
-            */
+    /*background: linear-gradient(135deg, #E6E6E6 7%, #56b9f4 0, #56b9f4 50%, #E6E6E6 0, #E6E6E6 57%, #56b9f4 0);*/
     background-color: #EA7169;
     background-size: 30px 30px;
 }
@@ -5199,7 +5197,7 @@ thead .ez-checked {
     width: calc(58% - -2px);
     width: -webkit-calc(100% - 16px);
     width: -moz-calc(100% - 16px);
-    height: 80px !important;
+    height: 60px !important;
     padding: 0;
     margin: 0 0 0 0 !important;
 }
