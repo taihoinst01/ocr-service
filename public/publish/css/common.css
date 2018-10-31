@@ -195,7 +195,7 @@ body.bg_login { background-image: url(../img/bg_login.png); width: 100%;height: 
 .st_infortext_01.ir_upload #uploadFileBtn { margin: 0 0 0 60px !important; }
 #uploadInfoText { color: #EA7169; }
 .stb-select li { margin: 10px 0; }
-.invoiceR_tblBody2 #tbody_dtlList .stb-select-container { border-radius: 5px !important; padding: 5px 0 5px 5px; }
+.invoiceR_tblBody2 #tbody_dtlList .stb-select-container { border-radius: 5px !important; padding: 5px 0 5px 5px; background: #FFF; }
 .invoiceR_tblBody2 #tbody_dtlList .stb-select { top: 21px !important; width: -webkit-calc(100% - 5px) !important; }
 .invoice_Dl_03 .select_style.select_style_K01 { background: none; }
 .invoice_Dl_04 .select_style.select_style_K01 { background: none; }
@@ -208,6 +208,7 @@ body.bg_login { background-image: url(../img/bg_login.png); width: 100%;height: 
 .search_header { border-radius: 5px 5px 0 0; }
 .box_content_bg_K01 .tits span, #span_document_base, #span_document_dtl  { color: #4C5059; }
 .invoice_Dl_01 input[type="checkbox"] { height: 20.5px; }
+#tbody_dtlList .stb-select li { color: #666 !important; }
 
 /*
     batchLearning.html (ÀÏ°ý ÇÐ½À)
@@ -3301,7 +3302,7 @@ table.ivoiceR_tblHead2 > thead > tr > th {
     background-color: #e5e5e5;
 }
 
-    
+/*    
 .table_style02 table > tbody > tr.on,
 .table_style02 table > tbody > tr:hover {
     background-color: #EA7169;
@@ -3310,7 +3311,7 @@ table.ivoiceR_tblHead2 > thead > tr > th {
 .table_style02 table > tbody > tr:hover > td > a{
     color: #FFF;
 }
-    
+*/   
 .invoiceR_tblBackground2 .table_style02 table > tbody > tr:hover > td {
     color: #666;
 }

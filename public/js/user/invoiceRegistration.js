@@ -64,8 +64,8 @@ var initForm = function ({ type }) {
 };
 
 $(function () {
-    $('#userDepartment, .invoice_Dl_03 select, .invoice_Dl_04 select').stbDropdown();
-    _init();
+    $('#userDepartment, .invoice_Dl_03 select, .invoice_Dl_04 select').stbDropdown();    
+    _init();   
 });
 
 /****************************************************************************************
@@ -971,8 +971,9 @@ var fn_search = function () {
             $("#tbody_baseList input[type=checkbox]").ezMark();
             $("#span_document_base").empty().html("문서 기본정보 - " + data.length + "건");
             $("#div_base").fadeIn();
-            fn_clickEvent();
-            endProgressBar();           
+            fn_clickEvent(); 
+            checkBoxCssEvent('#tbody_baseList');
+            endProgressBar();
         },
         error: function (err) {
             endProgressBar();
@@ -981,9 +982,16 @@ var fn_search = function () {
     });
 };
 
-var fn_searchDocEnterEvent = function () {
-    $('#docNum, #documentManager').keyup(function (e) {
-        if (e.keyCode == 13) $('#btn_search').click();
+var checkBoxCssEvent = function (tableTag) {
+    $(tableTag + ' .ez-checkbox').unbind('click');
+    $(tableTag + ' .ez-checkbox').click(function (e) {
+        if (!$(this).hasClass('ez-checked')) {
+            $(this).closest('tr').css('background', '#EA7169');
+            $(this).closest('tr').children('td').css('color', '#FFF');
+        } else {
+            $(this).closest('tr').css('background', '#FFF');
+            $(this).closest('tr').children('td').css('color', '#666');
+        }
     });
 };
 
@@ -1127,8 +1135,10 @@ var fn_clickEvent = function () {//jmh
         var numArr = id.replace("tr_base_", "");
         var seqNum = numArr.split("-")[0];
         var docNum = numArr.split("-")[1];
-
-        $("input:checkbox[id='base_chk_" + docNum + "']").parent().addClass('ez-checked');   
+        if (!$("input:checkbox[id='base_chk_" + docNum + "']").parent().hasClass('ez-checked')) {
+            $("input:checkbox[id='base_chk_" + docNum + "']").parent().click();
+        }
+        $("input:checkbox[id='base_chk_" + docNum + "']").parent().addClass('ez-checked'); 
 
         fn_search_dtl(docNum); // document_dtl 조회
     });
@@ -1407,6 +1417,7 @@ var ocrResult = function () {
             '</tr > '
         $('#tbody_dtlList').append(appendRowHtml);
         $('#tbody_dtlList input[type=checkbox]:last').ezMark();
+
     });
 
     //행 삭제
@@ -1827,6 +1838,7 @@ function fn_processFinish(mlData, imgId) {
     $("#div_dtl").css("display", "block");
     $('#tbody_dtlList select').stbDropdown();
     $("#btn_pop_ui_close").click();
+    checkBoxCssEvent('#tbody_dtlList');
 
     function makeMLSelect(mlData, colnum, entry) {
 
@@ -1992,6 +2004,7 @@ function fn_ContractNumExtraction() {
                         $("#div_dtl").css("display", "block");
                         endProgressBar(progressId);
                         $('.table_style02 #tbody_dtlList select').stbDropdown();
+                        checkBoxCssEvent('#tbody_dtlList');
 
                         if (l == cdnNm.length -1 && k == ttyYy.length - 1) {
                             if ($("#tbody_dtlList").length == 1) {
