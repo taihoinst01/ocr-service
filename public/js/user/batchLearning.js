@@ -2348,7 +2348,12 @@ var batchLearnTraining = function (imgIdArray, flag) {
                         }
                     }
                 });
-                endProgressBar(progressId);
+
+                setTimeout(function () {
+                    endProgressBar(progressId);
+                    fn_alert('alert', '일괄 학습이 완료 되었습니다.');
+                }, 4000);
+                //endProgressBar(progressId);
             } else if (flag == "LEARN_Y") {
                 endProgressBar(progressId);
                 searchBatchLearnDataList(addCond);
@@ -2366,7 +2371,7 @@ var batchLearnTraining = function (imgIdArray, flag) {
         complete: function () {
             console.log("done");
             //addProgressBar(41, 100);
-            endProgressBar(progressId);
+            //endProgressBar(progressId);
         }
     });
 };
@@ -2890,13 +2895,24 @@ function popUpRunEvent() {
             },
             success: function (data) {
                 //location.href = location.href;
-                // 해당 로우 화면상 테이블에서 삭제
+                // 해당 로우 화면상 테이블에서 삭제               
+                setTimeout(function () {
+                    endProgressBar(progressId);
+                    fn_alert('alert', '문서 등록이 완료 되었습니다.');
+                    $('#btn_pop_doc_cancel.ui_doc_pop_btn2.cbtn').click();
+                    var rowNum = $('#batchListRowNum').val();
+                    $('#leftRowNum_' + rowNum).remove();
+                    $('.rowNum' + rowNum).remove();
+                    $('.mlRowNum' + rowNum).remove();
+                }, 5000);
+                /*
                 endProgressBar(progressId);
                 $('#btn_pop_doc_cancel').click();
                 var rowNum = $('#batchListRowNum').val();
                 $('#leftRowNum_' + rowNum).remove();
                 $('.rowNum' + rowNum).remove();
                 $('.mlRowNum' + rowNum).remove();
+                */
             },
             error: function (err) {
                 console.log(err);

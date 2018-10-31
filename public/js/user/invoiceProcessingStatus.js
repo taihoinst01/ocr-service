@@ -3,6 +3,8 @@
 var monthEngNames = ['January', 'Febuary', 'March', 'April', 'May', 'June', 'July', 'August', 'September',
     'October', 'November', 'December'];
 var dayEngNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday','Saturday'];
+var progressId; // progress Id
+
 
 $(function () {
     _init();
@@ -237,6 +239,13 @@ var dateEvent = function () {
     });
 
     $('#roll_back_btn').click(function (e) {
+        progressId = showProgressBar();
+        setTimeout(function () {
+            endProgressBar(progressId);
+            fn_alert('alert', '현시점으로 roll back 완료 되었습니다.');
+        }, 5000);
+        
+        /*
         var d = new Date();
         $('.ips_date_year .bottom_line:eq(0)').text(d.getFullYear() - 1);
         $('.ips_date_year .main_div > p').text(d.getFullYear());
@@ -268,5 +277,7 @@ var dateEvent = function () {
         } else {
             $('.ips_date_day .top_line:eq(0)').text('');
         }
+        */
     });
+    
 };

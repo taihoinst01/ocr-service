@@ -102,6 +102,8 @@ def appendSentences(ocrData, bannedWords):
 
 def selectDocCategory(docType):
     try:
+        if not docType:
+            docType = 0
         selectDocCategorySql = "SELECT SEQNUM, DOCNAME, DOCTYPE, SAMPLEIMAGEPATH FROM TBL_DOCUMENT_CATEGORY WHERE DOCTYPE = :docType"
         curs.execute(selectDocCategorySql, {"docType": int(docType)})
         rows = curs.fetchall()
