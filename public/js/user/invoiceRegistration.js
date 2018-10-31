@@ -1498,7 +1498,12 @@ var fn_processBaseImage = function (fileInfo) {
                 $("#tbody_baseList input[type=checkbox]").ezMark();
                 $("#div_base").css("display", "block");
                 fn_clickEvent();
-                endProgressBar();
+                endProgressBar();                
+                checkBoxCssEvent('#tbody_baseList');
+                $('#tbody_baseList > tr:eq(0) .ez-checkbox').click();
+                $('#tbody_baseList > tr:eq(0) .ez-checkbox').addClass('ez-checked');
+                $('#tbody_baseList > tr:eq(0) .ez-checkbox > input[name="base_chk"]').prop('checked', true);
+
 				fn_search_dtl(fileInfo[0].imgId); // 첫번째 로우 ml 수행 함수
             } else {
                 console.log(data.error);
