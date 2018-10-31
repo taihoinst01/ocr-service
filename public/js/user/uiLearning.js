@@ -1022,6 +1022,7 @@ function detailTable(fileName) {
     new $.Zebra_Tooltips($('.tip'));
     dbSelectClickEvent();
     $('select').stbDropdown();
+    checkBoxMLCssEvent();
 
     $(".entryChk").change(function () {
 
@@ -1034,6 +1035,28 @@ function detailTable(fileName) {
         }
 
     })
+}
+
+function checkBoxMLCssEvent() {
+    $('#textResultTbl .ez-checkbox').each(function (i, e) {
+        if ($(e).hasClass('ez-checked')) {
+            $(e).closest('dl').children().css('background', '#EA7169')
+                .find('input[type="text"]').css('color', '#FFF').css('background', '#EA7169');
+        }
+    });
+
+    
+    $('#textResultTbl .ez-checkbox').unbind('click');
+    $('#textResultTbl .ez-checkbox').click(function () {
+        if (!$(this).hasClass('ez-checked')) {
+            $(this).closest('dl').children().css('background', '#EA7169')
+                .find('input[type="text"]').css('color', '#FFF').css('background', '#EA7169');
+        } else {
+            $(this).closest('dl').children().css('background', '#FFF')
+                .find('input[type="text"]').css('color', '#8C8C8C').css('background', '#FFF');
+        }
+    });
+    
 }
 
 // 컬럼 select html 가공 함수

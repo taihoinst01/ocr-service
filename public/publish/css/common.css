@@ -180,11 +180,16 @@ body.bg_login { background-image: url(../img/bg_login.png); width: 100%;height: 
 #imageBox span { text-align: center; }
 .page_ui { padding-top: 10px; }
 #uploadSucessForm .tits span, .content_sub_document_title_name { color:#4C5059; }
-
+#textResultTbl .stb-select-container { background: #FFF !important; }
+#textResultTbl .stb-select li { color: #4f5468 !important; }
 /*
     invoiceRegistration.html (계산서 등록)
 */
-.kDl01 .inputst_box01 { border: 1px solid #EA7169; border-radius: 10px; color: #EA7169; }
+.kDl01 .inputst_box01 {
+    border: 1px solid #EA7169;
+    border-radius: 10px;
+    color: #EA7169;
+}
 #userDepartment {  border: 1px solid #EA7169; border-radius: 10px; height: 40px; width: 100%; color: #EA7169; padding: 0 10px; }
 .fr.mt10 { width: 100%; }
 .button_ocr { display: inline-block; min-width: 80px; height: 40px; line-height: 16px; padding: 9px 15px 11px; margin: 0; font-size: 15px; color: #fff; background: #EA7169; border-radius: 5px;  cursor: pointer; }

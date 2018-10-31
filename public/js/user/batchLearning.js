@@ -1480,6 +1480,27 @@ function checkBoxCssEvent(tableTag) {
     });
 };
 
+function checkBoxMLCssEvent() {
+    $('#textResultTbl .ez-checkbox').each(function (i, e) {
+        if ($(e).hasClass('ez-checked')) {
+            $(e).closest('dl').children().css('background', '#EA7169')
+                .find('input[type="text"]').css('color', '#FFF').css('background', '#EA7169');
+        }
+    });
+
+    $('#textResultTbl .ez-checkbox').unbind('click');
+    $('#textResultTbl .ez-checkbox').click(function () {
+        if (!$(this).hasClass('ez-checked')) {
+            $(this).closest('dl').children().css('background', '#EA7169')
+                .find('input[type="text"]').css('color', '#FFF').css('background', '#EA7169');
+        } else {
+            $(this).closest('dl').children().css('background', '#FFF')
+                .find('input[type="text"]').css('color', '#8C8C8C').css('background', '#FFF');
+        }
+    });
+
+}
+
 function appendPredDoc(data) {
     var returnString = '';
     if (data.DOCNAME) {
@@ -2219,10 +2240,12 @@ function uiLayerHtml(data) {
 
     $('#textResultTbl').append(tblTag).append(tblSortTag);
     $('#textResultTbl select').stbDropdown();
+    
     // input 태그 마우스오버 말풍선 Tooltip 적용
     $('input[type=checkbox]').ezMark();
     new $.Zebra_Tooltips($('.tip'));
     dbSelectClickEvent();
+    checkBoxMLCssEvent();
 
     $(".entryChk").change(function () {
 

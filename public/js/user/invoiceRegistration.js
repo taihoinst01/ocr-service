@@ -982,6 +982,12 @@ var fn_search = function () {
     });
 };
 
+var fn_searchDocEnterEvent = function () {
+    $('#docNum, #documentManager').keyup(function (e) {
+        if (e.keyCode == 13) $('#btn_search').click();
+    });
+};
+
 var checkBoxCssEvent = function (tableTag) {
     $(tableTag + ' .ez-checkbox').unbind('click');
     $(tableTag + ' .ez-checkbox').click(function (e) {
