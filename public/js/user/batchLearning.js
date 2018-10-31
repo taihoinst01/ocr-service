@@ -1425,6 +1425,8 @@ var searchBatchLearnDataList = function (addCond) {
             imgPopupEvent();
             $('#batch_left_contents_after select').stbDropdown();
             $('#batch_right_contents_after select').stbDropdown();
+            checkBoxCssEvent('#batch_left_contents_before');
+            checkBoxCssEvent('#batch_left_contents_after');
         },
         error: function (err) {
             endProgressBar(progressId); // end progressbar
@@ -1459,6 +1461,23 @@ var searchBatchLearnDataList = function (addCond) {
 
         return hasColvalue ? appendMLSelect : '';
     }
+};
+
+function checkBoxCssEvent(tableTag) {
+    var isAfter = tableTag.indexOf('after') != -1;
+    $(tableTag + ' .ez-checkbox').unbind('click');
+    $(tableTag + ' .ez-checkbox').click(function (e) {
+        var trIdNum = $(this).closest('tr').attr('id').split('_')[1];
+        if (!$(this).hasClass('ez-checked')) {
+            $(this).closest('tr').css('background', '#EA7169').children('td').css('color', '#FFF').children('a').css('color', '#FFF');
+            $(tableTag.replace('left', 'right') + ' .rowNum' + trIdNum).css('background', '#EA7169').children('td').css('color', '#FFF');
+            if (isAfter) $(tableTag.replace('left', 'right') + ' .mlRowNum' + trIdNum).css('background', '#EA7169').children('td').css('color', '#FFF');
+        } else {
+            $(this).closest('tr').css('background', '#FFF').children('td').css('color', '#666').children('a').css('color', '#666');
+            $(tableTag.replace('left', 'right') + ' .rowNum' + trIdNum).css('background', '#FFF').children('td').css('color', '#666');
+            if (isAfter) $(tableTag.replace('left', 'right') + ' .mlRowNum' + trIdNum).css('background', '#FFF').children('td').css('color', '#666');
+        }
+    });
 };
 
 function appendPredDoc(data) {

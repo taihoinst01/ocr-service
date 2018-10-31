@@ -231,7 +231,7 @@ canvas.preview { border-radius: 5px; }
 #btn_uiTraining { min-width: 140px !important; }
 #btn_AddTraining { min-width: 150px !important; }
 #docSearchResultMask { border-radius: 5px; }
-
+#batch_right_contents_after li { color: #666 !important; }
 /*
     documentCheck.html (문서 조회)
 */
