@@ -83,13 +83,13 @@ var fnChoose = function (req, res) {
 };
 // 상위결재자 조회
 var callbackSearchHighApproval = function (rows, req, res) {
-    console.log(`searchHighApproval result : ${JSON.stringify(rows)}`);
+    //console.log(`searchHighApproval result : ${JSON.stringify(rows)}`);
     res.send(rows);
 };
 var fnSearchHighApproval = function (req, res) {
-    var condQuery = ` WHERE A.SEQNUM NOT IN ('${req.body.seqNum}') `; // 자기 자신을 제외한 사용자 조회
+    var condQuery = ` WHERE SEQNUM NOT IN ('${req.body.seqNum}') `; // 자기 자신을 제외한 사용자 조회
     var query = selectQuery + condQuery;
-    console.log(`fnSearchHighApproval query : ${query}`);
+    //console.log(`fnSearchHighApproval query : ${query}`);
     commonDB.reqQuery(query, callbackSearchHighApproval, req, res);
 };
 // 사용자 추가
