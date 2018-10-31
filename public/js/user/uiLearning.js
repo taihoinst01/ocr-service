@@ -868,9 +868,9 @@ function detailTable(fileName) {
                     tblTag += '<dl>';
                     tblTag += '<dt onclick="zoomImg(this,' + "'" + fileName + "'" + ')">';
                     if (data[i].originText) {
-                        tblTag += '<label for="langDiv' + i + '" class="" title="Accuracy : 95% &lt;/p&gt;&lt;p&gt; Ocr text : ' + data[i].originText + '" style="width:343px;">';
+                        tblTag += '<label for="langDiv' + i + '" class="" title="Accuracy : 95% &lt;/p&gt;&lt;p&gt; Ocr text : ' + data[i].originText + '" style="width:100%;">';
                     } else {
-                        tblTag += '<label for="langDiv' + i + '" class="" title="Accuracy : 95% &nbsp;&nbsp;" style="width:343px;">';
+                        tblTag += '<label for="langDiv' + i + '" class="" title="Accuracy : 95% &nbsp;&nbsp;" style="width:100%;">';
                     }
                     tblTag += '<input type="text" value="' + data[i].text + '" style="width:100% !important; border:0;" />';
                     tblTag += '<input type="hidden" value="' + data[i].location + '" />';
@@ -891,9 +891,9 @@ function detailTable(fileName) {
                     tblSortTag += '<dl>';
                     tblSortTag += '<dt onclick="zoomImg(this,' + "'" + fileName + "'" + ')">';
                     if (data[i].originText) {
-                        tblSortTag += '<label for="langDiv' + i + '" class="" title="Accuracy : 95% &lt;/p&gt;&lt;p&gt; Ocr text : ' + data[i].originText + '" style="width:343px;">';
+                        tblSortTag += '<label for="langDiv' + i + '" class="" title="Accuracy : 95% &lt;/p&gt;&lt;p&gt; Ocr text : ' + data[i].originText + '" style="width:100%;">';
                     } else {
-                        tblSortTag += '<label for="langDiv' + i + '" class="" title="Accuracy : 95% &nbsp;&nbsp;" style="width:343px;">';
+                        tblSortTag += '<label for="langDiv' + i + '" class="" title="Accuracy : 95% &nbsp;&nbsp;" style="width:100%;">';
                     }
                     tblSortTag += '<input type="text" value="' + data[i].text + '" style="100% !important; border:0;" />';
                     tblSortTag += '<input type="hidden" value="' + data[i].location + '" />';
@@ -914,9 +914,9 @@ function detailTable(fileName) {
                     tblTag += '<dl>';
                     tblTag += '<dt onclick="zoomImg(this,' + "'" + fileName + "'" + ')">';
                     if (data[i].originText) {
-                        tblTag += '<label for="langDiv' + i + '" class="" title="Accuracy : 95% &lt;/p&gt;&lt;p&gt; Ocr text : ' + data[i].originText + '" style="width:343px;">';
+                        tblTag += '<label for="langDiv' + i + '" class="" title="Accuracy : 95% &lt;/p&gt;&lt;p&gt; Ocr text : ' + data[i].originText + '" style="width:100%;">';
                     } else {
-                        tblTag += '<label for="langDiv' + i + '" class="" title="Accuracy : 95% &nbsp;&nbsp;" style="width:343px;">';
+                        tblTag += '<label for="langDiv' + i + '" class="" title="Accuracy : 95% &nbsp;&nbsp;" style="width:100%;">';
                     }
                     tblTag += '<input type="text" value="' + data[i].text + '" style="100% !important; border:0;" />';
                     tblTag += '<input type="hidden" value="' + data[i].location + '" />';

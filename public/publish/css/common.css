@@ -22,14 +22,15 @@
 body{ font-family:NanumGothicR,sans-serif,나눔고딕; }
 .selected { color: #EA7169 !important; opacity: 1 !important; }
 .clear_both { clear: both; }
+.page-wrap .now-count { font-weight: bold; color: #EA7169;  }
 
 /*
     header.html (상단바)
 */
 #header { position: absolute; top: 0px; left: 0px; overflow: hidden; width: 100%; min-width: 1899px; height: 70px; background-color: #EA7169; z-index: 2; }
-.totalSearch { background: transparent; border: 0 !important; color: #FFFFFF !important; }
+.totalSearch { background: transparent; border: 0 !important; color: #FFFFFF !important; padding: 0 !important; }
 #header ::placeholder { color: #C9C9C9; }
-.gnb_box .gnb_connectionday { float: left; line-height: 30px; padding: 3px 30px; margin: 13px 14px 0 0; background-color:#d3635c ; border-radius:30px;width: 293px;height: 35px; }
+.gnb_box .gnb_connectionday { float: left; line-height: 30px; padding: 3px 20px; margin: 13px 14px 0 0; background-color:#d3635c ; border-radius:30px;width: 293px;height: 35px; }
 .gnb_box .gnb_setting { float: left; line-height: 30px; padding: 3px 30px; margin: 16px 0 0 0; border-radius: 15px; }
 .gnb_box .gnb_infor { float: left; line-height: 30px; margin: 16px 14px 0 0; border-radius: 15px;padding-right: 30px; }
 .gnb_infor_img{ width: 33px; height: 33px; display:inline-block; background-color: #d3635c; border-radius: 50%; margin-top: 4px; margin-left: 6px; }
@@ -144,11 +145,12 @@ body{ font-family:NanumGothicR,sans-serif,나눔고딕; }
 */
 body.bg_login { background-image: url(../img/bg_login.png); width: 100%;height: 100%}
 .box_login { width: auto; height: 254px; padding: 20px 40px; border-radius: 15px; }
+.box_login .row { min-height: 17px; }
 .box_login_01 label { color:white; }
 .box_login_01 div { color:white; }
 .box_login_01 > dl > dt label { padding-left: 15px; border-radius: 20px; font-size: 16px; font-family: 'NanumGothicR' }
 .box_login_01 > dl > dd div { width: 100%; height: 46px; background-color: rgb(255, 255, 255, .2); border-radius: 30px;}
-.box_login_01 > dl > dd input { height: inherit; line-height: 32px; border-radius: 20px; background: transparent; color: #FFFFFF; border: 0; padding: 0 10px;}
+.box_login_01 > dl > dd input { height: inherit; line-height: 32px; border-radius: 20px; background: transparent; color: #FFFFFF; border: 0; padding: 0 15px;}
 .button_login { display: inline-block; width: 100%; height: 46px; line-height: 16px; padding: 9px 15px 11px; margin: 60px 0 0; font-size: 16px; font-family: 'NanumGothicB'; color: #D4635B; background: #FFFFFF; border-radius: 5px; cursor: pointer; }
 .remember_id_div { padding-left: 10px; }
 .remember_id_div div { padding: 0 0 0 5px; font-size: 16px; vertical-align: 3px;}
@@ -172,9 +174,12 @@ body.bg_login { background-image: url(../img/bg_login.png); width: 100%;height: 
 .content_sub_document_title { float: right; width:-webkit-calc(40% - 16px); height:47px; }
 .content_sub_document_title_name { float: left; font: 600 15px 'NanumGothicR'; padding: 20px 0 0 0; }
 .float_right { float: right; }
-.ui_image_div { height: 637px !important; }
+.ui_image_div { height: 605px !important; }
 #uiTrainBtn { padding-left: 0; min-width: 150px; }
 #uiTrainBtn p { margin-top: 5px; }
+#imageBox span { text-align: center; }
+.page_ui { padding-top: 10px; }
+#uploadSucessForm .tits span, .content_sub_document_title_name { color:#4C5059; }
 
 /*
     invoiceRegistration.html (계산서 등록)
@@ -234,10 +239,13 @@ canvas.preview { border-radius: 5px; }
     border-radius: 10px;
     color: #EA7169;
 }
+.box_stsearch > .um_table > .mCustomScrollbar { border-radius: 5px; }
 #btn_baseList_return, #btn_baseList_forward, #btn_baseList_approval { background: #EA7169; }
 #div_base, #div_dtl { padding-left: 0 !important; }
 .table_style02.table_K02 { background:#FFF; }
 .myApproval_divBodyScroll.divBodyScroll { background:#FFF; }
+
+
 
 /*
     invoiceProcessingStatus (계산서 처리현황)
@@ -694,7 +702,6 @@ h3.tits:before,
 .button_control14:before,
 .searchIcon:before,
 #content h2:before,
-.alert_icon:before,
 #uploadFileBtn,
 .content_title_icon,
 .content_title_icon_ui,
@@ -714,6 +721,11 @@ h3.tits:before,
     display: inline-block;
     background: url('../image/bg_img.png') no-repeat;
 }
+.alert_icon:before {
+    display: inline-block;
+    background: url('../image/bg_img_2.png') no-repeat;
+}
+
 .content_title_icon { width:30px; height: 30px; float:left; background-position: -5px -475px; }
 .content_title_icon_ui { width:40px; height: 30px; float:left; background-position: -70px -472px; }
 .content_title_icon_bl { width:40px; height: 30px; float:left; background-position: -140px -472px; }
@@ -1968,7 +1980,7 @@ select:disabled + ul.idealSelect:before {
 
 .box_imgtmb {
     position: relative;
-    width: 100%;
+    width: 99%;
     max-height: 130px;
     padding: 10px 0;
     background: #605f5d;
@@ -5260,7 +5272,7 @@ thead .ez-checked {
 
 #redNemo, #redZoomNemo {
     display: none;
-    border: 2px solid red;
+    border: 2px solid #EA7169;
     position: absolute;
     top: 185px;
     width: 100%;
@@ -6563,7 +6575,7 @@ input:disabled {
 }
 
 .searchManagerResultDiv {
-    height: 250px;
+    height: 260px;
     overflow: overlay;
     background: #FFF;
     border-radius: 0 0 5px 5px;
