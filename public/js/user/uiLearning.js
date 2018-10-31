@@ -696,7 +696,9 @@ function selectTypoText(index, fileName) {
     var item = lineText[index];
 
     var param = [];
-
+    detailTable(fileName);
+    docComparePopup(0);
+    /*
     $.ajax({
         url: 'common/selectTypoData2',
         type: 'post',
@@ -717,6 +719,8 @@ function selectTypoText(index, fileName) {
             console.log(err);
         }
     });
+    */
+    endProgressBar(progressId);
 }
 
 function docPopInit() {

@@ -108,9 +108,9 @@ router.post('/imageUpload', upload.any(), function (req, res) {
                     //execSync('java -jar C:/ICR/app/source/module/DrmDec.jar "' + ifile + '"');
 
                     //file convert MsOffice to Pdf
-                    if ( !(fileExt.toLowerCase() === 'pdf') ) {
+                    if (!(fileExt.toLowerCase() === 'pdf')) {
                         //convertPdf = execSync('"C:/Program Files/LibreOffice/program/python.exe" C:/ICR/app/source/module/unoconv/unoconv.py -f pdf -o "' + ofile + '" "' + ifile + '"');  //운영
-                        convertPdf = execSync('"C:/Program Files (x86)/LibreOffice/program/python.exe" C:/projectWork/koreanre/module/unoconv/unoconv.py -f pdf -o "' + ofile + '" "' + ifile + '"');
+                        convertPdf = execSync('"C:/Program Files/LibreOffice/program/python.exe" C:/Users/Taiho/Source/Repos/ocr-service/module/unoconv/unoconv.py -f pdf -o "' + ofile + '" "' + ifile + '"');
                     }
 
                     ifile = convertedImagePath + fileObj.originalname.split('.')[0] + '.pdf';
