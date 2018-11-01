@@ -2310,7 +2310,7 @@ function batchLearnTraining(filepath, flag, done) {
             pythonConfig.columnMappingOptions.args = [];
             pythonConfig.columnMappingOptions.args.push(propertiesConfig.filepath.answerFileFrontPath + filepath);
             pythonConfig.columnMappingOptions.args.push(flag);
-            var resPyStr = sync.await(PythonShell.run('batchClassify.py', pythonConfig.columnMappingOptions, sync.defer()));
+            var resPyStr = sync.await(PythonShell.run('batchClassify.py', pythonConfig.columnMappingOptions, sync.defer()));            
             var resPyArr = JSON.parse(resPyStr[0]);
 
             console.timeEnd("columnMapping ML");
@@ -2361,6 +2361,7 @@ function batchLearnTraining(filepath, flag, done) {
 
             return done(null, retData);
         } catch (e) {
+            console.log(resPyStr);
             console.log(e);
             return done(null, e);
         }
