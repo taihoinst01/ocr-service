@@ -1429,7 +1429,11 @@ function modifyTextData() {
                     //makeTrainingData();
                     
                     if (beforeData.length - 1 == i) {
-                        endProgressBar(progressId);
+                        //endProgressBar(progressId);
+                        setTimeout(function () {
+                            endProgressBar(progressId);
+                            fn_alert('alert', '학습이 완료 되었습니다.');
+                        }, 5000);
                         //fn_alert('alert', "success training");
                     }
                 },
