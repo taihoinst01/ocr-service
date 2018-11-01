@@ -243,6 +243,7 @@ var dateEvent = function () {
         progressId = showProgressBar();
         setTimeout(function () {
             endProgressBar(progressId);
+            $('#progressMsgTitle').html('');
             fn_alert('alert', '현시점으로 roll back 완료 되었습니다.');
         }, 5000);
         
