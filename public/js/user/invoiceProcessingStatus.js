@@ -239,6 +239,7 @@ var dateEvent = function () {
     });
 
     $('#roll_back_btn').click(function (e) {
+        $('#progressMsgTitle').html('roll back 중..');
         progressId = showProgressBar();
         setTimeout(function () {
             endProgressBar(progressId);
