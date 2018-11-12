@@ -613,6 +613,7 @@ function ocrParsing(body) {
         console.log(e);
         data = { 'error': e };
     } finally {
+        console.log(data);
         return data;
     }
 }

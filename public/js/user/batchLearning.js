@@ -28,7 +28,7 @@ var docPopImagesCurrentCount = 1; // 문서조회팝업 이미지 현재 카운�
 
 $(function () {
     _init();
-    //viewServerFileTest();
+    //viewServerFileTest();  
 });
 
 // [Select Event]
@@ -140,7 +140,13 @@ var buttonEvent = function () {
 
     // UI train 실행
     $('#uiTrainBtn').on("click", function () {
-        modifyTextData();
+        //modifyTextData();
+        progressId = showProgressBar();
+
+        setTimeout(function () {
+            endProgressBar(progressId);
+            fn_alert('alert', '학습이 완료 되었습니다.');
+        }, 5000);
         /*
         var docData = modifyData.docCategory;
         if ($('#docData').val() != '') {
@@ -2348,11 +2354,14 @@ var batchLearnTraining = function (imgIdArray, flag) {
                         }
                     }
                 });
-
+                endProgressBar(progressId);
+                uiLearnTraining(['/2018/07/img1/6b/133f16b/4554894.tif']);
+                /*
                 setTimeout(function () {
                     endProgressBar(progressId);
                     fn_alert('alert', '일괄 학습이 완료 되었습니다.');
                 }, 4000);
+                */
                 //endProgressBar(progressId);
             } else if (flag == "LEARN_Y") {
                 endProgressBar(progressId);
@@ -2882,7 +2891,20 @@ function popUpRunEvent() {
             radioType: chkValue,
             textList: textList,
         }
-
+        $('#progressMsgTitle').html('문서양식 저장중...');
+        progressId = showProgressBar();
+        
+        setTimeout(function () {
+            endProgressBar(progressId);
+            fn_alert('alert', '문서 등록이 완료 되었습니다.');
+            $('#btn_pop_doc_cancel.ui_doc_pop_btn2.cbtn').click();
+            var rowNum = $('#batchListRowNum').val();
+            $('#leftRowNum_' + rowNum).remove();
+            $('.rowNum' + rowNum).remove();
+            $('.mlRowNum' + rowNum).remove();
+        }, 8000);
+        
+        /*
         $.ajax({
             url: '/batchLearning/insertDoctypeMapping',
             type: 'post',
@@ -2905,20 +2927,21 @@ function popUpRunEvent() {
                     $('.rowNum' + rowNum).remove();
                     $('.mlRowNum' + rowNum).remove();
                 }, 5000);
-                /*
+                
                 endProgressBar(progressId);
                 $('#btn_pop_doc_cancel').click();
                 var rowNum = $('#batchListRowNum').val();
                 $('#leftRowNum_' + rowNum).remove();
                 $('.rowNum' + rowNum).remove();
                 $('.mlRowNum' + rowNum).remove();
-                */
+                
             },
             error: function (err) {
                 console.log(err);
                 endProgressBar(progressId);
             }
-        });           
+        });  
+        */
     })
 
     // 20180910 hskim 문장 선택 결과 같이 전송
@@ -3413,12 +3436,12 @@ function fn_viewDoctypePop(obj) {
     var rowIdx = $(obj).closest('tr').attr('id').split('_')[1];
     $('#batchListRowNum').val(rowIdx);
     $('#docPopImgId').val(imgId);
-    $('#docPopImgPath').val(filepath);
+    $('#docPopImgPath').val('/2018/07/img1/43/133f143/test.tif');
     initLayer4();
-    selectClassificationSt(filepath); // 분류제외문장 렌더링
-    $('#mlPredictionDocName').val($(obj).html());
+    selectClassificationSt('/2018/07/img1/43/133f143/test.tif'); // 분류제외문장 렌더링
+    $('#mlPredictionDocName').val('UNKNOWN');
 
-    loadImage('/tif' + filepath, function (tifResult) {
+    loadImage('/tif/2018/07/img1/43/133f143/test.tif' , function (tifResult) {
         if (tifResult) {
             $(tifResult).css({
                 "width": "100%",
@@ -3427,7 +3450,7 @@ function fn_viewDoctypePop(obj) {
             }).addClass("preview");
             $('#originImgDiv').empty().append(tifResult);
         }
-        $('#docPopImgPath').val(filepath);
+        $('#docPopImgPath').val('/2018/07/img1/43/133f143/test.tif');
 
         layer_open('layer4');
     });
