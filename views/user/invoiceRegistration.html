@@ -16,11 +16,14 @@
     <link rel="stylesheet" href="/common/css/fileupload/jquery.fileupload.css">
     <!-- // file upload css -->
     <link rel="stylesheet" href="css/dropdown.css">
+    <link rel="stylesheet" href="css/editable-select.css">
+    <link rel="stylesheet" href="/common/css/font-awesome.min.css">
     <!-- multiFileUpload & form async js -->
     <script type="text/javascript" src="js/import/fileupload/jquery.ui.widget.js"></script>
     <script type="text/javascript" src="js/import/fileupload/jquery.iframe-transport.js"></script>
     <script type="text/javascript" src="js/import/fileupload/jquery.fileupload.js"></script>
     <script type="text/javascript" src="js/import/jquery.form.min.js"></script>
+    <script type="text/javascript" src="js/import/jquery-editable-select.js"></script>
     <!-- // multiFileUpload & form async js -->
     <!-- 공통 js -->
     <script type="text/javascript" src="js/common.client.js"></script>
@@ -294,46 +297,46 @@
                                 <table class="ivoiceR_tblHead2" border="0">
                                     <colgroup>
                                         <col style="width:50px" />
-                                        <col style="width:150px" />
-                                        <col style="width:270px" />
-                                        <col style="width:270px" />
-                                        <col style="width:100px" />
-                                        <col style="width:150px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:150px" />
-                                        <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:270px" />
+                                            <col style="width:270px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
                                     </colgroup>
                                     <thead>
                                         <tr>
@@ -362,10 +365,10 @@
                                             <th scope="row">TAX</th>
                                             <th scope="row">OVERRIDING COM</th>
                                             <th scope="row">CHARGE</th>
-                                            <th scope="row">PREMUIM RESERVE RTD</th>
-                                            <th scope="row">P/F PREMIUM RESERVE RTD</th>
-                                            <th scope="row">PREMIUM RESERVE RLD</th>
-                                            <th scope="row">P/F PREMIUM RESERVE RLD</th>
+                                            <th scope="row">PREMUIM RESERVE<br /> RTD</th>
+                                            <th scope="row">P/F PREMIUM RESERVE<br /> RTD</th>
+                                            <th scope="row">PREMIUM RESERVE<br /> RLD</th>
+                                            <th scope="row">P/F PREMIUM RESERVE<br /> RLD</th>
                                             <th scope="row">CLAIM</th>
                                             <th scope="row">LOSS RECOVERY</th>
                                             <th scope="row">CASH LOSS</th>
@@ -387,46 +390,46 @@
                                 <table class="invoiceR_tblBody2" border="0">
                                     <colgroup>
                                         <col style="width:50px" />
-                                        <col style="width:150px" />
-                                        <col style="width:270px" />
-                                        <col style="width:270px" />
-                                        <col style="width:100px" />
-                                        <col style="width:150px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:100px" />
-                                        <col style="width:150px" />
-                                        <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:270px" />
+                                            <col style="width:270px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
+                                            <col style="width:150px" />
                                     </colgroup>
                                     <tbody id="tbody_dtlList">
                                         <!--

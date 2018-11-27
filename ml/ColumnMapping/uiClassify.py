@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -14,11 +15,11 @@ import batchUtil as bUtil
 import operator
 import requests
 
-id = "koreanre"
-pw = "koreanre01"
-sid = "koreanreocr"
+id = "ocr"
+pw = "taiho123"
+sid = "ocrservice"
 # ip = "10.10.20.205"
-ip = "172.16.53.145"
+ip = "192.168.0.251"
 port = "1521"
 connInfo = id + "/" + pw + "@" + ip + ":" + port + "/" + sid
 
@@ -131,7 +132,7 @@ def eval(inputJson, docType):
 
         # Azure ml 컬럼 매핑 추출
         params = {"data": json.dumps(inputArr), "type": "columnMapping"}
-        response = requests.post(url='http://172.16.53.143:8888/ml/api', data=params)
+        response = requests.post(url='http://192.168.0.149:8888/ml/api', data=params)
         inputArr = response.json()
 
         # 전 아이템 중 엔트리 라벨 추출
@@ -330,7 +331,7 @@ def selectFormMapping(sentencesSid):
 def azureFormMapping(sentencesSid):
     try:
         params = {"data": sentencesSid, "type": "formMapping"}
-        response = requests.post(url='http://172.16.53.143:8888/ml/api', data=params)
+        response = requests.post(url='http://192.168.0.149:8888/ml/api', data=params)
         r = response.json()
 
         selectDocCategorySql = "SELECT SEQNUM, DOCNAME, DOCTYPE, SAMPLEIMAGEPATH FROM TBL_DOCUMENT_CATEGORY WHERE DOCTYPE = :docType"
