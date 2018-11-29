@@ -2386,16 +2386,16 @@ router.post('/exportExcel', function (req, res) {
        
         }
 
-        workbook.xlsx.writeFile("hello.xlsx").then(function () {
+        workbook.xlsx.writeFile("ICR.xlsx").then(function () {
             // done
             console.log("success");
-            res.send({ fileName: "hello.xlsx" });
+            res.send({ fileName: "ICR.xlsx" });
         });
     });
 });
 
 router.get('/downloadExcel', function (req, res) {
-    res.download(appRoot + "\\hello.xlsx");
+    res.download(appRoot + "\\ICR.xlsx");
 });
 
 router.post('/batchLearnTraining', function (req, res) {
