@@ -1332,12 +1332,12 @@ var searchBatchLearnDataList = function (addCond) {
         },
         success: function (data) {
             console.log(data);
-            var list = data.data.rows;
+            var list = data.data;
 
             if (list.length != 0) {
 
                 for (var i = 0; i < list.length; i++) {
-                    var rows = list[i].rows;
+                    //var rows = list[i].rows;
 
                     if (addCond == "LEARN_N") checkboxHtml = '<td scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="' + nvl(list[i].FILEPATH) + '" class="sta00" name="listCheck_before" /></td>';
                     else checkboxHtml = '<td scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="' + nvl(list[i].FILEPATH) + '" class="stb00" name="listCheck_after" /></div></td>';
@@ -1349,56 +1349,56 @@ var searchBatchLearnDataList = function (addCond) {
                             + nvl(list[i].FILEPATH.substring((list[i].FILEPATH.lastIndexOf('/') + 1) )) + '</a ></td > < !--FILENAME--> ' +
                         '<td> ' + appendPredDoc(list[i]) + ' </td> <!--doctype -->' +
                         '</tr>';
-                    appendRightContentsHtml += '<tr class="rowNum' + i + '" style="height:' + (trHeight + 12) + 'px;"><td colspan="36"></td></tr>'
-                    /*
+                    //appendRightContentsHtml += '<tr class="rowNum' + i + '" style="height:' + (trHeight + 12) + 'px;"><td colspan="36"></td></tr>'
+                    
                     var mlData = data.mlData;
-                    if (mlData.rows.length != 0) {
-                        appendRightContentsHtml += '<tr class="mlTr mlRowNum' + i + '">' +
-                            '<td>' + makeMLSelect(mlData.rows, 0, null, rows[0].FILEPATH) + '</td> <!--출재사명-->' +
-                            '<td>' + makeMLSelect(mlData.rows, 1, null, rows[0].FILEPATH) + '</td> <!--계약명-->' +
-                            '<td>' + makeMLSelect(mlData.rows, 2, null, rows[0].FILEPATH) + '</td> <!--UY-->' +
-                            '<td>' + makeMLSelect(mlData.rows, 3, null, rows[0].FILEPATH) + '</td> <!--화폐코드-->' +
-                            '<td>' + makeMLSelect(mlData.rows, 4, null, rows[0].FILEPATH) + '</td> <!--화폐단위-->' +
-                            '<td>' + makeMLSelect(mlData.rows, 5, 0, rows[0].FILEPATH) + '</td> <!--Paid(100%)-->' +
-                            '<td>' + makeMLSelect(mlData.rows, 6, 1, rows[0].FILEPATH) + '</td> <!--Paid(Our Share)-->' +
-                            '<td>' + makeMLSelect(mlData.rows, 7, 2, rows[0].FILEPATH) + '</td> <!--OSL(100%)-->' +
-                            '<td>' + makeMLSelect(mlData.rows, 8, 3, rows[0].FILEPATH) + '</td> <!--OSL(Our Share)-->' +
-                            '<td>' + makeMLSelect(mlData.rows, 9, 4, rows[0].FILEPATH) + '</td> <!--PREMIUM-->' +
-                            '<td>' + makeMLSelect(mlData.rows, 10, 5, rows[0].FILEPATH) + '</td> <!--PREMIUM P/F ENT-->' +
-                            '<td>' + makeMLSelect(mlData.rows, 11, 6, rows[0].FILEPATH) + '</td> <!--PREMIUM P/F WOS-->' +
-                            '<td>' + makeMLSelect(mlData.rows, 12, 7, rows[0].FILEPATH) + '</td> <!--XOL PREMIUM-->' +
-                            '<td>' + makeMLSelect(mlData.rows, 13, 8, rows[0].FILEPATH) + '</td> <!--RETURN PREMIUM-->' +
-                            '<td>' + makeMLSelect(mlData.rows, 14, 9, rows[0].FILEPATH) + '</td> <!--COMMISION -->' +
-                            '<td>' + makeMLSelect(mlData.rows, 15, 10, rows[0].FILEPATH) + '</td> <!--PROFIT COMMISION-->' +
-                            '<td>' + makeMLSelect(mlData.rows, 16, 11, rows[0].FILEPATH) + '</td> <!--BROKERAGE-->' +
-                            '<td>' + makeMLSelect(mlData.rows, 17, 12, rows[0].FILEPATH) + '</td> <!--TEX-->' +
-                            '<td>' + makeMLSelect(mlData.rows, 18, 13, rows[0].FILEPATH) + '</td> <!-- OVERIDING COM-->' +
-                            '<td>' + makeMLSelect(mlData.rows, 19, 14, rows[0].FILEPATH) + '</td> <!--CHARGE-->' +
-                            '<td>' + makeMLSelect(mlData.rows, 20, 15, rows[0].FILEPATH) + '</td> <!--PREMIUM RESERVE RTD-->' +
-                            '<td>' + makeMLSelect(mlData.rows, 21, 16, rows[0].FILEPATH) + '</td> <!--P/F PREMIUM RESERVE RTD-->' +
-                            '<td>' + makeMLSelect(mlData.rows, 22, 17, rows[0].FILEPATH) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
-                            '<td>' + makeMLSelect(mlData.rows, 23, 18, rows[0].FILEPATH) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
-                            '<td>' + makeMLSelect(mlData.rows, 24, 19, rows[0].FILEPATH) + '</td> <!--CLAIM -->' +
-                            '<td>' + makeMLSelect(mlData.rows, 25, 20, rows[0].FILEPATH) + '</td> <!--LOSS RECOVERY -->' +
-                            '<td>' + makeMLSelect(mlData.rows, 26, 21, rows[0].FILEPATH) + '</td> <!--CASH LOSS -->' +
-                            '<td>' + makeMLSelect(mlData.rows, 27, 22, rows[0].FILEPATH) + '</td> <!--CASH LOSS REFUND -->' +
-                            '<td>' + makeMLSelect(mlData.rows, 28, 23, rows[0].FILEPATH) + '</td> <!--LOSS RESERVE RTD -->' +
-                            '<td>' + makeMLSelect(mlData.rows, 29, 24, rows[0].FILEPATH) + '</td> <!--LOSS RESERVE RLD -->' +
-                            '<td>' + makeMLSelect(mlData.rows, 30, 25, rows[0].FILEPATH) + '</td> <!--LOSS P/F ENT -->' +
-                            '<td>' + makeMLSelect(mlData.rows, 31, 26, rows[0].FILEPATH) + '</td> <!--LOSS P/F WOA -->' +
-                            '<td>' + makeMLSelect(mlData.rows, 32, 27, rows[0].FILEPATH) + '</td> <!--INTEREST -->' +
-                            '<td>' + makeMLSelect(mlData.rows, 33, 28, rows[0].FILEPATH) + '</td> <!--TAX ON -->' +
-                            '<td>' + makeMLSelect(mlData.rows, 34, 29, rows[0].FILEPATH) + '</td> <!--MISCELLANEOUS -->' +
-                            '<td>' + makeMLSelect(mlData.rows, 35, null, rows[0].FILEPATH) + '</td> <!--YOUR REF -->' +
+                    if (mlData.length != 0) {
+                        appendRightContentsHtml += '<tr class="mlRowNum' + i + ' rowNum' + i + '" style="height:' + (trHeight + 12) + 'px;">' +
+                            '<td>' + makeMLSelect(mlData, 0, null, list[i].IMGID) + '</td> <!--출재사명-->' +
+                            '<td>' + makeMLSelect(mlData, 1, null, list[i].IMGID) + '</td> <!--계약명-->' +
+                            '<td>' + makeMLSelect(mlData, 2, null, list[i].IMGID) + '</td> <!--UY-->' +
+                            '<td>' + makeMLSelect(mlData, 3, null, list[i].IMGID) + '</td> <!--화폐코드-->' +
+                            '<td>' + makeMLSelect(mlData, 4, null, list[i].IMGID) + '</td> <!--화폐단위-->' +
+                            '<td>' + makeMLSelect(mlData, 5, 0, list[i].IMGID) + '</td> <!--Paid(100%)-->' +
+                            '<td>' + makeMLSelect(mlData, 6, 1, list[i].IMGID) + '</td> <!--Paid(Our Share)-->' +
+                            '<td>' + makeMLSelect(mlData, 7, 2, list[i].IMGID) + '</td> <!--OSL(100%)-->' +
+                            '<td>' + makeMLSelect(mlData, 8, 3, list[i].IMGID) + '</td> <!--OSL(Our Share)-->' +
+                            '<td>' + makeMLSelect(mlData, 9, 4, list[i].IMGID) + '</td> <!--PREMIUM-->' +
+                            '<td>' + makeMLSelect(mlData, 10, 5, list[i].IMGID) + '</td> <!--PREMIUM P/F ENT-->' +
+                            '<td>' + makeMLSelect(mlData, 11, 6, list[i].IMGID) + '</td> <!--PREMIUM P/F WOS-->' +
+                            '<td>' + makeMLSelect(mlData, 12, 7, list[i].IMGID) + '</td> <!--XOL PREMIUM-->' +
+                            '<td>' + makeMLSelect(mlData, 13, 8, list[i].IMGID) + '</td> <!--RETURN PREMIUM-->' +
+                            '<td>' + makeMLSelect(mlData, 14, 9, list[i].IMGID) + '</td> <!--COMMISION -->' +
+                            '<td>' + makeMLSelect(mlData, 15, 10, list[i].IMGID) + '</td> <!--PROFIT COMMISION-->' +
+                            '<td>' + makeMLSelect(mlData, 16, 11, list[i].IMGID) + '</td> <!--BROKERAGE-->' +
+                            '<td>' + makeMLSelect(mlData, 17, 12, list[i].IMGID) + '</td> <!--TEX-->' +
+                            '<td>' + makeMLSelect(mlData, 18, 13, list[i].IMGID) + '</td> <!-- OVERIDING COM-->' +
+                            '<td>' + makeMLSelect(mlData, 19, 14, list[i].IMGID) + '</td> <!--CHARGE-->' +
+                            '<td>' + makeMLSelect(mlData, 20, 15, list[i].IMGID) + '</td> <!--PREMIUM RESERVE RTD-->' +
+                            '<td>' + makeMLSelect(mlData, 21, 16, list[i].IMGID) + '</td> <!--P/F PREMIUM RESERVE RTD-->' +
+                            '<td>' + makeMLSelect(mlData, 22, 17, list[i].IMGID) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
+                            '<td>' + makeMLSelect(mlData, 23, 18, list[i].IMGID) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
+                            '<td>' + makeMLSelect(mlData, 24, 19, list[i].IMGID) + '</td> <!--CLAIM -->' +
+                            '<td>' + makeMLSelect(mlData, 25, 20, list[i].IMGID) + '</td> <!--LOSS RECOVERY -->' +
+                            '<td>' + makeMLSelect(mlData, 26, 21, list[i].IMGID) + '</td> <!--CASH LOSS -->' +
+                            '<td>' + makeMLSelect(mlData, 27, 22, list[i].IMGID) + '</td> <!--CASH LOSS REFUND -->' +
+                            '<td>' + makeMLSelect(mlData, 28, 23, list[i].IMGID) + '</td> <!--LOSS RESERVE RTD -->' +
+                            '<td>' + makeMLSelect(mlData, 29, 24, list[i].IMGID) + '</td> <!--LOSS RESERVE RLD -->' +
+                            '<td>' + makeMLSelect(mlData, 30, 25, list[i].IMGID) + '</td> <!--LOSS P/F ENT -->' +
+                            '<td>' + makeMLSelect(mlData, 31, 26, list[i].IMGID) + '</td> <!--LOSS P/F WOA -->' +
+                            '<td>' + makeMLSelect(mlData, 32, 27, list[i].IMGID) + '</td> <!--INTEREST -->' +
+                            '<td>' + makeMLSelect(mlData, 33, 28, list[i].IMGID) + '</td> <!--TAX ON -->' +
+                            '<td>' + makeMLSelect(mlData, 34, 29, list[i].IMGID) + '</td> <!--MISCELLANEOUS -->' +
+                            '<td>' + makeMLSelect(mlData, 35, null, list[i].IMGID) + '</td> <!--YOUR REF -->' +
                             '</tr>';
                     } else {
                         appendRightContentsHtml +=
-                            '<tr class="mlTr mlRowNum' + i + '">' +
+                            '<tr class="mlRowNum' + i + '">' +
                             '<td colspan="36"></td>' +
                             '</tr>';
 
                     }
-                    */
+                    
                 }
             } else {
                 appendLeftContentsHtml += '<tr style="height: 30px"><td colspan="3"></td></tr>'
@@ -1437,13 +1437,13 @@ var searchBatchLearnDataList = function (addCond) {
         return values[num] == "null" ? '' : values[num];
     }
 
-    function makeMLSelect(mlData, colnum, entry, filepath) {
+    function makeMLSelect(mlData, colnum, entry, IMGID) {
 
         var appendMLSelect = '<select>';
         var hasColvalue = false;
         for (var y = 0; y < mlData.length; y++) {
 
-            if (mlData[y].FILEPATH == filepath) {
+            if (mlData[y].IMGID == IMGID) {
                 if (mlData[y].COLLABEL == colnum && (mlData[y].COLLABEL <= 3 || mlData[y].COLLABEL >= 35)) {
                     hasColvalue = true;
                     appendMLSelect += '<option>' + mlData[y].COLVALUE + '</option>';

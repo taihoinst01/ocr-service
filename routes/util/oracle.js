@@ -659,7 +659,7 @@ exports.selectBatchLearnListTest = function (req, done) {
                                                     FROM TBL_BATCH_LEARN_LIST 
                                                     WHERE ` + condQuery + ` AND ROWNUM <= :num ORDER BY FILEPATH ASC`
                                                     , [rowNum]);
-            return done(null, resAnswerFile);
+            return done(null, resAnswerFile.rows);
         } catch (err) { // catches errors in getConnection and the query
             console.log(err);
             return done(null, "error");
@@ -1703,6 +1703,38 @@ exports.selectBatchLearnMlList = function (filePathList, done) {
 
 
             return done(null, result);
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+exports.selectBatchLearnMlListTest = function (imgIdList, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            var inQuery = "(";
+            for (var i in imgIdList) {
+                inQuery += "'" + imgIdList[i] + "',";
+            }
+            inQuery = inQuery.substring(0, inQuery.length - 1);
+            inQuery += ")";
+            result = await conn.execute(queryConfig.batchLearningConfig.selectBatchLearnMlListTest + inQuery);
+
+
+            return done(null, result.rows);
         } catch (err) { // catches errors in getConnection and the query
             reject(err);
         } finally {
