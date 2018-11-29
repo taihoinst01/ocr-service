@@ -68,6 +68,22 @@ $(function () {
     _init();   
 });
 
+$(window).on('keyup', function (e) {
+    if (e.keyCode == '9') {
+        if (e.target.tagName == 'A') {
+            $("select").eq(0).focus();
+        }
+
+        if (e.target.tagName == 'SELECT') {
+            $(e.target).mousedown();
+        }
+
+        if (e.target.className == 'ui-select-wrap ui-wrap') {
+            zoomImgTarget(e);
+        }
+    }
+});
+
 /****************************************************************************************
  * INIT
  ****************************************************************************************/
@@ -1802,7 +1818,7 @@ function fn_processFinish(mlData, imgId) {
     // TODO : 분석 결과를 정리하고 1 record로 생성한다.
     var dtlHtml = '<tr>' +
         '<td><input type="checkbox" value="' + imgId + '" name="dtl_chk" /></td>' +
-        '<td><select><option selected>SA</option><option>OS</option><option>Claim Note</option></select></td> <!--계산서구분-->' +
+        '<td><select class="editSelect"><option selected>SA</option><option>OS</option><option>Claim Note</option></select></td> <!--계산서구분-->' +
         '<td>' + makeMLSelect(mlData, 0, null) + '</td> <!--출재사명-->' +
         '<td>' + makeMLSelect(mlData, 1, null) + '</td> <!--계약명-->' +
         '<td>' + makeMLSelect(mlData, 2, null) + '</td> <!--UY-->' +
@@ -1847,32 +1863,33 @@ function fn_processFinish(mlData, imgId) {
     $("#tbody_dtlList").empty().append(dtlHtml);
     $("#tbody_dtlList input[type=checkbox]").ezMark();
     $("#div_dtl").css("display", "block");
-    $('#tbody_dtlList select').stbDropdown();
+    //$('#tbody_dtlList select').stbDropdown();
     $("#btn_pop_ui_close").click();
     checkBoxCssEvent('#tbody_dtlList');
+    $('.editSelect').editableSelect();
 
     function makeMLSelect(mlData, colnum, entry) {
 
         var appendMLSelect = '';
         if (colnum == 0) {
-            appendMLSelect = '<select class="selectDbClick" name="cdnNm" onchange="zoomImg(this)">';
+            appendMLSelect = '<select class="selectDbClick editSelect" name="cdnNm" onchange="zoomImg(this)" onmousedown="zoomImg(this)">';
         } else if (colnum == 1) {
-            appendMLSelect = '<select class="selectDbClick" name="ctNm" onchange="zoomImg(this)">';
+            appendMLSelect = '<select class="selectDbClick editSelect" name="ctNm" onchange="zoomImg(this)" onmousedown="zoomImg(this)">';
         } else if (colnum == 2) {
-            appendMLSelect = '<select class="selectDbClick" name="ttyYy" onchange="zoomImg(this)">';
+            appendMLSelect = '<select class="selectDbClick editSelect" name="ttyYy" onchange="zoomImg(this)" onmousedown="zoomImg(this)">';
         } else {
-            appendMLSelect = '<select class="selectDbClick" onchange="zoomImg(this)">';
+            appendMLSelect = '<select class="selectDbClick editSelect" onchange="zoomImg(this)" onmousedown="zoomImg(this)">';
         }
-        appendMLSelect += '<option value="선택">선택</option>';
+        //appendMLSelect += '<option value="선택">선택</option>';
         var hasColvalue = false;
         for (var y = 0; y < mlData.length; y++) {
 
             if (mlData[y].colLbl == colnum && (mlData[y].colLbl <= 3 || mlData[y].colLbl >= 35)) {
                 hasColvalue = true;
-                appendMLSelect += '<option alt="' + mlData[y].convertFileName + '" value="' + mlData[y].location + '_' + mlData[y].text + '">' + mlData[y].text + '</option>';
+                appendMLSelect += '<option alt="' + mlData[y].convertFileName + '" value="' + mlData[y].location + '::' + mlData[y].text + '::' + mlData[y].convertFileName + '">' + mlData[y].text + '</option>';
             } else if (mlData[y].colLbl == 37 && mlData[y].entryLbl == entry) {
                 hasColvalue = true;
-                appendMLSelect += '<option alt="' + mlData[y].convertFileName + '" value="' + mlData[y].location + '_' + mlData[y].text + '">' + mlData[y].text + '</option>';
+                appendMLSelect += '<option alt="' + mlData[y].convertFileName + '" value="' + mlData[y].location + '::' + mlData[y].text + '::' + mlData[y].convertFileName + '">' + mlData[y].text + '</option>';
             }
         }
         appendMLSelect += '</select>';
@@ -1908,25 +1925,26 @@ function fn_ContractNumExtraction() {
     var ctNm = [];
     var ttyYy = [];
 
-    for (var i = 0; i <= $("select[name='cdnNm']").length; i++) {
-        if (i > 0) {
-            var text = $("select[name='cdnNm'] option:eq(" + i + ")").text();
-            cdnNm.push(text);
-        }
+    //출재사명
+    var $cdnNmLi = $('#tbody_dtlList td:eq(2)').find('li');
+    for (var i = 0; i < $cdnNmLi.length; i++) {     
+        var text = $cdnNmLi[i].innerText;
+        cdnNm.push(text);      
+    }
+    
+
+    //계약명
+    var $ctNmLi = $('#tbody_dtlList td:eq(3)').find('li');
+    for (var i = 0; i < $ctNmLi.length; i++) {
+        var text = $ctNmLi[i].innerText;
+        ctNm.push(text);
     }
 
-    for (var i = 0; i <= $("select[name='ctNm']").length; i++) {
-        if (i > 0) {
-            var text = $("select[name='ctNm'] option:eq(" + i + ")").text();
-            ctNm.push(text);
-        }
-    }
-
-    for (var i = 0; i <= $("select[name='ttyYy']").length; i++) {
-        if (i > 0) {
-            var text = $("select[name='ttyYy'] option:eq(" + i + ")").text();
-            ttyYy.push(text);
-        }
+    //UY
+    var $ttyYyLi = $('#tbody_dtlList td:eq(4)').find('li');
+    for (var i = 0; i < $ttyYyLi.length; i++) {
+        var text = $ttyYyLi[i].innerText;
+        ttyYy.push(text);
     }
 
     if (cdnNm.length == 0) {
@@ -1967,7 +1985,7 @@ function fn_ContractNumExtraction() {
                             // TODO : 분석 결과를 정리하고 1 record로 생성한다.
                             dtlHtml += '<tr>' +
                                 '<td><input type="checkbox" value="' + dataObj.imgId + '" name="dtl_chk" /></td>' +
-                                '<td><select><option selected>SA</option><option>OS</option><option>Claim Note</option></select></td> <!--계산서구분-->' +
+                                '<td><select class="editSelect"><option selected>SA</option><option>OS</option><option>Claim Note</option></select></td> <!--계산서구분-->' +
                                 '<td>' + data.data[i].cdnNm + '</td> <!--출재사명-->' +
                                 '<td>' + data.data[i].ctNm + '</td> <!--계약명-->' +
                                 '<td>' + data.data[i].ttyYy + '</td> <!--UY-->' +
@@ -2014,9 +2032,9 @@ function fn_ContractNumExtraction() {
                         $("#tbody_dtlList input[type=checkbox]").ezMark();
                         $("#div_dtl").css("display", "block");
                         endProgressBar(progressId);
-                        $('.table_style02 #tbody_dtlList select').stbDropdown();
+                        //$('.table_style02 #tbody_dtlList select').stbDropdown();
                         checkBoxCssEvent('#tbody_dtlList');
-
+                        $('.editSelect').editableSelect();
                         if (l == cdnNm.length -1 && k == ttyYy.length - 1) {
                             if ($("#tbody_dtlList").length == 1) {
                                 fn_alert('alert', '전송하신 키워드에 해당하는 계약번호가 없습니다. 키워드 재확인 부탁드립니다.');
@@ -2035,17 +2053,17 @@ function fn_ContractNumExtraction() {
     }
     function makeMLSelect(mlData, colnum, entry) {
 
-        var appendMLSelect = '<select class="selectDbClick" onchange="zoomImg(this, \'' + fileName + '\')">';
-        appendMLSelect += '<option value="선택">선택</option>';
+        var appendMLSelect = '<select class="selectDbClick editSelect" onchange="zoomImg(this)" onmousedown="zoomImg(this)">';
+        //appendMLSelect += '<option value="선택">선택</option>';
         var hasColvalue = false;
         for (var y = 0; y < mlData.length; y++) {
 
             if (mlData[y].colLbl == colnum && (mlData[y].colLbl <= 3 || mlData[y].colLbl >= 35)) {
                 hasColvalue = true;
-                appendMLSelect += '<option value="' + mlData[y].location + '_' + mlData[y].text + '">' + mlData[y].text + '</option>';
+                appendMLSelect += '<option alt="' + mlData[y].convertFileName + '" value="' + mlData[y].location + '::' + mlData[y].text + '::' + mlData[y].convertFileName + '">' + mlData[y].text + '</option>';
             } else if (mlData[y].colLbl == 37 && mlData[y].entryLbl == entry) {
                 hasColvalue = true;
-                appendMLSelect += '<option value="' + mlData[y].location + '_' + mlData[y].text + '">' + mlData[y].text + '</option>';
+                appendMLSelect += '<option alt="' + mlData[y].convertFileName + '" value="' + mlData[y].location + '::' + mlData[y].text + '::' + mlData[y].convertFileName + '">' + mlData[y].text + '</option>';
             }
         }
         appendMLSelect += '</select>';
@@ -2053,7 +2071,7 @@ function fn_ContractNumExtraction() {
     }
 
     function makePageNum(currentNum, lastNum) {
-        var appendPageSelect = '<select>';
+        var appendPageSelect = '<select class="editSelect">';
         for (var y = 0; y < lastNum; y++) {
             if ((y + 1) == currentNum) {
                 appendPageSelect += '<option selected>' + (y + 1) + '</option>';
@@ -2374,51 +2392,30 @@ var insertCommError = function (eCode, type) {
     });
 }
 
-function zoomImg(e, fileName) {
-    var mainImage = $("#mainImage").css('background-image');
-    mainImage = mainImage.replace('url(', '').replace(')', '').replace(/\"/gi, "");
-    mainImage = mainImage.substring(mainImage.lastIndexOf("/") + 1, mainImage.length);
+function zoomImgTarget(e) {
 
-    if (mainImage != fileName) {
-        $('#mainImage').css('background-image', 'url("../../uploads/' + fileName + '")');
+    var seltext = $(e.target).find('ul > li.edit_selected').text();
+    var selLiLeng = 9999;
+    var liLeng = $(e.target).find('ul > li').length;
+
+    for (var i = 0; i < liLeng; i++) {
+        if ($(e.target).find('ul > li').eq(i).hasClass("edit_selected") == true) {
+            selLiLeng = i;
+        }
     }
 
-    //실제 이미지 사이즈와 메인이미지div 축소율 판단
-    var reImg = new Image();
-    var imgPath = $('#mainImage').css('background-image').split('("')[1];
-    imgPath = imgPath.split('")')[0];
-    reImg.src = imgPath;
-    var width = reImg.width;
-    var height = reImg.height;
+    var selVal = $(e.target).closest('div').prev().find('option').eq(selLiLeng).val();
+    selVal = selVal.split("::");
+    var fileName = '';
+    var loc = '';
 
-    //imageZoom 고정크기
-    var fixWidth = 744;
-    var fixHeight = 1052;
+    if (selVal.length == 3 && seltext == selVal[1]) {
+        fileName = selVal[2];
+        loc = selVal[0];
+    } else {
+        return;
+    }
 
-    var widthPercent = fixWidth / width;
-    var heightPercent = fixHeight / height;
-
-    $('#mainImage').hide();
-    $('#imageZoom').css('height', '570px').css('background-image', $('#mainImage').css('background-image')).css('background-size', fixWidth + 'px ' + fixHeight + 'px').show();
-
-    // 사각형 좌표값
-    var location = $(e).val().split('_')[0].split(',');
-    x = parseInt(location[0]);
-    y = parseInt(location[1]);
-    textWidth = parseInt(location[2]);
-    textHeight = parseInt(location[3]);
-
-    var xPosition = ((- (x * widthPercent)) + 300) + 'px ';
-    var yPosition = ((- (y * heightPercent)) + 200) + 'px';
-    //console.log(xPosition + yPosition);
-    $('#imageZoom').css('background-position', xPosition + yPosition);
-
-    $('#redZoomNemo').css('height', (textHeight + 5) + 'px');
-    $('#redZoomNemo').show();
-}
-
-function zoomImg(e) {
-    var fileName = $(e).find('option:selected').attr('alt');    
     var mainImage = $("#mainImage").css('background-image');
     mainImage = mainImage.replace('url(', '').replace(')', '').replace(/\"/gi, "");
     mainImage = mainImage.substring(mainImage.lastIndexOf("/") + 1, mainImage.length);
@@ -2444,24 +2441,187 @@ function zoomImg(e) {
     var height = reImg.height;
 
     //imageZoom 고정크기
-    var fixWidth = 744;
-    var fixHeight = 1052;
+    //var fixWidth = 744;
+    //var fixHeight = 1052;
+
+    var fixWidth = 800;
+    var fixHeight = 1300;
 
     var widthPercent = fixWidth / width;
     var heightPercent = fixHeight / height;
 
     $('#mainImage').hide();
-    $('#imageZoom').css('height', '570px').css('background-image', $('#mainImage').css('background-image')).css('background-size', fixWidth + 'px ' + fixHeight + 'px').show();
+    $('#imageZoom').css('height', '1600px').css('background-image', $('#mainImage').css('background-image')).css('background-size', fixWidth + 'px ' + fixHeight + 'px').show();
 
     // 사각형 좌표값
-    var location = $(e).val().split('_')[0].split(',');
+    var location = loc.split(',');
     x = parseInt(location[0]);
     y = parseInt(location[1]);
     textWidth = parseInt(location[2]);
     textHeight = parseInt(location[3]);
 
-    var xPosition = ((- (x * widthPercent)) + 300) + 'px ';
-    var yPosition = ((- (y * heightPercent)) + 200) + 'px';
+    //var xPosition = ((- (x * widthPercent)) + 400) + 'px ';
+    //var yPosition = ((- (y * heightPercent)) + 260) + 'px';
+    var xPosition = '0px ';
+    var yPosition = ((- (y * heightPercent)) + 260) + 'px';
+    //console.log(xPosition + yPosition);
+    $('#imageZoom').css('background-position', xPosition + yPosition);
+
+    $('#redZoomNemo').css('height', (textHeight + 5) + 'px');
+    $('#redZoomNemo').show();
+}
+
+function zoomImg(e) {
+
+    var seltext = $(e).find('ul > li.edit_selected').text();
+    var selLiLeng = 9999;
+    var liLeng = $(e).find('ul > li').length;
+
+    for (var i = 0; i < liLeng; i++) {
+        if ($(e).find('ul > li').eq(i).hasClass("edit_selected") == true) {
+            selLiLeng = i;
+        }
+    }
+
+    var selVal = $(e).closest('div').prev().find('option').eq(selLiLeng).val();
+    selVal = selVal.split("::");
+    var fileName = '';
+    var loc = '';
+
+    if (selVal.length == 3 && seltext == selVal[1]) {
+        fileName = selVal[2];
+        loc = selVal[0];
+    } else {
+        return;
+    }
+
+    var mainImage = $("#mainImage").css('background-image');
+    mainImage = mainImage.replace('url(', '').replace(')', '').replace(/\"/gi, "");
+    mainImage = mainImage.substring(mainImage.lastIndexOf("/") + 1, mainImage.length);
+
+    if (mainImage != fileName) {
+        $('#mainImage').css('background-image', 'url("../../uploads/' + fileName + '")');
+    }
+
+    $('.thumb-img').each(function (i, el) {
+        $(el).closest('li').removeClass('on');
+        var imgSrc = $(el).children('img').attr('src');
+        if (imgSrc.indexOf(fileName) != -1) {
+            $(el).closest('li').addClass('on');
+        }
+    });
+
+    //실제 이미지 사이즈와 메인이미지div 축소율 판단
+    var reImg = new Image();
+    var imgPath = $('#mainImage').css('background-image').split('("')[1];
+    imgPath = imgPath.split('")')[0];
+    reImg.src = imgPath;
+    var width = reImg.width;
+    var height = reImg.height;
+
+    //imageZoom 고정크기
+    //var fixWidth = 744;
+    //var fixHeight = 1052;
+
+    var fixWidth = 800;
+    var fixHeight = 1300;
+
+    var widthPercent = fixWidth / width;
+    var heightPercent = fixHeight / height;
+
+    $('#mainImage').hide();
+    $('#imageZoom').css('height', '1600px').css('background-image', $('#mainImage').css('background-image')).css('background-size', fixWidth + 'px ' + fixHeight + 'px').show();
+
+    // 사각형 좌표값
+    var location = loc.split(',');
+    x = parseInt(location[0]);
+    y = parseInt(location[1]);
+    textWidth = parseInt(location[2]);
+    textHeight = parseInt(location[3]);
+
+    //var xPosition = ((- (x * widthPercent)) + 400) + 'px ';
+    //var yPosition = ((- (y * heightPercent)) + 260) + 'px';
+    var xPosition = '0px ';
+    var yPosition = ((- (y * heightPercent)) + 260) + 'px';
+    //console.log(xPosition + yPosition);
+    $('#imageZoom').css('background-position', xPosition + yPosition);
+
+    $('#redZoomNemo').css('height', (textHeight + 5) + 'px');
+    $('#redZoomNemo').show();
+}
+
+function zoomImgClick(e) {
+
+    var seltext = $(e).find('li.edit_selected').text();
+    var selLiLeng = 9999;
+    var liLeng = $(e).find('li').length;
+
+    for (var i = 0; i < liLeng; i++) {
+        if ($(e).find('li').eq(i).hasClass("edit_selected") == true) {
+            selLiLeng = i;
+        }
+    }
+    
+    var selVal = $(e).parent().parent().closest('div').prev().find('option').eq(selLiLeng).val();
+    selVal = selVal.split("::");
+    var fileName = '';
+    var loc = '';
+
+    if (selVal.length == 3 && seltext == selVal[1]) {
+        fileName = selVal[2];
+        loc = selVal[0];
+    } else {
+        return;
+    }
+
+    var mainImage = $("#mainImage").css('background-image');
+    mainImage = mainImage.replace('url(', '').replace(')', '').replace(/\"/gi, "");
+    mainImage = mainImage.substring(mainImage.lastIndexOf("/") + 1, mainImage.length);
+
+    if (mainImage != fileName) {
+        $('#mainImage').css('background-image', 'url("../../uploads/' + fileName + '")');
+    }
+
+    $('.thumb-img').each(function (i, el) {
+        $(el).closest('li').removeClass('on');
+        var imgSrc = $(el).children('img').attr('src');
+        if (imgSrc.indexOf(fileName) != -1) {
+            $(el).closest('li').addClass('on');
+        }
+    });
+
+    //실제 이미지 사이즈와 메인이미지div 축소율 판단
+    var reImg = new Image();
+    var imgPath = $('#mainImage').css('background-image').split('("')[1];
+    imgPath = imgPath.split('")')[0];
+    reImg.src = imgPath;
+    var width = reImg.width;
+    var height = reImg.height;
+
+    //imageZoom 고정크기
+    //var fixWidth = 744;
+    //var fixHeight = 1052;
+
+    var fixWidth = 800;
+    var fixHeight = 1300;
+
+    var widthPercent = fixWidth / width;
+    var heightPercent = fixHeight / height;
+
+    $('#mainImage').hide();
+    $('#imageZoom').css('height', '1600px').css('background-image', $('#mainImage').css('background-image')).css('background-size', fixWidth + 'px ' + fixHeight + 'px').show();
+
+    // 사각형 좌표값
+    var location = loc.split(',');
+    x = parseInt(location[0]);
+    y = parseInt(location[1]);
+    textWidth = parseInt(location[2]);
+    textHeight = parseInt(location[3]);
+
+    //var xPosition = ((- (x * widthPercent)) + 400) + 'px ';
+    //var yPosition = ((- (y * heightPercent)) + 260) + 'px';
+    var xPosition = '0px ';
+    var yPosition = ((- (y * heightPercent)) + 260) + 'px';
     //console.log(xPosition + yPosition);
     $('#imageZoom').css('background-position', xPosition + yPosition);
 

@@ -39,13 +39,15 @@ router.get('/', function (req, res) {
 
         if (req.isAuthenticated()) {
             //res.locals.currentUser = req.user;
+            /*
             if (!fs.existsSync(propertiesConfig.filepath.createImgDirPath)) {
                 fs.mkdir(propertiesConfig.filepath.createImgDirPath);
             }
             if (!fs.existsSync(propertiesConfig.filepath.createImgconvertedDirPath)) {
                 fs.mkdir(propertiesConfig.filepath.createImgconvertedDirPath);
             }
-            res.render('user/invoiceRegistration', { currentUser: req.user });
+            */
+            res.render('user/invoiceRegistration', { currentUser: req.user });         
         } else {
             res.render("index", {
                 messages: { error: req.flash('errors') }

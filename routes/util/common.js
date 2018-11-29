@@ -54,7 +54,7 @@ router.post('/imageUpload', upload.any(), function (req, res) {
                 if (fileExt.toLowerCase() === 'tif' || fileExt.toLowerCase() === 'jpg') {
                     var fileItem = {
                         imgId: new Date().isoNum(8) + "" + Math.floor(Math.random() * 9999999) + 1000000,
-                        filePath: (appRoot + '/' + fileObj.path).replace(/\\/gi, '/'),
+                        filePath: fileObj.path.replace(/\\/gi, '/'),
                         oriFileName: fileObj.originalname,
                         convertedFilePath: convertedImagePath.replace(/\\/gi, '/'),
                         convertFileName: fileObj.originalname.split('.')[0] + '.jpg',
@@ -77,7 +77,7 @@ router.post('/imageUpload', upload.any(), function (req, res) {
                 } else if (fileExt.toLowerCase() === 'png') {
                     var fileItem = {
                         imgId: new Date().isoNum(8) + "" + Math.floor(Math.random() * 9999999) + 1000000,
-                        filePath: (appRoot + '/' + fileObj.path).replace(/\\/gi, '/'),
+                        filePath: fileObj.path.replace(/\\/gi, '/'),
                         oriFileName: fileObj.originalname,
                         convertedFilePath: convertedImagePath.replace(/\\/gi, '/'),
                         convertFileName: fileObj.originalname.split('.')[0] + '.png',
@@ -133,7 +133,7 @@ router.post('/imageUpload', upload.any(), function (req, res) {
                                 if (stat) {
                                     var fileItem = {
                                         imgId: new Date().isoNum(8) + "" + Math.floor(Math.random() * 9999999) + 1000000,
-                                        filePath: (appRoot + '/' + fileObj.path).replace(/\\/gi, '/'),
+                                        filePath: fileObj.path.replace(/\\/gi, '/'),
                                         oriFileName: fileObj.originalname,
                                         convertedFilePath: convertedImagePath.replace(/\\/gi, '/'),
                                         convertFileName: fileObj.originalname.split('.')[0] + '-' + j + '.png',
@@ -154,7 +154,7 @@ router.post('/imageUpload', upload.any(), function (req, res) {
                                     if (stat2) {
                                         var fileItem = {
                                             imgId: new Date().isoNum(8) + "" + Math.floor(Math.random() * 9999999) + 1000000,
-                                            filePath: (appRoot + '/' + fileObj.path).replace(/\\/gi, '/'),
+                                            filePath: fileObj.path.replace(/\\/gi, '/'),
                                             oriFileName: fileObj.originalname,
                                             convertedFilePath: convertedImagePath.replace(/\\/gi, '/'),
                                             convertFileName: fileObj.originalname.split('.')[0] + '.png',

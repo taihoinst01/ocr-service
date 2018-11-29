@@ -1,14 +1,15 @@
+# -*- coding: utf-8 -*-
 import cx_Oracle
 import json
 import operator
 import re
 from difflib import SequenceMatcher
 
-id = "koreanre"
-pw = "koreanre01"
-sid = "koreanreocr"
+id = "ocr"
+pw = "taiho123"
+sid = "ocrservice"
 # ip = "10.10.20.205"
-ip = "172.16.53.145"
+ip = "192.168.0.251"
 port = "1521"
 connInfo = id + "/" + pw + "@" + ip + ":" + port + "/" + sid
 

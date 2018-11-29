@@ -30,6 +30,7 @@ var uiLearning = require('./routes/user/uiLearning');
 var batchLearning = require('./routes/user/batchLearning');
 var documentCheck = require('./routes/user/documentCheck');
 var invoiceProcessingStatus = require('./routes/user/invoiceProcessingStatus');
+var batchLearningTest = require('./routes/user/batchLearningTest');
 
 var adminLearning = require('./routes/user/adminLearning');
 var wF_WorkflowProc = require('./routes/user/wF_WorkflowProc');
@@ -86,6 +87,7 @@ app.use('/uiLearning', uiLearning);
 app.use('/batchLearning', batchLearning);
 app.use('/documentCheck', documentCheck);
 app.use('/invoiceProcessingStatus', invoiceProcessingStatus);
+app.use('/batchLearningTest', batchLearningTest);
 
 app.use('/adminLearning', adminLearning);
 app.use('/wF_WorkflowProc', wF_WorkflowProc);//jmh
