@@ -1614,7 +1614,7 @@ function fn_viewImageData(filepath, rowNum, imgId, obj) {
         data = $("#batch_right_contents_after .rowNum" + rowNum);
     }
 
-    loadImage('/tif' + filepath, function (tifResult) {
+    loadImage('/tifTest' + filepath, function (tifResult) {
 
         if (tifResult) {
             $(tifResult).css({
@@ -1635,11 +1635,10 @@ function fn_viewImageData(filepath, rowNum, imgId, obj) {
             fn_alert('confirm', "없는 파일입니다 삭제하시겠습니까?", function () {
 
                 var param = {
-                    filepath: filepath,
                     imgId: imgId
                 };
                 $.ajax({
-                    url: '/batchLearningTest/deleteAnswerFile',
+                    url: '/batchLearningTest/deleteBatchLearnList',
                     type: 'post',
                     datatype: "json",
                     data: JSON.stringify(param),
@@ -2153,7 +2152,7 @@ function uiLayerHtml(data) {
     $('#img_content').html(mainImgHtml);
     //data.data.fileinfo.filepath.substring(0, lastIndexOf("."))
     var convertImg = data.data.fileinfo.filepath.substring(0, data.data.fileinfo.filepath.lastIndexOf(".")) + ".jpg";
-    $('#mainImage').css('background-image', 'url("/tif' + convertImg + '")');
+    $('#mainImage').css('background-image', 'url("/tifTest' + convertImg + '")');
 
     var tblTag = '';
     var tblSortTag = '';
@@ -3432,7 +3431,7 @@ function fn_viewDoctypePop(obj) {
     selectClassificationSt('/2018/07/img1/43/133f143/test.tif'); // 분류제외문장 렌더링
     $('#mlPredictionDocName').val('UNKNOWN');
 
-    loadImage('/tif/2018/07/img1/43/133f143/test.tif' , function (tifResult) {
+    loadImage('/tifTest/2018/07/img1/43/133f143/test.tif' , function (tifResult) {
         if (tifResult) {
             $(tifResult).css({
                 "width": "100%",
