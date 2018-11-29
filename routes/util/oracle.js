@@ -645,6 +645,41 @@ exports.selectBatchLearnList = function (req, done) {
     return new Promise(async function (resolve, reject) {
         var res = [];
         let conn;
+
+        var condQuery
+        if (!commonUtil.isNull(req.body.addCond)) {
+            if (req.body.addCond == "LEARN_N") condQuery = "((STATUS != 'D' AND STATUS != 'R') OR STATUS IS NULL OR STATUS = 'T')";
+            else if (req.body.addCond == "LEARN_Y") condQuery = "(STATUS = 'D')";
+        }
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);          
+            var rowNum = req.body.moreNum;
+            let resAnswerFile = await conn.execute(`SELECT FILEPATH, DOCTYPE 
+                                                    FROM TBL_BATCH_LEARN_LIST 
+                                                    WHERE ` + condQuery + ` AND ROWNUM <= :num ORDER BY FILEPATH ASC`
+                                                    , [rowNum]);
+            return done(null, resAnswerFile);
+        } catch (err) { // catches errors in getConnection and the query
+            console.log(err);
+            return done(null, "error");
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+/*
+exports.selectBatchLearnList = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        var res = [];
+        let conn;
         let colNameArr = ['SEQNUM', 'FILEPATH', 'ORIGINFILENAME'];
         var condQuery
         if (!commonUtil.isNull(req.body.addCond)) {
@@ -693,54 +728,6 @@ exports.selectBatchLearnList = function (req, done) {
             }
 
             return done(null, res);
-
-            /*
-            conn = await oracledb.getConnection(dbConfig);
-
-            var idCond = [];
-            var status;
-            if (!commonUtil.isNull(req.body.addCond)) {
-                if (req.body.addCond == "LEARN_N") status = 'N';
-                else if (req.body.addCond == "LEARN_Y") status = 'Y';
-            }
-
-            idCond.push(status);
-            idCond.push(req.body.moreNum);
-
-            let resLearnId = await conn.execute(`SELECT FILEPATH, STATUS FROM TBL_BATCH_LEARN_ID WHERE STATUS = :status AND ROWNUM <= :num `, idCond);
-
-            if (resLearnId.rows.length != 0) {
-                var answerCond = [];
-                var answerFileSql = "(";
-                for (var i = 0; i < resLearnId.rows.length; i++) {
-                    answerCond.push(resLearnId.rows[i].FILEPATH);
-                    answerFileSql += (i > 0) ? ", :" + i : ":" + i;
-                }
-                answerFileSql += ")";
-
-                let resAnswerFile = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_FILE WHERE FILEPATH IN` + answerFileSql, answerCond);
-
-                for (var i = 0; i < resAnswerFile.rows.length; i++) {
-                    var imgId = resAnswerFile.rows[i].IMGID;
-                    var imgStartNo = resAnswerFile.rows[i].PAGENUM;
-                    var filepath = resAnswerFile.rows[i].FILEPATH;
-                    var filename = filepath.substring(filepath.lastIndexOf('/') + 1, filepath.length);
-
-                    let resAnswerData = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_DATA WHERE IMGID = :imgId AND TO_NUMBER(IMGFILESTARTNO) <= :imgStartNo AND TO_NUMBER(IMGFILEENDNO) >= :imgStartNo `, [imgId, imgStartNo, imgStartNo]);
-
-                    for (var row = 0; row < resAnswerData.rows.length; row++) {
-                        resAnswerData.rows[row].FILEPATH = filepath;
-                        resAnswerData.rows[row].FILENAME = filename;
-                    }
-
-                    if (resAnswerData.rows.length > 0) {
-                        res.push(resAnswerData);
-                    }
-                }
-            }
-            
-            return done(null, res);
-            */
         } catch (err) { // catches errors in getConnection and the query
             console.log(err);
             return done(null, "error");
@@ -755,6 +742,7 @@ exports.selectBatchLearnList = function (req, done) {
         }
     });
 };
+*/
 
 exports.convertTiftoJpg = function (originFilePath, done) {
     try {
@@ -3164,6 +3152,32 @@ exports.finalApproval = function (req, done) {
                 }
             }
             return done(null, dateArr);
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+// 파일업로드시 TBL_BATCH_LEARN_LIST 에 파일정보 INSERT
+exports.insertBatchLearningFileInfo = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        var dateArr = [];
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            await conn.execute("INSERT INTO TBL_BATCH_LEARN_LIST VALUES (:imgId, 'T', :filePath, null, sysdate)", req);
+
+            return done(null, null);
         } catch (err) { // catches errors in getConnection and the query
             reject(err);
         } finally {

@@ -342,7 +342,7 @@ var batchLearningConfig = {
             tbl_batch_learn_list
          SET
             status = 'R'
-         WHERE filepath = `,
+         WHERE filepath in `,
     selectBatchAnswerFile:
         `SELECT
             imgId, pageNum, filePath, totalCount
