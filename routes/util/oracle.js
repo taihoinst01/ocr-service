@@ -641,7 +641,7 @@ exports.selectOcrFilePaths = function (req, done) {
     });
 };
 
-exports.selectBatchLearnList = function (req, done) {
+exports.selectBatchLearnListTest = function (req, done) {
     return new Promise(async function (resolve, reject) {
         var res = [];
         let conn;
@@ -675,7 +675,7 @@ exports.selectBatchLearnList = function (req, done) {
     });
 };
 
-/*
+
 exports.selectBatchLearnList = function (req, done) {
     return new Promise(async function (resolve, reject) {
         var res = [];
@@ -742,7 +742,7 @@ exports.selectBatchLearnList = function (req, done) {
         }
     });
 };
-*/
+
 
 exports.convertTiftoJpg = function (originFilePath, done) {
     try {
