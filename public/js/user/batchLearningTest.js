@@ -1397,7 +1397,7 @@ var searchBatchLearnDataList = function (addCond) {
                             '</tr>';
                     } else {
                         appendRightContentsHtml +=
-                            '<tr class="mlRowNum' + i + '">' +
+                            '<tr class="mlRowNum' + i + '" style="height:' + (trHeight + 12) + 'px;">' +
                             '<td colspan="36"></td>' +
                             '</tr>';
 
