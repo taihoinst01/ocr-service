@@ -3192,6 +3192,31 @@ exports.insertBatchLearningFileInfo = function (req, done) {
     });
 };
 
+exports.selectImgid = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        var dateArr = [];
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            result = await conn.execute("select imgid from tbl_batch_learn_list where filepath = :filePath", [req]);
+
+            return done(null, result);
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
 function getConvertDate() {
     var today = new Date();
     var yyyy = today.getFullYear();

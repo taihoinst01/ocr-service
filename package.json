@@ -48,6 +48,7 @@
     "request": "^2.87.0",
     "serve-favicon": "^2.3.0",
     "simple-oracledb": "^1.2.4",
+    "step": "^1.0.0",
     "sync-exec": "^0.6.2",
     "sync-request": "^6.0.0",
     "winston": "^3.0.0",
