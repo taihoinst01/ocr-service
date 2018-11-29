@@ -5643,7 +5643,7 @@ label[disabled] {
 .pop_layer_K01 {
     margin-left: -820px !important;
     width: 1700px;
-    height: 1000px;
+    height: 900px;
     margin-top: -460px;
 }
 
@@ -5931,7 +5931,7 @@ label[disabled] {
          *  ���α��̸� ������� ������ overflow-y�� �ɸ��� �ʽ��ϴ�.
          */
     width: 100% !important;
-    height: 270px !important;
+    height: 170px !important;
     overflow-x: scroll;
     overflow-y: scroll;
 }
@@ -6465,7 +6465,7 @@ input:disabled {
 }
 
 .pop_image_data {
-    height: 300px;
+    height: 200px;
 }
 
 #tbody_batchList_answer tr {
@@ -6490,7 +6490,7 @@ input:disabled {
     width: 1660px;
     height: 80px;
     background: #eaeaea;
-    padding: 30px 20px;
+    padding: 30px 13px;
 }
 
 .layer3_pop_footer > .pop_close_btn {

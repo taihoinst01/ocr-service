@@ -655,7 +655,7 @@ exports.selectBatchLearnListTest = function (req, done) {
         try {
             conn = await oracledb.getConnection(dbConfig);          
             var rowNum = req.body.moreNum;
-            let resAnswerFile = await conn.execute(`SELECT FILEPATH, DOCTYPE 
+            let resAnswerFile = await conn.execute(`SELECT FILEPATH, DOCTYPE, IMGID 
                                                     FROM TBL_BATCH_LEARN_LIST 
                                                     WHERE ` + condQuery + ` AND ROWNUM <= :num ORDER BY FILEPATH ASC`
                                                     , [rowNum]);
@@ -2154,6 +2154,30 @@ exports.deleteAnswerFile = function (req, done) {
         try {
             conn = await oracledb.getConnection(dbConfig);;
             result = await conn.execute(queryConfig.batchLearningConfig.deleteAnswerFile, [req[1], req[0]]);
+
+            return done(null, { code: '200' });
+        } catch (err) {
+            return done(null, { code: '500', error: err });
+        } finally {
+            if (conn) {
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+exports.deleteBatchLearnList = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);;
+            result = await conn.execute(queryConfig.batchLearningConfig.deleteBatchLearnList, [req[0]]);
 
             return done(null, { code: '200' });
         } catch (err) {

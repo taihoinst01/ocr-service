@@ -48,6 +48,7 @@ var xlsx = require('xlsx');
 //var listProc = require('./routes/util/listProc'); // legacy interface
 
 // 
+app.use('/tifTest', express.static(path.join(appRoot)));
 app.use('/tif', express.static(path.join(propertiesConfig.filepath.answerFileFrontPath)));
 app.use('/jpg', express.static(path.join(propertiesConfig.filepath.doc_sampleImagePath)));
 app.use('/uploads', express.static(__dirname + '/uploads'));
