@@ -2256,6 +2256,148 @@ router.post('/batchLearnTraining_old', function (req, res) {
     });
 });
 
+router.post('/exportExcel', function (req, res) {
+    sync.fiber(function () {
+        var imgId = req.body.imgIdArray;
+        var workbook = new exceljs.Workbook();
+        var worksheet = workbook.addWorksheet('My Sheet');
+
+        worksheet.columns = [
+            { header: '파일명', key: 'fileName' },
+            { header: '예측문서', key: 'docType' },
+            { header: '출재사명', key: 'OGCOMPANYNAME' },
+            { header: '계약명', key: 'CTNM' },
+            { header: 'UY', key: 'UY' },
+            { header: '화폐코드', key: 'CURCD' },
+            { header: '화폐단위', key: 'CURUNIT' },
+            { header: 'Paid(100%)', key: 'PAIDPERCENT' },
+            { header: 'Paid(Our Share)', key: 'PAIDSHARE' },
+            { header: 'OSL(100%)', key: 'OSLPERCENT' },
+            { header: 'OSL(Our Share)', key: 'OSLSHARE' },
+            { header: 'PREMIUM', key: 'PM' },
+            { header: 'PREMIUM P/F ENT', key: 'PMPFEND' },
+            { header: 'PREMIUM P/F WOS', key: 'PMPFWOS' },
+            { header: 'XOL PREMIUM', key: 'XOLPM' },
+            { header: 'RETURN PREMIUM', key: 'RETURNPM' },
+            { header: 'COMMISSION', key: 'CN' },
+            { header: 'PROFIT COMMISSION', key: 'PROFITCN' },
+            { header: 'BROKERAGE', key: 'BROKERAGE' },
+            { header: 'TAX', key: 'TAX' },
+            { header: 'OVERRIDING COM', key: 'OVERRIDINGCOM' },
+            { header: 'CHARGE', key: 'CHARGE' },
+            { header: 'PREMIUM RESERVE RTD', key: 'PMRESERVERTD1' },
+            { header: 'P/F PREMIUM RESERVE RTD', key: 'PFPMRESERVERTD1' },
+            { header: 'PREMIUM RESERVE RLD', key: 'PMRESERVERTD2' },
+            { header: 'P/F PREMIUM RESERVE RLD', key: 'PFPMRESERVERTD2' },
+            { header: 'CLAIM', key: 'CLAIM' },
+            { header: 'LOSS RECOVERY', key: 'LOSSRECOVERY' },
+            { header: 'CASH LOSS', key: 'CASHLOSS' },
+            { header: 'CASH LOSS REFUND', key: 'CASHLOSSRD' },
+            { header: 'LOSS RESERVE RTD', key: 'LOSSRR' },
+            { header: 'LOSS RESERVE RLD	', key: 'LOSSRR2' },
+            { header: 'LOSS P/F ENT', key: 'LOSSPFENT' },
+            { header: 'LOSS P/F WOA', key: 'LOSSPFWOA' },
+            { header: 'INTEREST	', key: 'INTEREST' },
+            { header: 'TAX ON', key: 'TAXON' },
+            { header: 'MISCELLANEOUS', key: 'MISCELLANEOUS' },
+            { header: 'Your Ref', key: 'CSCOSARFRNCNNT2' }
+        ];
+
+        for (var i = 0; i < imgId.length; i++) {
+            var result = sync.await(oracle.selectBatchLearnMlList([imgId[i]], sync.defer()));
+            console.log(result);
+            var excelObj = {};
+            for (var j = 0; j < result.rows.length; j++) {
+                if (result.rows[j].COLLABEL == "0") {
+                    excelObj.OGCOMPANYNAME = result.rows[j].COLVALUE;
+                } else if (result.rows[j].COLLABEL == "1") {
+                    excelObj.CTNM = result.rows[j].COLVALUE;
+                } else if (result.rows[j].COLLABEL == "2") {
+                    excelObj.UY = result.rows[j].COLVALUE;
+                } else if (result.rows[j].COLLABEL == "37" && result.rows[j].ENTRYLABEL == "4") {
+                    excelObj.PM = result.rows[j].COLVALUE;
+                } else if (result.rows[j].COLLABEL == "37" && result.rows[j].ENTRYLABEL == "5") {
+                    excelObj.PMPFEND = result.rows[j].COLVALUE;
+                } else if (result.rows[j].COLLABEL == "37" && result.rows[j].ENTRYLABEL == "6") {
+                    excelObj.PMPFWOS = result.rows[j].COLVALUE;
+                } else if (result.rows[j].COLLABEL == "37" && result.rows[j].ENTRYLABEL == "7") {
+                    excelObj.XOLPM = result.rows[j].COLVALUE;
+                } else if (result.rows[j].COLLABEL == "37" && result.rows[j].ENTRYLABEL == "8") {
+                    excelObj.RETURNPM = result.rows[j].COLVALUE;
+                } else if (result.rows[j].COLLABEL == "37" && result.rows[j].ENTRYLABEL == "9") {
+                    excelObj.CN = result.rows[j].COLVALUE;
+                } else if (result.rows[j].COLLABEL == "37" && result.rows[j].ENTRYLABEL == "10") {
+                    excelObj.PROFITCN = result.rows[j].COLVALUE;
+                } else if (result.rows[j].COLLABEL == "37" && result.rows[j].ENTRYLABEL == "11") {
+                    excelObj.BROKERAGE = result.rows[j].COLVALUE;
+                } else if (result.rows[j].COLLABEL == "37" && result.rows[j].ENTRYLABEL == "12") {
+                    excelObj.TAX = result.rows[j].COLVALUE;
+                } else if (result.rows[j].COLLABEL == "37" && result.rows[j].ENTRYLABEL == "13") {
+                    excelObj.OVERRIDINGCOM = result.rows[j].COLVALUE;
+                } else if (result.rows[j].COLLABEL == "37" && result.rows[j].ENTRYLABEL == "14") {
+                    excelObj.CHARGE = result.rows[j].COLVALUE;
+                } else if (result.rows[j].COLLABEL == "37" && result.rows[j].ENTRYLABEL == "15") {
+                    excelObj.PMRESERVERTD1 = result.rows[j].COLVALUE;
+                } else if (result.rows[j].COLLABEL == "37" && result.rows[j].ENTRYLABEL == "16") {
+                    excelObj.PFPMRESERVERTD1 = result.rows[j].COLVALUE;
+                } else if (result.rows[j].COLLABEL == "37" && result.rows[j].ENTRYLABEL == "17") {
+                    excelObj.PMRESERVERTD2 = result.rows[j].COLVALUE;
+                } else if (result.rows[j].COLLABEL == "37" && result.rows[j].ENTRYLABEL == "18") {
+                    excelObj.PFPMRESERVERTD2 = result.rows[j].COLVALUE;
+                } else if (result.rows[j].COLLABEL == "37" && result.rows[j].ENTRYLABEL == "19") {
+                    excelObj.CLAIM = result.rows[j].COLVALUE;
+                } else if (result.rows[j].COLLABEL == "37" && result.rows[j].ENTRYLABEL == "20") {
+                    excelObj.LOSSRECOVERY = result.rows[j].COLVALUE;
+                } else if (result.rows[j].COLLABEL == "37" && result.rows[j].ENTRYLABEL == "21") {
+                    excelObj.CASHLOSS = result.rows[j].COLVALUE;
+                } else if (result.rows[j].COLLABEL == "37" && result.rows[j].ENTRYLABEL == "22") {
+                    excelObj.CASHLOSSRD = result.rows[j].COLVALUE;
+                } else if (result.rows[j].COLLABEL == "37" && result.rows[j].ENTRYLABEL == "23") {
+                    excelObj.LOSSRR = result.rows[j].COLVALUE;
+                } else if (result.rows[j].COLLABEL == "37" && result.rows[j].ENTRYLABEL == "24") {
+                    excelObj.LOSSRR2 = result.rows[j].COLVALUE;
+                } else if (result.rows[j].COLLABEL == "37" && result.rows[j].ENTRYLABEL == "25") {
+                    excelObj.LOSSPFENT = result.rows[j].COLVALUE;
+                } else if (result.rows[j].COLLABEL == "37" && result.rows[j].ENTRYLABEL == "26") {
+                    excelObj.LOSSPFWOA = result.rows[j].COLVALUE;
+                } else if (result.rows[j].COLLABEL == "37" && result.rows[j].ENTRYLABEL == "27") {
+                    excelObj.INTEREST = result.rows[j].COLVALUE;
+                } else if (result.rows[j].COLLABEL == "37" && result.rows[j].ENTRYLABEL == "28") {
+                    excelObj.TAXON = result.rows[j].COLVALUE;
+                } else if (result.rows[j].COLLABEL == "37" && result.rows[j].ENTRYLABEL == "29") {
+                    excelObj.MISCELLANEOUS = result.rows[j].COLVALUE;
+                } else if (result.rows[j].COLLABEL == "35") {
+                    excelObj.CSCOSARFRNCNNT2 = result.rows[j].COLVALUE;
+                }
+            }
+
+            worksheet.addRow({
+                fileName: imgId[i], docType: '', OGCOMPANYNAME: excelObj.OGCOMPANYNAME, CTNM: excelObj.CTNM,
+                UY: excelObj.UY, CURCD: excelObj.CURCD, CURUNIT: excelObj.CURUNIT, PAIDPERCENT: excelObj.PAIDPERCENT,
+                PAIDSHARE: excelObj.PAIDSHARE, OSLPERCENT: excelObj.OSLPERCENT, OSLSHARE: excelObj.OSLSHARE, PM: excelObj.PM,
+                PMPFEND: excelObj.PMPFEND, PMPFWOS: excelObj.PMPFWOS, XOLPM: excelObj.XOLPM, RETURNPM: excelObj.RETURNPM,
+                CN: excelObj.CN, PROFITCN: excelObj.PROFITCN, BROKERAGE: excelObj.BROKERAGE, TAX: excelObj.TAX,
+                OVERRIDINGCOM: excelObj.OVERRIDINGCOM, CHARGE: excelObj.CHARGE, PMRESERVERTD1: excelObj.PMRESERVERTD1, PFPMRESERVERTD1: excelObj.PFPMRESERVERTD1,
+                PMRESERVERTD2: excelObj.PMRESERVERTD2, PFPMRESERVERTD2: excelObj.PFPMRESERVERTD2, CLAIM: excelObj.CLAIM, LOSSRECOVERY: excelObj.LOSSRECOVERY,
+                CASHLOSS: excelObj.CASHLOSS, CASHLOSSRD: excelObj.CASHLOSSRD, LOSSRR: excelObj.LOSSRR, LOSSRR2: excelObj.LOSSRR2,
+                LOSSPFENT: excelObj.LOSSPFENT, LOSSPFWOA: excelObj.LOSSPFWOA, INTEREST: excelObj.INTEREST, TAXON: excelObj.TAXON,
+                MISCELLANEOUS: excelObj.MISCELLANEOUS, CSCOSARFRNCNNT2: excelObj.CSCOSARFRNCNNT2
+            });
+       
+        }
+
+        workbook.xlsx.writeFile("hello.xlsx").then(function () {
+            // done
+            console.log("success");
+            res.send({ fileName: "hello.xlsx" });
+        });
+    });
+});
+
+router.get('/downloadExcel', function (req, res) {
+    res.download(appRoot + "\\hello.xlsx");
+});
+
 router.post('/batchLearnTraining', function (req, res) {
 
     var filepath = req.body.imgIdArray;

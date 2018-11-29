@@ -109,6 +109,10 @@ var buttonEvent = function () {
     $("#btn_uiTraining").on("click", function () {
         fn_uiTraining();
     });
+    // excel down
+    $("#btn_exportExcel").on("click", function () {
+        fn_exportExcel();
+    });
 
     // popupButton
     // [배치학습popup] 학습실행
@@ -1846,6 +1850,48 @@ var fn_rightExcelUpload = function () {
 var fn_imageUpload = function () {
 
 };
+
+var fn_exportExcel = function () {
+    var imgIdArray = [];
+    var chkSize = 0;
+    if (addCond == "LEARN_N") {
+        $('input[name="listCheck_before"]').each(function (index, element) {
+            if ($(this).is(":checked")) {
+                imgIdArray.push($(this).val());
+                chkSize++;
+            }
+        });
+    } else {
+        $('input[name="listCheck_after"]').each(function (index, element) {
+            if ($(this).is(":checked")) {
+                imgIdArray.push($(this).val());
+                chkSize++;
+            }
+        });
+    }
+    if (chkSize > 0) {
+        var param = { imgIdArray: imgIdArray };
+        $.ajax({
+            url: '/batchLearningTest/exportExcel',
+            type: 'post',
+            datatype: "json",
+            data: JSON.stringify(param),
+            contentType: 'application/json; charset=UTF-8',
+            success: function (responseText, statusText) {
+                //fn_alert('alert', "success");
+                downloadExcel(responseText.fileName);
+                searchBatchLearnDataList(addCond);
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    }
+}
+
+var downloadExcel = function () {
+    location.href = '/batchLearningTest/downloadExcel';
+}
 
 // 이미지 삭제
 var fn_imageDelete = function () {
