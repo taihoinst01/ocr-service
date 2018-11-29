@@ -2345,7 +2345,7 @@ var batchLearnTraining = function (imgIdArray, flag) {
                     }
                 });
                 endProgressBar(progressId);
-                uiLearnTraining(['/2018/07/img1/6b/133f16b/4554894.tif']);
+                //uiLearnTraining(['/2018/07/img1/6b/133f16b/4554894.tif']);
                 /*
                 setTimeout(function () {
                     endProgressBar(progressId);

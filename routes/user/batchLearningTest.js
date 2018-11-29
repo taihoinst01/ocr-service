@@ -26,6 +26,8 @@ var ocrUtil = require('../util/ocr.js');
 var batch = require('../util/batch.js');
 var pythonConfig = require(appRoot + '/config/pythonConfig');
 var mlStudio = require('../util/mlStudio.js');
+var transPantternVar = require('./transPattern');
+var Step = require('step');
 
 var selectBatchLearningDataListQuery = queryConfig.batchLearningConfig.selectBatchLearningDataList;
 var selectBatchLearningDataQuery = queryConfig.batchLearningConfig.selectBatchLearningData;
@@ -2220,7 +2222,7 @@ function addBatchTraining(filepath, done) {
     });
 }
 
-router.post('/batchLearnTraining', function (req, res) {
+router.post('/batchLearnTraining_old', function (req, res) {
     req.setTimeout(500000);
 
     sync.fiber(function () {
@@ -2244,7 +2246,59 @@ router.post('/batchLearnTraining', function (req, res) {
     });
 });
 
-function batchLearnTraining(filepath, flag, done) {
+router.post('/batchLearnTraining', function (req, res) {
+
+    var filepath = req.body.imgIdArray;
+    var flag = req.body.flag;
+    var retData = [];
+    var uiTraining = '';
+
+    Step(
+        function executeML() {
+            var self = this;
+            filepath.forEach(function (element) {
+                batchLearnTraining(element, self.parallel());
+            });
+        },
+        function finalize(err) {
+            if (err) console.log(err);
+            console.log('done');
+            res.send({ data: retData });
+        }
+    );
+    //var batchData = sync.await(batchLearnTraining(filepath, flag, sync.defer()));
+
+
+});
+
+function batchLearnTraining(filepath, callback) {
+    sync.fiber(function () {
+
+        var imgid = sync.await(oracle.selectImgid(filepath, sync.defer()));
+        imgid = imgid.rows[0].IMGID;
+
+        var fileName = filepath.substring(1, filepath.lastIndexOf("."));
+        console.log(fileName);
+        var ocrResult = sync.await(ocrUtil.localOcr(appRoot + "\\uploads\\" + fileName + ".jpg", sync.defer()));
+        console.log(ocrResult);
+
+        pythonConfig.columnMappingOptions.args = [];
+        pythonConfig.columnMappingOptions.args.push(JSON.stringify(ocrResult));
+        var resPyStr = sync.await(PythonShell.run('uiClassify.py', pythonConfig.columnMappingOptions, sync.defer()));
+        var resPyArr = JSON.parse(resPyStr[0]);
+        resPyArr = sync.await(transPantternVar.trans(resPyArr, sync.defer()));
+        console.log(resPyArr);
+
+        var retData = {};
+        retData = resPyArr;
+        retData.fileinfo = { filepath: filepath, imgId: imgid };
+        sync.await(oracle.insertMLData(retData, sync.defer()));
+
+        callback();
+    });
+}
+
+function batchLearnTraining_old(filepath, flag, done) {
     sync.fiber(function () {
         try {
 
