@@ -2429,9 +2429,9 @@ function batchLearnTraining(filepath, callback) {
         var imgid = sync.await(oracle.selectImgid(filepath, sync.defer()));
         imgid = imgid.rows[0].IMGID;
 
-        filepath = filepath.substring(0, filepath.lastIndexOf("."));
+        var filename = filepath.substring(0, filepath.lastIndexOf("."));
         console.log(filepath);
-        var ocrResult = sync.await(ocrUtil.localOcr((appRoot + filepath + ".jpg").replace(/\\/gi, '/'), sync.defer()));
+        var ocrResult = sync.await(ocrUtil.localOcr((appRoot + filename + ".jpg").replace(/\\/gi, '/'), sync.defer()));
         console.log(ocrResult);
 
         pythonConfig.columnMappingOptions.args = [];
