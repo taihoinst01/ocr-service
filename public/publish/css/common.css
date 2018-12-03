@@ -700,7 +700,6 @@ h3.tits:before,
 .box_st04 h3:before,
 .button_control:before,
 .button_st6:before,
-.tits11_btn01:before,
 .ipt83:before,
 .button_control11:before,
 .button_control12:before,
@@ -732,6 +731,10 @@ h3.tits:before,
     background: url('../image/bg_img_2.png') no-repeat;
 }
 
+.tits11_btn01:before {
+    display: inline-block;
+    background: url('../image/bg_img_sample.png') no-repeat; 
+}
 .content_title_icon { width:30px; height: 30px; float:left; background-position: -5px -475px; }
 .content_title_icon_ui { width:40px; height: 30px; float:left; background-position: -70px -472px; }
 .content_title_icon_bl { width:40px; height: 30px; float:left; background-position: -140px -472px; }
@@ -5253,7 +5256,7 @@ thead .ez-checked {
 
 .tits11_btn01:before {
     content: '';
-    background-position: -120px -550px;
+    background-position: -121px -550px;
     width: 20px;
     height: 20px;
 }

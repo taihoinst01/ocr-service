@@ -117,7 +117,7 @@ function popUpRunEvent() {
                 lineText[currentImgCount].data.docCategory.DOCNAME = data.docName;
                 lineText[currentImgCount].data.docCategory.DOCTYPE = data.docType;
                 lineText[currentImgCount].data.docSid = data.docSid;
-                //$('#btn_pop_doc_cancel').click();
+                $('#btn_pop_doc_cancel').click();
                 endProgressBar(progressId);
             },
             error: function (err) {
@@ -639,7 +639,7 @@ function executeML(totData) {
                     }
                     */
                     $('#docName').text(data.data.docCategory.DOCNAME);
-                    $('#docPredictionScore').text((data.data.docCategory.DOCSCORE * 100) + ' %');
+                    $('#docPredictionScore').text('100 %');
 
                     var mainImgHtml = '';
                     mainImgHtml += '<div id="mainImage" class="ui_mainImage">';
