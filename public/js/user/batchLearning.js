@@ -1318,7 +1318,7 @@ var searchBatchLearnDataList = function (addCond) {
                         checkboxHtml +
                         '<td><a class="fileNamePath" data-filepath="' + nvl(rows[0].FILEPATH) + '" data-imgId="' + nvl(rows[0].IMGID) + '" ' +
                         'onclick = "javascript:fn_viewImageData(\'' + nvl(rows[0].FILEPATH) + '\',\'' + i + '\', \'' + nvl(rows[0].IMGID) + '\', this)" href = "javascript:void(0);" > ' + nvl(rows[0].FILENAME) + '</a ></td > < !--FILENAME--> ' +
-                        '<td> ' + appendPredDoc(rows[0]) + ' </td> <!--doctype -->' +
+                        '<td></td> <!--doctype -->' +
                         '</tr>';
 
                     for (var y = 0; y < rows.length; y++) {
@@ -1362,6 +1362,7 @@ var searchBatchLearnDataList = function (addCond) {
                             '</tr>';
                     }
                     var mlData = data.mlData;
+                    /*
                     if (mlData.rows.length != 0) {
                         appendRightContentsHtml += '<tr class="mlTr mlRowNum' + i + '">' +
                             '<td>' + makeMLSelect(mlData.rows, 0, null, rows[0].FILEPATH) + '</td> <!--출재사명-->' +
@@ -1407,7 +1408,8 @@ var searchBatchLearnDataList = function (addCond) {
                             '<td colspan="36"></td>' +
                             '</tr>';
 
-                    }
+                    }*/  
+                    appendRightContentsHtml += '<tr class="mlTr"><td colspan="36"></td></tr>';                  
                 }
             } else {
                 appendLeftContentsHtml += '<tr style="height: 30px"><td colspan="3"></td></tr>'
@@ -1513,11 +1515,24 @@ function appendPredDoc(data) {
         returnString = '<input type="hidden" name="docType" class="docType" value="' + data.DOCTYPE + '" />';
         returnString += '<a onclick="javascript:fn_viewDoctypePop(this);" href="javascript:void(0);">' + data.DOCNAME + '</a>';
     } else {
-        returnString = '<!--<a onclick="javascript:fn_viewDoctypePop(this);" href="javascript:void(0);"></a>-->';
+        returnString = '<a onclick="javascript:fn_viewDoctypePop(this);" href="javascript:void(0);">CO-OPERATORS 100%</a>';
     }
 
     return returnString;
 }
+
+function appendPredDoc2(data) {
+    var returnString = '';
+    if (data.DOCNAME) {
+        returnString = '<input type="hidden" name="docType" class="docType" value="' + data.DOCTYPE + '" />';
+        returnString += '<a onclick="javascript:fn_viewDoctypePop(this);" href="javascript:void(0);">' + data.DOCNAME + '</a>';
+    } else {
+        returnString = '<a onclick="javascript:fn_viewDoctypePop(this);" href="javascript:void(0);">unknown 0%</a>';
+    }
+
+    return returnString;
+}
+
 
 function compareMLAndAnswer(mlData) {
     if (mlData.length != 0) {
@@ -2337,6 +2352,7 @@ var batchLearnTraining = function (imgIdArray, flag) {
             //console.log(data);
             //searchBatchLearnDataList(addCond);
             if (flag == "LEARN_N") {
+                /*
                 $("input[name=listCheck_before]").each(function (index, entry) {
                     if ($(this).is(":checked")) {
 
@@ -2354,8 +2370,32 @@ var batchLearnTraining = function (imgIdArray, flag) {
                         }
                     }
                 });
+                */
+                //todo
+                $("input[name=listCheck_before]").each(function (index, entry) {
+                    if ($(this).is(":checked")) {
+                                               
+                            //console.log(index);
+                            var docHtml = '<input type="hidden" name="docType" class="docType" value="" />';
+                            if(index == 2) {
+                                var docHtml = '<a onclick="javascript:fn_viewDoctypePop(this);" href="javascript:void(0);">unknown 0%</a>';    
+                            } else {
+                                docHtml += '<a onclick="javascript:fn_viewDoctypePop(this);" href="javascript:void(0);">CO-OPERATORS 100%</a>';
+                            }
+                            $(this).closest("td").next().next().html(docHtml);
+                                
+                            var appendRightContentsHtml = '<td>CO-OPERATORS(CANADA)</td>' 
+                                            +   '<td>CO-OPERATORS - CAT XL</td>'
+                                            +   '<td>2016</td>'
+                                            +   '<td>CAD</td>'
+                                            +   '<td></td>'
+                                            +   '<td></td>';
+                            $('.mlTr').empty().append(appendRightContentsHtml);
+                    }
+                });
+
                 endProgressBar(progressId);
-                uiLearnTraining(['/2018/07/img1/6b/133f16b/4554894.tif']);
+                //uiLearnTraining(['/2018/07/img1/6b/133f16b/4554894.tif']);
                 /*
                 setTimeout(function () {
                     endProgressBar(progressId);
