@@ -1515,7 +1515,7 @@ function appendPredDoc(data) {
         returnString = '<input type="hidden" name="docType" class="docType" value="' + data.DOCTYPE + '" />';
         returnString += '<a onclick="javascript:fn_viewDoctypePop(this);" href="javascript:void(0);">' + data.DOCNAME + '</a>';
     } else {
-        returnString = '<a onclick="javascript:fn_viewDoctypePop(this);" href="javascript:void(0);">CO-OPERATORS 100%</a>';
+        returnString = '<a onclick="javascript:fn_viewDoctypePop(this);" href="javascript:void(0);">INTREAS 100%</a>';
     }
 
     return returnString;
@@ -2384,16 +2384,21 @@ var batchLearnTraining = function (imgIdArray, flag) {
                             }
                             $(this).closest("td").next().next().html(docHtml);
                                 
-                            var appendRightContentsHtml = '<td>CO-OPERATORS(CANADA)</td>' 
-                                            +   '<td>CO-OPERATORS - CAT XL</td>'
-                                            +   '<td>2016</td>'
-                                            +   '<td>CAD</td>'
-                                            +   '<td></td>'
-                                            +   '<td></td>';
-                            $('.mlTr').empty().append(appendRightContentsHtml);
+                            
+                            //$('.mlTr').empty().append(appendRightContentsHtml);
                     }
                 });
-
+                var appendRightContentsHtml = '<td>INTREAS</td>' 
+                                            +   '<td>INTREAS - AG MULTI NATURAL PERILS AGGREGATE XL	</td>'
+                                            +   '<td>2017</td>'
+                                            +   '<td>EUR</td>'
+                                            +   '<td></td>'
+                                            +   '<td></td>';
+                $('.mlTr:eq(0)').empty().append(appendRightContentsHtml);
+                $('.mlTr:eq(1)').empty().append(appendRightContentsHtml);
+                $('.mlTr:eq(2)').empty().append(appendRightContentsHtml);
+                $('.mlTr:eq(3)').empty().append(appendRightContentsHtml);
+                $('.mlTr:eq(4)').empty().append(appendRightContentsHtml);
                 endProgressBar(progressId);
                 //uiLearnTraining(['/2018/07/img1/6b/133f16b/4554894.tif']);
                 /*
@@ -2939,9 +2944,8 @@ function popUpRunEvent() {
             fn_alert('alert', '문서 등록이 완료 되었습니다.');
             $('#btn_pop_doc_cancel.ui_doc_pop_btn2.cbtn').click();
             var rowNum = $('#batchListRowNum').val();
-            $('#leftRowNum_' + rowNum).remove();
-            $('.rowNum' + rowNum).remove();
-            $('.mlRowNum' + rowNum).remove();
+            $('#leftRowNum_2').find('td:eq(2)').html('<a>' + docName + '</a>');
+            $('#leftRowNum_2').find('td:eq(2)').css('color', )
         }, 8000);
         
         /*
@@ -3480,8 +3484,8 @@ function fn_viewDoctypePop(obj) {
     initLayer4();
     selectClassificationSt('/2018/07/img1/43/133f143/test.tif'); // 분류제외문장 렌더링
     $('#mlPredictionDocName').val('UNKNOWN');
-
-    loadImage('/tif/2018/07/img1/43/133f143/test.tif' , function (tifResult) {
+    filepath = "/uploads/sample.tiff";
+    loadImage('/tifTest' + filepath, function (tifResult) {
         if (tifResult) {
             $(tifResult).css({
                 "width": "100%",
