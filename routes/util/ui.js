@@ -88,15 +88,15 @@ function insertDoctypeMapping(req, done) {
                 convertedFilepath = copyFile(data.filepath, docType);
 
                 //20180911 TBL_FORM_MAPPING 에 5개문장의 sid 와 doctype값 insert
-                insertFormMapping(topSentenses, docType);
+                //insertFormMapping(topSentenses, docType);
                 insertDocumentSentence(similarSentences, docType);
             } else if (data.radioType == '1') {
                 docType = selectDocCategoryFromDocName(data);
-                insertFormMapping(topSentenses, docType);
+                //insertFormMapping(topSentenses, docType);
                 insertDocumentSentence(similarSentences, docType);
             } else {
                 docType = selectDocCategoryFromDocName(data);
-                insertFormMapping(topSentenses, docType);
+                //insertFormMapping(topSentenses, docType);
                 insertDocumentSentence(similarSentences, docType);
             }
 
@@ -182,16 +182,16 @@ function selectDocCategoryFromDocName(data) {
 function copyFile(src, docType) {
     var convertedFilepath = propertiesConfig.filepath.docFilePath;
     try {
-        if (!fs.existsSync(src)) {
+        if (!fs.existsSync(appRoot + src)) {
             throw new Error('file not exist');
         }
-        var data = fs.readFileSync(src, 'utf-8');
+        var data = fs.readFileSync(appRoot + src, 'utf-8');
         try {
             fs.mkdirSync(convertedFilepath);
         } catch (e) {
             if (e.code != 'EEXIST') throw e;
         }
-        execSync('module\\imageMagick\\convert.exe -density 800x800 "' + src + '" ' + (convertedFilepath + '/' + docType + '.jpg'));
+        execSync('module\\imageMagick\\convert.exe -density 800x800 "' + (appRoot + src) + '" ' + (convertedFilepath + '/' + docType + '.jpg'));
         sync.await(oracle.updateDocCategoryToFilePath(['/' + (convertedFilepath.split('/')[2] + '/' + docType + '.jpg'), docType], sync.defer()));
 
         return (convertedFilepath + '/' + docType + '.jpg');
