@@ -1,0 +1,14 @@
+.box_txt_st01.st00_us > dl:last-child {
+    width: 600px !important;
+    margin: 0 0 0 10px;
+}
+.um_list {
+    border-radius: 5px;
+    border: 1px solid #D8D8D8;
+}
+
+.btn_rt {
+    position: absolute;
+    bottom: 18px;
+    right: 22px
+}

@@ -41,7 +41,7 @@ var sessionConfig = {
 var userMngConfig = {
     selUserList:
         `SELECT
-            seqNum, userId, auth, email, note, scanApproval, icrApproval, middleApproval, lastApproval, ocrUseCount, admin,
+            seqNum, userId, userPw, auth, email, note, scanApproval, icrApproval, middleApproval, lastApproval, ocrUseCount, admin,
             TO_CHAR(joinDate,'YYYY-MM-DD') AS joinDate,
             TO_CHAR(lastLoginDate,'YYYY-MM-DD hh24:mi:ss') AS lastLoginDate
          FROM

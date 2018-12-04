@@ -3273,6 +3273,90 @@ exports.selectImgid = function (req, done) {
     });
 };
 
+// 사용자 찾기
+exports.searchUser = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        try {
+            let dept = req.body.dept;
+            let scan = req.body.scan;
+            let icr = req.body.icr;
+            let approval = req.body.approval;
+            let finalApproval = req.body.finalApproval;
+            let admin = req.body.admin;
+
+            conn = await oracledb.getConnection(dbConfig);
+            var userQuery = 
+                "SELECT " +
+                "    CO_EMP.EMP_NO, CO_EMP.EMP_NM, CO_EMP.EMP_PW, CO_EMP.DEPT_NM,CO_REG.AUTH_SCAN, CO_REG.AUTH_ICR, CO_REG.AUTH_APPROVAL, EXT_USER, " + 
+                "    CO_REG.AUTH_FINAL_APPROVAL, CO_REG.AUTH_ADMIN, TO_CHAR(CO_REG.FINAL_LOGIN_DATE, 'YYYY/MM/DD HH24:MI:SS') AS FINAL_LOGIN_DATE " +
+                "FROM (SELECT " + 
+                "           CO_EMP.EMP_NO, NULL AS EMP_PW, EMP_NM, EMP_ENGL_NM, BLT_DEPT_CD, JBLV_CD, PSTN_CD, DEPT_NM, 'N' AS EXT_USER " +
+                "        FROM " +
+                "            TBL_CO_EMP_BS CO_EMP " +
+                "        LEFT JOIN TBL_CO_DEPT_BS CO_DEPT " +
+                "        ON " +
+                "            CO_EMP.BLT_DEPT_CD = CO_DEPT.DEPT_CD " +
+                "        UNION ALL " +
+                "        SELECT " +
+                "            EMP_NO, EMP_PW, EMP_NM, EMP_ENGL_NM, BLT_DEPT_CD, JBLV_CD, PSTN_CD, DEPT_NM, 'Y' AS EXT_USER " +
+                "        FROM " +
+                "            TBL_CO_EMP_BS_EXT CO_EXT " +
+                "        LEFT JOIN " +
+                "            TBL_CO_DEPT_BS_EXT CO_DEPT_EXT " +
+                "        ON " +
+                "            CO_EXT.BLT_DEPT_CD = CO_DEPT_EXT.DEPT_CD) " +
+                "        CO_EMP " +
+                "LEFT JOIN " +
+                "    TBL_CO_EMP_REG CO_REG " +
+                "ON " +
+                "    CO_EMP.EMP_NO = CO_REG.EMP_NO " +
+                "WHERE 1=1 "
+
+            if (!req.body.type) {
+                if (dept != '모든부서') {
+                    userQuery += " AND CO_EMP.DEPT_NM = '" + dept + "'";
+                }
+                var auths = [scan, icr, approval, finalApproval, admin];
+                var authColumns = ['CO_REG.AUTH_SCAN', 'CO_REG.AUTH_ICR', 'CO_REG.AUTH_APPROVAL', 'CO_REG.AUTH_FINAL_APPROVAL',
+                    'CO_REG.AUTH_ADMIN'];
+                var authCnt = 0;
+                for (var i in auths) {
+                    if (auths[i] == 'Y') {
+                        authCnt++;
+                        if (authCnt == 1) {
+                            userQuery += " AND (" + authColumns[i] + " = '" + auths[i] + "'";
+                        } else {
+                            userQuery += " OR " + authColumns[i] + " = '" + auths[i] + "'";
+                        }
+                    }
+                }
+                if (authCnt > 0) userQuery += ' )';
+            }
+
+            userQuery += "ORDER BY EXT_USER, DEPT_NM, EMP_NM";
+            result = await conn.execute(userQuery);
+            if (result.rows.length > 0) {
+                return done(null, result.rows);
+            } else {
+                return done(null, []);
+            }
+            
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
 function getConvertDate() {
     var today = new Date();
     var yyyy = today.getFullYear();

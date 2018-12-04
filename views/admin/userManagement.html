@@ -10,7 +10,9 @@
     <title>ICR</title>
 
     <%include  ../common/commonLib.html%>
-
+    <!-- 문서 조회 학습 전용 css -->
+    <link rel="stylesheet" href="css/admin/userManagement.css">
+    <!-- // 문서 조회 전용 css -->
     <!-- 공통 js -->
     <script type="text/javascript" src="js/common.client.js"></script>
     <!-- // 공통 js -->
@@ -87,14 +89,12 @@
                 </div>
                 <!-- // 부서구분 목록 -->
                 <!-- 사용자관리 목록  -->
-                <div class="box_stsearch titcolor01">
+                <div class="mb15">
 
                     <div class="table_style02 um_table">
                         <table>
                             <caption>사용자관리 타이틀</caption>
                             <colgroup>
-                                <col style="width:5%" />
-                                <col style="width:11%" />
                                 <col style="width:11%" />
                                 <col style="width:11%" />
                                 <col style="width:7%" />
@@ -108,9 +108,7 @@
                             </colgroup>
                             <thead>
                                 <tr>
-                                    <th scope="row">번호</th>
                                     <th scope="row">사번</th>
-                                    <th scope="row">이메일</th>
                                     <th scope="row">비고</th>
                                     <th scope="row">스캔결재자</th>
                                     <th scope="row">ICR결재자</th>
@@ -123,12 +121,10 @@
                                 </tr>
                             </thead>
                         </table>
-                        <div class="mCustomScrollbar box_scroll_st5" data-mcs-axis="yx" data-mcs-theme="dark-3" style="background: #FFF; height: 585px;">
+                        <div class="mCustomScrollbar box_scroll_st5" data-mcs-axis="yx" data-mcs-theme="dark-3" style="background: #FFF; height: 525px;">
                             <table>
                                 <caption>사용자관리 정보</caption>
                                 <colgroup>
-                                    <col style="width:5%" />
-                                    <col style="width:11%" />
                                     <col style="width:11%" />
                                     <col style="width:11%" />
                                     <col style="width:7%" />
@@ -146,47 +142,42 @@
                     </div>
                 </div>
                 <!-- // 사용자관리 목록 -->
+                
                 <div class="page-div">
                     <div class="page-wrap">
                         <strong>총 100건의 학습중 <strong class="now-count">1</strong>건이 선택됨</strong>
                         <span class="page">Page 1 of 1</span>
                     </div>
                 </div>
+                
                 <!-- 사용자관리 목록  -->
                 <div class="box_stsearch titcolor01 mb0 um_list">
 
                     <div class="box_txt_st01 st00_us um_select">
                         <dl>
+                            <dt><label for="intxt_01">사번</label></dt>
                             <dd>
                                 <input type="hidden" name="seqNum" id="seqNum" />
-                                <input type="text" name="userId" id="userId" class="inputst_box01" maxlength="30" value="" />
+                                <input type="text" name="empNo" id="empNo" class="inputst_box01" maxlength="30" value="" />
                             </dd>
                         </dl>
                         <dl>
+                            <dt><label for="intxt_03">Password</label></dt>
                             <dd>
-                                <input type="password" name="userPw" id="userPw" class="inputst_box01" value="" placeholder="Password" />
+                                <input type="password" name="empPw" id="empPw" class="inputst_box01" value="" />
                             </dd>
                         </dl>
                         <dl>
+                            <dt><label for="">결재자</label></dt>
                             <dd>
-                                <input type="text" name="email" id="email" class="inputst_box01" value="" placeholder="E-mail"/>
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dd>
-                                <input type="text" name="note" id="note" class="inputst_box01" value="" />
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dd>
-                                <select>
-                                    <option value="" selected>상위결재자</option>
-                                    <option>스캔결재자</option>
-                                    <option>ICR결재자</option>
-                                    <option>중간결재자</option>
-                                    <option>최종결재자</option>
-                                    <option>관리자</option>
-                                </select>              
+                                <div class="checkbox-options user-auth">
+                                    <input type="checkbox" value="1" id="mApproval1" name="approval" class="chk_reset"/><label for="mApproval1"><span>스캔결재자</span></label>
+                                    <input type="checkbox" value="2" id="mApproval2" name="approval" class="chk_reset"/><label for="mApproval2"><span>ICR결재자</span></label>
+                                    <input type="checkbox" value="3" id="mApproval3" name="approval" class="chk_reset"/><label for="mApproval3"><span>중간결재자</span></label>
+                                    <input type="checkbox" value="4" id="mApproval4" name="approval" class="chk_reset"/><label for="mApproval4"><span>최종결재자</span></label>
+                                    <input type="checkbox" value="5" id="mAdmin" name="admin" class="chk_reset"/><label for="mAdmin"><span>관리자</span></label>
+                                    <input type="checkbox" value="6" id="mExternalUsers" name="externalUsers" class="chk_reset"/><label for="mExternalUsers"><span>외부사용자</span></label>
+                                </div>
                             </dd>
                         </dl>
                     </div>
