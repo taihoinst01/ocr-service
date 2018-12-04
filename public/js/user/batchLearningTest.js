@@ -1382,23 +1382,11 @@ var searchBatchLearnDataList = function (addCond) {
                             '<td>' + makeMLSelect(mlData, 21, 16, list[i].IMGID) + '</td> <!--P/F PREMIUM RESERVE RTD-->' +
                             '<td>' + makeMLSelect(mlData, 22, 17, list[i].IMGID) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
                             '<td>' + makeMLSelect(mlData, 23, 18, list[i].IMGID) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
-                            '<td>' + makeMLSelect(mlData, 24, 19, list[i].IMGID) + '</td> <!--CLAIM -->' +
-                            '<td>' + makeMLSelect(mlData, 25, 20, list[i].IMGID) + '</td> <!--LOSS RECOVERY -->' +
-                            '<td>' + makeMLSelect(mlData, 26, 21, list[i].IMGID) + '</td> <!--CASH LOSS -->' +
-                            '<td>' + makeMLSelect(mlData, 27, 22, list[i].IMGID) + '</td> <!--CASH LOSS REFUND -->' +
-                            '<td>' + makeMLSelect(mlData, 28, 23, list[i].IMGID) + '</td> <!--LOSS RESERVE RTD -->' +
-                            '<td>' + makeMLSelect(mlData, 29, 24, list[i].IMGID) + '</td> <!--LOSS RESERVE RLD -->' +
-                            '<td>' + makeMLSelect(mlData, 30, 25, list[i].IMGID) + '</td> <!--LOSS P/F ENT -->' +
-                            '<td>' + makeMLSelect(mlData, 31, 26, list[i].IMGID) + '</td> <!--LOSS P/F WOA -->' +
-                            '<td>' + makeMLSelect(mlData, 32, 27, list[i].IMGID) + '</td> <!--INTEREST -->' +
-                            '<td>' + makeMLSelect(mlData, 33, 28, list[i].IMGID) + '</td> <!--TAX ON -->' +
-                            '<td>' + makeMLSelect(mlData, 34, 29, list[i].IMGID) + '</td> <!--MISCELLANEOUS -->' +
-                            '<td>' + makeMLSelect(mlData, 35, null, list[i].IMGID) + '</td> <!--YOUR REF -->' +
                             '</tr>';
                     } else {
                         appendRightContentsHtml +=
                             '<tr class="mlRowNum' + i + '" style="height:' + (trHeight + 12) + 'px;">' +
-                            '<td colspan="36"></td>' +
+                            '<td colspan="24"></td>' +
                             '</tr>';
 
                     }
@@ -1406,7 +1394,7 @@ var searchBatchLearnDataList = function (addCond) {
                 }
             } else {
                 appendLeftContentsHtml += '<tr style="height: 30px"><td colspan="3"></td></tr>'
-                appendRightContentsHtml += '<tr><td colspan="36">조회할 데이터가 없습니다.</td></tr>';
+                appendRightContentsHtml += '<tr><td colspan="24">조회할 데이터가 없습니다.</td></tr>';
             }
             //$(appendHtml).appendTo($("#tbody_batchList")).slideDown('slow');
             if (addCond == "LEARN_N") {
