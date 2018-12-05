@@ -11,7 +11,8 @@
     <%include  ../common/commonLib.html%>
 
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-
+    
+    <link rel="stylesheet" href="/common/css/font-awesome.min.css">
     <!-- tui-grid css import-->
     <link rel="stylesheet" href="/common/css/fileupload/jquery.fileupload.css">
     <!-- tui-grid css import-->
@@ -307,10 +308,11 @@
                         </div>
 
                         <!-- 하단 정보 영역 -->
-                        <div class="box_cotent_bottom mt10">
-                            <div class="page-wrap">
-                                <strong>총 100건의 학습중 <strong class="now-count">1</strong>건이 선택됨</strong>
-                                <span class="page">Page 1 of 4</span>
+                        <div class="box_cotent_bottom">
+                            <div id="paginationDiv">
+                                <ul class="pagination">
+    
+                                </ul>
                             </div>
                         </div>
                         <!-- // 하단 정보 영역 -->

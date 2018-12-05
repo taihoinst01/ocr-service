@@ -28,6 +28,7 @@ var pythonConfig = require(appRoot + '/config/pythonConfig');
 var mlStudio = require('../util/mlStudio.js');
 var transPantternVar = require('./transPattern');
 var Step = require('step');
+var paging = require(appRoot + '/config/paging');
 
 var selectBatchLearningDataListQuery = queryConfig.batchLearningConfig.selectBatchLearningDataList;
 var selectBatchLearningDataQuery = queryConfig.batchLearningConfig.selectBatchLearningData;
@@ -222,6 +223,7 @@ var fnSearchBatchLearningDataList = function (req, res) {
 
     sync.fiber(function () {
         try {
+            var currentPage = req.body.page;
 
             //var retData = {};
             //hskim 20180828 일괄학습 화면 상단 셀렉트 버튼에서 값 가져오게 변경
@@ -236,9 +238,12 @@ var fnSearchBatchLearningDataList = function (req, res) {
                     imgIdList.push(originImageArr[i].IMGID);
                 }
                 mlData = sync.await(oracle.selectBatchLearnMlListTest(imgIdList, sync.defer()));
+                
+                res.send({ data: originImageArr, mlData: mlData, code: 200, pageList : paging.pagination(currentPage, originImageArr[0].TOTCNT)});
+            } else {
+                res.send({ data: originImageArr, mlData: mlData, code: 200 });
             }
 
-            res.send({ data: originImageArr, mlData: mlData, code: 200 });
 
             // 9월11일 전 버전
             /*if (req.body.addCond == "LEARN_Y") {

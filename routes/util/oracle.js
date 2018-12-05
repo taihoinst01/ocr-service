@@ -655,10 +655,14 @@ exports.selectBatchLearnListTest = function (req, done) {
         try {
             conn = await oracledb.getConnection(dbConfig);          
             var rowNum = req.body.moreNum;
-            let resAnswerFile = await conn.execute(`SELECT FILEPATH, DOCTYPE, IMGID 
-                                                    FROM TBL_BATCH_LEARN_LIST 
-                                                    WHERE ` + condQuery + ` AND ROWNUM <= :num ORDER BY FILEPATH ASC`
-                                                    , [rowNum]);
+            let resAnswerFile = await conn.execute(`select bll.* from 
+                                                        (select ROW_NUMBER() OVER(ORDER BY REGDATE DESC, FILEPATH) AS NUM, 
+                                                        COUNT('1') OVER(PARTITION BY '1') AS TOTCNT, 
+                                                        CEIL((ROW_NUMBER() OVER(ORDER BY REGDATE DESC, FILEPATH))/ 13) PAGEIDX, 
+                                                        IMGID, STATUS, FILEPATH, DOCTYPE, REGDATE
+                                                        from TBL_BATCH_LEARN_LIST WHERE` + condQuery + `) bll
+                                                    WHERE PAGEIDX = :pageIdx`
+                                                    , [req.body.page]);
             return done(null, resAnswerFile.rows);
         } catch (err) { // catches errors in getConnection and the query
             console.log(err);
