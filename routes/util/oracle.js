@@ -3277,6 +3277,56 @@ exports.selectImgid = function (req, done) {
     });
 };
 
+exports.selectIcrDocTopType = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        var dateArr = [];
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            result = await conn.execute("select seqnum, docname from tbl_icr_doc_toptype where useyn='Y'");
+
+            return done(null, result);
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+exports.selectIcrLabelDef = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        var dateArr = [];
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            result = await conn.execute("select kornm from tbl_icr_label_def where docId=:docid", [req]);
+
+            return done(null, result);
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
 // 사용자 찾기
 exports.searchUser = function (req, done) {
     return new Promise(async function (resolve, reject) {

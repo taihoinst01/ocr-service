@@ -232,16 +232,17 @@ var fnSearchBatchLearningDataList = function (req, res) {
             var imgIdList = [];
 
             var originImageArr = sync.await(oracle.selectBatchLearnListTest(req, sync.defer()));
+            var docTopType = sync.await(oracle.selectIcrDocTopType(req, sync.defer()));
 
             if (originImageArr.length != 0) {
                 for (var i = 0; i < originImageArr.length; i++) {
                     imgIdList.push(originImageArr[i].IMGID);
                 }
                 mlData = sync.await(oracle.selectBatchLearnMlListTest(imgIdList, sync.defer()));
-                
-                res.send({ data: originImageArr, mlData: mlData, code: 200, pageList : paging.pagination(currentPage, originImageArr[0].TOTCNT)});
+
+                res.send({ data: originImageArr, mlData: mlData, code: 200, docTopType: docTopType.rows, pageList: paging.pagination(currentPage, originImageArr[0].TOTCNT) });
             } else {
-                res.send({ data: originImageArr, mlData: mlData, code: 200 });
+                res.send({ data: originImageArr, mlData: mlData, code: 200, docTopType: docTopType.rows });
             }
 
 
@@ -3497,6 +3498,26 @@ router.post('/insertBatchLearningFileInfo', function (req, res) {
     sync.fiber(function () {
         try {
             returnObj = sync.await(oracle.insertBatchLearningFileInfo(data, sync.defer()));
+        } catch (e) {
+            console.log(e);
+            returnObj = { code: 500, message: e };
+        } finally {
+            res.send(returnObj);
+        }
+    });
+});
+
+router.post('/selectIcrLabelDef', function (req, res) {
+    var returnObj;
+    var data = req.body.docType;
+    if (data) {
+        data = data;
+    } else {
+        data = "2";
+    }
+    sync.fiber(function () {
+        try {
+            returnObj = sync.await(oracle.selectIcrLabelDef(data, sync.defer()));
         } catch (e) {
             console.log(e);
             returnObj = { code: 500, message: e };

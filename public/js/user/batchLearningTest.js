@@ -183,6 +183,13 @@ var buttonEvent = function () {
             $('#newDocName').hide();
         }
     })
+
+    $("#docTopType").on('change', function () {
+        var docType = $("#docTopType option:selected").val();
+        console.log(docType);
+        searchBatchLearnDataList (addCond, 1, docType)
+
+    });
 };
 
 // [popup event]
@@ -1312,14 +1319,15 @@ function updateBatchLearningData(fileNames, data) {
 
 // [Function]
 // main menu batch learning 1 [List] 배치학습데이터 조회
-var searchBatchLearnDataList = function (addCond, page) {
+var searchBatchLearnDataList = function (addCond, page, docType) {
     var param = {
         /*
         'startNum': startNum,
         'moreNum': nvl2($("#select_view_count").val(), 20),
         */
         'addCond': nvl(addCond),
-        'page': nvl2(page, 1)
+        'page': nvl2(page, 1),
+        'docType': docType
     };
     var appendHtml = "";
     var checkboxHtml = "";
@@ -1340,6 +1348,20 @@ var searchBatchLearnDataList = function (addCond, page) {
         success: function (data) {
             console.log(data);
             var list = data.data;
+
+            var selHtmlText = "";
+            if (data.docTopType) {
+                for (var i = 0; i < data.docTopType.length; i++) {
+                    if (docType && docType == data.docTopType[i].SEQNUM) {
+                        selHtmlText += "<option value='" + data.docTopType[i].SEQNUM + "' selected>" + data.docTopType[i].DOCNAME + "</option>";
+                    } else {
+                        selHtmlText += "<option value='" + data.docTopType[i].SEQNUM + "'>" + data.docTopType[i].DOCNAME + "</option>";
+                    }
+
+                }
+            }
+            $("#docTopType").html(selHtmlText);
+            fnDocTypeColumn(docType);
 
             if (list.length != 0) {
 
@@ -1461,6 +1483,46 @@ $(document).on('click','.li_paging',function(e){
         searchBatchLearnDataList(addCond, $(this).val());
     }
 });
+
+function fnDocTypeColumn(docType) {
+    var param = {
+        'docType': docType
+    };
+
+    $.ajax({
+        url: '/batchLearningTest/selectIcrLabelDef',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify(param),
+        contentType: 'application/json; charset=UTF-8',
+        success: function (data) {
+            console.log(data);
+            var list = data.rows;
+            $("#docTableColumn").html("");
+            var htmlText = "";
+            htmlText = "<colgroup>";
+            for (var i = 0; i < list.length; i++) {
+                htmlText += '<col style="width:200px">';
+            }
+            htmlText += "</colgroup><thead><tr>";
+            for (var i = 0; i < list.length; i++) {
+                htmlText += '<th scope="row">' + list[i].KORNM + '</th>';
+            }
+            htmlText += "</tr></thead>";
+            $("#docTableColumn").html(htmlText);
+
+            $("#docTableList > colgroup").html("");
+            htmlText = "";
+            for (var i = 0; i < list.length; i++) {
+                htmlText += '<col style="width:200px">';
+            }
+            $("#docTableList > colgroup").html(htmlText);
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
+}
 
 function checkBoxCssEvent(tableTag) {
     var isAfter = tableTag.indexOf('after') != -1;
