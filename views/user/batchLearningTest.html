@@ -16,7 +16,7 @@
     <!-- tui-grid css import-->
     <link rel="stylesheet" href="/common/css/fileupload/jquery.fileupload.css">
     <!-- tui-grid css import-->
-    <link rel="stylesheet" href="css/user/batchLearning.css">
+    <link rel="stylesheet" href="css/user/batchLearningTest.css">
     <!-- form submit aync & multi-upload js import -->
     <script type="text/javascript" src="js/import/fileupload/jquery.ui.widget.js"></script>
     <script type="text/javascript" src="js/import/fileupload/jquery.iframe-transport.js"></script>
@@ -132,6 +132,7 @@
                 <div class="clear_both"></div>
                 <form id="multiUploadForm" action="/batchLearning/multiUpload" method="post" enctype="multipart/form-data">
                     <div class="bl_btn_div">
+                        <select id="docTopType"></select>
                         <p class="attach_btn fl">
                             <i class="upload_icon"></i>
                             <input type="file" id="document_file" name="file" multiple />
