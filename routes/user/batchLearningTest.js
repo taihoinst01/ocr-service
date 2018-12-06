@@ -28,6 +28,7 @@ var pythonConfig = require(appRoot + '/config/pythonConfig');
 var mlStudio = require('../util/mlStudio.js');
 var transPantternVar = require('./transPattern');
 var Step = require('step');
+var Iconv = require('iconv').Iconv;
 
 var selectBatchLearningDataListQuery = queryConfig.batchLearningConfig.selectBatchLearningDataList;
 var selectBatchLearningDataQuery = queryConfig.batchLearningConfig.selectBatchLearningData;
@@ -2425,6 +2426,7 @@ router.post('/batchLearnTraining', function (req, res) {
 
 function batchLearnTraining(filepath, callback) {
     sync.fiber(function () {
+        var iconv = new Iconv('EUC-KR', 'UTF-8');
 
         var imgid = sync.await(oracle.selectImgid(filepath, sync.defer()));
         imgid = imgid.rows[0].IMGID;
@@ -2433,10 +2435,12 @@ function batchLearnTraining(filepath, callback) {
         console.log(filepath);
         var ocrResult = sync.await(ocrUtil.localOcr((appRoot + filename + ".jpg").replace(/\\/gi, '/'), sync.defer()));
         console.log(ocrResult);
-
         pythonConfig.columnMappingOptions.args = [];
         pythonConfig.columnMappingOptions.args.push(JSON.stringify(ocrResult));
         var resPyStr = sync.await(PythonShell.run('uiClassify.py', pythonConfig.columnMappingOptions, sync.defer()));
+        //var mlText = new Buffer(resPyStr[0], 'binary');
+        //var mlConsole = iconv.convert(resPyStr[0]);
+        //console.log(mlConsole);
         var resPyArr = JSON.parse(resPyStr[0]);
         resPyArr = sync.await(transPantternVar.trans(resPyArr, sync.defer()));
         console.log(resPyArr);
