@@ -371,6 +371,9 @@ function processImage(fileInfo) {
         type: 'POST',
         data: JSON.stringify({ 'fileInfo': fileInfo })
     }).success(function (data) {
+        console.log("============================ ocr data ============================ ");
+        console.log(data);
+        console.log("============================ ocr data ============================ ");
         ocrCount++;
         if (!data.code) { // 에러가 아니면
             //console.log(data);

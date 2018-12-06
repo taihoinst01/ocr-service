@@ -16,6 +16,7 @@ var sync = require('../util/sync.js');
 var oracle = require('../util/oracle.js');
 var execSync = require('sync-exec');
 var ocrUtil = require('../util/ocr.js');
+var Step = require('step');
 
 const upload = multer({
     storage: multer.diskStorage({
@@ -40,150 +41,28 @@ var router = express.Router();
 router.post('/imageUpload', upload.any(), function (req, res) {
     sync.fiber(function () {
         var files = req.files;
-        var imagePath = propertiesConfig.filepath.imagePath;
-        var convertedImagePath = appRoot + '\\uploads\\';
+        
         var fileInfo = [];
         var returnObj = [];
 
-        try {
-            for (var i = 0; i < files.length; i++) {
-                console.time("file upload & convert");
-                var fileObj = files[i];
-                var fileExt = fileObj.originalname.split('.')[1];
-
-                if (fileExt.toLowerCase() === 'tif' || fileExt.toLowerCase() === 'jpg') {
-                    var fileItem = {
-                        imgId: new Date().isoNum(8) + "" + Math.floor(Math.random() * 9999999) + 1000000,
-                        filePath: '/' + fileObj.path.replace(/\\/gi, '/'),
-                        oriFileName: fileObj.originalname,
-                        convertedFilePath: convertedImagePath.replace(/\\/gi, '/'),
-                        convertFileName: fileObj.originalname.split('.')[0] + '.jpg',
-                        fileExt: fileExt,
-                        fileSize: fileObj.size,
-                        contentType: fileObj.mimetype
-                    };
-                    fileInfo.push(fileItem);
-
-                    var fileNames = [];
-                    returnObj.push(fileItem.convertFileName);
-
-                    var ifile = convertedImagePath + fileObj.originalname;
-                    var ofile = convertedImagePath + fileObj.originalname.split('.')[0] + '.jpg';
-
-                    var result = execSync('module\\imageMagick\\convert.exe -density 800x800 ' + ifile + ' ' + ofile);
-                    if (result.status != 0) {
-                        throw new Error(result.stderr);
-                    }
-                } else if (fileExt.toLowerCase() === 'png') {
-                    var fileItem = {
-                        imgId: new Date().isoNum(8) + "" + Math.floor(Math.random() * 9999999) + 1000000,
-                        filePath: '/' + fileObj.path.replace(/\\/gi, '/'),
-                        oriFileName: fileObj.originalname,
-                        convertedFilePath: convertedImagePath.replace(/\\/gi, '/'),
-                        convertFileName: fileObj.originalname.split('.')[0] + '.png',
-                        fileExt: fileExt,
-                        fileSize: fileObj.size,
-                        contentType: fileObj.mimetype
-                    };
-                    fileInfo.push(fileItem);
-
-                    var fileNames = [];
-                    returnObj.push(fileItem.convertFileName);
-
-                    var ifile = convertedImagePath + fileObj.originalname;
-                    var ofile = convertedImagePath + fileObj.originalname.split('.')[0] + '.png';
-
-                } else if (fileExt.toLowerCase() === 'docx' || fileExt.toLowerCase() === 'doc'
-                    || fileExt.toLowerCase() === 'xlsx' || fileExt.toLowerCase() === 'xls'
-                    || fileExt.toLowerCase() === 'pptx' || fileExt.toLowerCase() === 'ppt'
-                    || fileExt.toLowerCase() === 'pdf') {
-
-
-                    var ifile = convertedImagePath + fileObj.originalname;
-                    var ofile = convertedImagePath + fileObj.originalname.split('.')[0] + '.pdf';
-
-                    var convertPdf = '';
-
-                    //file decription 운영 경로
-                    //execSync('java -jar C:/ICR/app/source/module/DrmDec.jar "' + ifile + '"');
-
-                    //file convert MsOffice to Pdf
-                    if (!(fileExt.toLowerCase() === 'pdf')) {
-                        //convertPdf = execSync('"C:/Program Files/LibreOffice/program/python.exe" C:/ICR/app/source/module/unoconv/unoconv.py -f pdf -o "' + ofile + '" "' + ifile + '"');  //운영
-                        convertPdf = execSync('"C:/Program Files/LibreOffice/program/python.exe" C:/Users/Taiho/Source/Repos/ocr-service/module/unoconv/unoconv.py -f pdf -o "' + ofile + '" "' + ifile + '"');
-                    }
-
-                    ifile = convertedImagePath + fileObj.originalname.split('.')[0] + '.pdf';
-                    ofile = convertedImagePath + fileObj.originalname.split('.')[0] + '.png';
-
-                    //file convert Pdf to Png
-                    if (convertPdf || fileExt.toLowerCase() === 'pdf') {
-                        var result = execSync('module\\imageMagick\\convert.exe -density 300 -colorspace Gray -alpha remove -alpha off "' + ifile + '" "' + ofile + '"');
-
-                        if (result.status != 0) {
-                            throw new Error(result.stderr);
-                        }
-
-                        var isStop = false;
-                        var j = 0;
-                        while (!isStop) {
-                            try { // 하나의 파일 안의 여러 페이지면
-                                var convertFileFullPath = appRoot + '\\' + files[i].path.split('.')[0] + '-' + j + '.png';
-                                var stat = fs.statSync(convertFileFullPath);
-                                if (stat) {
-                                    var fileItem = {
-                                        imgId: new Date().isoNum(8) + "" + Math.floor(Math.random() * 9999999) + 1000000,
-                                        filePath: '/' + fileObj.path.replace(/\\/gi, '/'),
-                                        oriFileName: fileObj.originalname,
-                                        convertedFilePath: convertedImagePath.replace(/\\/gi, '/'),
-                                        convertFileName: fileObj.originalname.split('.')[0] + '-' + j + '.png',
-                                        fileExt: fileExt,
-                                        fileSize: fileObj.size,
-                                        contentType: fileObj.mimetype
-                                    };
-                                    fileInfo.push(fileItem);
-                                    returnObj.push(fileItem.convertFileName);
-                                } else {
-                                    isStop = true;
-                                    break;
-                                }
-                            } catch (err) { // 하나의 파일 안의 한 페이지면
-                                try {
-                                    var convertFileFullPath = appRoot + '\\' + files[i].path.split('.')[0] + '.png';
-                                    var stat2 = fs.statSync(convertFileFullPath);
-                                    if (stat2) {
-                                        var fileItem = {
-                                            imgId: new Date().isoNum(8) + "" + Math.floor(Math.random() * 9999999) + 1000000,
-                                            filePath: '/' + fileObj.path.replace(/\\/gi, '/'),
-                                            oriFileName: fileObj.originalname,
-                                            convertedFilePath: convertedImagePath.replace(/\\/gi, '/'),
-                                            convertFileName: fileObj.originalname.split('.')[0] + '.png',
-                                            fileExt: fileExt,
-                                            fileSize: fileObj.size,
-                                            contentType: fileObj.mimetype
-                                        };
-                                        fileInfo.push(fileItem);
-                                        returnObj.push(fileItem.convertFileName);
-                                        break;
-                                    }
-                                } catch (e) {
-                                    break;
-                                }
-                            }
-                            j++;
-                        }
-
-                    } else {
-                        throw new Error("pdf convert fail");
-                    }
-                }
-                console.timeEnd("file upload & convert");
-            }
-            res.send({ code: 200, message: returnObj, fileInfo: fileInfo, type: 'image' });
-        } catch (e) {
-            console.log(e);
-            res.send({ code: 500, message: [], error: e });
-        }
+        Step(          
+            function uploadConvertStep() {
+                var self = this;
+                files.forEach(function (element) {
+                    var result = uploadConvert(element, self.parallel());
+                    fileInfo.push(result.fileInfo);
+                    returnObj.push(result.returnObj);
+                });
+            },
+                
+            function finalize(err) {
+                if (err) console.log(err);
+                console.log('done');
+                res.send({ code: 200, message: returnObj, fileInfo: fileInfo, type: 'image' });
+            }         
+        );
+            
+       
 
     });
 
@@ -237,6 +116,146 @@ router.post('/imageUpload', upload.any(), function (req, res) {
     }
     */
 });
+
+function uploadConvert(files, callback) {
+    var returnResult = {};
+    var imagePath = propertiesConfig.filepath.imagePath;
+    var convertedImagePath = appRoot + '\\uploads\\';
+    console.time("file upload & convert");
+    var fileObj = files;
+    var fileExt = fileObj.originalname.split('.')[1];
+
+    if (fileExt.toLowerCase() === 'tif' || fileExt.toLowerCase() === 'jpg') {
+        var fileItem = {
+            imgId: new Date().isoNum(8) + "" + Math.floor(Math.random() * 9999999) + 1000000,
+            filePath: '/' + fileObj.path.replace(/\\/gi, '/'),
+            oriFileName: fileObj.originalname,
+            convertedFilePath: convertedImagePath.replace(/\\/gi, '/'),
+            convertFileName: fileObj.originalname.split('.')[0] + '.jpg',
+            fileExt: fileExt,
+            fileSize: fileObj.size,
+            contentType: fileObj.mimetype
+        };
+        returnResult.fileInfo = fileItem;
+
+        var fileNames = [];
+        returnResult.returnObj = fileItem.convertFileName;
+
+        var ifile = convertedImagePath + fileObj.originalname;
+        var ofile = convertedImagePath + fileObj.originalname.split('.')[0] + '.jpg';
+        
+        var result = execSync('module\\imageMagick\\convert.exe -density 800x800 ' + ifile + ' ' + ofile);
+        if (result.status != 0) {
+            throw new Error(result.stderr);
+        }
+    } else if (fileExt.toLowerCase() === 'png') {
+        var fileItem = {
+            imgId: new Date().isoNum(8) + "" + Math.floor(Math.random() * 9999999) + 1000000,
+            filePath: '/' + fileObj.path.replace(/\\/gi, '/'),
+            oriFileName: fileObj.originalname,
+            convertedFilePath: convertedImagePath.replace(/\\/gi, '/'),
+            convertFileName: fileObj.originalname.split('.')[0] + '.png',
+            fileExt: fileExt,
+            fileSize: fileObj.size,
+            contentType: fileObj.mimetype
+        };
+        fileInfo.push(fileItem);
+
+        var fileNames = [];
+        returnObj.push(fileItem.convertFileName);
+
+        var ifile = convertedImagePath + fileObj.originalname;
+        var ofile = convertedImagePath + fileObj.originalname.split('.')[0] + '.png';
+
+    } else if (fileExt.toLowerCase() === 'docx' || fileExt.toLowerCase() === 'doc'
+        || fileExt.toLowerCase() === 'xlsx' || fileExt.toLowerCase() === 'xls'
+        || fileExt.toLowerCase() === 'pptx' || fileExt.toLowerCase() === 'ppt'
+        || fileExt.toLowerCase() === 'pdf') {
+
+
+        var ifile = convertedImagePath + fileObj.originalname;
+        var ofile = convertedImagePath + fileObj.originalname.split('.')[0] + '.pdf';
+
+        var convertPdf = '';
+
+        //file decription 운영 경로
+        //execSync('java -jar C:/ICR/app/source/module/DrmDec.jar "' + ifile + '"');
+
+        //file convert MsOffice to Pdf
+        if (!(fileExt.toLowerCase() === 'pdf')) {
+            //convertPdf = execSync('"C:/Program Files/LibreOffice/program/python.exe" C:/ICR/app/source/module/unoconv/unoconv.py -f pdf -o "' + ofile + '" "' + ifile + '"');  //운영
+            convertPdf = execSync('"C:/Program Files/LibreOffice/program/python.exe" C:/Users/Taiho/Source/Repos/ocr-service/module/unoconv/unoconv.py -f pdf -o "' + ofile + '" "' + ifile + '"');
+        }
+
+        ifile = convertedImagePath + fileObj.originalname.split('.')[0] + '.pdf';
+        ofile = convertedImagePath + fileObj.originalname.split('.')[0] + '.png';
+
+        //file convert Pdf to Png
+        if (convertPdf || fileExt.toLowerCase() === 'pdf') {
+            var result = execSync('module\\imageMagick\\convert.exe -density 300 -colorspace Gray -alpha remove -alpha off "' + ifile + '" "' + ofile + '"');
+
+            if (result.status != 0) {
+                throw new Error(result.stderr);
+            }
+
+            var isStop = false;
+            var j = 0;
+            while (!isStop) {
+                try { // 하나의 파일 안의 여러 페이지면
+                    var convertFileFullPath = appRoot + '\\' + files.path.split('.')[0] + '-' + j + '.png';
+                    var stat = fs.statSync(convertFileFullPath);
+                    if (stat) {
+                        var fileItem = {
+                            imgId: new Date().isoNum(8) + "" + Math.floor(Math.random() * 9999999) + 1000000,
+                            filePath: '/' + fileObj.path.replace(/\\/gi, '/'),
+                            oriFileName: fileObj.originalname,
+                            convertedFilePath: convertedImagePath.replace(/\\/gi, '/'),
+                            convertFileName: fileObj.originalname.split('.')[0] + '-' + j + '.png',
+                            fileExt: fileExt,
+                            fileSize: fileObj.size,
+                            contentType: fileObj.mimetype
+                        };
+                        fileInfo.push(fileItem);
+                        returnObj.push(fileItem.convertFileName);
+                    } else {
+                        isStop = true;
+                        break;
+                    }
+                } catch (err) { // 하나의 파일 안의 한 페이지면
+                    try {
+                        var convertFileFullPath = appRoot + '\\' + files.path.split('.')[0] + '.png';
+                        var stat2 = fs.statSync(convertFileFullPath);
+                        if (stat2) {
+                            var fileItem = {
+                                imgId: new Date().isoNum(8) + "" + Math.floor(Math.random() * 9999999) + 1000000,
+                                filePath: '/' + fileObj.path.replace(/\\/gi, '/'),
+                                oriFileName: fileObj.originalname,
+                                convertedFilePath: convertedImagePath.replace(/\\/gi, '/'),
+                                convertFileName: fileObj.originalname.split('.')[0] + '.png',
+                                fileExt: fileExt,
+                                fileSize: fileObj.size,
+                                contentType: fileObj.mimetype
+                            };
+                            fileInfo.push(fileItem);
+                            returnObj.push(fileItem.convertFileName);
+                            break;
+                        }
+                    } catch (e) {
+                        break;
+                    }
+                }
+                j++;
+            }
+
+        } else {
+            throw new Error("pdf convert fail");
+        }
+    }
+    console.timeEnd("file upload & convert");
+    
+    callback();
+    return returnResult;
+}
 
 router.post('/approvalDtlProcess', function (req, res) {
     var data = req.body.data;
@@ -736,6 +755,7 @@ router.post('/headerUserPopSelectPw', function (req, res) {
     var query = queryConfig.userMngConfig.headerUserPopSelectPw + condQuery;
     commonDB.reqQuery(query, callbackHeaderUserPopSelectPw, req, res);
 });
+
 
 // [POST] 헤더 사용자관리 팝업 패스워드 변경
 var callbackHeaderUserPopChangePw = function (rows, req, res) {
