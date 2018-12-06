@@ -28,7 +28,7 @@ var pythonConfig = require(appRoot + '/config/pythonConfig');
 var mlStudio = require('../util/mlStudio.js');
 var transPantternVar = require('./transPattern');
 var Step = require('step');
-var Iconv = require('iconv').Iconv;
+var paging = require(appRoot + '/config/paging');
 
 var selectBatchLearningDataListQuery = queryConfig.batchLearningConfig.selectBatchLearningDataList;
 var selectBatchLearningDataQuery = queryConfig.batchLearningConfig.selectBatchLearningData;
@@ -223,6 +223,7 @@ var fnSearchBatchLearningDataList = function (req, res) {
 
     sync.fiber(function () {
         try {
+            var currentPage = req.body.page;
 
             //var retData = {};
             //hskim 20180828 일괄학습 화면 상단 셀렉트 버튼에서 값 가져오게 변경
@@ -237,9 +238,12 @@ var fnSearchBatchLearningDataList = function (req, res) {
                     imgIdList.push(originImageArr[i].IMGID);
                 }
                 mlData = sync.await(oracle.selectBatchLearnMlListTest(imgIdList, sync.defer()));
+                
+                res.send({ data: originImageArr, mlData: mlData, code: 200, pageList : paging.pagination(currentPage, originImageArr[0].TOTCNT)});
+            } else {
+                res.send({ data: originImageArr, mlData: mlData, code: 200 });
             }
 
-            res.send({ data: originImageArr, mlData: mlData, code: 200 });
 
             // 9월11일 전 버전
             /*if (req.body.addCond == "LEARN_Y") {
@@ -2426,7 +2430,6 @@ router.post('/batchLearnTraining', function (req, res) {
 
 function batchLearnTraining(filepath, callback) {
     sync.fiber(function () {
-        var iconv = new Iconv('EUC-KR', 'UTF-8');
 
         var imgid = sync.await(oracle.selectImgid(filepath, sync.defer()));
         imgid = imgid.rows[0].IMGID;
@@ -2435,12 +2438,10 @@ function batchLearnTraining(filepath, callback) {
         console.log(filepath);
         var ocrResult = sync.await(ocrUtil.localOcr((appRoot + filename + ".jpg").replace(/\\/gi, '/'), sync.defer()));
         console.log(ocrResult);
+
         pythonConfig.columnMappingOptions.args = [];
         pythonConfig.columnMappingOptions.args.push(JSON.stringify(ocrResult));
         var resPyStr = sync.await(PythonShell.run('uiClassify.py', pythonConfig.columnMappingOptions, sync.defer()));
-        //var mlText = new Buffer(resPyStr[0], 'binary');
-        //var mlConsole = iconv.convert(resPyStr[0]);
-        //console.log(mlConsole);
         var resPyArr = JSON.parse(resPyStr[0]);
         resPyArr = sync.await(transPantternVar.trans(resPyArr, sync.defer()));
         console.log(resPyArr);

@@ -1312,11 +1312,14 @@ function updateBatchLearningData(fileNames, data) {
 
 // [Function]
 // main menu batch learning 1 [List] 배치학습데이터 조회
-var searchBatchLearnDataList = function (addCond) {
+var searchBatchLearnDataList = function (addCond, page) {
     var param = {
+        /*
         'startNum': startNum,
         'moreNum': nvl2($("#select_view_count").val(), 20),
-        'addCond': nvl(addCond)
+        */
+        'addCond': nvl(addCond),
+        'page': nvl2(page, 1)
     };
     var appendHtml = "";
     var checkboxHtml = "";
@@ -1416,6 +1419,7 @@ var searchBatchLearnDataList = function (addCond) {
             $('#batch_right_contents_after select').stbDropdown();
             checkBoxCssEvent('#batch_left_contents_before');
             checkBoxCssEvent('#batch_left_contents_after');
+            $('#paginationDiv').empty().append(data.pageList);
         },
         error: function (err) {
             endProgressBar(progressId); // end progressbar
@@ -1451,6 +1455,12 @@ var searchBatchLearnDataList = function (addCond) {
         return hasColvalue ? appendMLSelect : '';
     }
 };
+
+$(document).on('click','.li_paging',function(e){
+    if(!$(this).hasClass('active')){
+        searchBatchLearnDataList(addCond, $(this).val());
+    }
+});
 
 function checkBoxCssEvent(tableTag) {
     var isAfter = tableTag.indexOf('after') != -1;
@@ -3008,7 +3018,7 @@ function _init() {
     imageUploadEvent();         // image upload event
     //excelUploadEvent();         // excel upload event
     popUpEvent();
-    searchBatchLearnDataList(addCond);   // 배치 학습 데이터 조회
+    searchBatchLearnDataList(addCond, 1);   // 배치 학습 데이터 조회
     changeDocPopupImage();      // 문서 양식 조회 이미지 좌우 버튼 이벤트
     popUpRunEvent();            // 문서 양식 조회 및 저장 
     selectLearningMethod();     //학습실행팝업
