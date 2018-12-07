@@ -24,6 +24,7 @@ var columnMappingOptions = {
     pythonPath: '',
     pythonOptions: ['-u'],
     scriptPath: './ml/ColumnMapping',
+    encoding: 'utf-8',
     args: []
 };
 module.exports = {

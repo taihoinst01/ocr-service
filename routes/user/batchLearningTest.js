@@ -2436,14 +2436,24 @@ function batchLearnTraining(filepath, callback) {
         imgid = imgid.rows[0].IMGID;
 
         var filename = filepath.substring(0, filepath.lastIndexOf("."));
-        console.log(filepath);
-        var ocrResult = sync.await(ocrUtil.localOcr((appRoot + filename + ".jpg").replace(/\\/gi, '/'), sync.defer()));
-        console.log(ocrResult);
+        var fullFilePath = appRoot.replace(/\\/g,'/') + filename + ".jpg"
 
+        var selOcr = sync.await(oracle.selectOcrData(fullFilePath, sync.defer()));
+        if (selOcr.length == 0) {
+            var ocrResult = sync.await(ocrUtil.localOcr(fullFilePath, sync.defer()));
+            sync.await(oracle.insertOcrData(fullFilePath, JSON.stringify(ocrResult), sync.defer()));
+            selOcr = sync.await(oracle.selectOcrData(fullFilePath, sync.defer()));
+        }
+        
+        var seqNum = selOcr.SEQNUM;
         pythonConfig.columnMappingOptions.args = [];
-        pythonConfig.columnMappingOptions.args.push(JSON.stringify(ocrResult));
-        var resPyStr = sync.await(PythonShell.run('uiClassify.py', pythonConfig.columnMappingOptions, sync.defer()));
-        var resPyArr = JSON.parse(resPyStr[0]);
+        pythonConfig.columnMappingOptions.args.push(seqNum);
+        var resPyStr = sync.await(PythonShell.run('batchClassifyTest.py', pythonConfig.columnMappingOptions, sync.defer()));
+        var testStr = resPyStr[0].replace('b', '');
+        testStr = testStr.replace(/'/g, '');
+        var decode = new Buffer(testStr, 'base64').toString('utf-8');
+
+        var resPyArr = JSON.parse(decode);
         resPyArr = sync.await(transPantternVar.trans(resPyArr, sync.defer()));
         console.log(resPyArr);
 
@@ -2451,7 +2461,7 @@ function batchLearnTraining(filepath, callback) {
         retData = resPyArr;
         retData.fileinfo = { filepath: filepath, imgId: imgid };
         sync.await(oracle.insertMLData(retData, sync.defer()));
-
+        sync.await(oracle.updateBatchLearnListDocType(retData, sync.defer()));
         callback();
     });
 }

@@ -659,9 +659,14 @@ exports.selectBatchLearnListTest = function (req, done) {
                                                         (select ROW_NUMBER() OVER(ORDER BY REGDATE DESC, FILEPATH) AS NUM, 
                                                         COUNT('1') OVER(PARTITION BY '1') AS TOTCNT, 
                                                         CEIL((ROW_NUMBER() OVER(ORDER BY REGDATE DESC, FILEPATH))/ 13) PAGEIDX, 
-                                                        IMGID, STATUS, FILEPATH, DOCTYPE, REGDATE
-                                                        from TBL_BATCH_LEARN_LIST WHERE` + condQuery + `) bll
-                                                    WHERE PAGEIDX = :pageIdx`
+                                                        IMGID, STATUS, FILEPATH, DOCTYPE, DOCNAME, REGDATE
+                                                        from (
+                                                            SELECT IMGID, STATUS, FILEPATH, A.DOCTYPE, B.DOCNAME, REGDATE
+                                                            FROM TBL_BATCH_LEARN_LIST A,
+                                                            TBL_DOCUMENT_CATEGORY B
+                                                            WHERE A.DOCTYPE = B.DOCTYPE(+)
+                                                            ) WHERE` + condQuery + `) bll
+                                                        WHERE PAGEIDX = :pageIdx`
                                                     , [req.body.page]);
             return done(null, resAnswerFile.rows);
         } catch (err) { // catches errors in getConnection and the query
@@ -1900,7 +1905,7 @@ exports.selectOcrData = function (req, done) {
             var ocr = JSON.parse(result.rows[0].OCRDATA);
             //var retData = ocrJson(ocr.regions);
 
-            return done(null, ocr);
+            return done(null, result.rows[0]);
         } catch (err) { // catches errors in getConnection and the query
             reject(err);
         } finally {
@@ -3311,6 +3316,33 @@ exports.selectIcrLabelDef = function (req, done) {
             conn = await oracledb.getConnection(dbConfig);
 
             result = await conn.execute("select kornm from tbl_icr_label_def where docId=:docid", [req]);
+
+            return done(null, result);
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+exports.updateBatchLearnListDocType = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        var dateArr = [];
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            var updateSql = "UPDATE TBL_BATCH_LEARN_LIST SET DOCTYPE=:doctype WHERE FILEPATH=:filepath";
+
+            result = await conn.execute(updateSql, [req.docCategory.DOCTYPE, req.fileinfo.filepath]);
 
             return done(null, result);
         } catch (err) { // catches errors in getConnection and the query
