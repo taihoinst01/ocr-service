@@ -1348,21 +1348,31 @@ var searchBatchLearnDataList = function (addCond, page, docType) {
         success: function (data) {
             console.log(data);
             var list = data.data;
-
+            
             var selHtmlText = "";
+            var seletedText = "";
             if (data.docTopType) {
                 for (var i = 0; i < data.docTopType.length; i++) {
                     if (docType && docType == data.docTopType[i].SEQNUM) {
                         selHtmlText += "<option value='" + data.docTopType[i].SEQNUM + "' selected>" + data.docTopType[i].DOCNAME + "</option>";
+                        seletedText = data.docTopType[i].DOCNAME;
                     } else {
                         selHtmlText += "<option value='" + data.docTopType[i].SEQNUM + "'>" + data.docTopType[i].DOCNAME + "</option>";
                     }
 
                 }
             }
+           
             $("#docTopType").html(selHtmlText);
-            fnDocTypeColumn(docType);
 
+            if(seletedText) {
+                $("#docTopType").prev().empty().append(seletedText);
+            } else {
+                $("#docTopType").prev().empty().append('진료비영수증');
+            }
+            
+            fnDocTypeColumn(docType);
+            //todo
             if (list.length != 0) {
 
                 for (var i = 0; i < list.length; i++) {
@@ -3071,6 +3081,8 @@ function _init() {
     $("#uploadDiv").hide();
     $('#gridDiv').hide();
     $('#reviewDiv').hide();
+
+    $('.um_select select').stbDropdown(); // 셀렉트박스 css
 
     //multiUploadEvent();
     //originFileUploadBtnEvent();
