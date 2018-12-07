@@ -130,7 +130,7 @@ function uploadConvert(files, callback) {
     if (fileExt.toLowerCase() === 'tif' || fileExt.toLowerCase() === 'jpg') {
         var fileItem = {
             imgId: new Date().isoNum(8) + "" + Math.floor(Math.random() * 9999999) + 1000000,
-            filePath: '/' + fileObj.path.replace(/\\/gi, '/'),
+            filePath: fileObj.path.replace(/\\/gi, '/'),
             oriFileName: fileObj.originalname,
             convertedFilePath: convertedImagePath.replace(/\\/gi, '/'),
             convertFileName: fileObj.originalname.split('.')[0] + '.jpg',
@@ -153,7 +153,7 @@ function uploadConvert(files, callback) {
     } else if (fileExt.toLowerCase() === 'png') {
         var fileItem = {
             imgId: new Date().isoNum(8) + "" + Math.floor(Math.random() * 9999999) + 1000000,
-            filePath: '/' + fileObj.path.replace(/\\/gi, '/'),
+            filePath: fileObj.path.replace(/\\/gi, '/'),
             oriFileName: fileObj.originalname,
             convertedFilePath: convertedImagePath.replace(/\\/gi, '/'),
             convertFileName: fileObj.originalname.split('.')[0] + '.png',
@@ -209,7 +209,7 @@ function uploadConvert(files, callback) {
                     if (stat) {
                         var fileItem = {
                             imgId: new Date().isoNum(8) + "" + Math.floor(Math.random() * 9999999) + 1000000,
-                            filePath: '/' + fileObj.path.replace(/\\/gi, '/'),
+                            filePath: fileObj.path.replace(/\\/gi, '/'),
                             oriFileName: fileObj.originalname,
                             convertedFilePath: convertedImagePath.replace(/\\/gi, '/'),
                             convertFileName: fileObj.originalname.split('.')[0] + '-' + j + '.png',
@@ -230,7 +230,7 @@ function uploadConvert(files, callback) {
                         if (stat2) {
                             var fileItem = {
                                 imgId: new Date().isoNum(8) + "" + Math.floor(Math.random() * 9999999) + 1000000,
-                                filePath: '/' + fileObj.path.replace(/\\/gi, '/'),
+                                filePath: fileObj.path.replace(/\\/gi, '/'),
                                 oriFileName: fileObj.originalname,
                                 convertedFilePath: convertedImagePath.replace(/\\/gi, '/'),
                                 convertFileName: fileObj.originalname.split('.')[0] + '.png',
