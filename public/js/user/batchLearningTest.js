@@ -1389,15 +1389,15 @@ var searchBatchLearnDataList = function (addCond, page, docType) {
 
                 for (var i = 0; i < list.length; i++) {
                     //var rows = list[i].rows;
-
+                    var fileName = nvl(list[i].FILEPATH.substring((list[i].FILEPATH.lastIndexOf('/') + 1) ));
                     if (addCond == "LEARN_N") checkboxHtml = '<td scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="' + nvl(list[i].FILEPATH) + '" class="sta00" name="listCheck_before" /></td>';
                     else checkboxHtml = '<td scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="' + nvl(list[i].FILEPATH) + '" class="stb00" name="listCheck_after" /></div></td>';
                     var trHeight = i == 0 ? 30 : 31;
                     appendLeftContentsHtml += '<tr id="leftRowNum_' + i + '" style="height:' + trHeight + 'px;">' +
                         checkboxHtml +
                         '<td><a class="fileNamePath" data-filepath="' + nvl(list[i].FILEPATH) + '" data-imgId="' + nvl(list[i].IMGID) + '" ' +
-                            'onclick = "javascript:fn_viewImageData(\'' + nvl(list[i].FILEPATH) + '\',\'' + i + '\', \'' + nvl(list[i].IMGID) + '\', this)" href = "javascript:void(0);" > '
-                            + nvl(list[i].FILEPATH.substring((list[i].FILEPATH.lastIndexOf('/') + 1) )) + '</a ></td > < !--FILENAME--> ' +
+                            'onclick = "javascript:fn_viewImageData(\'' + fileName + '\',\'' + i + '\', \'' + nvl(list[i].IMGID) + '\', this)" href = "javascript:void(0);" > '
+                            + fileName + '</a ></td > < !--FILENAME--> ' +
                         '<td> ' + appendPredDoc(list[i]) + ' </td> <!--doctype -->' +
                         '</tr>';
                     //appendRightContentsHtml += '<tr class="rowNum' + i + '" style="height:' + (trHeight + 12) + 'px;"><td colspan="36"></td></tr>'
@@ -1689,7 +1689,7 @@ function compareMLAndAnswer(mlData) {
     }
 }
 
-function fn_viewImageData(filepath, rowNum, imgId, obj) {
+function fn_viewImageData(filename, rowNum, imgId, obj) {
 
     var appendHtml = '';
     $('#tbody_batchList_answer').empty();
@@ -1700,7 +1700,7 @@ function fn_viewImageData(filepath, rowNum, imgId, obj) {
         data = $("#batch_right_contents_after .rowNum" + rowNum);
     }
 
-    loadImage('/tifTest' + filepath, function (tifResult) {
+    loadImage('/tif/' + filename, function (tifResult) {
 
         if (tifResult) {
             $(tifResult).css({
@@ -3570,6 +3570,7 @@ function fn_viewDoctypePop(obj) {
     var filepath = data.attr('data-filepath');
     var imgId = data.attr('data-imgId');
     var rowIdx = $(obj).closest('tr').attr('id').split('_')[1];
+    var fileName = nvl(filepath.substring(filepath.lastIndexOf('/') + 1));
     $('#batchListRowNum').val(rowIdx);
     $('#docPopImgId').val(imgId);
     $('#docPopImgPath').val(filepath);
@@ -3577,7 +3578,7 @@ function fn_viewDoctypePop(obj) {
     selectClassificationSt(filepath); // 분류제외문장 렌더링
     //$('#mlPredictionDocName').val('UNKNOWN');
 
-    loadImage('/tifTest' + filepath, function (tifResult) {
+    loadImage('/tif/' + fileName, function (tifResult) {
  
         if (tifResult) {
             $(tifResult).css({
