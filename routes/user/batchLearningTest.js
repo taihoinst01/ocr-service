@@ -2438,11 +2438,11 @@ function batchLearnTraining(filepath, callback) {
         var filename = filepath.substring(0, filepath.lastIndexOf("."));
         var fullFilePath = appRoot.replace(/\\/g,'/') + filename + ".jpg"
 
-        var selOcr = sync.await(oracle.selectOcrData(fullFilePath, sync.defer()));
+        var selOcr = sync.await(oracle.selectOcrData(filepath, sync.defer()));
         if (selOcr.length == 0) {
             var ocrResult = sync.await(ocrUtil.localOcr(fullFilePath, sync.defer()));
-            sync.await(oracle.insertOcrData(fullFilePath, JSON.stringify(ocrResult), sync.defer()));
-            selOcr = sync.await(oracle.selectOcrData(fullFilePath, sync.defer()));
+            sync.await(oracle.insertOcrData(filepath, JSON.stringify(ocrResult), sync.defer()));
+            selOcr = sync.await(oracle.selectOcrData(filepath, sync.defer()));
         }
         
         var seqNum = selOcr.SEQNUM;
