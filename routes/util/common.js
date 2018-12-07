@@ -21,7 +21,8 @@ var Step = require('step');
 const upload = multer({
     storage: multer.diskStorage({
         destination: function (req, file, cb) {
-            cb(null, 'uploads/');
+            //cb(null, 'uploads/');
+            cb(null, propertiesConfig.filepath.uploadsPath);
         },
         filename: function (req, file, cb) {
             cb(null, file.originalname);
@@ -120,7 +121,8 @@ router.post('/imageUpload', upload.any(), function (req, res) {
 function uploadConvert(files, callback) {
     var returnResult = {};
     var imagePath = propertiesConfig.filepath.imagePath;
-    var convertedImagePath = appRoot + '\\uploads\\';
+    //var convertedImagePath = appRoot + '\\uploads\\';
+    var convertedImagePath = propertiesConfig.filepath.uploadsPath;
     console.time("file upload & convert");
     var fileObj = files;
     var fileExt = fileObj.originalname.split('.')[1];
