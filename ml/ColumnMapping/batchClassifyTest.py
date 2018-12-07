@@ -378,7 +378,8 @@ def sortArrLocation(inputArr):
     tempArr = []
     retArr = []
     for item in inputArr:
-        tempArr.append((makeindex(item['location']), item))
+       if item['location']:
+            tempArr.append((makeindex(item['location']), item))
     tempArr.sort(key=operator.itemgetter(0))
     for tempItem in tempArr:
         retArr.append(tempItem[1])
