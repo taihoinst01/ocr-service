@@ -32,8 +32,8 @@ function insertDoctypeMapping(req, done) {
             var docType;
             var convertedFilepath;
             var bannedWord;
+
             //20180910 hskim 문서양식 매핑
-            bannedWord = selectBannedWord();
             //문장을 순서대로 for문
             for (var i in data.textList) {
                 //console.log(data.textList[i]);

@@ -167,6 +167,7 @@ var buttonEvent = function () {
 
     //layer4 라디오버튼
     $('input:radio[name=radio_batch]').on('click', function () {
+
         var chkValue = $(this).val();
 
         if (chkValue == '1') {
@@ -177,6 +178,17 @@ var buttonEvent = function () {
             $('#newDocName').show();
             $('#orgDocName').hide();
             $('#notInvoice').hide();
+
+            for (var i = 0; i < $("input[type='checkbox'].batch_layer4_result_chk").length; i++) {
+                $("input[type='checkbox'].batch_layer4_result_chk").eq(i).parent().removeClass("ez-hide");
+                $("input[type='checkbox'].batch_layer4_result_chk").eq(i).prop("checked", true);
+                $("input[type='checkbox'].batch_layer4_result_chk").eq(i).parent().addClass("ez-checked")
+
+                if (i == 20) {
+                    break;
+                }
+            }
+
         } else if (chkValue == '3') {
             $('#notInvoice').show();
             $('#orgDocName').hide();
@@ -1372,7 +1384,7 @@ var searchBatchLearnDataList = function (addCond, page, docType) {
             }
             
             fnDocTypeColumn(docType);
-            //todo
+            
             if (list.length != 0) {
 
                 for (var i = 0; i < list.length; i++) {
@@ -2998,18 +3010,33 @@ function popUpRunEvent() {
             radioType: chkValue,
             textList: textList,
         }
-        $('#progressMsgTitle').html('문서양식 저장중...');
-        progressId = showProgressBar();
-        
-        setTimeout(function () {
-            endProgressBar(progressId);
-            fn_alert('alert', '문서 등록이 완료 되었습니다.');
-            $('#btn_pop_doc_cancel.ui_doc_pop_btn2.cbtn').click();
-            var rowNum = $('#batchListRowNum').val();
-            $('#leftRowNum_' + rowNum).remove();
-            $('.rowNum' + rowNum).remove();
-            $('.mlRowNum' + rowNum).remove();
-        }, 8000);
+        $.ajax({
+            url: '/batchLearning/insertDoctypeMapping',
+            type: 'post',
+            datatype: 'json',
+            data: JSON.stringify(param),
+            contentType: 'application/json; charset=UTF-8',
+            beforeSend: function () {
+                $('#progressMsgTitle').html('문서양식 저장중...');
+                progressId = showProgressBar();
+            },
+            success: function (data) {
+                //location.href = location.href;
+                // 해당 로우 화면상 테이블에서 삭제
+                endProgressBar(progressId);
+                $('#btn_pop_doc_cancel').click();
+                var rowNum = $('#batchListRowNum').val();
+                $('#leftRowNum_' + rowNum).remove();
+                $('.rowNum' + rowNum).remove();
+                $('.mlRowNum' + rowNum).remove();
+                fn_alert('alert', '계산서 양식 저장이 완료 되었습니다.');
+                $('#btn_pop_doc_cancel').click();
+            },
+            error: function (err) {
+                console.log(err);
+                endProgressBar(progressId);
+            }
+        });           
         
         /*
         $.ajax({
@@ -3545,12 +3572,13 @@ function fn_viewDoctypePop(obj) {
     var rowIdx = $(obj).closest('tr').attr('id').split('_')[1];
     $('#batchListRowNum').val(rowIdx);
     $('#docPopImgId').val(imgId);
-    $('#docPopImgPath').val('/2018/07/img1/43/133f143/test.tif');
+    $('#docPopImgPath').val(filepath);
     initLayer4();
-    selectClassificationSt('/2018/07/img1/43/133f143/test.tif'); // 분류제외문장 렌더링
-    $('#mlPredictionDocName').val('UNKNOWN');
+    selectClassificationSt(filepath); // 분류제외문장 렌더링
+    //$('#mlPredictionDocName').val('UNKNOWN');
 
-    loadImage('/tifTest/2018/07/img1/43/133f143/test.tif' , function (tifResult) {
+    loadImage('/tifTest' + filepath, function (tifResult) {
+ 
         if (tifResult) {
             $(tifResult).css({
                 "width": "100%",
@@ -3559,7 +3587,7 @@ function fn_viewDoctypePop(obj) {
             }).addClass("preview");
             $('#originImgDiv').empty().append(tifResult);
         }
-        $('#docPopImgPath').val('/2018/07/img1/43/133f143/test.tif');
+        $('#docPopImgPath').val(filepath);
 
         layer_open('layer4');
     });
@@ -3584,7 +3612,6 @@ function selectClassificationSt(filepath) {
     };
 
     $.ajax({
-		//todo
         url: '/batchLearningTest/selectClassificationSt',
         type: 'post',
         datatype: "json",
@@ -3595,7 +3622,7 @@ function selectClassificationSt(filepath) {
         },
         success: function (data) {
             //console.log("SUCCESS selectClassificationSt : " + JSON.stringify(data));
-            if (data.code != 500 || data.data != null) {
+            if (data.code != 500 && data.data.length == 1) {
 
                 var ocrdata = JSON.parse(data.data[0].OCRDATA);
 
@@ -3613,22 +3640,11 @@ function selectClassificationSt(filepath) {
 
                 for (let i = 0; i < tempArr.length; i++) {
 
-                    var bannedCheck = true;
-                    for (let j = 0; j < data.bannedData.length; j++) {
-                        if (tempArr[i][1].text.toLowerCase().indexOf(data.bannedData[j].WORD) == 0) {
-                            bannedCheck = false;
-                            break;
-                        }
-                    }
-                    var resultOcrData = '<tr class="batch_layer4_result_tr">';
-                    if (bannedCheck) {
-                        resultOcrData += '<td><input type="checkbox" class="batch_layer4_result_chk"></td>';
-                    } else {
-                        resultOcrData += '<td><input type="checkbox" checked="checked" class="batch_layer4_result_chk"></td>';
-                    }
-                    resultOcrData += '<td class="td_bannedword"></td></tr>';
+                    var resultOcrData = '<tr class="batch_layer4_result_tr">'
+                                    + '<td><input type="checkbox" class="batch_layer4_result_chk"></td>'
+                                    + '<td class="td_sentence"></td></tr>';
                     $('#batch_layer4_result').append(resultOcrData);
-                    $('.td_bannedword:eq('+ i +')').text(tempArr[i][1].text);
+                    $('.td_sentence:eq('+ i +')').text(tempArr[i][1].text);
                 }
                 $('input[type=checkbox]').ezMark();
                 
@@ -3651,7 +3667,7 @@ function editBannedword() {
     });
 
     // td영역 클릭시 edit
-    $(document).on('click', '.td_bannedword', function () {
+    $(document).on('click', '.td_sentence', function () {
         var bannedCheck = $(this).prev().find('.batch_layer4_result_chk').is(':checked');
         var isInputFocus = $(this).children('input').is(":focus");
         if (bannedCheck && isInputFocus == false) {

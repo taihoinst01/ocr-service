@@ -3454,9 +3454,8 @@ router.post('/selectClassificationSt', function (req, res) {
     sync.fiber(function () {
         try {
             var result = sync.await(oracle.selectClassificationSt(data, sync.defer()));
-            var resultBanned = sync.await(oracle.selectBannedWord(sync.defer()));
             if (result.rows) {
-                returnObj = { data: result.rows, bannedData: resultBanned };
+                returnObj = { data: result.rows };
             } else {
                 returnObj = { data: null };
             }
