@@ -21,7 +21,8 @@ var Step = require('step');
 const upload = multer({
     storage: multer.diskStorage({
         destination: function (req, file, cb) {
-            cb(null, 'uploads/');
+            //cb(null, 'uploads/');
+            cb(null, propertiesConfig.filepath.uploadsPath);
         },
         filename: function (req, file, cb) {
             cb(null, file.originalname);
@@ -120,7 +121,8 @@ router.post('/imageUpload', upload.any(), function (req, res) {
 function uploadConvert(files, callback) {
     var returnResult = {};
     var imagePath = propertiesConfig.filepath.imagePath;
-    var convertedImagePath = appRoot + '\\uploads\\';
+    //var convertedImagePath = appRoot + '\\uploads\\';
+    var convertedImagePath = propertiesConfig.filepath.uploadsPath;
     console.time("file upload & convert");
     var fileObj = files;
     var fileExt = fileObj.originalname.split('.')[1];
@@ -128,7 +130,7 @@ function uploadConvert(files, callback) {
     if (fileExt.toLowerCase() === 'tif' || fileExt.toLowerCase() === 'jpg') {
         var fileItem = {
             imgId: new Date().isoNum(8) + "" + Math.floor(Math.random() * 9999999) + 1000000,
-            filePath: '/' + fileObj.path.replace(/\\/gi, '/'),
+            filePath: fileObj.path.replace(/\\/gi, '/'),
             oriFileName: fileObj.originalname,
             convertedFilePath: convertedImagePath.replace(/\\/gi, '/'),
             convertFileName: fileObj.originalname.split('.')[0] + '.jpg',
@@ -151,7 +153,7 @@ function uploadConvert(files, callback) {
     } else if (fileExt.toLowerCase() === 'png') {
         var fileItem = {
             imgId: new Date().isoNum(8) + "" + Math.floor(Math.random() * 9999999) + 1000000,
-            filePath: '/' + fileObj.path.replace(/\\/gi, '/'),
+            filePath: fileObj.path.replace(/\\/gi, '/'),
             oriFileName: fileObj.originalname,
             convertedFilePath: convertedImagePath.replace(/\\/gi, '/'),
             convertFileName: fileObj.originalname.split('.')[0] + '.png',
@@ -207,7 +209,7 @@ function uploadConvert(files, callback) {
                     if (stat) {
                         var fileItem = {
                             imgId: new Date().isoNum(8) + "" + Math.floor(Math.random() * 9999999) + 1000000,
-                            filePath: '/' + fileObj.path.replace(/\\/gi, '/'),
+                            filePath: fileObj.path.replace(/\\/gi, '/'),
                             oriFileName: fileObj.originalname,
                             convertedFilePath: convertedImagePath.replace(/\\/gi, '/'),
                             convertFileName: fileObj.originalname.split('.')[0] + '-' + j + '.png',
@@ -228,7 +230,7 @@ function uploadConvert(files, callback) {
                         if (stat2) {
                             var fileItem = {
                                 imgId: new Date().isoNum(8) + "" + Math.floor(Math.random() * 9999999) + 1000000,
-                                filePath: '/' + fileObj.path.replace(/\\/gi, '/'),
+                                filePath: fileObj.path.replace(/\\/gi, '/'),
                                 oriFileName: fileObj.originalname,
                                 convertedFilePath: convertedImagePath.replace(/\\/gi, '/'),
                                 convertFileName: fileObj.originalname.split('.')[0] + '.png',

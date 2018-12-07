@@ -2436,7 +2436,7 @@ function batchLearnTraining(filepath, callback) {
         imgid = imgid.rows[0].IMGID;
 
         var filename = filepath.substring(0, filepath.lastIndexOf("."));
-        var fullFilePath = appRoot.replace(/\\/g,'/') + filename + ".jpg"
+        var fullFilePath = filename + ".jpg"
 
         var selOcr = sync.await(oracle.selectOcrData(filepath, sync.defer()));
         if (selOcr.length == 0) {

@@ -16,6 +16,7 @@ var propertiesConfig = {
         subscriptionKey: '00ec4f5cd65e4dc0977047b69554235c',
     },
     filepath: {
+        uploadsPath: 'C:\\ICR\\uploads\\',
         //develop
         logfilepath: 'c:/logs',
         //realExcelPath: 'C:\\Users\\Taiho\\Desktop\\labeled_data',
