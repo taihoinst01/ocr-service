@@ -2280,7 +2280,7 @@ function uiLayerHtml(data) {
     $('#img_content').html(mainImgHtml);
     //data.data.fileinfo.filepath.substring(0, lastIndexOf("."))
     var convertImg = data.data.fileinfo.filepath.substring(0, data.data.fileinfo.filepath.lastIndexOf(".")) + ".jpg";
-    $('#mainImage').css('background-image', 'url("/tifTest' + convertImg + '")');
+    $('#mainImage').css('background-image', 'url("/tif/' + convertImg + '")');
 
     var tblTag = '';
     var tblSortTag = '';
