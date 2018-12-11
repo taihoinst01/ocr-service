@@ -2098,7 +2098,8 @@ router.post('/uiLearnTraining', function (req, res) {
         var filepath = req.body.imgIdArray;
         var uiData;
         for (var i = 0; i < filepath.length; i++) {
-            uiData = sync.await(batchLearnTraining(filepath[i], "LEARN_Y", sync.defer()));
+            //uiData = sync.await(batchLearnTraining(filepath[i], "LEARN_Y", sync.defer()));
+            uiData = sync.await(batchLearnTraining(filepath[i], sync.defer()));
 
             res.send({ data: uiData });
         }       
@@ -2421,7 +2422,7 @@ router.post('/batchLearnTraining', function (req, res) {
         function finalize(err) {
             if (err) console.log(err);
             console.log('done');
-            res.send({ data: retData });
+            res.send({ data: retData, 'column': colMappingList, 'entryMappingList': entryMappingList });
         }
     );
     //var batchData = sync.await(batchLearnTraining(filepath, flag, sync.defer()));
@@ -2462,7 +2463,14 @@ function batchLearnTraining(filepath, callback) {
         retData.fileinfo = { filepath: filepath, imgId: imgid };
         sync.await(oracle.insertMLData(retData, sync.defer()));
         sync.await(oracle.updateBatchLearnListDocType(retData, sync.defer()));
-        callback();
+
+        var colMappingList = sync.await(oracle.selectColumn(null, sync.defer()));
+        var entryMappingList = sync.await(oracle.selectEntryMappingCls(null, sync.defer()));
+
+        retData.column = colMappingList;
+        retData.entryMappingList = entryMappingList;
+
+        callback(null, retData);
     });
 }
 
