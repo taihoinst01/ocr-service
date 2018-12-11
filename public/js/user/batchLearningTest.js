@@ -2177,31 +2177,34 @@ var fn_uiTraining = function () {
     let chkCnt = 0;
     let chkBefore = $("#tab_before").closest("li").hasClass("on");
 
-    if (chkBefore) {
-        fn_alert('alert', "UI학습은 학습이 완료된 파일만 가능합니다.");
+    $(".ez-checkbox").each(function (index, entry) {
+        if ($(this).hasClass("ez-checked")) {
+            imgId = $(this).children('input').val();
+            chkCnt++;
+        }
+    });
+
+    /*
+    $("input[name=listCheck_after]").each(function (index, entry) {
+        if ($(this).is(":checked")) {
+            imgId = $(this).val();
+            chkCnt++;
+        }
+    });
+    */
+
+    if (chkCnt == 0) {
+        fn_alert('alert', "선택된 파일이 없습니다.");
+        return;
+    } else if (chkCnt > 1) {
+        fn_alert('alert', "한번에 하나의 파일만 UI학습이 가능합니다.");
         return;
     } else {
-        $("input[name=listCheck_after]").each(function (index, entry) {
-            if ($(this).is(":checked")) {
-                imgId = $(this).val();
-                chkCnt++;
-            }
-        });
-
-        if (chkCnt == 0) {
-            fn_alert('alert', "선택된 파일이 없습니다.");
-            return;
-        } else if (chkCnt > 1) {
-            fn_alert('alert', "한번에 하나의 파일만 UI학습이 가능합니다.");
-            return;
-        } else {
-            imgIdArray.push(imgId);
-            totCount++;
-            uiLearnTraining(imgIdArray);
-            //uiFlag = "Y";
-            //searchBatchLearnData(imgIdArray, "PROCESS_IMAGE");
-        }
-
+        imgIdArray.push(imgId);
+        totCount++;
+        uiLearnTraining(imgIdArray);
+        //uiFlag = "Y";
+        //searchBatchLearnData(imgIdArray, "PROCESS_IMAGE");
     }
 
 };
@@ -3011,7 +3014,7 @@ function popUpRunEvent() {
             textList: textList,
         }
         $.ajax({
-            url: '/batchLearning/insertDoctypeMapping',
+            url: '/batchLearningTest/insertDoctypeMapping',
             type: 'post',
             datatype: 'json',
             data: JSON.stringify(param),

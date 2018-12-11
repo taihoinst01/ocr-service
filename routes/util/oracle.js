@@ -2357,9 +2357,9 @@ exports.insertDocCategory = function (req, done) {
             if (result.rows.length == 0) {
                 result = await conn.execute('SELECT MAX(docType) + 1 AS docType FROM tbl_document_category');
                 await conn.execute(`INSERT INTO
-                                    tbl_document_category
+                                    tbl_document_category(seqnum, docname, doctype, sampleimagepath, doctoptype)
                                  VALUES
-                                    (seq_document_category.nextval, :docName, :docType, :sampleImagePath) `,
+                                    (seq_document_category.nextval, :docName, :docType, :sampleImagePath, 2) `,
                     [req[0], result.rows[0].DOCTYPE, req[1]]);
                 conn.commit();
             }
@@ -2691,14 +2691,13 @@ exports.insertDocumentSentence = function (req, done) {
         let conn;
         let result;
         try {
-            console.log(req);
             conn = await oracledb.getConnection(dbConfig);
-            result = await conn.execute(`SELECT SEQNUM FROM TBL_DOCUMENT_SENTENCE WHERE DATA = LOWER(:data) AND DOCTYPE = :doctype `, req);
+            result = await conn.execute(`SELECT SEQNUM FROM TBL_DOCUMENT_SENTENCE WHERE DATA = LOWER(:data) AND DOCTYPE = :doctype AND SENTENCELENGTH = :length`, req);
             if (result.rows.length == 0) {
                 await conn.execute(`INSERT INTO
-                                        TBL_DOCUMENT_SENTENCE (SEQNUM, DATA, DOCTYPE, REGDATE)
+                                        TBL_DOCUMENT_SENTENCE
                                     VALUES
-                                        (seq_document_sentence.nextval, LOWER(:data), :doctype, sysdate) `,
+                                        (seq_document_sentence.nextval, LOWER(:data), :doctype, sysdate, :length) `,
                     req);
             }
 

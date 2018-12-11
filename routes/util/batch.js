@@ -33,47 +33,20 @@ function insertDoctypeMapping(req, done) {
             var convertedFilepath;
             var bannedWord;
 
-            //20180910 hskim 문서양식 매핑
-            //문장을 순서대로 for문
             for (var i in data.textList) {
-                //console.log(data.textList[i]);
-
-                //앞 문장이 bannedword에 포함 되어 있는지 여부 확인
-                var bannedCheck = true;
-                for (var j in bannedWord) {
-                    if (data.textList[i].text.toLowerCase().indexOf(bannedWord[j].WORD) == 0) {
-                        bannedCheck = false;
-                        break;
-                    }
+                if (data.textList[i].check == 1) {
+                    similarSentences.push(data.textList[i]);
                 }
 
-                if (data.textList[i].check == 0) {
-                    //문장 index가 0인 경우 sentenses.append, sentenses length가 5가 되면 for문 종료
-                    if (bannedCheck) {
-                        topSentenses.push(data.textList[i]);
-
-                        //문장 index가 0인 경우 문장을 symspell에 등록 안된 단어 있는지 확인 후 없을 경우 insert
-                        data.textList[i] = insertSymspell(data.textList[i]);
-                    }
-                    if (topSentenses.length >= 5) break;
-
-                } else if (data.textList[i].check == 1) {
-                    //문장 index가 1인 경우 문장의 첫부분을 TBL_OCR_BANNED_WORD 에 insert
-                    //var regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi;
-                    //특수문자를 공백으로 치환하고 공백으로 슬라이스 후 배열의 첫번째 값을 banned_word에 insert
-                    if (bannedCheck) {
-                        data.textList[i] = insertBannedWord(data.textList[i]);
-                    }
+                if (topSentenses.length < 5) {
+                    data.textList[i] = insertSymspell(data.textList[i]);
+                    topSentenses.push(data.textList[i]);
                 }
-            }
-
-            for (var i in data.textList) {
-                similarSentences.push(data.textList[i]);
-                if (similarSentences.length >= 5) break;
             }
 
             //20180911 가져온 문장의 sid EXPORT_SENTENCE_SID함수를 통해 추출
-            data = getSentenceSid(data)
+            data = getSentenceSid(data);
+            docSid = getDocSid(topSentenses);
 
             //20180911 신규문서일 경우
             if (data.radioType == '2') {
@@ -82,23 +55,23 @@ function insertDoctypeMapping(req, done) {
                 docType = insertDocCategory(data);
 
                 //20180911 기존 이미지 파일을 C://ICR/sampleDocImage 폴더에 DocType(숫자).jpg로 저장
-                convertedFilepath = copyFile(propertiesConfig.filepath.answerFileFrontPath + data.filepath, docType);
+                convertedFilepath = copyFile(data.filepath, docType);
 
                 //20180911 TBL_FORM_MAPPING 에 5개문장의 sid 와 doctype값 insert
-                insertFormMapping(topSentenses, docType);
-                insertDocumentSentence(similarSentences, docType);
+                //insertFormMapping(topSentenses, docType);
+                insertDocumentSentence(similarSentences, docType, similarSentences.length);
             } else if (data.radioType == '3') {
                 docType = selectDocCategoryFromDocName(data);
                 //insertNotInvoce(topSentenses, docType);
-                insertDocumentSentence(similarSentences, docType);
+                insertDocumentSentence(similarSentences, docType, similarSentences.length);
             } else {
                 docType = selectDocCategoryFromDocName(data);
-                insertFormMapping(topSentenses, docType);
-                insertDocumentSentence(similarSentences, docType);
+                //insertFormMapping(topSentenses, docType);
+                insertDocumentSentence(similarSentences, docType, similarSentences.length);
             }
 
             //20180911 TBL_BATCH_LEARN_LIST 에 update (statue = 'D')
-            updateBatchLearnList(data, docType);
+            //updateBatchLearnList(data, docType);
 
             return done(null, data);
         } catch (e) {
@@ -199,6 +172,25 @@ function copyFile(src, docType) {
     }
 }
 
+function getDocSid(topSentenses) {
+    try {
+        var formsid = '';
+        for (var i = 0; i < 5; i++) {
+            if (i < topSentenses.length) {
+                formsid += topSentenses[i].sid + ',';
+            } else {
+                formsid += '0,0,0,0,0,';
+            }
+        }
+
+        return formsid.slice(0, -1);
+
+    } catch (e) {
+        throw e;
+    }
+
+}
+
 function insertFormMapping(topSentenses, docType) {
     try {
         var formsid = '';
@@ -229,13 +221,14 @@ function insertNotInvoce(topSentenses, docType) {
     }
 }
 
-function insertDocumentSentence(topSentenses, docType) {
+function insertDocumentSentence(topSentenses, docType, length) {
     try {
+        var regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi;
         var text = "";
         for (var i in topSentenses) {
-            text += topSentenses[i].text + ",";
+            text += topSentenses[i].text.replace(regExp, '') + ",";
         }
-        sync.await(oracle.insertDocumentSentence([text.slice(0, -1), docType], sync.defer()));
+        sync.await(oracle.insertDocumentSentence([text.slice(0, -1), docType, length], sync.defer()));
     } catch (e) {
         throw e;
     }
