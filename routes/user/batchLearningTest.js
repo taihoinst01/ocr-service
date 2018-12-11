@@ -2422,7 +2422,7 @@ router.post('/batchLearnTraining', function (req, res) {
         function finalize(err) {
             if (err) console.log(err);
             console.log('done');
-            res.send({ data: retData, 'column': colMappingList, 'entryMappingList': entryMappingList });
+            res.send({ data: retData });
         }
     );
     //var batchData = sync.await(batchLearnTraining(filepath, flag, sync.defer()));

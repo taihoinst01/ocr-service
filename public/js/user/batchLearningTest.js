@@ -3014,7 +3014,7 @@ function popUpRunEvent() {
             textList: textList,
         }
         $.ajax({
-            url: '/batchLearning/insertDoctypeMapping',
+            url: '/batchLearningTest/insertDoctypeMapping',
             type: 'post',
             datatype: 'json',
             data: JSON.stringify(param),
