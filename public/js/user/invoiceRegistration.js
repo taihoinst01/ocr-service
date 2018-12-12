@@ -518,7 +518,7 @@ function changeOcrDocPopupImage() {
             return false;
         } else {
             currentImgCount--;
-            var appendImg = '<img id="originImg" src="../../uploads/' + lineText[currentImgCount].fileName + '" style="width: 100%;height: 480px;">'
+            var appendImg = '<img id="originImg" src="/tif/' + lineText[currentImgCount].fileName + '" style="width: 100%;height: 480px;">'
             $('#originImgDiv').html(appendImg);
             selectClassificationStOcr('', currentImgCount);
             if (currentImgCount == 0) {
@@ -535,7 +535,7 @@ function changeOcrDocPopupImage() {
             return false;
         } else {
             currentImgCount++;
-            var appendImg = '<img id="originImg" src="../../uploads/' + lineText[currentImgCount].fileName + '" style="width: 100%;height: 480px;">'
+            var appendImg = '<img id="originImg" src="/tif/' + lineText[currentImgCount].fileName + '" style="width: 100%;height: 480px;">'
             $('#originImgDiv').html(appendImg);
             selectClassificationStOcr('', currentImgCount);
             if (currentImgCount == totalImgCount) {
@@ -1330,16 +1330,16 @@ var fn_search_image = function (imgId) {
             if (data.length > 0) {
                 $.each(data, function (index, entry) {
                     if (index == 0) {
-                        $("#main_image").prop("src", '../../' + nvl(entry.ORIGINFILENAME));
+                        $("#main_image").prop("src", '/tif/' + nvl(entry.ORIGINFILENAME));
                         $("#main_image").prop("alt", entry.ORIGINFILENAME);
                         imageHtml += '<li class="on">' + 
-                                        '<div class="box_img"><i><img src="../../' + nvl(entry.ORIGINFILENAME) + '" title="' + nvl(entry.ORIGINFILENAME) + '"></i></div>' +
+                                        '<div class="box_img"><i><img src="/tif/' + nvl(entry.ORIGINFILENAME) + '" title="' + nvl(entry.ORIGINFILENAME) + '"></i></div>' +
                                         '<span>' + nvl(entry.ORIGINFILENAME) + '</span>' +
                                     '</li> ';
                     } else {
                         imageHtml += 
                                     '<li>' +
-                                        '<div class="box_img"><i><img src="../../' + nvl(entry.ORIGINFILENAME) + '" title="' + nvl(entry.ORIGINFILENAME) + '"></i></div>' +
+                                        '<div class="box_img"><i><img src="/tif/' + nvl(entry.ORIGINFILENAME) + '" title="' + nvl(entry.ORIGINFILENAME) + '"></i></div>' +
                                         '<span>' + nvl(entry.ORIGINFILENAME) + '</span>' +
                                     '</li>';
                     }
@@ -1621,7 +1621,7 @@ function executeML(totData) {
                     mainImgHtml += '</div>';
 
                     $('#div_invoice_view_image').html(mainImgHtml);
-                    $('#mainImage').css('background-image', 'url("../../uploads/' + data.fileName + '")');
+                    $('#mainImage').css('background-image', 'url("/tif/' + data.fileName + '")');
                     $('#imageBox > li').eq(0).addClass('on');
                     $('#div_image').css("display", "block");
                     
@@ -2216,9 +2216,9 @@ var thumnImg = function () {
             var imageTag = '';
 
             if (i == 0) {
-                imageTag = '<li class="on"><a href="#none" class="imgtmb thumb-img"><img src="../../uploads/' + thumbImgs[i] + '" style="width: 48px; background-color:white" /></a></li>';
+                imageTag = '<li class="on"><a href="#none" class="imgtmb thumb-img"><img src="/tif/' + thumbImgs[i] + '" style="width: 48px; background-color:white" /></a></li>';
             } else {
-                imageTag = '<li><a href="#none" class="imgtmb thumb-img"><img src="../../uploads/' + thumbImgs[i] + '" style="width: 48px; background-color:white" /></a></li>';
+                imageTag = '<li><a href="#none" class="imgtmb thumb-img"><img src="/tif/' + thumbImgs[i] + '" style="width: 48px; background-color:white" /></a></li>';
             }
             
             $('#ul_image').append(imageTag);
@@ -2265,7 +2265,7 @@ var thumbImgPaging = function (pageCount) {
     for (var i = startImgCnt; i < endImgCnt; i++) {
         imageTag += '<li>';
         //imageTag += '<a href="javascript:void(0);" class="imgtmb thumb-img" style="background-image:url(../../uploads/' + thumbImgs[i] + '); width: 48px;"></a>';
-        imageTag += '<a href="javascript:void(0);" class="imgtmb thumb-img"><img src="../../uploads/' + thumbImgs[i] + '" style="width: 48px; background-color: white;"></a>';
+        imageTag += '<a href="javascript:void(0);" class="imgtmb thumb-img"><img src="/tif/' + thumbImgs[i] + '" style="width: 48px; background-color: white;"></a>';
         imageTag += '</li>';
     }
     $('#ul_image').append(imageTag);
@@ -2421,7 +2421,7 @@ function zoomImgTarget(e) {
     mainImage = mainImage.substring(mainImage.lastIndexOf("/") + 1, mainImage.length);
 
     if (mainImage != fileName) {
-        $('#mainImage').css('background-image', 'url("../../uploads/' + fileName + '")');
+        $('#mainImage').css('background-image', 'url("/tif/' + fileName + '")');
     }
 
     $('.thumb-img').each(function (i, el) {
@@ -2500,7 +2500,7 @@ function zoomImg(e) {
     mainImage = mainImage.substring(mainImage.lastIndexOf("/") + 1, mainImage.length);
 
     if (mainImage != fileName) {
-        $('#mainImage').css('background-image', 'url("../../uploads/' + fileName + '")');
+        $('#mainImage').css('background-image', 'url("/tif/' + fileName + '")');
     }
 
     $('.thumb-img').each(function (i, el) {
@@ -2579,7 +2579,7 @@ function zoomImgClick(e) {
     mainImage = mainImage.substring(mainImage.lastIndexOf("/") + 1, mainImage.length);
 
     if (mainImage != fileName) {
-        $('#mainImage').css('background-image', 'url("../../uploads/' + fileName + '")');
+        $('#mainImage').css('background-image', 'url("/tif/' + fileName + '")');
     }
 
     $('.thumb-img').each(function (i, el) {
