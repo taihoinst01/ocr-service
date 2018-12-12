@@ -433,7 +433,7 @@ function changeOcrImg(data) {
     $(data).parent().parent().parent().addClass('on');
     var fileName = data.src.substring(data.src.lastIndexOf("/") + 1, data.src.length);
     $('#imageZoom').hide();
-    $('#mainImage').css('background-image', 'url("../../uploads/' + fileName + '")');
+    $('#mainImage').css('background-image', 'url("/tif/' + fileName + '")');
 }
 
 // 초기 썸네일 이미지 렌더링
@@ -443,10 +443,10 @@ function thumnImg() {
             var imageTag = '';
             
             if (i == 0) {
-                imageTag = '<li class="on"><div class="box_img"><i><img src="../../uploads/' + thumbImgs[i] + '" onclick="changeOcrImg(this)" style="background-color: white;"></i>'
+                imageTag = '<li class="on"><div class="box_img"><i><img src="/tif/' + thumbImgs[i] + '" onclick="changeOcrImg(this)" style="background-color: white;"></i>'
                     + ' </div ><span>' + thumbImgs[i] + '</span></li >';
             } else {
-                imageTag = '<li><div class="box_img"><i><img src="../../uploads/' + thumbImgs[i] + '" onclick="changeOcrImg(this)" style="background-color: white;"></i>'
+                imageTag = '<li><div class="box_img"><i><img src="/tif/' + thumbImgs[i] + '" onclick="changeOcrImg(this)" style="background-color: white;"></i>'
                     + ' </div ><span>' + thumbImgs[i] + '</span></li >';
             }
             $('#imageBox').append(imageTag);
@@ -493,7 +493,7 @@ function thumbImgPaging(pageCount) {
         //imageTag += '<li>';
         //imageTag += '<a href="javascript:void(0);" class="imgtmb thumb-img" style="background-image:url(../../uploads/' + thumbImgs[i] + '); width: 48px;"></a>';
         //imageTag += '</li>';
-        imageTag += '<li><div class="box_img"><i><img src="../../uploads/' + thumbImgs[i] + '" onclick="changeOcrImg(this)" style="background-color: white;"></i>'
+        imageTag += '<li><div class="box_img"><i><img src="/tif/' + thumbImgs[i] + '" onclick="changeOcrImg(this)" style="background-color: white;"></i>'
             + ' </div ><span>' + thumbImgs[i] + '</span></li >';
     }
     $('#imageBox').append(imageTag);
@@ -654,7 +654,7 @@ function executeML(totData) {
                     mainImgHtml += '</div>';
                     mainImgHtml += '</div>';
                     $('#img_content').html(mainImgHtml);
-                    $('#mainImage').css('background-image', 'url("../../uploads/' + data.fileName + '")');
+                    $('#mainImage').css('background-image', 'url("/tif/' + data.fileName + '")');
                     
                     $('#imageBox > li').eq(0).addClass('on');
                     /*
@@ -752,7 +752,7 @@ function docComparePopup(imgIndex) {
         selectClassificationSt($('#docPopImgPath').val());
         $('#mlPredictionDocName').val($('#docName').text());
         $('#mlPredictionPercent').val($('#docPredictionScore').text());
-        var appendImg = '<img id="originImg" src="../../uploads/' + lineText[imgIndex].fileName + '" style="width: 100%;height: 480px;">'
+        var appendImg = '<img id="originImg" src="/tif/' + lineText[imgIndex].fileName + '" style="width: 100%;height: 480px;">'
         $('#originImgDiv').html(appendImg);
         //$('#originImg').attr('src', '../../uploads/' + lineText[imgIndex].fileName);
         //$('#searchImg').attr('src', '../../' + lineText[imgIndex].docCategory.SAMPLEIMAGEPATH);
@@ -1179,7 +1179,7 @@ function zoomImg(e, fileName) {
     mainImage = mainImage.substring(mainImage.lastIndexOf("/") + 1, mainImage.length);
 
     if (mainImage != fileName) {
-        $('#mainImage').css('background-image', 'url("../../uploads/' + fileName + '")');
+        $('#mainImage').css('background-image', 'url("/tif/' + fileName + '")');
     }
 
     //실제 이미지 사이즈와 메인이미지div 축소율 판단
@@ -1734,7 +1734,7 @@ function changeOcrDocPopupImage() {
             return false;
         } else {
             currentImgCount--;
-            var appendImg = '<img id="originImg" src="../../uploads/' + lineText[currentImgCount].fileName + '" style="width: 100%;height: 480px;">'
+            var appendImg = '<img id="originImg" src="/tif/' + lineText[currentImgCount].fileName + '" style="width: 100%;height: 480px;">'
             $('#originImgDiv').html(appendImg);
             selectClassificationStOcr('', currentImgCount);
             if (currentImgCount == 0) {
@@ -1751,7 +1751,7 @@ function changeOcrDocPopupImage() {
             return false;
         } else {
             currentImgCount++;
-            var appendImg = '<img id="originImg" src="../../uploads/' + lineText[currentImgCount].fileName + '" style="width: 100%;height: 480px;">'
+            var appendImg = '<img id="originImg" src="/tif/' + lineText[currentImgCount].fileName + '" style="width: 100%;height: 480px;">'
             $('#originImgDiv').html(appendImg);
             selectClassificationStOcr('', currentImgCount);
             if (currentImgCount == totalImgCount) {

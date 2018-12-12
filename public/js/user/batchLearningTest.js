@@ -2281,9 +2281,10 @@ function uiLayerHtml(data) {
     mainImgHtml += '</div>';
     mainImgHtml += '</div>';
     $('#img_content').html(mainImgHtml);
-    //data.data.fileinfo.filepath.substring(0, lastIndexOf("."))
-    var convertImg = data.data.fileinfo.filepath.substring(0, data.data.fileinfo.filepath.lastIndexOf(".")) + ".jpg";
-    $('#mainImage').css('background-image', 'url("/tifTest' + convertImg + '")');
+
+    var fileName = nvl(data.data.fileinfo.filepath.substring(data.data.fileinfo.filepath.lastIndexOf('/') + 1));
+    fileName = fileName.substring(0, fileName.indexOf('.')) + '.jpg';
+    $('#mainImage').css('background-image', 'url("/tif/' + fileName + '")');
 
     var tblTag = '';
     var tblSortTag = '';
