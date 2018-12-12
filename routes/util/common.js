@@ -580,6 +580,10 @@ function ocrParsing(body) {
             for (var j = 0; j < body.regions[i].lines.length; j++) {
                 var item = '';
                 for (var k = 0; k < body.regions[i].lines[j].words.length; k++) {
+                    if (body.regions[i].lines[j].words[k].text == '공단부담금') {
+                        data.push({ 'location': body.regions[i].lines[j].words[k].boundingBox, 'text': body.regions[i].lines[j].words[k].text.trim() });
+                        break;
+                    }
                     item += body.regions[i].lines[j].words[k].text + ' ';
                 }
                 data.push({ 'location': body.regions[i].lines[j].boundingBox, 'text': item.trim() });

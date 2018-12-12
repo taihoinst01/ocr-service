@@ -329,6 +329,46 @@ def selectOcrData(seqnum):
         raise Exception(str({'code': 500, 'message': 'TBL_BATCH_OCR_DATA table select fail',
                              'error': str(e).replace("'", "").replace('"', '')}))
 
+def selectLabelDef(docId):
+    try:
+        selectOcrData = 'SELECT SEQNUM, DOCID, KORNM, ENGNM, LABELTYPE FROM TBL_ICR_LABEL_DEF WHERE DOCID=:docId'
+        curs.execute(selectOcrData, {"docId": docId})
+        rows = curs.fetchall()
+        return rows
+
+    except Exception as e:
+        raise Exception(str({'code': 500, 'message': 'TBL_BATCH_OCR_DATA table select fail',
+                             'error': str(e).replace("'", "").replace('"', '')}))
+
+def selectLabelDefLabelType(seqnum):
+    try:
+        sql = 'SELECT SEQNUM, DOCID, KORNM, ENGNM, LABELTYPE FROM TBL_ICR_LABEL_DEF WHERE SEQNUM=:seqNum'
+        curs.execute(sql, {"seqNum":seqnum})
+        rows = curs.fetchall()
+
+        if len(rows) == 0:
+            return ''
+        else:
+            return rows[0][4]
+
+    except Exception as e:
+        raise Exception(str({'code': 500, 'message': 'getEntryLabelYN table select fail',
+                             'error': str(e).replace("'", "").replace('"', '')}))
+
+def checkVertical(entLoc, lblLoc):
+    try:
+        lblwidthLoc = (int(lblLoc[3]) + int(lblLoc[1])) / 2
+        entwidthLoc = (int(entLoc[3]) + int(entLoc[1])) / 2
+        # entryLabel이 오른쪽에서 가까울 경우 제외
+        if -50 < entwidthLoc - lblwidthLoc < 160:
+            return True
+        else:
+            return False
+
+    except Exception as e:
+        raise Exception(str({'code': 500, 'message': 'checkVerticalEntry fail',
+                         'error': str(e).replace("'", "").replace('"', '')}))
+
 # def classifyDocument(sentences):
 #     try:
 #         text = ''
