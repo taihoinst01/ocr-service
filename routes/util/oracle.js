@@ -3358,6 +3358,31 @@ exports.updateBatchLearnListDocType = function (req, done) {
     });
 };
 
+exports.updateNewBatchLearnListDocType = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            await conn.execute(`UPDATE TBL_BATCH_LEARN_LIST SET DOCTYPE = :docType WHERE IMGID = :imgId AND FILEPATH = :filepath `, [req.docType, req.imgId, req.filepath]);
+            conn.commit();
+
+            return done(null, null);
+        } catch (err) { // catches errors in getConnection and the query
+            return done(null, err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
 // 사용자 찾기
 exports.searchUser = function (req, done) {
     return new Promise(async function (resolve, reject) {

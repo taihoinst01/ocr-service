@@ -174,6 +174,17 @@ var buttonEvent = function () {
             $('#orgDocName').show();
             $('#newDocName').hide();
             $('#notInvoice').hide();
+
+            for (var i = 0; i < $("input[type='checkbox'].batch_layer4_result_chk").length; i++) {
+                $("input[type='checkbox'].batch_layer4_result_chk").eq(i).parent().removeClass("ez-hide");
+                $("input[type='checkbox'].batch_layer4_result_chk").eq(i).prop("checked", true);
+                $("input[type='checkbox'].batch_layer4_result_chk").eq(i).parent().addClass("ez-checked")
+
+                if (i == 20) {
+                    break;
+                }
+            }
+
         } else if (chkValue == '2') {
             $('#newDocName').show();
             $('#orgDocName').hide();
@@ -193,6 +204,13 @@ var buttonEvent = function () {
             $('#notInvoice').show();
             $('#orgDocName').hide();
             $('#newDocName').hide();
+
+            for (var i = 0; i < $("input[type='checkbox'].batch_layer4_result_chk").length; i++) {
+                $("input[type='checkbox'].batch_layer4_result_chk").eq(i).parent().removeClass("ez-hide");
+                $("input[type='checkbox'].batch_layer4_result_chk").eq(i).prop("checked", false);
+                $("input[type='checkbox'].batch_layer4_result_chk").eq(i).parent().removeClass("ez-checked");
+            }
+
         }
     })
 
@@ -3012,8 +3030,9 @@ function popUpRunEvent() {
             filepath: $('#docPopImgPath').val(),
             docName: docName,
             radioType: chkValue,
-            textList: textList,
+            textList: textList
         }
+
         $.ajax({
             url: '/batchLearningTest/insertDoctypeMapping',
             type: 'post',
@@ -3028,13 +3047,11 @@ function popUpRunEvent() {
                 //location.href = location.href;
                 // 해당 로우 화면상 테이블에서 삭제
                 endProgressBar(progressId);
-                $('#btn_pop_doc_cancel').click();
                 var rowNum = $('#batchListRowNum').val();
-                $('#leftRowNum_' + rowNum).remove();
-                $('.rowNum' + rowNum).remove();
-                $('.mlRowNum' + rowNum).remove();
+                $('#leftRowNum_' + rowNum).find('td:eq(2) a').html(data.docName);
+                $('#leftRowNum_' + rowNum).find('td:eq(2) input[name=docType]').val(data.docType);
                 fn_alert('alert', '계산서 양식 저장이 완료 되었습니다.');
-                $('#btn_pop_doc_cancel').click();
+                $('#layer4 .cbtn').click();
             },
             error: function (err) {
                 console.log(err);
@@ -3649,9 +3666,20 @@ function selectClassificationSt(filepath) {
                                     + '<td><input type="checkbox" class="batch_layer4_result_chk"></td>'
                                     + '<td class="td_sentence"></td></tr>';
                     $('#batch_layer4_result').append(resultOcrData);
+                    
                     $('.td_sentence:eq('+ i +')').text(tempArr[i][1].text);
                 }
                 $('input[type=checkbox]').ezMark();
+
+                for (var i = 0; i < $("input[type='checkbox'].batch_layer4_result_chk").length; i++) {
+                    $("input[type='checkbox'].batch_layer4_result_chk").eq(i).parent().removeClass("ez-hide");
+                    $("input[type='checkbox'].batch_layer4_result_chk").eq(i).prop("checked", true);
+                    $("input[type='checkbox'].batch_layer4_result_chk").eq(i).parent().addClass("ez-checked")
+    
+                    if (i == 20) {
+                        break;
+                    }
+                }
                 
             }
 
