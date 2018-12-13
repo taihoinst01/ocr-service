@@ -217,7 +217,7 @@ var buttonEvent = function () {
     $("#docTopType").on('change', function () {
         var docType = $("#docTopType option:selected").val();
         console.log(docType);
-        searchBatchLearnDataList (addCond, 1, docType)
+        searchBatchLearnDataList (addCond);
 
     });
 };
@@ -1349,7 +1349,8 @@ function updateBatchLearningData(fileNames, data) {
 
 // [Function]
 // main menu batch learning 1 [List] 배치학습데이터 조회
-var searchBatchLearnDataList = function (addCond, page, docType) {
+var searchBatchLearnDataList = function (addCond, page) {
+    var docTopType = $('#docTopType').val() == null ? 2 :  $('#docTopType').val();
     var param = {
         /*
         'startNum': startNum,
@@ -1357,7 +1358,7 @@ var searchBatchLearnDataList = function (addCond, page, docType) {
         */
         'addCond': nvl(addCond),
         'page': nvl2(page, 1),
-        'docType': nvl2(docType, 2)
+        'docType': docTopType
     };
     var appendHtml = "";
     var checkboxHtml = "";
@@ -1383,7 +1384,7 @@ var searchBatchLearnDataList = function (addCond, page, docType) {
             var seletedText = "";
             if (data.docTopType) {
                 for (var i = 0; i < data.docTopType.length; i++) {
-                    if (docType && docType == data.docTopType[i].SEQNUM) {
+                    if (docTopType && docTopType == data.docTopType[i].SEQNUM) {
                         selHtmlText += "<option value='" + data.docTopType[i].SEQNUM + "' selected>" + data.docTopType[i].DOCNAME + "</option>";
                         seletedText = data.docTopType[i].DOCNAME;
                     } else {
@@ -1401,7 +1402,7 @@ var searchBatchLearnDataList = function (addCond, page, docType) {
                 $("#docTopType").prev().empty().append('진료비영수증');
             }
             
-            fnDocTypeColumn(docType);
+            fnDocTypeColumn(docTopType);
             
             if (list.length != 0) {
 
@@ -1422,7 +1423,7 @@ var searchBatchLearnDataList = function (addCond, page, docType) {
                     
                     var mlData = data.mlData;
                     if (mlData.length != 0) {
-                        if(docType == 2) {
+                        if(docTopType == 2) {
                             appendRightContentsHtml += '<tr class="mlRowNum' + i + ' rowNum' + i + '" style="height:' + (trHeight + 12) + 'px;">' +
                                 '<td>' + makeMLSelect(mlData, null, [1, 26, 51, 76, 101], list[i].IMGID) + '</td> <!--진찰료-->' +
                                 '<td>' + makeMLSelect(mlData, null, [2, 27, 52, 77, 102], list[i].IMGID) + '</td> <!--입원료-->' +
@@ -1468,7 +1469,7 @@ var searchBatchLearnDataList = function (addCond, page, docType) {
                                 '<td>' + makeMLSelect(mlData, 134, null, list[i].IMGID) + '</td> <!--퇴원/중간-->' +
                                 '<td>' + makeMLSelect(mlData, 135, null, list[i].IMGID) + '</td> <!--진료기간-->' +
                                 '</tr>';
-                        } else if(docType == 3) {
+                        } else if(docTopType == 3) {
                             //임시
                             appendRightContentsHtml +=
                             '<tr class="mlRowNum' + i + '" style="height:' + (trHeight + 12) + 'px;">' +
@@ -3173,7 +3174,7 @@ function _init() {
     imageUploadEvent();         // image upload event
     //excelUploadEvent();         // excel upload event
     popUpEvent();
-    searchBatchLearnDataList(addCond, 1, 2);   // 배치 학습 데이터 조회
+    searchBatchLearnDataList(addCond);   // 배치 학습 데이터 조회
     changeDocPopupImage();      // 문서 양식 조회 이미지 좌우 버튼 이벤트
     popUpRunEvent();            // 문서 양식 조회 및 저장 
     selectLearningMethod();     //학습실행팝업
