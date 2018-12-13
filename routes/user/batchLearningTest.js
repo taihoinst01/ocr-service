@@ -2405,6 +2405,16 @@ router.get('/downloadExcel', function (req, res) {
     res.download(appRoot + "\\ICR.xlsx");
 });
 
+router.post('/uiDocTopType', function (req, res) {
+    sync.fiber(function () {
+        var docTopType = req.body.docTopType;
+        var docTopData = sync.await(oracle.selectIcrDocTopType(req, sync.defer()));
+        var labelData = sync.await(oracle.selectIcrLabelDef(docTopType, sync.defer()));
+
+        res.send({ docTopData: docTopData.rows, labelData: labelData.rows });
+    });
+});
+
 router.post('/batchLearnTraining', function (req, res) {
 
     var filepath = req.body.imgIdArray;
@@ -2466,9 +2476,11 @@ function batchLearnTraining(filepath, callback) {
 
         var colMappingList = sync.await(oracle.selectColumn(null, sync.defer()));
         var entryMappingList = sync.await(oracle.selectEntryMappingCls(null, sync.defer()));
+        var labelData = sync.await(oracle.selectIcrLabelDef(resPyArr.docCategory.DOCTOPTYPE, sync.defer()));
 
         retData.column = colMappingList;
         retData.entryMappingList = entryMappingList;
+        retData.labelData = labelData.rows;
 
         callback(null, retData);
     });

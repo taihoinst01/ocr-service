@@ -2264,8 +2264,10 @@ function uiLayerHtml(data) {
     var mlData = data.data.data;
     var columnArr = data.data.column;
     var entryColArr = data.data.entryMappingList;
+    var labelData = data.data.labelData;
     //var fileName = filePath.substring(filePath.lastIndexOf('/') + 1, filePath.length);
     fn_initUiTraining();
+    fn_uiDocTopType(data.data.docCategory);
     layer_open('layer2');
 
 
@@ -2292,24 +2294,8 @@ function uiLayerHtml(data) {
     columnArr.unshift(columnArr.pop());
     entryColArr.unshift(entryColArr.pop());
 
-    /*
     for (var i in mlData) {
-        tblTag += '<dl>';
-        tblTag += '<dt onclick="zoomImg(this)">';
-        tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
-        tblTag += '<input type="text" value="' + mlData[i].text + '" style="width:100%; border:0;" />';
-        tblTag += '<input type="hidden" value="' + mlData[i].location + '" />';
-        tblTag += '</label>';
-        tblTag += '</dt>';
-        tblTag += '<dd>';
-        tblTag += appendOptionHtml((mlData[i].colLbl != undefined) ? mlData[i].colLbl : 36, columnArr);
-        tblTag += '</dd>';
-        tblTag += '</dl>';
-    }
-    */
-    for (var i in mlData) {
-        // colLbl이 37이면 entryLbl 값에 해당하는 entryColoumn 값을 뿌려준다
-        if (mlData[i].colLbl == 37) {
+        if (mlData[i].colLbl == 0) {
             tblTag += '<dl>';
             tblTag += '<dt onclick="zoomImg(this)">';
             tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
@@ -2321,13 +2307,13 @@ function uiLayerHtml(data) {
             tblTag += '<input type="checkbox" class="entryChk" checked>';
             tblTag += '</dd>';
             tblTag += '<dd class="columnSelect" style="display:none">';
-            tblTag += appendOptionHtml((mlData[i].colLbl + '') ? mlData[i].colLbl : 999, columnArr);
+            tblTag += appendSelOptionHtml((mlData[i].colLbl + '') ? mlData[i].colLbl : 999, labelData);
             tblTag += '</dd>';
             tblTag += '<dd class="entrySelect">';
-            tblTag += appendEntryOptionHtml((mlData[i].entryLbl + '') ? mlData[i].entryLbl : 999, entryColArr);
+            tblTag += appendSelEntryOptionHtml((mlData[i].entryLbl + '') ? mlData[i].entryLbl : 999, labelData);
             tblTag += '</dd>';
             tblTag += '</dl>';
-        } else if (mlData[i].colLbl == 38) {
+        } else if (mlData[i].colLbl == -1) {
             tblSortTag += '<dl>';
             tblSortTag += '<dt onclick="zoomImg(this)">';
             tblSortTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
@@ -2339,10 +2325,10 @@ function uiLayerHtml(data) {
             tblSortTag += '<input type="checkbox" class="entryChk">';
             tblSortTag += '</dd>';
             tblSortTag += '<dd class="columnSelect">';
-            tblSortTag += appendOptionHtml((mlData[i].colLbl + '') ? mlData[i].colLbl : 999, columnArr);
+            tblSortTag += appendSelOptionHtml((mlData[i].colLbl + '') ? mlData[i].colLbl : 999, labelData);
             tblSortTag += '</dd>';
             tblSortTag += '<dd class="entrySelect" style="display:none">';
-            tblSortTag += appendEntryOptionHtml((mlData[i].entryLbl + '') ? mlData[i].entryLbl : 999, entryColArr);
+            tblSortTag += appendSelEntryOptionHtml((mlData[i].entryLbl + '') ? mlData[i].entryLbl : 999, labelData);
             tblSortTag += '</dd>';
             tblSortTag += '</dl>';
         } else {
@@ -2357,10 +2343,10 @@ function uiLayerHtml(data) {
             tblTag += '<input type="checkbox" class="entryChk">';
             tblTag += '</dd>';
             tblTag += '<dd class="columnSelect">';
-            tblTag += appendOptionHtml((mlData[i].colLbl + '') ? mlData[i].colLbl : 999, columnArr);
+            tblTag += appendSelOptionHtml((mlData[i].colLbl + '') ? mlData[i].colLbl : 999, labelData);
             tblTag += '</dd>';
             tblTag += '<dd class="entrySelect" style="display:none">';
-            tblTag += appendEntryOptionHtml((mlData[i].entryLbl + '') ? mlData[i].entryLbl : 999, entryColArr);
+            tblTag += appendSelEntryOptionHtml((mlData[i].entryLbl + '') ? mlData[i].entryLbl : 999, labelData);
             tblTag += '</dd>';
             tblTag += '</dl>';
         }
@@ -2386,6 +2372,85 @@ function uiLayerHtml(data) {
         }
 
     })
+}
+
+function appendSelOptionHtml(targetColumn, columns) {
+
+    var selectHTML = '<select>';
+    var optionHTML = '';
+    optionHTML = '<option value="999">Unknown</option>';
+    selectHTML += optionHTML;
+    for (var i in columns) {
+        if (targetColumn == columns[i].SEQNUM) {
+            optionHTML = '<option value="' + columns[i].SEQNUM + '" selected>' + columns[i].KORNM + '</option>';
+        } else {
+            optionHTML = '<option value="' + columns[i].SEQNUM + '">' + columns[i].KORNM + '</option>';
+        }
+        selectHTML += optionHTML;
+    }
+    selectHTML += '</select>';
+
+    return selectHTML;
+}
+
+function appendSelEntryOptionHtml(targetColumn, columns) {
+
+    var selectHTML = '<select>';
+    var optionHTML = '';
+    optionHTML = '<option value="999">Unknown</option>';
+    selectHTML += optionHTML;
+    for (var i in columns) {
+
+        if (targetColumn > 25 && targetColumn < 51) {
+            targetColumn = targetColumn % 25;
+        } else if (targetColumn > 50 && targetColumn < 76) {
+            targetColumn = targetColumn % 50;
+        } else if (targetColumn > 75 && targetColumn < 101) {
+            targetColumn = targetColumn % 75;
+        } else if (targetColumn > 100 && targetColumn < 126) {
+            targetColumn = targetColumn % 100;
+        }
+
+        if (targetColumn == columns[i].SEQNUM) {
+            optionHTML = '<option value="' + targetColumn + '" selected>' + columns[i].KORNM + '</option>';
+        } else {
+            optionHTML = '<option value="' + targetColumn + '">' + columns[i].KORNM + '</option>';
+        }
+        selectHTML += optionHTML;
+    }
+    selectHTML += '</select>';
+
+    return selectHTML;
+}
+
+function fn_uiDocTopType(docCategory) {
+    var docTopType = docCategory.DOCTOPTYPE;
+
+    $.ajax({
+        url: '/batchLearningTest/uiDocTopType',
+        type: 'post',
+        datatype: 'json',
+        data: JSON.stringify({ 'docTopType': docTopType }),
+        contentType: 'application/json; charset=UTF-8',
+        success: function (data) {
+            var selHtmlText = "";
+            if (data.docTopData) {
+                for (var i = 0; i < data.docTopData.length; i++) {
+                    if (docTopType && docTopType == data.docTopData[i].SEQNUM) {
+                        selHtmlText += "<option value='" + data.docTopData[i].SEQNUM + "' selected>" + data.docTopData[i].DOCNAME + "</option>";
+                    } else {
+                        selHtmlText += "<option value='" + data.docTopData[i].SEQNUM + "'>" + data.docTopData[i].DOCNAME + "</option>";
+                    }
+
+                }
+            }
+
+            $("#uiDocTopType").html(selHtmlText);    
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
 }
 
 function dbSelectClickEvent() {

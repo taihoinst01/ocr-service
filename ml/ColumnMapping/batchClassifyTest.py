@@ -66,7 +66,7 @@ def findLabelDB(inputsid, docType, docTopType):
                 if dbNum[0] == inputNum[0] and dbNum[4:] == inputNum[4:]:
                     ret.append(row[2])
             elif inputNum[4:] == ['1','1','1','1','1']:
-                ret.append(37)
+                ret.append(0)
             else:
                 if row[1] == inputsid:
                     ret.append(row[2])
@@ -146,7 +146,7 @@ def eval(inputJson, docType, docTopType):
 
         # 전 아이템 중 엔트리 추출 후 같은 열이나 같은 행에 엔트리 라벨 검색
         for inputItem in inputArr:
-            if inputItem['colLbl'] == 37:
+            if inputItem['colLbl'] == 0:
                 entLoc = inputItem['mappingSid'].split(",")[0:4]
 
                 horizItem = 9999
