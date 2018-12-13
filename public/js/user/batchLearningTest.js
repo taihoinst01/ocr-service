@@ -3062,7 +3062,8 @@ function popUpRunEvent() {
             filepath: $('#docPopImgPath').val(),
             docName: docName,
             radioType: chkValue,
-            textList: textList
+            textList: textList,
+            docTopType: $('#docTopType').val()
         }
 
         $.ajax({

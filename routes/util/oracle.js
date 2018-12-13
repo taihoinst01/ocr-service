@@ -2359,8 +2359,8 @@ exports.insertDocCategory = function (req, done) {
                 await conn.execute(`INSERT INTO
                                     tbl_document_category(seqnum, docname, doctype, sampleimagepath, doctoptype)
                                  VALUES
-                                    (seq_document_category.nextval, :docName, :docType, :sampleImagePath, 2) `,
-                    [req[0], result.rows[0].DOCTYPE, req[1]]);
+                                    (seq_document_category.nextval, :docName, :docType, :sampleImagePath, :docTopType) `,
+                    [req[0], result.rows[0].DOCTYPE, req[1], req[2]]);
                 conn.commit();
             }
 

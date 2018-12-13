@@ -135,7 +135,7 @@ function getSentenceSid(data) {
 
 function insertDocCategory(data) {
     try {
-        var docType = sync.await(oracle.insertDocCategory([data.docName, data.filepath], sync.defer()));
+        var docType = sync.await(oracle.insertDocCategory([data.docName, data.filepath, data.docTopType], sync.defer()));
 
         return docType;
     } catch (e) {
