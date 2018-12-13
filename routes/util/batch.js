@@ -68,8 +68,10 @@ function insertDoctypeMapping(req, done) {
                 docType = selectDocCategoryFromDocName(data);
                 //insertFormMapping(topSentenses, docType);
                 insertDocumentSentence(similarSentences, docType, similarSentences.length);
+                //updateDocumentType();
             }
-
+            data.docType = docType;
+            updateNewBatchLearnListDocType(data);
             //20180911 TBL_BATCH_LEARN_LIST 에 update (statue = 'D')
             //updateBatchLearnList(data, docType);
 
@@ -133,7 +135,7 @@ function getSentenceSid(data) {
 
 function insertDocCategory(data) {
     try {
-        var docType = sync.await(oracle.insertDocCategory([data.docName, data.filepath], sync.defer()));
+        var docType = sync.await(oracle.insertDocCategory([data.docName, data.filepath, data.docTopType], sync.defer()));
 
         return docType;
     } catch (e) {
@@ -243,3 +245,10 @@ function updateBatchLearnList(data, docType) {
     }
 }
 
+function updateNewBatchLearnListDocType(data) {
+    try {
+        sync.await(oracle.updateNewBatchLearnListDocType(data, sync.defer()));
+    } catch (e) {
+        throw e;
+    }
+}

@@ -174,6 +174,17 @@ var buttonEvent = function () {
             $('#orgDocName').show();
             $('#newDocName').hide();
             $('#notInvoice').hide();
+
+            for (var i = 0; i < $("input[type='checkbox'].batch_layer4_result_chk").length; i++) {
+                $("input[type='checkbox'].batch_layer4_result_chk").eq(i).parent().removeClass("ez-hide");
+                $("input[type='checkbox'].batch_layer4_result_chk").eq(i).prop("checked", true);
+                $("input[type='checkbox'].batch_layer4_result_chk").eq(i).parent().addClass("ez-checked")
+
+                if (i == 20) {
+                    break;
+                }
+            }
+
         } else if (chkValue == '2') {
             $('#newDocName').show();
             $('#orgDocName').hide();
@@ -193,13 +204,20 @@ var buttonEvent = function () {
             $('#notInvoice').show();
             $('#orgDocName').hide();
             $('#newDocName').hide();
+
+            for (var i = 0; i < $("input[type='checkbox'].batch_layer4_result_chk").length; i++) {
+                $("input[type='checkbox'].batch_layer4_result_chk").eq(i).parent().removeClass("ez-hide");
+                $("input[type='checkbox'].batch_layer4_result_chk").eq(i).prop("checked", false);
+                $("input[type='checkbox'].batch_layer4_result_chk").eq(i).parent().removeClass("ez-checked");
+            }
+
         }
     })
 
     $("#docTopType").on('change', function () {
         var docType = $("#docTopType option:selected").val();
         console.log(docType);
-        searchBatchLearnDataList (addCond, 1, docType)
+        searchBatchLearnDataList (addCond);
 
     });
 };
@@ -1331,7 +1349,8 @@ function updateBatchLearningData(fileNames, data) {
 
 // [Function]
 // main menu batch learning 1 [List] 배치학습데이터 조회
-var searchBatchLearnDataList = function (addCond, page, docType) {
+var searchBatchLearnDataList = function (addCond, page) {
+    var docTopType = $('#docTopType').val() == null ? 2 :  $('#docTopType').val();
     var param = {
         /*
         'startNum': startNum,
@@ -1339,7 +1358,7 @@ var searchBatchLearnDataList = function (addCond, page, docType) {
         */
         'addCond': nvl(addCond),
         'page': nvl2(page, 1),
-        'docType': docType
+        'docType': docTopType
     };
     var appendHtml = "";
     var checkboxHtml = "";
@@ -1365,7 +1384,7 @@ var searchBatchLearnDataList = function (addCond, page, docType) {
             var seletedText = "";
             if (data.docTopType) {
                 for (var i = 0; i < data.docTopType.length; i++) {
-                    if (docType && docType == data.docTopType[i].SEQNUM) {
+                    if (docTopType && docTopType == data.docTopType[i].SEQNUM) {
                         selHtmlText += "<option value='" + data.docTopType[i].SEQNUM + "' selected>" + data.docTopType[i].DOCNAME + "</option>";
                         seletedText = data.docTopType[i].DOCNAME;
                     } else {
@@ -1383,7 +1402,7 @@ var searchBatchLearnDataList = function (addCond, page, docType) {
                 $("#docTopType").prev().empty().append('진료비영수증');
             }
             
-            fnDocTypeColumn(docType);
+            fnDocTypeColumn(docTopType);
             
             if (list.length != 0) {
 
@@ -1404,36 +1423,63 @@ var searchBatchLearnDataList = function (addCond, page, docType) {
                     
                     var mlData = data.mlData;
                     if (mlData.length != 0) {
-                        appendRightContentsHtml += '<tr class="mlRowNum' + i + ' rowNum' + i + '" style="height:' + (trHeight + 12) + 'px;">' +
-                            '<td>' + makeMLSelect(mlData, 0, null, list[i].IMGID) + '</td> <!--출재사명-->' +
-                            '<td>' + makeMLSelect(mlData, 1, null, list[i].IMGID) + '</td> <!--계약명-->' +
-                            '<td>' + makeMLSelect(mlData, 2, null, list[i].IMGID) + '</td> <!--UY-->' +
-                            '<td>' + makeMLSelect(mlData, 3, null, list[i].IMGID) + '</td> <!--화폐코드-->' +
-                            '<td>' + makeMLSelect(mlData, 4, null, list[i].IMGID) + '</td> <!--화폐단위-->' +
-                            '<td>' + makeMLSelect(mlData, 5, 0, list[i].IMGID) + '</td> <!--Paid(100%)-->' +
-                            '<td>' + makeMLSelect(mlData, 6, 1, list[i].IMGID) + '</td> <!--Paid(Our Share)-->' +
-                            '<td>' + makeMLSelect(mlData, 7, 2, list[i].IMGID) + '</td> <!--OSL(100%)-->' +
-                            '<td>' + makeMLSelect(mlData, 8, 3, list[i].IMGID) + '</td> <!--OSL(Our Share)-->' +
-                            '<td>' + makeMLSelect(mlData, 9, 4, list[i].IMGID) + '</td> <!--PREMIUM-->' +
-                            '<td>' + makeMLSelect(mlData, 10, 5, list[i].IMGID) + '</td> <!--PREMIUM P/F ENT-->' +
-                            '<td>' + makeMLSelect(mlData, 11, 6, list[i].IMGID) + '</td> <!--PREMIUM P/F WOS-->' +
-                            '<td>' + makeMLSelect(mlData, 12, 7, list[i].IMGID) + '</td> <!--XOL PREMIUM-->' +
-                            '<td>' + makeMLSelect(mlData, 13, 8, list[i].IMGID) + '</td> <!--RETURN PREMIUM-->' +
-                            '<td>' + makeMLSelect(mlData, 14, 9, list[i].IMGID) + '</td> <!--COMMISION -->' +
-                            '<td>' + makeMLSelect(mlData, 15, 10, list[i].IMGID) + '</td> <!--PROFIT COMMISION-->' +
-                            '<td>' + makeMLSelect(mlData, 16, 11, list[i].IMGID) + '</td> <!--BROKERAGE-->' +
-                            '<td>' + makeMLSelect(mlData, 17, 12, list[i].IMGID) + '</td> <!--TEX-->' +
-                            '<td>' + makeMLSelect(mlData, 18, 13, list[i].IMGID) + '</td> <!-- OVERIDING COM-->' +
-                            '<td>' + makeMLSelect(mlData, 19, 14, list[i].IMGID) + '</td> <!--CHARGE-->' +
-                            '<td>' + makeMLSelect(mlData, 20, 15, list[i].IMGID) + '</td> <!--PREMIUM RESERVE RTD-->' +
-                            '<td>' + makeMLSelect(mlData, 21, 16, list[i].IMGID) + '</td> <!--P/F PREMIUM RESERVE RTD-->' +
-                            '<td>' + makeMLSelect(mlData, 22, 17, list[i].IMGID) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
-                            '<td>' + makeMLSelect(mlData, 23, 18, list[i].IMGID) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
+                        if(docTopType == 2) {
+                            appendRightContentsHtml += '<tr class="mlRowNum' + i + ' rowNum' + i + '" style="height:' + (trHeight + 12) + 'px;">' +
+                                '<td>' + makeMLSelect(mlData, null, [1, 26, 51, 76, 101], list[i].IMGID) + '</td> <!--진찰료-->' +
+                                '<td>' + makeMLSelect(mlData, null, [2, 27, 52, 77, 102], list[i].IMGID) + '</td> <!--입원료-->' +
+                                '<td>' + makeMLSelect(mlData, null, [3, 28, 53, 78, 103], list[i].IMGID) + '</td> <!--식대-->' +
+                                '<td>' + makeMLSelect(mlData, null, [4, 29, 54, 79, 104], list[i].IMGID) + '</td> <!--투약및조제료(행위료)-->' +
+                                '<td>' + makeMLSelect(mlData, null, [5, 30, 55, 80, 105], list[i].IMGID) + '</td> <!--투약 및 조제료(약품비)-->' +
+                                '<td>' + makeMLSelect(mlData, null, [6, 31, 56, 81, 106], list[i].IMGID) + '</td> <!--주사료(행위료)-->' +
+                                '<td>' + makeMLSelect(mlData, null, [7, 32, 57, 82, 107], list[i].IMGID) + '</td> <!--주사료(약품비)-->' +
+                                '<td>' + makeMLSelect(mlData, null, [8, 33, 58, 83, 108], list[i].IMGID) + '</td> <!--마취료-->' +
+                                '<td>' + makeMLSelect(mlData, null, [9, 34, 59, 84, 109], list[i].IMGID) + '</td> <!--처치 및 수술료-->' +
+                                '<td>' + makeMLSelect(mlData, null, [10, 35, 60, 85, 110], list[i].IMGID) + '</td> <!--검사료-->' +
+                                '<td>' + makeMLSelect(mlData, null, [11, 36, 61, 86, 111], list[i].IMGID) + '</td> <!--영상진단-->' +
+                                '<td>' + makeMLSelect(mlData, null, [12, 37, 62, 87, 112], list[i].IMGID) + '</td> <!--방사선료-->' +
+                                '<td>' + makeMLSelect(mlData, null, [13, 38, 63, 88, 113], list[i].IMGID) + '</td> <!--치료재료대-->' +
+                                '<td>' + makeMLSelect(mlData, null, [14, 39, 64, 89, 114], list[i].IMGID) + '</td> <!--재활및물리치료료-->' +
+                                '<td>' + makeMLSelect(mlData, null, [15, 40, 65, 90, 115], list[i].IMGID) + '</td> <!--정신요법료 -->' +
+                                '<td>' + makeMLSelect(mlData, null, [16, 41, 66, 91, 116], list[i].IMGID) + '</td> <!--전혈/혈액성분제재-->' +
+                                '<td>' + makeMLSelect(mlData, null, [17, 42, 67, 92, 117], list[i].IMGID) + '</td> <!--CT진단료-->' +
+                                '<td>' + makeMLSelect(mlData, null, [18, 43, 68, 93, 118], list[i].IMGID) + '</td> <!--MRI 진단료-->' +
+                                '<td>' + makeMLSelect(mlData, null, [19, 44, 69, 94, 119], list[i].IMGID) + '</td> <!-- PET진단료-->' +
+                                '<td>' + makeMLSelect(mlData, null, [20, 45, 70, 95, 120], list[i].IMGID) + '</td> <!--초음파진단료-->' +
+                                '<td>' + makeMLSelect(mlData, null, [21, 46, 71, 96, 121], list[i].IMGID) + '</td> <!--보철교정료-->' +
+                                '<td>' + makeMLSelect(mlData, null, [22, 47, 72, 97, 122], list[i].IMGID) + '</td> <!--기타진료비-->' +
+                                '<td>' + makeMLSelect(mlData, null, [23, 48, 73, 98, 123], list[i].IMGID) + '</td> <!--65세이상(신설)-->' +
+                                '<td>' + makeMLSelect(mlData, null, [24, 49, 74, 99, 124], list[i].IMGID) + '</td> <!--포괄수가진료비-->' +
+    
+                                '<td>' + makeMLSelect(mlData, null, [25, 50, 75, 100, 125], list[i].IMGID) + '</td> <!--합계-->' +
+                                
+                                '<td></td> <!--본인부담-->' +
+                                '<td></td> <!--공단부담-->' +
+                                '<td></td> <!--전액본인-->' +
+                                '<td></td> <!--선택진료-->' +
+                                '<td></td> <!--선택진료외-->' +
+    
+                                '<td>' + makeMLSelect(mlData, 126, null, list[i].IMGID) + '</td> <!--이미납부한금액-->' +
+                                '<td>' + makeMLSelect(mlData, 127, null, list[i].IMGID) + '</td> <!--납부한금액-->' +
+                                '<td>' + makeMLSelect(mlData, 128, null, list[i].IMGID) + '</td> <!--요양기관종류-->' +
+                                '<td>' + makeMLSelect(mlData, 129, null, list[i].IMGID) + '</td> <!--사업자등록번호-->' +
+                                '<td>' + makeMLSelect(mlData, 130, null, list[i].IMGID) + '</td> <!--상호-->' +
+                                '<td>' + makeMLSelect(mlData, 131, null, list[i].IMGID) + '</td> <!--성명-->' +
+                                '<td>' + makeMLSelect(mlData, 132, null, list[i].IMGID) + '</td> <!--환자구분-->' +
+                                '<td>' + makeMLSelect(mlData, 133, null, list[i].IMGID) + '</td> <!--외래/입원-->' +
+                                '<td>' + makeMLSelect(mlData, 134, null, list[i].IMGID) + '</td> <!--퇴원/중간-->' +
+                                '<td>' + makeMLSelect(mlData, 135, null, list[i].IMGID) + '</td> <!--진료기간-->' +
+                                '</tr>';
+                        } else if(docTopType == 3) {
+                            //임시
+                            appendRightContentsHtml +=
+                            '<tr class="mlRowNum' + i + '" style="height:' + (trHeight + 12) + 'px;">' +
+                            '<td colspan="40"></td>' +
                             '</tr>';
+                        }
                     } else {
                         appendRightContentsHtml +=
                             '<tr class="mlRowNum' + i + '" style="height:' + (trHeight + 12) + 'px;">' +
-                            '<td colspan="24"></td>' +
+                            '<td colspan="40"></td>' +
                             '</tr>';
 
                     }
@@ -1441,7 +1487,7 @@ var searchBatchLearnDataList = function (addCond, page, docType) {
                 }
             } else {
                 appendLeftContentsHtml += '<tr style="height: 30px"><td colspan="3"></td></tr>'
-                appendRightContentsHtml += '<tr><td colspan="24">조회할 데이터가 없습니다.</td></tr>';
+                appendRightContentsHtml += '<tr><td colspan="40">조회할 데이터가 없습니다.</td></tr>';
             }
             //$(appendHtml).appendTo($("#tbody_batchList")).slideDown('slow');
             if (addCond == "LEARN_N") {
@@ -1484,14 +1530,17 @@ var searchBatchLearnDataList = function (addCond, page, docType) {
         for (var y = 0; y < mlData.length; y++) {
 
             if (mlData[y].IMGID == IMGID) {
-                if (mlData[y].COLLABEL == colnum && (mlData[y].COLLABEL <= 3 || mlData[y].COLLABEL >= 35)) {
-                    hasColvalue = true;
-                    appendMLSelect += '<option>' + mlData[y].COLVALUE + '</option>';
-                } else if (mlData[y].COLLABEL == 37 && mlData[y].ENTRYLABEL == entry) {
+
+                if(entry) {
+                    if (mlData[y].COLLABEL == 0 && (mlData[y].ENTRYLABEL == entry[0] || mlData[y].ENTRYLABEL == entry[1] || mlData[y].ENTRYLABEL == entry[2] || 
+                            mlData[y].ENTRYLABEL == entry[3] || mlData[y].ENTRYLABEL == entry[4] )) {
+                        hasColvalue = true;
+                        appendMLSelect += '<option>' + mlData[y].COLVALUE + '</option>';
+                    } 
+                } else if (mlData[y].COLLABEL == colnum) {
                     hasColvalue = true;
                     appendMLSelect += '<option>' + mlData[y].COLVALUE + '</option>';
                 }
-
             }
         }
         appendMLSelect += '</select>';
@@ -1526,10 +1575,12 @@ function fnDocTypeColumn(docType) {
             for (var i = 0; i < list.length; i++) {
                 htmlText += '<col style="width:200px">';
             }
+            htmlText += '<col style="width:17px">';
             htmlText += "</colgroup><thead><tr>";
             for (var i = 0; i < list.length; i++) {
                 htmlText += '<th scope="row">' + list[i].KORNM + '</th>';
             }
+            htmlText += '<th></th>'
             htmlText += "</tr></thead>";
             $("#docTableColumn").html(htmlText);
 
@@ -3078,7 +3129,9 @@ function popUpRunEvent() {
             docName: docName,
             radioType: chkValue,
             textList: textList,
+            docTopType: $('#docTopType').val()
         }
+
         $.ajax({
             url: '/batchLearningTest/insertDoctypeMapping',
             type: 'post',
@@ -3093,13 +3146,11 @@ function popUpRunEvent() {
                 //location.href = location.href;
                 // 해당 로우 화면상 테이블에서 삭제
                 endProgressBar(progressId);
-                $('#btn_pop_doc_cancel').click();
                 var rowNum = $('#batchListRowNum').val();
-                $('#leftRowNum_' + rowNum).remove();
-                $('.rowNum' + rowNum).remove();
-                $('.mlRowNum' + rowNum).remove();
+                $('#leftRowNum_' + rowNum).find('td:eq(2) a').html(data.docName);
+                $('#leftRowNum_' + rowNum).find('td:eq(2) input[name=docType]').val(data.docType);
                 fn_alert('alert', '계산서 양식 저장이 완료 되었습니다.');
-                $('#btn_pop_doc_cancel').click();
+                $('#layer4 .cbtn').click();
             },
             error: function (err) {
                 console.log(err);
@@ -3188,7 +3239,7 @@ function _init() {
     imageUploadEvent();         // image upload event
     //excelUploadEvent();         // excel upload event
     popUpEvent();
-    searchBatchLearnDataList(addCond, 1);   // 배치 학습 데이터 조회
+    searchBatchLearnDataList(addCond);   // 배치 학습 데이터 조회
     changeDocPopupImage();      // 문서 양식 조회 이미지 좌우 버튼 이벤트
     popUpRunEvent();            // 문서 양식 조회 및 저장 
     selectLearningMethod();     //학습실행팝업
@@ -3714,9 +3765,20 @@ function selectClassificationSt(filepath) {
                                     + '<td><input type="checkbox" class="batch_layer4_result_chk"></td>'
                                     + '<td class="td_sentence"></td></tr>';
                     $('#batch_layer4_result').append(resultOcrData);
+                    
                     $('.td_sentence:eq('+ i +')').text(tempArr[i][1].text);
                 }
                 $('input[type=checkbox]').ezMark();
+
+                for (var i = 0; i < $("input[type='checkbox'].batch_layer4_result_chk").length; i++) {
+                    $("input[type='checkbox'].batch_layer4_result_chk").eq(i).parent().removeClass("ez-hide");
+                    $("input[type='checkbox'].batch_layer4_result_chk").eq(i).prop("checked", true);
+                    $("input[type='checkbox'].batch_layer4_result_chk").eq(i).parent().addClass("ez-checked")
+    
+                    if (i == 20) {
+                        break;
+                    }
+                }
                 
             }
 

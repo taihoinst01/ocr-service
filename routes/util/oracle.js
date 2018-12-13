@@ -2359,8 +2359,8 @@ exports.insertDocCategory = function (req, done) {
                 await conn.execute(`INSERT INTO
                                     tbl_document_category(seqnum, docname, doctype, sampleimagepath, doctoptype)
                                  VALUES
-                                    (seq_document_category.nextval, :docName, :docType, :sampleImagePath, 2) `,
-                    [req[0], result.rows[0].DOCTYPE, req[1]]);
+                                    (seq_document_category.nextval, :docName, :docType, :sampleImagePath, :docTopType) `,
+                    [req[0], result.rows[0].DOCTYPE, req[1], req[2]]);
                 conn.commit();
             }
 
@@ -3346,6 +3346,31 @@ exports.updateBatchLearnListDocType = function (req, done) {
             return done(null, result);
         } catch (err) { // catches errors in getConnection and the query
             reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+exports.updateNewBatchLearnListDocType = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            await conn.execute(`UPDATE TBL_BATCH_LEARN_LIST SET DOCTYPE = :docType WHERE IMGID = :imgId AND FILEPATH = :filepath `, [req.docType, req.imgId, req.filepath]);
+            conn.commit();
+
+            return done(null, null);
+        } catch (err) { // catches errors in getConnection and the query
+            return done(null, err);
         } finally {
             if (conn) {   // the conn assignment worked, must release
                 try {
