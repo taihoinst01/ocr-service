@@ -210,7 +210,7 @@ var buttonEvent = function () {
 
     $("#docTopType").on('change', function () {
         var docType = $("#docTopType option:selected").val();
-        console.log(docType);
+        //console.log(docType);
         searchBatchLearnDataList (addCond);
 
     });
@@ -2223,7 +2223,7 @@ var fn_uiTraining = function () {
     let chkCnt = 0;
     let chkBefore = $("#tab_before").closest("li").hasClass("on");
 
-    $(".ez-checkbox").each(function (index, entry) {
+    $(".batchListLeftTbody .ez-checkbox").each(function (index, entry) {
         if ($(this).hasClass("ez-checked")) {
             imgId = $(this).children('input').val();
             chkCnt++;
@@ -2399,10 +2399,10 @@ function uiLayerHtml(data) {
     }
 
     $('#textResultTbl').append(tblTag).append(tblSortTag);
-    $('#textResultTbl select').stbDropdown();
+    //$('#textResultTbl select').stbDropdown();
     
     // input 태그 마우스오버 말풍선 Tooltip 적용
-    $('input[type=checkbox]').ezMark();
+    $('#textResultTbl input[type=checkbox]').ezMark();
     new $.Zebra_Tooltips($('.tip'));
     dbSelectClickEvent();
     checkBoxMLCssEvent();
@@ -2481,6 +2481,9 @@ function fn_uiDocTopType(docCategory) {
         success: function (data) {
             var selHtmlText = "";
             if (data.docTopData) {
+                $('#uiDocTopTypeDiv').empty();
+                selHtmlText += "<select id='uiDocTopType'>"  
+                                
                 for (var i = 0; i < data.docTopData.length; i++) {
                     if (docTopType && docTopType == data.docTopData[i].SEQNUM) {
                         selHtmlText += "<option value='" + data.docTopData[i].SEQNUM + "' selected>" + data.docTopData[i].DOCNAME + "</option>";
@@ -2489,9 +2492,16 @@ function fn_uiDocTopType(docCategory) {
                     }
 
                 }
+
+                selHtmlText += "</select>"
+    
+                if(data.labelData) {
+                    labelDataList = data.labelData; 
+                }
             }
 
-            $("#uiDocTopType").html(selHtmlText);    
+            $("#uiDocTopTypeDiv").html(selHtmlText);    
+            $("#uiDocTopType").stbDropdown();
         },
         error: function (err) {
             console.log(err);
@@ -3224,7 +3234,7 @@ function _init() {
     $('#gridDiv').hide();
     $('#reviewDiv').hide();
 
-    $('.um_select select').stbDropdown(); // 셀렉트박스 css
+    $('.um_select #docTopType').stbDropdown(); // 셀렉트박스 css
 
     //multiUploadEvent();
     //originFileUploadBtnEvent();
