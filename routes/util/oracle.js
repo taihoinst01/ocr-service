@@ -465,8 +465,8 @@ exports.insertBatchColumnMapping = function (req, filepath, done) {
         let conn;
         try {
             conn = await oracledb.getConnection(dbConfig);
-            let selectSqlText = `SELECT SEQNUM FROM TBL_BATCH_COLUMN_MAPPING_TRAIN WHERE DATA = :DATA AND CLASS = :CLASS`;
-            let insertSqlText = `INSERT INTO TBL_BATCH_COLUMN_MAPPING_TRAIN (SEQNUM, DATA, CLASS, REGDATE) VALUES (SEQ_COLUMN_MAPPING_TRAIN.NEXTVAL,:DATA,:CLASS,SYSDATE)`;
+            let selectSqlText = `SELECT SEQNUM FROM TBL_BATCH_COLUMN_MAPPING_TRAIN WHERE DATA = :data AND CLASS = :class`;
+            let insertSqlText = `INSERT INTO TBL_BATCH_COLUMN_MAPPING_TRAIN (SEQNUM, DATA, CLASS, REGDATE) VALUES (SEQ_BATCH_COLUMN_MAPPING_TRAIN.NEXTVAL,:data,:class,SYSDATE)`;
             let selectLearnListSqlText = `SELECT DOCTYPE FROM TBL_BATCH_LEARN_LIST WHERE FILEPATH = :filepath`
 
             var result = await conn.execute(selectSqlText, [req.sid, req.colLbl]);
@@ -484,7 +484,7 @@ exports.insertBatchColumnMapping = function (req, filepath, done) {
 
                     var sid = resLearnList.rows[0].DOCTYPE + "," + req.sid;
 
-                    if (!(((req.colLbl >= 5 && req.colLbl <= 34) || req.colLbl == 36) && (textSid == "0,0,0,0,0" || textSid == "1,1,1,1,1"))) {
+                    if (req.colLbl != 0) {
                         await conn.execute(insertSqlText, [sid, req.colLbl]);
                     }
                 }

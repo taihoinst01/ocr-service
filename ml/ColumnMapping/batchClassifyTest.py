@@ -61,7 +61,9 @@ def findLabelDB(inputsid, docType, docTopType):
                 # 문서종류 and (Y좌표 and (X좌표 or 넓이))
                 if (dbNum[0] == inputNum[0]) and (boundaryCheck(dbNum[2], inputNum[2]) and (
                         boundaryCheck(dbNum[1], inputNum[1]) or boundaryCheck(dbNum[3], inputNum[3]))):
-                    ret.append(row[2])
+                    result.append(int(row[2]))
+                    result.append(0.99)
+                    return result
             elif label[4] == "T" and dbNum[0] == str(docType) and int(row[2]) == int(label[0]):
                 if dbNum[0] == inputNum[0] and dbNum[4:] == inputNum[4:]:
                     ret.append(row[2])

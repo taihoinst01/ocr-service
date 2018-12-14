@@ -144,13 +144,7 @@ var buttonEvent = function () {
 
     // UI train 실행
     $('#uiTrainBtn').on("click", function () {
-        //modifyTextData();
-        progressId = showProgressBar();
-
-        setTimeout(function () {
-            endProgressBar(progressId);
-            fn_alert('alert', '학습이 완료 되었습니다.');
-        }, 5000);
+        modifyTextData();
         /*
         var docData = modifyData.docCategory;
         if ($('#docData').val() != '') {
@@ -2429,7 +2423,7 @@ function appendSelOptionHtml(targetColumn, columns) {
 
     var selectHTML = '<select>';
     var optionHTML = '';
-    optionHTML = '<option value="999">Unknown</option>';
+    optionHTML = '<option value="-1">Unknown</option>';
     selectHTML += optionHTML;
     for (var i in columns) {
         if (targetColumn == columns[i].SEQNUM) {
@@ -2448,7 +2442,7 @@ function appendSelEntryOptionHtml(targetColumn, columns) {
 
     var selectHTML = '<select>';
     var optionHTML = '';
-    optionHTML = '<option value="999">Unknown</option>';
+    optionHTML = '<option value="-1">Unknown</option>';
     selectHTML += optionHTML;
     for (var i in columns) {
 
