@@ -2493,10 +2493,7 @@ function fn_uiDocTopType(docCategory) {
                 }
 
                 selHtmlText += "</select>"
-    
-                if(data.labelData) {
-                    labelDataList = data.labelData; 
-                }
+
             }
 
             $("#uiDocTopTypeDiv").html(selHtmlText);    
