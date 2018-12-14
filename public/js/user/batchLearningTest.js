@@ -1980,6 +1980,7 @@ var fn_imageUpload = function () {
 
 var fn_exportExcel = function () {
     var imgIdArray = [];
+    var docTopType = $("#docTopType option:selected").val();
     var chkSize = 0;
     if (addCond == "LEARN_N") {
         $('input[name="listCheck_before"]').each(function (index, element) {
@@ -1997,7 +1998,7 @@ var fn_exportExcel = function () {
         });
     }
     if (chkSize > 0) {
-        var param = { imgIdArray: imgIdArray };
+        var param = { imgIdArray: imgIdArray, docTopType: docTopType };
         $.ajax({
             url: '/batchLearningTest/exportExcel',
             type: 'post',

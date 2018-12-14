@@ -467,26 +467,27 @@ exports.insertBatchColumnMapping = function (req, filepath, done) {
             conn = await oracledb.getConnection(dbConfig);
             let selectSqlText = `SELECT SEQNUM FROM TBL_BATCH_COLUMN_MAPPING_TRAIN WHERE DATA = :data AND CLASS = :class`;
             let insertSqlText = `INSERT INTO TBL_BATCH_COLUMN_MAPPING_TRAIN (SEQNUM, DATA, CLASS, REGDATE) VALUES (SEQ_BATCH_COLUMN_MAPPING_TRAIN.NEXTVAL,:data,:class,SYSDATE)`;
-            let selectLearnListSqlText = `SELECT DOCTYPE FROM TBL_BATCH_LEARN_LIST WHERE FILEPATH = :filepath`
+            let selectLearnListSqlText = `SELECT DOCTYPE FROM TBL_BATCH_LEARN_LIST WHERE FILEPATH = :filepath`;
+            let updateBatchColumnMapping = 'UPDATE TBL_BATCH_COLUMN_MAPPING_TRAIN SET CLASS = :class WHERE DATA = :data';
 
             var result = await conn.execute(selectSqlText, [req.sid, req.colLbl]);
-            if (result.rows[0]) {
-                //await conn.execute(updateSqlText, [req.data[i].sid, req.data[i].colLbl, result.rows[0].SEQNUM]);
-            } else {
 
-                var resLearnList = await conn.execute(selectLearnListSqlText, [filepath]);
-                if (resLearnList.rows[0]) {
-                    var sidSplit = req.sid.split(",");
-                    var len = sidSplit.length;
-                    var textSid = sidSplit[len - 5] + "," + sidSplit[len - 4] + "," + sidSplit[len - 3] + "," + sidSplit[len - 2] + "," + sidSplit[len - 1];
+            var resLearnList = await conn.execute(selectLearnListSqlText, [filepath]);
+            if (resLearnList.rows[0]) {
+                var sidSplit = req.sid.split(",");
+                var len = sidSplit.length;
+                var textSid = sidSplit[len - 5] + "," + sidSplit[len - 4] + "," + sidSplit[len - 3] + "," + sidSplit[len - 2] + "," + sidSplit[len - 1];
 
-                    var locSplit = req.location.split(",");
+                var locSplit = req.location.split(",");
 
-                    var sid = resLearnList.rows[0].DOCTYPE + "," + req.sid;
+                var sid = resLearnList.rows[0].DOCTYPE + "," + req.sid;
 
+                if (result.rows.length == 0) {
                     if (req.colLbl != 0) {
                         await conn.execute(insertSqlText, [sid, req.colLbl]);
                     }
+                } else {
+                    await conn.execute(updateBatchColumnMapping, [sid, req.colLbl]);
                 }
             }
             return done(null, req);
