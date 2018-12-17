@@ -25,6 +25,8 @@ var ocrPopData; //UI Popup DATA
 
 var docPopImages; // 문서조회팝업 이미지 리스트
 var docPopImagesCurrentCount = 1; // 문서조회팝업 이미지 현재 카운트
+var labelDataList; // ui트레이닝 팝업 labeldata
+var mlDataList; // ui트레이닝 팝업 mldata
 
 $(function () {
     _init();
@@ -214,7 +216,23 @@ var buttonEvent = function () {
         searchBatchLearnDataList (addCond);
 
     });
+    
 };
+
+$(document).on('change', '#uiDocTopType', function () {
+    var docType = $("#uiDocTopType option:selected").val();
+    //console.log(docType);
+    var appendSelOptionHtml1 = '';
+    var appendEntryOtionHtml1 = '';
+
+    for(var i = 0 ; i < mlDataList.length; i++) {
+        appendSelOptionHtml1 = appendSelOptionHtml((mlDataList[i].colLbl + '') ? mlDataList[i].colLbl : 999, labelDataList, docType);
+        appendEntryOtionHtml1 = appendSelEntryOptionHtml((mlDataList[i].entryLbl + '') ? mlDataList[i].entryLbl : 999, labelDataList, docType);
+        $('#textResultTbl dl:eq(' + i + ')').find('dd:eq(1)').empty().append(appendSelOptionHtml1);
+        $('#textResultTbl dl:eq(' + i + ')').find('dd:eq(2)').empty().append(appendEntryOtionHtml1);
+    }
+
+});
 
 // [popup event]
 var popupEvent = (function () {
@@ -2308,12 +2326,16 @@ function selectTypoData(data) {
 
 function uiLayerHtml(data) {
     var mlData = data.data.data;
+    mlDataList = mlData;
     var columnArr = data.data.column;
     var entryColArr = data.data.entryMappingList;
     var labelData = data.data.labelData;
+    labelDataList = labelData;
+    var docTopType = data.data.docCategory.DOCTOPTYPE;
     //var fileName = filePath.substring(filePath.lastIndexOf('/') + 1, filePath.length);
     fn_initUiTraining();
     fn_uiDocTopType(data.data.docCategory);
+    $('#docName').html(data.data.docCategory.DOCNAME);
     layer_open('layer2');
 
 
@@ -2353,10 +2375,10 @@ function uiLayerHtml(data) {
             tblTag += '<input type="checkbox" class="entryChk" checked>';
             tblTag += '</dd>';
             tblTag += '<dd class="columnSelect" style="display:none">';
-            tblTag += appendSelOptionHtml((mlData[i].colLbl + '') ? mlData[i].colLbl : 999, labelData);
+            tblTag += appendSelOptionHtml((mlData[i].colLbl + '') ? mlData[i].colLbl : 999, labelData, docTopType);
             tblTag += '</dd>';
             tblTag += '<dd class="entrySelect">';
-            tblTag += appendSelEntryOptionHtml((mlData[i].entryLbl + '') ? mlData[i].entryLbl : 999, labelData);
+            tblTag += appendSelEntryOptionHtml((mlData[i].entryLbl + '') ? mlData[i].entryLbl : 999, labelData, docTopType);
             tblTag += '</dd>';
             tblTag += '</dl>';
         } else if (mlData[i].colLbl == -1) {
@@ -2371,10 +2393,10 @@ function uiLayerHtml(data) {
             tblSortTag += '<input type="checkbox" class="entryChk">';
             tblSortTag += '</dd>';
             tblSortTag += '<dd class="columnSelect">';
-            tblSortTag += appendSelOptionHtml((mlData[i].colLbl + '') ? mlData[i].colLbl : 999, labelData);
+            tblSortTag += appendSelOptionHtml((mlData[i].colLbl + '') ? mlData[i].colLbl : 999, labelData, docTopType);
             tblSortTag += '</dd>';
             tblSortTag += '<dd class="entrySelect" style="display:none">';
-            tblSortTag += appendSelEntryOptionHtml((mlData[i].entryLbl + '') ? mlData[i].entryLbl : 999, labelData);
+            tblSortTag += appendSelEntryOptionHtml((mlData[i].entryLbl + '') ? mlData[i].entryLbl : 999, labelData, docTopType);
             tblSortTag += '</dd>';
             tblSortTag += '</dl>';
         } else {
@@ -2389,10 +2411,10 @@ function uiLayerHtml(data) {
             tblTag += '<input type="checkbox" class="entryChk">';
             tblTag += '</dd>';
             tblTag += '<dd class="columnSelect">';
-            tblTag += appendSelOptionHtml((mlData[i].colLbl + '') ? mlData[i].colLbl : 999, labelData);
+            tblTag += appendSelOptionHtml((mlData[i].colLbl + '') ? mlData[i].colLbl : 999, labelData, docTopType);
             tblTag += '</dd>';
             tblTag += '<dd class="entrySelect" style="display:none">';
-            tblTag += appendSelEntryOptionHtml((mlData[i].entryLbl + '') ? mlData[i].entryLbl : 999, labelData);
+            tblTag += appendSelEntryOptionHtml((mlData[i].entryLbl + '') ? mlData[i].entryLbl : 999, labelData, docTopType);
             tblTag += '</dd>';
             tblTag += '</dl>';
         }
@@ -2420,26 +2442,28 @@ function uiLayerHtml(data) {
     })
 }
 
-function appendSelOptionHtml(targetColumn, columns) {
+function appendSelOptionHtml(targetColumn, columns, docTopType) {
 
     var selectHTML = '<select>';
     var optionHTML = '';
     optionHTML = '<option value="-1">Unknown</option>';
     selectHTML += optionHTML;
     for (var i in columns) {
-        if (targetColumn == columns[i].SEQNUM) {
-            optionHTML = '<option value="' + columns[i].SEQNUM + '" selected>' + columns[i].KORNM + '</option>';
-        } else {
-            optionHTML = '<option value="' + columns[i].SEQNUM + '">' + columns[i].KORNM + '</option>';
+        if(docTopType == columns[i].DOCID){
+            if (targetColumn == columns[i].SEQNUM) {
+                optionHTML = '<option value="' + columns[i].SEQNUM + '" selected>' + columns[i].KORNM + '</option>';
+            } else {
+                optionHTML = '<option value="' + columns[i].SEQNUM + '">' + columns[i].KORNM + '</option>';
+            }
+            selectHTML += optionHTML;
         }
-        selectHTML += optionHTML;
     }
     selectHTML += '</select>';
 
     return selectHTML;
 }
 
-function appendSelEntryOptionHtml(targetColumn, columns) {
+function appendSelEntryOptionHtml(targetColumn, columns, docTopType) {
 
     var selectHTML = '<select>';
     var optionHTML = '';
@@ -2457,12 +2481,14 @@ function appendSelEntryOptionHtml(targetColumn, columns) {
             targetColumn = targetColumn % 100;
         }
 
-        if (targetColumn == columns[i].SEQNUM) {
-            optionHTML = '<option value="' + targetColumn + '" selected>' + columns[i].KORNM + '</option>';
-        } else {
-            optionHTML = '<option value="' + targetColumn + '">' + columns[i].KORNM + '</option>';
+        if(docTopType == columns[i].DOCID){
+            if (targetColumn == columns[i].SEQNUM) {
+                optionHTML = '<option value="' + targetColumn + '" selected>' + columns[i].KORNM + '</option>';
+            } else {
+                optionHTML = '<option value="' + targetColumn + '">' + columns[i].KORNM + '</option>';
+            }
+            selectHTML += optionHTML;
         }
-        selectHTML += optionHTML;
     }
     selectHTML += '</select>';
 

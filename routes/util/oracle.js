@@ -3315,7 +3315,7 @@ exports.selectIcrLabelDef = function (req, done) {
         try {
             conn = await oracledb.getConnection(dbConfig);
 
-            result = await conn.execute("select kornm, seqnum from tbl_icr_label_def where docId=:docid", [req]);
+            result = await conn.execute("select kornm, seqnum, docid from tbl_icr_label_def");
 
             return done(null, result);
         } catch (err) { // catches errors in getConnection and the query
