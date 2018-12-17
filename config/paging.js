@@ -3,7 +3,7 @@ module.exports = {
         if( curPage && totalCount ){
             var paging_result='';
             var maxPageInSet = 10, // 페이지 카운트 갯수
-                maxEntityInPage = 100, // 한 페이지당 컨텐츠 수
+                maxEntityInPage = 40, // 한 페이지당 컨텐츠 수
                 totalPage = Math.ceil(totalCount/maxEntityInPage), // 전체 페이지수
                 totalSet = Math.ceil(totalPage/maxPageInSet), // 전체 세트수
                 curSet = Math.ceil(curPage/maxPageInSet), // 현재 세트번호
