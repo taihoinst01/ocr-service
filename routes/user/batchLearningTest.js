@@ -2484,7 +2484,7 @@ function batchLearnTraining(filepath, callback) {
 
         var colMappingList = sync.await(oracle.selectColumn(null, sync.defer()));
         var entryMappingList = sync.await(oracle.selectEntryMappingCls(null, sync.defer()));
-        var labelData = sync.await(oracle.selectIcrLabelDef(resPyArr.docCategory.DOCTOPTYPE, sync.defer()));
+        var labelData = sync.await(oracle.selectIcrLabelDef(null, sync.defer()));
 
         retData.column = colMappingList;
         retData.entryMappingList = entryMappingList;
