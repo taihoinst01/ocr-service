@@ -2357,30 +2357,7 @@ router.post('/exportExcel', function (req, res) {
                 fgColor:{argb:'FFDCDCDC'}
             };
 
-            var cellList = ["D3", "E3", "F3", "G3", "H3", "I3", "J3", "K3", "L3", "M3", "N3", "O3", "P3", "Q3", "R3", "S3", "T3", "U3", 
-                    "V3", "W3", "X3", "Y3", "Z3", "AA3", "AB3", "AC3"];
-            var cellListLength = cellList.length;                   
-            for(var i = 0; i < cellListLength; i++) {
-                
-                if(cellList[i] == "AB3") {
-                    worksheet.getCell(cellList[i]).fill = {
-                        type: 'pattern',
-                        pattern:'solid',
-                        fgColor:{argb: "FFFA8072"}
-                    };
-                    worksheet.getCell(cellList[i]).font = {
-                        color: { argb: 'FFFF0000' }
-                    };
-                } else {
-                    worksheet.getCell(cellList[i]).fill = {
-                        type: 'pattern',
-                        pattern:'solid',
-                        fgColor:{argb: "FF9ACD32"}
-                    };
-                }
-
-            }
-                    
+            
             worksheet.getCell("D3").value = "진찰료";
             worksheet.getCell("E3").value = "입원료(주1)";
             worksheet.getCell("F3").value = "식대";
@@ -2407,7 +2384,32 @@ router.post('/exportExcel', function (req, res) {
             worksheet.getCell("AA3").value = "포괄수가진료비";
             worksheet.getCell("AB3").value = "표준항목외";
             worksheet.getCell("AC3").value = "합계";
+            
+            var cellList = ["D3", "E3", "F3", "G3", "H3", "I3", "J3", "K3", "L3", "M3", "N3", "O3", "P3", "Q3", "R3", "S3", "T3", "U3", 
+                    "V3", "W3", "X3", "Y3", "Z3", "AA3", "AB3", "AC3"];
+            var cellListLength = cellList.length;                   
+            for(var i = 0; i < cellListLength; i++) {
+                
+                if(cellList[i] == "AB3") {
+                    worksheet.getCell(cellList[i]).fill = {
+                        type: 'pattern',
+                        pattern:'solid',
+                        fgColor:{argb: "FFFA8072"}
+                    };
+                    worksheet.getCell(cellList[i]).font = {
+                        color: { argb: 'FFFF0000' }
+                    };
+                } else {
+                    worksheet.getCell(cellList[i]).fill = {
+                        type: 'pattern',
+                        pattern:'solid',
+                        fgColor:{argb: "FF9ACD32"}
+                    };
+                }
 
+            }
+            
+            
             worksheet.getCell("AD3").value = "진찰료";
             worksheet.getCell("AE3").value = "입원료(주1)";
             worksheet.getCell("AF3").value = "식대";
@@ -2434,6 +2436,30 @@ router.post('/exportExcel', function (req, res) {
             worksheet.getCell("BA3").value = "포괄수가진료비";
             worksheet.getCell("BB3").value = "표준항목외";
             worksheet.getCell("BC3").value = "합계";
+            
+            cellList = ["AD3", "AE3", "AF3", "AG3", "AH3", "AI3", "AJ3", "AK3", "AL3", "AM3", "AN3", "AO3", "AP3", "AQ3", "AR3", "AS3", "AT3", "AU3", 
+                    "AV3", "AW3", "AX3", "AY3", "AZ3", "BA3", "BB3", "BC3"];
+            cellListLength = cellList.length;                   
+            for(var i = 0; i < cellListLength; i++) {
+                
+                if(cellList[i] == "BA3") {
+                    worksheet.getCell(cellList[i]).fill = {
+                        type: 'pattern',
+                        pattern:'solid',
+                        fgColor:{argb: "FFFA8072"}
+                    };
+                    worksheet.getCell(cellList[i]).font = {
+                        color: { argb: 'FFFF0000' }
+                    };
+                } else {
+                    worksheet.getCell(cellList[i]).fill = {
+                        type: 'pattern',
+                        pattern:'solid',
+                        fgColor:{argb: "FFB0C4DE"}
+                    };
+                }
+
+            }
 
             worksheet.getCell("BD3").value = "진찰료";
             worksheet.getCell("BE3").value = "입원료(주1)";
@@ -2462,6 +2488,30 @@ router.post('/exportExcel', function (req, res) {
             worksheet.getCell("CB3").value = "표준항목외";
             worksheet.getCell("CC3").value = "합계";
 
+            cellList = ["BD3", "BE3", "BF3", "BG3", "BH3", "BI3", "BJ3", "BK3", "BL3", "BM3", "BN3", "BO3", "BP3", "BQ3", "BR3", "BS3", "BT3", "BU3", 
+                    "BV3", "BW3", "BX3", "BY3", "BZ3", "CA3", "CB3", "CC3"];
+            cellListLength = cellList.length;                   
+            for(var i = 0; i < cellListLength; i++) {
+                
+                if(cellList[i] == "CA3") {
+                    worksheet.getCell(cellList[i]).fill = {
+                        type: 'pattern',
+                        pattern:'solid',
+                        fgColor:{argb: "FFFA8072"}
+                    };
+                    worksheet.getCell(cellList[i]).font = {
+                        color: { argb: 'FFFF0000' }
+                    };
+                } else {
+                    worksheet.getCell(cellList[i]).fill = {
+                        type: 'pattern',
+                        pattern:'solid',
+                        fgColor:{argb: "FFD8BFD8"}
+                    };
+                }
+
+            }
+
             worksheet.getCell("CD3").value = "진찰료";
             worksheet.getCell("CE3").value = "입원료(주1)";
             worksheet.getCell("CF3").value = "식대";
@@ -2488,6 +2538,30 @@ router.post('/exportExcel', function (req, res) {
             worksheet.getCell("DA3").value = "포괄수가진료비";
             worksheet.getCell("DB3").value = "표준항목외";
             worksheet.getCell("DC3").value = "합계";
+
+            cellList = ["CD3", "CE3", "CF3", "CG3", "CH3", "CI3", "CJ3", "CK3", "CL3", "CM3", "CN3", "CO3", "CP3", "CQ3", "CR3", "CS3", "CT3", "CU3", 
+                    "CV3", "CW3", "CX3", "CY3", "CZ3", "DA3", "DB3", "DC3"];
+            cellListLength = cellList.length;                   
+            for(var i = 0; i < cellListLength; i++) {
+                
+                if(cellList[i] == "DA3") {
+                    worksheet.getCell(cellList[i]).fill = {
+                        type: 'pattern',
+                        pattern:'solid',
+                        fgColor:{argb: "FFFA8072"}
+                    };
+                    worksheet.getCell(cellList[i]).font = {
+                        color: { argb: 'FFFF0000' }
+                    };
+                } else {
+                    worksheet.getCell(cellList[i]).fill = {
+                        type: 'pattern',
+                        pattern:'solid',
+                        fgColor:{argb: "FFFFB6C1"}
+                    };
+                }
+
+            }
 
             worksheet.getCell("DD3").value = "진찰료";
             worksheet.getCell("DE3").value = "입원료(주1)";
@@ -2516,6 +2590,30 @@ router.post('/exportExcel', function (req, res) {
             worksheet.getCell("EB3").value = "표준항목외";
             worksheet.getCell("EC3").value = "합계";
 
+            cellList = ["DD3", "DE3", "DF3", "DG3", "DH3", "DI3", "DJ3", "DK3", "DL3", "DM3", "DN3", "DO3", "DP3", "DQ3", "DR3", "DS3", "DT3", "DU3", 
+                    "DV3", "DW3", "DX3", "DY3", "DZ3", "EA3", "EB3", "EC3"];
+            cellListLength = cellList.length;                   
+            for(var i = 0; i < cellListLength; i++) {
+                
+                if(cellList[i] == "EA3") {
+                    worksheet.getCell(cellList[i]).fill = {
+                        type: 'pattern',
+                        pattern:'solid',
+                        fgColor:{argb: "FFFA8072"}
+                    };
+                    worksheet.getCell(cellList[i]).font = {
+                        color: { argb: 'FFFF0000' }
+                    };
+                } else {
+                    worksheet.getCell(cellList[i]).fill = {
+                        type: 'pattern',
+                        pattern:'solid',
+                        fgColor:{argb: "FF808000"}
+                    };
+                }
+
+            }
+
             worksheet.getCell("ED3").value = "이미납부한금액";
             worksheet.getCell("EE3").value = "납부한금액";
             worksheet.getCell("EF3").value = "진료비총액";
@@ -2526,6 +2624,29 @@ router.post('/exportExcel', function (req, res) {
             worksheet.getCell("EK3").value = "환자구분";
             worksheet.getCell("EL3").value = "외래/입원";
             worksheet.getCell("EM3").value = "퇴원/중간";
+
+            cellList = ["ED3", "EE3", "EF3", "EG3", "EH3", "EI3", "EJ3", "EK3", "EL3", "EM3"];
+            cellListLength = cellList.length;                   
+            for(var i = 0; i < cellListLength; i++) {
+                
+                if(cellList[i] == "EF3") {
+                    worksheet.getCell(cellList[i]).fill = {
+                        type: 'pattern',
+                        pattern:'solid',
+                        fgColor:{argb: "FFFA8072"}
+                    };
+                    worksheet.getCell(cellList[i]).font = {
+                        color: { argb: 'FFFF0000' }
+                    };
+                } else {
+                    worksheet.getCell(cellList[i]).fill = {
+                        type: 'pattern',
+                        pattern:'solid',
+                        fgColor:{argb: "FFDCDCDC"}
+                    };
+                }
+
+            }
 
             worksheet.getCell("D4").value = "1";
             worksheet.getCell("E4").value = "2";
@@ -2554,6 +2675,17 @@ router.post('/exportExcel', function (req, res) {
             worksheet.getCell("AB4").value = "25";
             worksheet.getCell("AC4").value = "26";
 
+            cellList = ["D4", "E4", "F4", "G4", "H4", "I4", "J4", "K4", "L4", "M4", "N4", "O4", "P4", "Q4", "R4", "S4", "T4", "U4", "V4", "W4", "X4", "Y4", "Z4",
+                    "AA4", "AB4", "AC4"];
+            cellListLength = cellList.length;                   
+            for(var i = 0; i < cellListLength; i++) {                
+                worksheet.getCell(cellList[i]).fill = {
+                    type: 'pattern',
+                    pattern:'solid',
+                    fgColor:{argb: "FF9ACD32"}
+                };               
+            }
+
             worksheet.getCell("AD4").value = "27";
             worksheet.getCell("AE4").value = "28";
             worksheet.getCell("AF4").value = "29";
@@ -2580,6 +2712,17 @@ router.post('/exportExcel', function (req, res) {
             worksheet.getCell("BA4").value = "50";
             worksheet.getCell("BB4").value = "51";
             worksheet.getCell("BC4").value = "52";
+
+            cellList = ["AD4", "AE4", "AF4", "AG4", "AH4", "AI4", "AJ4", "AK4", "AL4", "AM4", "AN4", "AO4", "AP4", "AQ4", "AR4", "AS4", "AT4", 
+            "AU4", "AV4", "AW4", "AX4", "AY4", "AZ4", "BA4", "BB4", "BC4"];
+            cellListLength = cellList.length;                   
+            for(var i = 0; i < cellListLength; i++) {                
+                worksheet.getCell(cellList[i]).fill = {
+                    type: 'pattern',
+                    pattern:'solid',
+                    fgColor:{argb: "FFB0C4DE"}
+                };               
+            }
 
             worksheet.getCell("BD4").value = "53";
             worksheet.getCell("BE4").value = "54";
@@ -2608,6 +2751,17 @@ router.post('/exportExcel', function (req, res) {
             worksheet.getCell("CB4").value = "77";
             worksheet.getCell("CC4").value = "78";
 
+            cellList = ["BD4", "BE4", "BF4", "BG4", "BH4", "BI4", "BJ4", "BK4", "BL4", "BM4", "BN4", "BO4", "BP4", "BQ4", "BR4", "BS4", "BT4", 
+            "BU4", "BV4", "BW4", "BX4", "BY4", "BZ4", "CA4", "CB4", "CC4"];
+            cellListLength = cellList.length;                   
+            for(var i = 0; i < cellListLength; i++) {                
+                worksheet.getCell(cellList[i]).fill = {
+                    type: 'pattern',
+                    pattern:'solid',
+                    fgColor:{argb: "FFD8BFD8"}
+                };               
+            }
+
             worksheet.getCell("CD4").value = "79";
             worksheet.getCell("CE4").value = "80";
             worksheet.getCell("CF4").value = "81";
@@ -2634,6 +2788,17 @@ router.post('/exportExcel', function (req, res) {
             worksheet.getCell("DA4").value = "102";
             worksheet.getCell("DB4").value = "103";
             worksheet.getCell("DC4").value = "104";
+
+            cellList = ["CD4", "CE4", "CF4", "CG4", "CH4", "CI4", "CJ4", "CK4", "CL4", "CM4", "CN4", "CO4", "CP4", "CQ4", "CR4", "CS4", "CT4", 
+            "CU4", "CV4", "CW4", "CX4", "CY4", "CZ4", "DA4", "DB4", "DC4"];
+            cellListLength = cellList.length;                   
+            for(var i = 0; i < cellListLength; i++) {                
+                worksheet.getCell(cellList[i]).fill = {
+                    type: 'pattern',
+                    pattern:'solid',
+                    fgColor:{argb: "FFFFB6C1"}
+                };               
+            }
 
             worksheet.getCell("DD4").value = "105";
             worksheet.getCell("DE4").value = "106";
@@ -2662,6 +2827,17 @@ router.post('/exportExcel', function (req, res) {
             worksheet.getCell("EB4").value = "129";
             worksheet.getCell("EC4").value = "130";
 
+            cellList = ["DD4", "DE4", "DF4", "DG4", "DH4", "DI4", "DJ4", "DK4", "DL4", "DM4", "DN4", "DO4", "DP4", "DQ4", "DR4", "DS4", "DT4", 
+            "DU4", "DV4", "DW4", "DX4", "DY4", "DZ4", "EA4", "EB4", "EC4"];
+            cellListLength = cellList.length;                   
+            for(var i = 0; i < cellListLength; i++) {                
+                worksheet.getCell(cellList[i]).fill = {
+                    type: 'pattern',
+                    pattern:'solid',
+                    fgColor:{argb: "FF808000"}
+                };               
+            }
+
             worksheet.getCell("ED4").value = "131";
             worksheet.getCell("EE4").value = "132";
             worksheet.getCell("EF4").value = "133";
@@ -2672,7 +2848,17 @@ router.post('/exportExcel', function (req, res) {
             worksheet.getCell("EK4").value = "138";
             worksheet.getCell("EL4").value = "139";
             worksheet.getCell("EM4").value = "140";
+            
 
+            cellList = ["ED4", "EE4", "EF4", "EG4", "EH4", "EI4", "EJ4", "EK4", "EL4", "EM4"];
+            cellListLength = cellList.length;                   
+            for(var i = 0; i < cellListLength; i++) {                
+                worksheet.getCell(cellList[i]).fill = {
+                    type: 'pattern',
+                    pattern:'solid',
+                    fgColor:{argb: "FFDCDCDC"}
+                };               
+            }
 
             for (var i = 0; i < imgId.length; i++) {
                 var result = sync.await(oracle.selectBatchLearnMlList([imgId[i]], sync.defer()));
