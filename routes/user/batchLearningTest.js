@@ -2274,29 +2274,113 @@ router.post('/exportExcel', function (req, res) {
 
             worksheet.mergeCells('A2:A4');
             worksheet.getCell('A4').value = "NO";
+            worksheet.getCell('A4').fill = {
+                type: 'pattern',
+                pattern:'solid',
+                fgColor:{argb:'FFDCDCDC'}
+            };
             worksheet.mergeCells('B2:B4');
             worksheet.getCell('B4').value = "접번";
+            worksheet.getCell('B4').fill = {
+                type: 'pattern',
+                pattern:'solid',
+                fgColor:{argb:'FFDCDCDC'}
+            };
             worksheet.mergeCells('C2:C4');
             worksheet.getCell('C4').value = "KEY";
+            worksheet.getCell('C4').fill = {
+                type: 'pattern',
+                pattern:'solid',
+                fgColor:{argb:'FFDCDCDC'}
+            };
             worksheet.mergeCells('D2:AC2');
             worksheet.getCell('D2').value = "본인부담";
+            worksheet.getCell('D2').fill = {
+                type: 'pattern',
+                pattern:'solid',
+                fgColor:{argb:'FF9ACD32'}
+            };
             worksheet.mergeCells('AD2:BC2');
             worksheet.getCell('AD2').value = "공단부담금";
+            worksheet.getCell('AD2').fill = {
+                type: 'pattern',
+                pattern:'solid',
+                fgColor:{argb:'FFB0C4DE'}
+            };
             worksheet.mergeCells('BD2:CC2');
             worksheet.getCell('BD2').value = "전액본인부담";
+            worksheet.getCell('BD2').fill = {
+                type: 'pattern',
+                pattern:'solid',
+                fgColor:{argb:'FFD8BFD8'}
+            };
             worksheet.mergeCells('CD2:DC2');
             worksheet.getCell('CD2').value = "선택진료료";
+            worksheet.getCell('CD2').fill = {
+                type: 'pattern',
+                pattern:'solid',
+                fgColor:{argb:'FFFFB6C1'}
+            };
             worksheet.mergeCells('DD2:EC2');
             worksheet.getCell('DD2').value = "선택진료료이외";
+            worksheet.getCell('DD2').fill = {
+                type: 'pattern',
+                pattern:'solid',
+                fgColor:{argb:'FF808000'}
+            };
             worksheet.mergeCells('ED2:EF2');
             worksheet.getCell('ED2').value = "금액정보";
+            worksheet.getCell('ED2').fill = {
+                type: 'pattern',
+                pattern:'solid',
+                fgColor:{argb:'FFDCDCDC'}
+            };
             worksheet.mergeCells('EG2:EI2');
             worksheet.getCell('EG2').value = "병원정보";
+            worksheet.getCell('EG2').fill = {
+                type: 'pattern',
+                pattern:'solid',
+                fgColor:{argb:'FFDCDCDC'}
+            };
             worksheet.mergeCells('EJ2:EK2');
             worksheet.getCell('EJ2').value = "환자정보";
+            worksheet.getCell('EJ2').fill = {
+                type: 'pattern',
+                pattern:'solid',
+                fgColor:{argb:'FFDCDCDC'}
+            };
             worksheet.mergeCells('EL2:EM2');
             worksheet.getCell('EL2').value = "치료정보";
+            worksheet.getCell('EL2').fill = {
+                type: 'pattern',
+                pattern:'solid',
+                fgColor:{argb:'FFDCDCDC'}
+            };
 
+            var cellList = ["D3", "E3", "F3", "G3", "H3", "I3", "J3", "K3", "L3", "M3", "N3", "O3", "P3", "Q3", "R3", "S3", "T3", "U3", 
+                    "V3", "W3", "X3", "Y3", "Z3", "AA3", "AB3", "AC3"];
+            var cellListLength = cellList.length;                   
+            for(var i = 0; i < cellListLength; i++) {
+                
+                if(cellList[i] == "AB3") {
+                    worksheet.getCell(cellList[i]).fill = {
+                        type: 'pattern',
+                        pattern:'solid',
+                        fgColor:{argb: "FFFA8072"}
+                    };
+                    worksheet.getCell(cellList[i]).font = {
+                        color: { argb: 'FFFF0000' }
+                    };
+                } else {
+                    worksheet.getCell(cellList[i]).fill = {
+                        type: 'pattern',
+                        pattern:'solid',
+                        fgColor:{argb: "FF9ACD32"}
+                    };
+                }
+
+            }
+                    
             worksheet.getCell("D3").value = "진찰료";
             worksheet.getCell("E3").value = "입원료(주1)";
             worksheet.getCell("F3").value = "식대";
