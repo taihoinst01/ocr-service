@@ -2335,6 +2335,7 @@ function uiLayerHtml(data) {
     //var fileName = filePath.substring(filePath.lastIndexOf('/') + 1, filePath.length);
     fn_initUiTraining();
     fn_uiDocTopType(data.data.docCategory);
+    $('#docName').html(data.data.docCategory.DOCNAME);
     layer_open('layer2');
 
 
