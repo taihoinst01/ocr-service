@@ -483,7 +483,7 @@ exports.insertBatchColumnMapping = function (req, filepath, done) {
                 var sid = resLearnList.rows[0].DOCTYPE + "," + req.sid;
 
                 if (result.rows.length == 0) {
-                    if (req.colLbl != 0) {
+                    if (req.colLbl != 0 && textSid != "0,0,0,0,0") {
                         await conn.execute(insertSqlText, [sid, req.colLbl]);
                     }
                 } else {
