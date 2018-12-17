@@ -431,7 +431,7 @@ if __name__ == '__main__':
 
         if formMappingRows:
             obj["docCategory"] = selectDocCategory(formMappingRows[0][0])
-        elif documentSentenceDoctype and ratio > 0.5:
+        elif documentSentenceDoctype and ratio > 0.2:
             obj["docCategory"] = selectDocCategory(documentSentenceDoctype)
         else:
             obj["docCategory"] = selectDocCategory(0)
@@ -455,7 +455,7 @@ if __name__ == '__main__':
                 obj["data"] = colLblDefaultValue(obj["data"])
             else:
                 obj["data"] = eval(ocrData, formMappingRows[0][0])
-        elif documentSentenceDoctype and ratio > 0.5:
+        elif documentSentenceDoctype and ratio > 0.2:
             if documentSentenceDoctype == 1 or documentSentenceDoctype == 0:
                 obj["data"] = ocrData
                 obj["data"] = colLblDefaultValue(obj["data"])
