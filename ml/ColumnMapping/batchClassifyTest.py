@@ -142,6 +142,10 @@ def eval(inputJson, docType, docTopType):
                 if bUtil.selectLabelDefLabelType(inputItem['colLbl']) == 'T':
                     entryLabel.append(inputItem)
 
+        for label in entryLabel:
+            if label['colLbl'] == 136 or label['colLbl'] == 137:
+                label['colLbl'] = bUtil.selectLabelBehaviorDrug(label, entryLabel)
+
         # 전 아이템 중 엔트리 추출 후 같은 열이나 같은 행에 엔트리 라벨 검색
         for inputItem in inputArr:
             if inputItem['colLbl'] == 0:

@@ -369,30 +369,25 @@ def checkVertical(entLoc, lblLoc):
         raise Exception(str({'code': 500, 'message': 'checkVerticalEntry fail',
                          'error': str(e).replace("'", "").replace('"', '')}))
 
-# def classifyDocument(sentences):
-#     try:
-#         text = ''
-#         for item in sentences:
-#             text += item["text"] + ","
-#         text = text[:-1].lower()
-#
-#         selectDocumentSql = "SELECT DATA, DOCTYPE FROM TBL_DOCUMENT_SENTENCE"
-#         curs.execute(selectDocumentSql)
-#         selDocument = curs.fetchall()
-#
-#         maxNum = 0
-#         row = ''
-#
-#         for rows in selDocument:
-#             ratio = similar(text, rows[0])
-#             if ratio > maxNum:
-#                 maxNum = ratio
-#                 row = rows[1]
-#
-#         if maxNum > 0.5:
-#             return maxNum, row
-#         else:
-#             return 0,''
-#
-#     except Exception as e:
-#         raise Exception(str({'code': 500, 'message': 'TBL_NOTINVOICE_DATA table select fail', 'error': str(e).replace("'", "").replace('"', '')}))
+def selectLabelBehaviorDrug(label, entryLabel):
+    try:
+        colLabel = label["colLbl"]
+        lloc = label["location"].split(",")
+        for entry in entryLabel:
+            eloc = entry["location"].split(",")
+            if abs(int(lloc[0]) - int(eloc[0])) < 150 and -30 < int(lloc[1]) - int(eloc[1]) < 50:
+                if entry["colLbl"] == 138:
+                    if colLabel == 136:
+                        colLabel = 6
+                    elif colLabel == 137:
+                        colLabel = 7
+                elif entry["colLbl"] == 139:
+                    if colLabel == 136:
+                        colLabel = 4
+                    elif colLabel == 137:
+                        colLabel = 5
+
+        return colLabel
+    except Exception as e:
+        raise Exception(str({'code': 500, 'message': 'selectLabelBehaviorDrug fail',
+                         'error': str(e).replace("'", "").replace('"', '')}))
