@@ -1585,12 +1585,16 @@ function fnDocTypeColumn(docType) {
             var htmlText = "";
             htmlText = "<colgroup>";
             for (var i = 0; i < list.length; i++) {
-                htmlText += '<col style="width:200px">';
+                if(list[i].DOCID == docType) {
+                    htmlText += '<col style="width:200px">';
+                }
             }
             htmlText += '<col style="width:17px">';
             htmlText += "</colgroup><thead><tr>";
             for (var i = 0; i < list.length; i++) {
-                htmlText += '<th scope="row">' + list[i].KORNM + '</th>';
+                if(list[i].DOCID == docType) {
+                    htmlText += '<th scope="row">' + list[i].KORNM + '</th>';
+                }
             }
             htmlText += '<th></th>'
             htmlText += "</tr></thead>";
@@ -1599,7 +1603,9 @@ function fnDocTypeColumn(docType) {
             $("#docTableList > colgroup").html("");
             htmlText = "";
             for (var i = 0; i < list.length; i++) {
-                htmlText += '<col style="width:200px">';
+                if(list[i].DOCID == docType) {
+                    htmlText += '<col style="width:200px">';
+                }
             }
             $("#docTableList > colgroup").html(htmlText);
         },
