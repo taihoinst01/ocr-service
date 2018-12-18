@@ -43,12 +43,39 @@ var selectViewCount = function (value) {
 var checkboxEvent = function () {
     // all checkbox
     $("#listCheckAll_before").on("click", function () {
-        if ($("#listCheckAll_before").prop("checked")) $("input[name=listCheck_before]").prop("checked", true);
-        else $("input[name=listCheck_before]").prop("checked", false);
+        if ($("#listCheckAll_before").prop("checked")) {
+            $("input[name=listCheck_before]").each(function(){
+                if($(this).is(":checked") == false) {
+                    $(this).click();
+                }
+            })
+
+        } 
+        else {
+            $("input[name=listCheck_before]").each(function(){
+                if($(this).is(":checked") == true) {
+                    $(this).click();
+                }
+            })
+        }
     });
+    
     $("#listCheckAll_after").on("click", function () {
-        if ($("#listCheckAll_after").prop("checked")) $("input[name=listCheck_after]").prop("checked", true);
-        else $("input[name=listCheck_after]").prop("checked", false);
+        if ($("#listCheckAll_after").prop("checked")) {
+            $("input[name=listCheck_after]").each(function(){
+                if($(this).is(":checked") == false) {
+                    $(this).click();
+                }
+            })
+
+        } 
+        else {
+            $("input[name=listCheck_after]").each(function(){
+                if($(this).is(":checked") == true) {
+                    $(this).click();
+                }
+            })
+        }
     });
 
     // checkbox change
@@ -1617,10 +1644,10 @@ function fnDocTypeColumn(docType) {
 
 function checkBoxCssEvent(tableTag) {
     var isAfter = tableTag.indexOf('after') != -1;
-    $(tableTag + ' .ez-checkbox').unbind('click');
-    $(tableTag + ' .ez-checkbox').click(function (e) {
+    $(tableTag + ' .ez-checkbox input[type=checkbox]').unbind('click');
+    $(tableTag + ' .ez-checkbox input[type=checkbox]').click(function (e) {
         var trIdNum = $(this).closest('tr').attr('id').split('_')[1];
-        if (!$(this).hasClass('ez-checked')) {
+        if (!$(this).parent().hasClass('ez-checked')) {
             $(this).closest('tr').css('background', '#EA7169').children('td').css('color', '#FFF').children('a').css('color', '#FFF');
             $(tableTag.replace('left', 'right') + ' .rowNum' + trIdNum).css('background', '#EA7169').children('td').css('color', '#FFF');
             if (isAfter) $(tableTag.replace('left', 'right') + ' .mlRowNum' + trIdNum).css('background', '#EA7169').children('td').css('color', '#FFF');
