@@ -3137,34 +3137,35 @@ router.post('/exportExcel', function (req, res) {
                         excelObj.col135 = result.rows[j].COLVALUE;
                     }
                 }
+                
                 worksheet.addRow([
                     (i + 1), imgId[i], '',
                     excelObj.col1, excelObj.col2, excelObj.col3, excelObj.col4, excelObj.col5,
                     excelObj.col6, excelObj.col7, excelObj.col8, excelObj.col9, excelObj.col10,
                     excelObj.col11, excelObj.col12, excelObj.col13, excelObj.col14, excelObj.col15,
                     excelObj.col16, excelObj.col17, excelObj.col18, excelObj.col19, excelObj.col20,
-                    excelObj.col21, excelObj.col22, excelObj.col23, excelObj.col24, excelObj.col25, excelObj.col26,
+                    excelObj.col21, excelObj.col22, excelObj.col23, excelObj.col24, "", excelObj.col25,  ,excelObj.col26,
                     excelObj.col27, excelObj.col28, excelObj.col29, excelObj.col30, excelObj.col31,
                     excelObj.col32, excelObj.col33, excelObj.col34, excelObj.col35, excelObj.col36,
                     excelObj.col37, excelObj.col38, excelObj.col39, excelObj.col40, excelObj.col41,
                     excelObj.col42, excelObj.col43, excelObj.col44, excelObj.col45, excelObj.col46,
-                    excelObj.col47, excelObj.col48, excelObj.col49, excelObj.col50, excelObj.col51,
+                    excelObj.col47, "", excelObj.col48, excelObj.col49, excelObj.col50, excelObj.col51,
                     excelObj.col52, excelObj.col53, excelObj.col54, excelObj.col55, excelObj.col56,
                     excelObj.col57, excelObj.col58, excelObj.col59, excelObj.col60, excelObj.col61,
                     excelObj.col62, excelObj.col63, excelObj.col64, excelObj.col65, excelObj.col66,
                     excelObj.col67, excelObj.col68, excelObj.col69, excelObj.col70, excelObj.col71,
-                    excelObj.col72, excelObj.col73, excelObj.col74, excelObj.col75, excelObj.col76,
+                    excelObj.col72, "", excelObj.col73, excelObj.col74, excelObj.col75, excelObj.col76,
                     excelObj.col77, excelObj.col78, excelObj.col79, excelObj.col80, excelObj.col81,
                     excelObj.col82, excelObj.col83, excelObj.col84, excelObj.col85, excelObj.col86,
                     excelObj.col87, excelObj.col88, excelObj.col89, excelObj.col90, excelObj.col91,
                     excelObj.col92, excelObj.col93, excelObj.col94, excelObj.col95, excelObj.col96,
-                    excelObj.col97, excelObj.col98, excelObj.col99, excelObj.col100, excelObj.col101,
+                    excelObj.col97, "", excelObj.col98, excelObj.col99, excelObj.col100, excelObj.col101, 
                     excelObj.col102, excelObj.col103, excelObj.col104, excelObj.col105, excelObj.col106,
                     excelObj.col107, excelObj.col108, excelObj.col109, excelObj.col110, excelObj.col111,
                     excelObj.col112, excelObj.col113, excelObj.col114, excelObj.col115, excelObj.col116,
                     excelObj.col117, excelObj.col118, excelObj.col119, excelObj.col120, excelObj.col121,
-                    excelObj.col122, excelObj.col123, excelObj.col124, excelObj.col125, excelObj.col126,
-                    excelObj.col127, excelObj.col128, excelObj.col129, excelObj.col130, excelObj.col131,
+                    excelObj.col122, "", excelObj.col123, excelObj.col124, excelObj.col125, excelObj.col126,
+                    "", excelObj.col127, excelObj.col128, excelObj.col129, excelObj.col130, excelObj.col131,
                     excelObj.col132, excelObj.col133, excelObj.col134, excelObj.col135, excelObj.col136,
                     excelObj.col137, excelObj.col138, excelObj.col139, excelObj.col140
                 ]);
