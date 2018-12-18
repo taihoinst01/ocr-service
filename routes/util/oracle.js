@@ -659,7 +659,7 @@ exports.selectBatchLearnListTest = function (req, done) {
             let resAnswerFile = await conn.execute(`select bll.* from 
                                                         (select ROW_NUMBER() OVER(ORDER BY REGDATE DESC, FILEPATH) AS NUM, 
                                                         COUNT('1') OVER(PARTITION BY '1') AS TOTCNT, 
-                                                        CEIL((ROW_NUMBER() OVER(ORDER BY REGDATE DESC, FILEPATH))/ 100) PAGEIDX, 
+                                                        CEIL((ROW_NUMBER() OVER(ORDER BY REGDATE DESC, FILEPATH))/ 40) PAGEIDX, 
                                                         IMGID, STATUS, FILEPATH, DOCTYPE, DOCNAME, REGDATE
                                                         from (
                                                             SELECT IMGID, STATUS, FILEPATH, A.DOCTYPE, B.DOCNAME, REGDATE
