@@ -59,7 +59,7 @@ var checkboxEvent = function () {
             })
         }
     });
-    
+
     $("#listCheckAll_after").on("click", function () {
         if ($("#listCheckAll_after").prop("checked")) {
             $("input[name=listCheck_after]").each(function(){
@@ -1667,9 +1667,9 @@ function checkBoxMLCssEvent() {
         }
     });
 
-    $('#textResultTbl .ez-checkbox').unbind('click');
-    $('#textResultTbl .ez-checkbox').click(function () {
-        if (!$(this).hasClass('ez-checked')) {
+    $('#textResultTbl .ez-checkbox input[type=checkbox]').unbind('click');
+    $('#textResultTbl .ez-checkbox input[type=checkbox]').click(function () {
+        if (!$(this).parent().hasClass('ez-checked')) {
             $(this).closest('dl').children().css('background', '#EA7169')
                 .find('input[type="text"]').css('color', '#FFF').css('background', '#EA7169');
         } else {
