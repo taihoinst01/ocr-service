@@ -1488,15 +1488,7 @@ var searchBatchLearnDataList = function (addCond, page) {
                                 '<td>' + makeMLSelect(mlData, null, [22, 47, 72, 97, 122], list[i].IMGID) + '</td> <!--기타진료비-->' +
                                 '<td>' + makeMLSelect(mlData, null, [23, 48, 73, 98, 123], list[i].IMGID) + '</td> <!--65세이상(신설)-->' +
                                 '<td>' + makeMLSelect(mlData, null, [24, 49, 74, 99, 124], list[i].IMGID) + '</td> <!--포괄수가진료비-->' +
-    
-                                '<td>' + makeMLSelect(mlData, null, [25, 50, 75, 100, 125], list[i].IMGID) + '</td> <!--합계-->' +
-                                
-                                '<td></td> <!--본인부담-->' +
-                                '<td></td> <!--공단부담-->' +
-                                '<td></td> <!--전액본인-->' +
-                                '<td></td> <!--선택진료-->' +
-                                '<td></td> <!--선택진료외-->' +
-    
+                                '<td>' + makeMLSelect(mlData, null, [25, 50, 75, 100, 125], list[i].IMGID) + '</td> <!--합계-->' +                            
                                 '<td>' + makeMLSelect(mlData, 126, null, list[i].IMGID) + '</td> <!--이미납부한금액-->' +
                                 '<td>' + makeMLSelect(mlData, 127, null, list[i].IMGID) + '</td> <!--납부한금액-->' +
                                 '<td>' + makeMLSelect(mlData, 128, null, list[i].IMGID) + '</td> <!--요양기관종류-->' +
@@ -1542,7 +1534,7 @@ var searchBatchLearnDataList = function (addCond, page) {
             }
             endProgressBar(progressId); // end progressbar
             checkboxEvent(); // refresh checkbox event
-            $('input[type=checkbox]').ezMark();
+            $('.batchListLeftTbody input[type=checkbox]').ezMark();
             imgPopupEvent();
             $('#batch_left_contents_after select').stbDropdown();
             $('#batch_right_contents_after select').stbDropdown();
@@ -1613,14 +1605,19 @@ function fnDocTypeColumn(docType) {
             htmlText = "<colgroup>";
             for (var i = 0; i < list.length; i++) {
                 if(list[i].DOCID == docType) {
-                    htmlText += '<col style="width:200px">';
+                    if(list[i].SEQNUM <= 135) {
+                        htmlText += '<col style="width:200px">';
+                    }
+                    
                 }
             }
             htmlText += '<col style="width:17px">';
             htmlText += "</colgroup><thead><tr>";
             for (var i = 0; i < list.length; i++) {
                 if(list[i].DOCID == docType) {
-                    htmlText += '<th scope="row">' + list[i].KORNM + '</th>';
+                    if(list[i].SEQNUM <= 135) {
+                        htmlText += '<th scope="row">' + list[i].KORNM + '</th>';
+                    }
                 }
             }
             htmlText += '<th></th>'
@@ -1631,7 +1628,9 @@ function fnDocTypeColumn(docType) {
             htmlText = "";
             for (var i = 0; i < list.length; i++) {
                 if(list[i].DOCID == docType) {
-                    htmlText += '<col style="width:200px">';
+                    if(list[i].SEQNUM <= 135) {
+                        htmlText += '<col style="width:200px">';
+                    }
                 }
             }
             $("#docTableList > colgroup").html(htmlText);
@@ -3829,7 +3828,7 @@ function selectClassificationSt(filepath) {
                     
                     $('.td_sentence:eq('+ i +')').text(tempArr[i][1].text);
                 }
-                $('input[type=checkbox]').ezMark();
+                $('#batch_layer4_result input[type=checkbox]').ezMark();
 
                 for (var i = 0; i < $("input[type='checkbox'].batch_layer4_result_chk").length; i++) {
                     $("input[type='checkbox'].batch_layer4_result_chk").eq(i).parent().removeClass("ez-hide");

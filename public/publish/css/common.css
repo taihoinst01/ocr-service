@@ -940,11 +940,11 @@ input[type='checkbox'] {
 .ez-checkbox {
     width: 22px;
     margin-right: 0px;
-    background-position: -42px -148.8px;
+    background-position: -42px -149.5px;
 }
 
 .ez-checked {
-    background-position: -130px -148px;
+    background-position: -129px -150px;
 }
 
 .checkbox-options {
