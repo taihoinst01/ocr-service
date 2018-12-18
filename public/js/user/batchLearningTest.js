@@ -1504,13 +1504,13 @@ var searchBatchLearnDataList = function (addCond, page) {
                             //임시
                             appendRightContentsHtml +=
                             '<tr class="mlRowNum' + i + '" style="height:' + (trHeight + 12) + 'px;">' +
-                            '<td colspan="40"></td>' +
+                            '<td colspan="35"></td>' +
                             '</tr>';
                         }
                     } else {
                         appendRightContentsHtml +=
                             '<tr class="mlRowNum' + i + '" style="height:' + (trHeight + 12) + 'px;">' +
-                            '<td colspan="40"></td>' +
+                            '<td colspan="35"></td>' +
                             '</tr>';
 
                     }
@@ -1518,7 +1518,7 @@ var searchBatchLearnDataList = function (addCond, page) {
                 }
             } else {
                 appendLeftContentsHtml += '<tr style="height: 30px"><td colspan="3"></td></tr>'
-                appendRightContentsHtml += '<tr><td colspan="40">조회할 데이터가 없습니다.</td></tr>';
+                appendRightContentsHtml += '<tr><td colspan="35">조회할 데이터가 없습니다.</td></tr>';
             }
             //$(appendHtml).appendTo($("#tbody_batchList")).slideDown('slow');
             if (addCond == "LEARN_N") {
@@ -1600,7 +1600,7 @@ function fnDocTypeColumn(docType) {
         success: function (data) {
             console.log(data);
             var list = data.rows;
-            $("#docTableColumn").html("");
+            $(".docTableColumn").html("");
             var htmlText = "";
             htmlText = "<colgroup>";
             for (var i = 0; i < list.length; i++) {
@@ -1622,7 +1622,7 @@ function fnDocTypeColumn(docType) {
             }
             htmlText += '<th></th>'
             htmlText += "</tr></thead>";
-            $("#docTableColumn").html(htmlText);
+            $(".docTableColumn").html(htmlText);
 
             $("#docTableList > colgroup").html("");
             htmlText = "";
