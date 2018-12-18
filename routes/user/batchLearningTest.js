@@ -3144,7 +3144,7 @@ router.post('/exportExcel', function (req, res) {
                     excelObj.col6, excelObj.col7, excelObj.col8, excelObj.col9, excelObj.col10,
                     excelObj.col11, excelObj.col12, excelObj.col13, excelObj.col14, excelObj.col15,
                     excelObj.col16, excelObj.col17, excelObj.col18, excelObj.col19, excelObj.col20,
-                    excelObj.col21, excelObj.col22, excelObj.col23, excelObj.col24, "", excelObj.col25,  ,excelObj.col26,
+                    excelObj.col21, excelObj.col22, excelObj.col23, excelObj.col24, "", excelObj.col25, excelObj.col26,
                     excelObj.col27, excelObj.col28, excelObj.col29, excelObj.col30, excelObj.col31,
                     excelObj.col32, excelObj.col33, excelObj.col34, excelObj.col35, excelObj.col36,
                     excelObj.col37, excelObj.col38, excelObj.col39, excelObj.col40, excelObj.col41,
