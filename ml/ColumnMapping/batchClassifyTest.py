@@ -39,7 +39,13 @@ def isfloat(value):
 
 
 def boundaryCheck(str1, str2):
-    return abs(int(str1) - int(str2)) < 6
+    return abs(int(str1) - int(str2)) < 8
+
+def priceCheck(str1, str2):
+    return abs(int(str1) - int(str2)) < 40
+
+def leftLabelCheck(entLoc, lblLoc):
+    return -1000 < int(lblLoc[1]) - int(entLoc[1]) < 0
 
 
 def findLabelDB(inputsid, docType, docTopType):
@@ -145,6 +151,8 @@ def eval(inputJson, docType, docTopType):
         for label in entryLabel:
             if label['colLbl'] == 136 or label['colLbl'] == 137:
                 label['colLbl'] = bUtil.selectLabelBehaviorDrug(label, entryLabel)
+            if label['colLbl'] == 25:
+                label['colLbl'] = bUtil.selectLabelAmountPaid(label, entryLabel)
 
         # 전 아이템 중 엔트리 추출 후 같은 열이나 같은 행에 엔트리 라벨 검색
         for inputItem in inputArr:
@@ -161,9 +169,13 @@ def eval(inputJson, docType, docTopType):
                     # 같은 문서 검사
                     if entLoc[0] == lblLoc[0]:
                         # 같은 라인 검사
-                        if boundaryCheck(entLoc[2], lblLoc[2]):
+                        if boundaryCheck(entLoc[2], lblLoc[2]) and leftLabelCheck(entLoc, lblLoc):
                             inputItem['entryLbl'] = lblItem['colLbl']
                             horizItem = lblItem['colLbl']
+
+                        if priceCheck(entLoc[2], lblLoc[2]) and leftLabelCheck(entLoc, lblLoc):
+                            if lblItem['colLbl'] == 126 or lblItem['colLbl'] == 145:
+                                inputItem['entryLbl'] = lblItem['colLbl']
 
                         # 20180911 수직기준으로 가까운 엔트리라벨을 체크하는데 만약 거리가 80이 넘는것만 있을경우 unknown
                         if bUtil.checkVerticalEntry(entLoc, lblLoc):

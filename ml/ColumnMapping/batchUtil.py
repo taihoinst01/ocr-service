@@ -391,3 +391,18 @@ def selectLabelBehaviorDrug(label, entryLabel):
     except Exception as e:
         raise Exception(str({'code': 500, 'message': 'selectLabelBehaviorDrug fail',
                          'error': str(e).replace("'", "").replace('"', '')}))
+
+def selectLabelAmountPaid(label, entryLabel):
+    try:
+        colLabel = label["colLbl"]
+        lloc = label["location"].split(",")
+        for entry in entryLabel:
+            eloc = entry["location"].split(",")
+            if abs(int(lloc[0]) - int(eloc[0])) < 250 and -30 < int(lloc[1]) - int(eloc[1]) < 60:
+                if entry["colLbl"] == 127:
+                    colLabel = 127
+
+        return colLabel
+    except Exception as e:
+        raise Exception(str({'code': 500, 'message': 'selectLabelBehaviorDrug fail',
+                         'error': str(e).replace("'", "").replace('"', '')}))
