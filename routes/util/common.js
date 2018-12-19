@@ -385,7 +385,7 @@ router.post('/modifyBatchUiTextData', function (req, res) {
                         afterData.data[i].sid = sync.await(oracle.selectSid(beforeData.data[j], sync.defer()));
                         //라벨이 변경된 경우만 트레이닝 insert
                         if (afterData.data[i].colLbl != beforeData.data[j].colLbl) {
-                            sync.await(oracle.insertBatchColumnMapping(afterData.data[i], filepath, sync.defer()));
+                            sync.await(oracle.insertBatchColumnMapping(afterData.data[i], filepath, beforeData.data[j], sync.defer()));
                         }
                     }
                 }

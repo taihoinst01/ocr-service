@@ -460,7 +460,7 @@ exports.insertColumnMapping = function (req, done) {
     });
 };
 
-exports.insertBatchColumnMapping = function (req, filepath, done) {
+exports.insertBatchColumnMapping = function (req, filepath, before, done) {
     return new Promise(async function (resolve, reject) {
         let conn;
         try {
@@ -469,8 +469,6 @@ exports.insertBatchColumnMapping = function (req, filepath, done) {
             let insertSqlText = `INSERT INTO TBL_BATCH_COLUMN_MAPPING_TRAIN (SEQNUM, DATA, CLASS, REGDATE) VALUES (SEQ_BATCH_COLUMN_MAPPING_TRAIN.NEXTVAL,:data,:class,SYSDATE)`;
             let selectLearnListSqlText = `SELECT DOCTYPE FROM TBL_BATCH_LEARN_LIST WHERE FILEPATH = :filepath`;
             let updateBatchColumnMapping = 'UPDATE TBL_BATCH_COLUMN_MAPPING_TRAIN SET CLASS = :class WHERE DATA = :data';
-
-            var result = await conn.execute(selectSqlText, [req.sid, req.colLbl]);
 
             var resLearnList = await conn.execute(selectLearnListSqlText, [filepath]);
             if (resLearnList.rows[0]) {
@@ -482,12 +480,14 @@ exports.insertBatchColumnMapping = function (req, filepath, done) {
 
                 var sid = resLearnList.rows[0].DOCTYPE + "," + req.sid;
 
+                var result = await conn.execute(selectSqlText, [sid, before.colLbl]);
+
                 if (result.rows.length == 0) {
                     if (req.colLbl != 0 && textSid != "0,0,0,0,0") {
                         await conn.execute(insertSqlText, [sid, req.colLbl]);
                     }
                 } else {
-                    await conn.execute(updateBatchColumnMapping, [sid, req.colLbl]);
+                    await conn.execute(updateBatchColumnMapping, [req.colLbl, sid]);
                 }
             }
             return done(null, req);
