@@ -1489,8 +1489,8 @@ var searchBatchLearnDataList = function (addCond, page) {
                                 '<td>' + makeMLSelect(mlData, null, [23, 48, 73, 98, 123], list[i].IMGID) + '</td> <!--65세이상(신설)-->' +
                                 '<td>' + makeMLSelect(mlData, null, [24, 49, 74, 99, 124], list[i].IMGID) + '</td> <!--포괄수가진료비-->' +
                                 '<td>' + makeMLSelect(mlData, null, [25, 50, 75, 100, 125], list[i].IMGID) + '</td> <!--합계-->' +                            
-                                '<td>' + makeMLSelect(mlData, 126, null, list[i].IMGID) + '</td> <!--이미납부한금액-->' +
-                                '<td>' + makeMLSelect(mlData, 127, null, list[i].IMGID) + '</td> <!--납부한금액-->' +
+                                '<td>' + makeMLSelect(mlData, null, [126], list[i].IMGID) + '</td> <!--이미납부한금액-->' +
+                                '<td>' + makeMLSelect(mlData, null, [127], list[i].IMGID) + '</td> <!--납부한금액-->' +
                                 '<td>' + makeMLSelect(mlData, 128, null, list[i].IMGID) + '</td> <!--요양기관종류-->' +
                                 '<td>' + makeMLSelect(mlData, 129, null, list[i].IMGID) + '</td> <!--사업자등록번호-->' +
                                 '<td>' + makeMLSelect(mlData, 130, null, list[i].IMGID) + '</td> <!--상호-->' +

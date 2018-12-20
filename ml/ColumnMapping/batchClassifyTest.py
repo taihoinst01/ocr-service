@@ -69,7 +69,7 @@ def findLabelDB(inputsid, docType, docTopType):
             if label[4] == "P" and dbNum[0] == str(docType) and int(row[2]) == int(label[0]):
                 # 문서종류 and (Y좌표 and (X좌표 or 넓이))
                 if (dbNum[0] == inputNum[0]) and (boundaryCheckP(dbNum[2], inputNum[2]) and (
-                        boundaryCheckP(dbNum[1], inputNum[1]) or boundaryCheckP(dbNum[3], inputNum[3]))):
+                        boundaryCheckP(dbNum[1], inputNum[1]) and boundaryCheckP(dbNum[3], inputNum[3]))):
                     ret.append(row[2])
                     result.append(int(row[2]))
                     result.append(0.99)
