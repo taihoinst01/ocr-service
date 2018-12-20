@@ -3115,9 +3115,9 @@ router.post('/exportExcel', function (req, res) {
                         excelObj.col124 = result.rows[j].COLVALUE;
                     } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "125") {
                         excelObj.col125 = result.rows[j].COLVALUE;
-                    } else if (result.rows[j].COLLABEL == "126") {
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "126") {
                         excelObj.col126 = result.rows[j].COLVALUE;
-                    } else if (result.rows[j].COLLABEL == "127") {
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "127") {
                         excelObj.col127 = result.rows[j].COLVALUE;
                     } else if (result.rows[j].COLLABEL == "128") {
                         excelObj.col128 = result.rows[j].COLVALUE;
