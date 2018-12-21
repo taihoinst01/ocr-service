@@ -39,7 +39,7 @@ def isfloat(value):
 
 
 def boundaryCheck(str1, str2):
-    return abs(int(str1) - int(str2)) < 8
+    return abs(int(str1) - int(str2)) < 10
 
 def boundaryCheckP(str1, str2):
     return abs(int(str1) - int(str2)) < 2

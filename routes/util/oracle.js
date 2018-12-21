@@ -483,7 +483,7 @@ exports.insertBatchColumnMapping = function (req, filepath, before, done) {
                 var result = await conn.execute(selectSqlText, [sid, before.colLbl]);
 
                 if (result.rows.length == 0) {
-                    if (req.colLbl != 0 && textSid != "0,0,0,0,0") {
+                    if ((req.colLbl != 0 && textSid != "0,0,0,0,0") && !(req.colLbl == -1 && textSid == "1,1,1,1,1")) {
                         await conn.execute(insertSqlText, [sid, req.colLbl]);
                     }
                 } else {
