@@ -263,7 +263,13 @@ def getSid(data):
         selectExportSidSql = "SELECT EXPORT_SENTENCE_SID (LOWER(:sentence)) AS SID FROM DUAL"
         for item in data:
             text = re.sub(regExp, '', item["text"])
-            curs.execute(selectExportSidSql, {"sentence": text})
+            num = re.sub(',| ', '', text)
+
+            if num.isdigit():
+                curs.execute(selectExportSidSql, {"sentence": num})
+            else:
+                curs.execute(selectExportSidSql, {"sentence": text})
+
             exportSidRows = curs.fetchall()
             item["sid"] = exportSidRows[0][0]
 

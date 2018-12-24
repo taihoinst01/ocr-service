@@ -186,7 +186,7 @@ function uploadConvert(files, callback) {
         //file convert MsOffice to Pdf
         if (!(fileExt.toLowerCase() === 'pdf')) {
             //convertPdf = execSync('"C:/Program Files/LibreOffice/program/python.exe" C:/ICR/app/source/module/unoconv/unoconv.py -f pdf -o "' + ofile + '" "' + ifile + '"');  //운영
-            convertPdf = execSync('"C:/Program Files/LibreOffice/program/python.exe" C:/Users/Taiho/Source/Repos/ocr-service/module/unoconv/unoconv.py -f pdf -o "' + ofile + '" "' + ifile + '"');
+            convertPdf = execSync('"C:/Program Files/LibreOffice/program/python.exe" C:/projectWork/ocrService/module/unoconv/unoconv.py -f pdf -o "' + ofile + '" "' + ifile + '"');
         }
 
         ifile = convertedImagePath + fileObj.originalname.split('.')[0] + '.pdf';
@@ -204,7 +204,7 @@ function uploadConvert(files, callback) {
             var j = 0;
             while (!isStop) {
                 try { // 하나의 파일 안의 여러 페이지면
-                    var convertFileFullPath = appRoot + '\\' + files.path.split('.')[0] + '-' + j + '.png';
+                    var convertFileFullPath = files.path.split('.')[0] + '-' + j + '.png';
                     var stat = fs.statSync(convertFileFullPath);
                     if (stat) {
                         var fileItem = {
@@ -217,7 +217,7 @@ function uploadConvert(files, callback) {
                             fileSize: fileObj.size,
                             contentType: fileObj.mimetype
                         };
-                        fileInfo.push(fileItem);
+                        returnResult.fileInfo.push(fileItem);
                         returnObj.push(fileItem.convertFileName);
                     } else {
                         isStop = true;
@@ -225,7 +225,7 @@ function uploadConvert(files, callback) {
                     }
                 } catch (err) { // 하나의 파일 안의 한 페이지면
                     try {
-                        var convertFileFullPath = appRoot + '\\' + files.path.split('.')[0] + '.png';
+                        var convertFileFullPath = files.path.split('.')[0] + '.png';
                         var stat2 = fs.statSync(convertFileFullPath);
                         if (stat2) {
                             var fileItem = {
@@ -238,8 +238,8 @@ function uploadConvert(files, callback) {
                                 fileSize: fileObj.size,
                                 contentType: fileObj.mimetype
                             };
-                            fileInfo.push(fileItem);
-                            returnObj.push(fileItem.convertFileName);
+                            returnResult.fileInfo = fileItem;
+                            returnResult.returnObj = fileItem.convertFileName;
                             break;
                         }
                     } catch (e) {
