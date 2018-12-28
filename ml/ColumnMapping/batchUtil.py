@@ -4,6 +4,8 @@ import json
 import operator
 import re
 from difflib import SequenceMatcher
+from symspellpy.symspellpy import SymSpell, Verbosity
+from langdetect import detect
 
 id = "ocr"
 pw = "taiho123"
