@@ -406,3 +406,130 @@ def selectLabelAmountPaid(label, entryLabel):
     except Exception as e:
         raise Exception(str({'code': 500, 'message': 'selectLabelBehaviorDrug fail',
                          'error': str(e).replace("'", "").replace('"', '')}))
+
+def typoSentence(ocrData, langDetect):
+    try:
+        initial_capacity = 83000
+        max_edit_distance_dictionary = 2
+        prefix_length = 7
+
+        sym_spell = SymSpell(initial_capacity, max_edit_distance_dictionary,
+                             prefix_length)
+
+        if langDetect == "en":
+            dictionary_path = os.path.join(os.path.dirname(__file__),
+                                       "frequency_dictionary_en_82_765.txt")
+        elif langDetect == "de":
+            dictionary_path = os.path.join(os.path.dirname(__file__),
+                                           "frequency_dictionary_de.txt")
+
+        term_index = 0
+        count_index = 1
+
+        if not sym_spell.load_dictionary(dictionary_path, term_index, count_index):
+            print("Dictionary file not found")
+            return
+
+        for item in ocrData:
+            text = item["text"]
+            text = text.split(" ")
+            symText = ''
+
+            for i in text:
+                input_term = i
+
+                max_edit_distance_lookup = 2
+                suggestion_verbosity = Verbosity.TOP
+                suggestions = sym_spell.lookup(input_term, suggestion_verbosity,
+                                               max_edit_distance_lookup)
+
+                if len(suggestions) > 0:
+                    i = suggestions[0].term
+
+                symText += i + " "
+
+            item["text"] = symText
+
+        return ocrData
+
+    except Exception as e:
+        raise Exception(str({'code': 500, 'message': 'typoSentence error',
+                             'error': str(e).replace("'", "").replace('"', '')}))
+
+def langDetect(ocrData):
+    try:
+
+        lang = ''
+        text = ''
+
+        for data in ocrData:
+            text += data["text"]
+
+        lang = detect(text)
+
+        return lang
+
+    except Exception as e:
+        raise Exception(str({'code': 500, 'message': 'langDetect error',
+                             'error': str(e).replace("'", "").replace('"', '')}))
+
+def findFixLabel(ocrData):
+    try:
+        fixLabelSql = "SELECT * FROM TBL_ICR_LABEL_DEF WHERE LABELTYPE = 'T'"
+        curs.execute(fixLabelSql)
+        fixLabelRows = curs.fetchall()
+
+        label = []
+        for row in fixLabelRows:
+            label.append(row[0])
+
+        # 고정 라벨 추출
+        for item in ocrData:
+            data = item["sid"]
+            if data != ["1,1,1,1,1"]:
+                trainSql = "SELECT SEQNUM, DATA, CLASS FROM TBL_BATCH_COLUMN_MAPPING_TRAIN WHERE DATA LIKE '%" + data + "%'"
+                curs.execute(trainSql)
+                trainRows = curs.fetchall()
+
+                for row in trainRows:
+                    for e in fixLabelRows:
+                        if int(row[2]) in e:
+                            item["colLbl"] = e[0]
+
+        # 고정라벨의 엔트리 추출
+        # for item in ocrData:
+        #
+        #     if "colLbl" in item:
+        #         label = item["location"]
+        #         label = label.split(",")
+        #         # 엔트리 정규식
+        #         labelValid = re.compile(item["valid"])
+        #
+        #         if item["amount"] == "single":
+        #             for entryItem in ocrData:
+        #                 entry = entryItem["location"]
+        #                 entry = entry.split(",")
+        #
+        #                 # 라벨과 엔트리가 수평으로 일치하는지 Check
+        #                 if boundaryCheck(label[1], entry[1]):
+        #                     valid = labelValid.match(entryItem["text"])
+        #
+        #                     # 해당 라벨의 정규식과 일치 하는지 확인
+        #                     if hasattr(valid, "string"):
+        #                         entryItem['entryLbl'] = item["colLbl"]
+        #                         break
+        #
+        #                 # 라벨과 엔트리가 수직으로 일치하는지 Check
+        #                 if verticalCheck(label, entry):
+        #                     valid = labelValid.match(entryItem["text"])
+        #
+        #                     # 해당 라벨의 정규식과 일치 하는지 확인
+        #                     if hasattr(valid, "string"):
+        #                         entryItem['entryLbl'] = item["colLbl"]
+        #                         break
+
+
+        return ocrData
+    except Exception as e:
+        raise Exception(str({'code': 500, 'message': 'findFixLabel error',
+                             'error': str(e).replace("'", "").replace('"', '')}))
