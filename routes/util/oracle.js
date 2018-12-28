@@ -3265,7 +3265,7 @@ exports.selectImgid = function (req, done) {
         try {
             conn = await oracledb.getConnection(dbConfig);
 
-            result = await conn.execute("select imgid from tbl_batch_learn_list where filepath = :filePath", [req]);
+            result = await conn.execute("select imgid from tbl_batch_learn_list where filepath = :filePath and status = 'T'", [req]);
 
             return done(null, result);
         } catch (err) { // catches errors in getConnection and the query

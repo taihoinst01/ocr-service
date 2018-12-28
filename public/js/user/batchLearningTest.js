@@ -2505,6 +2505,9 @@ function appendSelEntryOptionHtml(targetColumn, columns, docTopType) {
 
         if (targetColumn > 25 && targetColumn < 51) {
             targetColumn = targetColumn % 25;
+            if (targetColumn == 0) {
+                targetColumn = 25;
+            }
         } else if (targetColumn > 50 && targetColumn < 76) {
             targetColumn = targetColumn % 50;
         } else if (targetColumn > 75 && targetColumn < 101) {
