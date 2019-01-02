@@ -535,3 +535,51 @@ def findFixLabel(ocrData):
     except Exception as e:
         raise Exception(str({'code': 500, 'message': 'findFixLabel error',
                              'error': str(e).replace("'", "").replace('"', '')}))
+
+        
+        
+        # 문서양식 추출 함수
+def findDocType(ocrData):
+    try:
+        # document sentence 테이블 검색
+        docSentenceSql = "SELECT DATA, DOCTYPE, SENTENCELENGTH FROM TBL_DOCUMENT_SENTENCE"
+        curs.execute(docSentenceSql)
+        docSentenceRows = curs.fetchall()
+
+        maxNum = 0
+        row = ''
+        docSentence = []
+        for row in docSentenceRows:
+            docSentence.append(row[1])
+
+        # colLbl 값 검색 후 text 추출 및 sort
+        text = []
+        strText = ''
+        for item in ocrData:
+            for k, v in item.items():
+                if k == "colLbl":
+                    if v > 1:
+                        print('{}:{}'.format(k, v))
+                        text.append(item["text"])
+                        text.sort()
+                        strText = ",".join(str(x) for x in text)
+
+        #print(text)
+        #print(strText)
+        #print(docSentence)
+
+        for rows in docSentenceRows:
+            ratio = similar(strText, rows[0])
+            if ratio > maxNum:
+                maxNum = ratio
+                row = rows[1]
+
+        if maxNum > 0.2:
+            return row
+        else:
+            return ''
+
+    except Exception as ex:
+        raise Exception(str({'code': 500, 'message': 'findDocType error',
+                             'error': str(ex).replace("'", "").replace('"', '')}))
+        
