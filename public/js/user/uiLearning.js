@@ -518,95 +518,12 @@ function appendOcrData(fileInfo, data) {
         'filePath': fileInfo.filePath,
         'fileName': fileInfo.convertFileName
     }
-    /*
-    var param = {
-        'filePath': filePath
-    };
-    */
+
     executeML(param);
-    /*
-    $('#progressMsgTitle').html('머신러닝 작동 중..');
-    $('#loadingDetail').html(JSON.stringify({ 'fileName': fileName, 'data': data }).substring(0,200) + '...');
-    addProgressBar(41, 50);
-    $.ajax({
-        url: '/uiLearning/searchDBColumns',
-        type: 'post',
-        datatype: "json",
-        data: JSON.stringify({ 'fileName': fileName, 'data': data }),
-        contentType: 'application/json; charset=UTF-8',
-        success: function (data) {
-            lineText.push(data);
-            searchDBColumnsCount++;
-            
-            if (searchDBColumnsCount == 1) {  
-                var mainImgHtml = '';
-                mainImgHtml += '<div id="mainImage">';
-                mainImgHtml += '<div id="redNemo">';
-                mainImgHtml += '</div>';
-                mainImgHtml += '</div>';
-                mainImgHtml += '<div id="imageZoom">';
-                mainImgHtml += '<div id="redZoomNemo">';
-                mainImgHtml += '</div>';
-                mainImgHtml += '</div>';
-                $('#img_content').html(mainImgHtml);
-                $('#mainImage').css('background-image', 'url("../../uploads/' + fileName + '")');
-                thumnImg();
-                $('#imageBox > li').eq(0).addClass('on');
-                detailTable(fileName);
-            }
-            if (totCount == searchDBColumnsCount) {
-                thumbImgEvent();
-            }
-            $('#progressMsgTitle').html('머신러닝 작동 완료');
-            $('#loadingDetail').html(JSON.stringify({ 'fileName': fileName, 'data': data }).substring(0, 200) + '...');
-            addProgressBar(91, 100);
-            // 몇 페이지 어디인지 표시
-            //if (totCount == searchDBColumnsCount) {
-            //    $('.dialog_wrap').html('<div id="mainImage" style="height:700px; background-size: 100% 100%; background-repeat: no-repeat;"><div id="redNemo" style="display:none; border:2px solid red; position:absolute;"></div>');
-            //    var originalDiv = document.getElementById("mainImage");
-            //    originalDiv.style.backgroundImage = "url('../../uploads/" + thumbImgs[0] + "')";
-            //    detailTable(fileName);
-            //    thumbImgEvent();
-            //}
-            //
-        },
-        error: function (err) {
-            console.log(err);
-        }
-    });
-    */
+
 }
 
 function executeML(totData) {
-    /*
-    var targetUrl;
-    var param;
-    param = { 'fileName': fileName, 'data': data };
-
-    if (type == 'ts') {
-        targetUrl = '/uiLearning/typoSentence';
-        $('#progressMsgTitle').html('오타 수정 처리 중..');
-        //addProgressBar(41, 50);
-    } else if (type == 'fl') {
-        targetUrl = '/uiLearning/formLabelMapping';
-        $('#progressMsgTitle').html('양식 라벨 맴핑 처리 중..');
-        //addProgressBar(51, 60);
-    } else if (type == 'fm') {
-        targetUrl = '/uiLearning/formMapping';
-        $('#progressMsgTitle').html('양식 맵핑 처리 중..');
-        //addProgressBar(61, 70);
-    } else if (type == 'cm') {
-        targetUrl = '/uiLearning/columnMapping';
-        $('#progressMsgTitle').html('컬럼 맵핑 처리 중..');
-        //addProgressBar(51, 70);
-        //addProgressBar(51, 75);
-    } else {
-        targetUrl = '/uiLearning/searchDBColumns';
-        $('#progressMsgTitle').html('DB 컬럼 조회 중..');
-        //addProgressBar(71, 90);
-        //addProgressBar(76, 90);
-    }
-    */
     $('#progressMsgTitle').html('머신러닝 처리 중..');
     $.ajax({
         url: '/uiLearning/uiLearnTraining',

@@ -483,7 +483,7 @@ exports.insertBatchColumnMapping = function (req, filepath, before, done) {
                 var result = await conn.execute(selectSqlText, [sid, before.colLbl]);
 
                 if (result.rows.length == 0) {
-                    if (req.colLbl != 0 && textSid != "0,0,0,0,0") {
+                    if ((req.colLbl != 0 && textSid != "0,0,0,0,0") && !(req.colLbl == -1 && textSid == "1,1,1,1,1")) {
                         await conn.execute(insertSqlText, [sid, req.colLbl]);
                     }
                 } else {
@@ -3265,7 +3265,7 @@ exports.selectImgid = function (req, done) {
         try {
             conn = await oracledb.getConnection(dbConfig);
 
-            result = await conn.execute("select imgid from tbl_batch_learn_list where filepath = :filePath", [req]);
+            result = await conn.execute("select imgid from tbl_batch_learn_list where filepath = :filePath and status = 'T'", [req]);
 
             return done(null, result);
         } catch (err) { // catches errors in getConnection and the query

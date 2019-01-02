@@ -430,8 +430,6 @@ if __name__ == '__main__':
                 if len(sentences) == 5:
                     break
 
-                    # 최종 5개 문장이 추출되면 각문장의 단어를 TBL_OCR_SYMSPELL 에 조회후 없으면 INSERT
-        insertOcrSymspell(sentences)
 
         # 5개문장의 SID를 EXPORT_SENTENCE_SID 함수를 통해 SID 추출
         sentencesSid = getDocSid(sentences)
