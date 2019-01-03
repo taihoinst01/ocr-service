@@ -1424,10 +1424,10 @@ var searchBatchLearnDataList = function (addCond, page) {
             if (data.docTopType) {
                 for (var i = 0; i < data.docTopType.length; i++) {
                     if (docTopType && docTopType == data.docTopType[i].SEQNUM) {
-                        selHtmlText += "<option value='" + data.docTopType[i].SEQNUM + "' selected>" + data.docTopType[i].DOCNAME + "</option>";
-                        seletedText = data.docTopType[i].DOCNAME;
+                        selHtmlText += "<option value='" + data.docTopType[i].SEQNUM + "' selected>" + data.docTopType[i].ENGNM + "</option>";
+                        seletedText = data.docTopType[i].ENGNM;
                     } else {
-                        selHtmlText += "<option value='" + data.docTopType[i].SEQNUM + "'>" + data.docTopType[i].DOCNAME + "</option>";
+                        selHtmlText += "<option value='" + data.docTopType[i].SEQNUM + "'>" + data.docTopType[i].ENGNM + "</option>";
                     }
 
                 }
@@ -2547,9 +2547,9 @@ function fn_uiDocTopType(docCategory) {
                                 
                 for (var i = 0; i < data.docTopData.length; i++) {
                     if (docTopType && docTopType == data.docTopData[i].SEQNUM) {
-                        selHtmlText += "<option value='" + data.docTopData[i].SEQNUM + "' selected>" + data.docTopData[i].DOCNAME + "</option>";
+                        selHtmlText += "<option value='" + data.docTopData[i].SEQNUM + "' selected>" + data.docTopData[i].ENGNM + "</option>";
                     } else {
-                        selHtmlText += "<option value='" + data.docTopData[i].SEQNUM + "'>" + data.docTopData[i].DOCNAME + "</option>";
+                        selHtmlText += "<option value='" + data.docTopData[i].SEQNUM + "'>" + data.docTopData[i].ENGNM + "</option>";
                     }
 
                 }

@@ -3290,7 +3290,7 @@ exports.selectIcrDocTopType = function (req, done) {
         try {
             conn = await oracledb.getConnection(dbConfig);
 
-            result = await conn.execute("select seqnum, docname from tbl_icr_doc_toptype where useyn='Y'");
+            result = await conn.execute("select seqnum, engnm, kornm from tbl_icr_doc_toptype where useyn='Y'");
 
             return done(null, result);
         } catch (err) { // catches errors in getConnection and the query
