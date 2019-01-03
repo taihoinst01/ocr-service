@@ -28,19 +28,6 @@ router.post('/', function (req, res) {                          // 문서등록 
     else res.redirect("/logout");
 });
 
-router.post('/insertDocToptype', function (req, res) {
-    sync.fiber(function () {
-        let returnObj = {};
-        let userId = req.session.userId;
-        let docNameEng = req.body.docNameEng;
-        let docNameKor = req.body.docNameKor;
-        let param = [docNameEng, docNameKor, userId];
-        
-        sync.await(oracle.insertDocToptype(param, sync.defer()));
-        res.send(returnObj);
-    });
-});
-
 router.post('/selectDocTopType', function (req, res) {
     sync.fiber(function () {
         let returnObj = {};
