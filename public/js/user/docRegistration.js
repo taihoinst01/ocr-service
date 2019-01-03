@@ -92,8 +92,8 @@ function fn_selectDocList(docToptype) {
                             appendDocListHtml += '<tr class="originalTr" data-seq="' + docToptypeList[i].SEQNUM + '">' +
                                                 '<td><input type="text" value="' + docToptypeList[i].ENGNM + '" class="inputst_box03" ' +
                                                 '       data-originalValue="' + docToptypeList[i].ENGNM + '"></td>' +
-                                                '<td><input type="text" value="' + docToptypeList[i].KORNM + '" class="inputst_box03" ' +
-                                                '       data-originalValue="' + docToptypeList[i].KORNM + '"></td>' +
+                                                '<td><input type="text" value="' + nvl(docToptypeList[i].KORNM) + '" class="inputst_box03" ' +
+                                                '       data-originalValue="' + nvl(docToptypeList[i].KORNM) + '"></td>' +
                                                 '<td><select class="inputst_box03" data-originalValue="' + docToptypeList[i].LABELTYPE + '">' +
                                                         fn_makeOptionHtml(labeltypeList, docToptypeList[i].LABELTYPE) + '</td>' +
                                                 '<td><select class="inputst_box03" data-originalValue="' + docToptypeList[i].AMOUNT + '">' +
