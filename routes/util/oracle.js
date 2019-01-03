@@ -3476,11 +3476,11 @@ exports.insertDocToptype = function (req, done) {
         
         try {
             conn = await oracledb.getConnection(dbConfig);
-            let insertQuery = "insert into tbl_icr_doc_toptype(seqnum, docname, userid) values(seq_icr_doc_toptype.nextval, :docNameKor, :userId)";
+            let insertQuery = "insert into tbl_icr_doc_toptype(seqnum, engnm, kornm, userid) values(seq_icr_doc_toptype.nextval, :engnm, :kornm, :userId)";
             await conn.execute(insertQuery, req);
 
             let selectQuery = "select max(seqnum) as doctoptype from tbl_icr_doc_toptype where userid = :userid";
-            let result = await conn.execute(selectQuery, [req[1]]);
+            let result = await conn.execute(selectQuery, [req[2]]);
             
             return done(null, result.rows[0].DOCTOPTYPE);
         } catch (err) { // catches errors in getConnection and the query
@@ -3505,7 +3505,7 @@ exports.selectDocTopType = function (req, done) {
 
         try {
             conn = await oracledb.getConnection(dbConfig);
-            let query = "select seqnum, docname from tbl_icr_doc_toptype where useyn='Y' and userid = :userid";
+            let query = "select seqnum, engnm, kornm from tbl_icr_doc_toptype where useyn='Y' and userid = :userid";
             result = await conn.execute(query, req);
 
             return done(null, result.rows);
@@ -3629,7 +3629,7 @@ exports.deleteDocList = function (req, done) {
             inQuery = inQuery.substring(0, inQuery.length -1);
             inQuery += ")";
 
-            let query = "delete from tbl_icr_label_def where seqnum in " + inQuery;
+            let query = "update tbl_icr_label_def set status = 0 where seqnum in " + inQuery;
             result = await conn.execute(query, []);
 
             return done(null, null);

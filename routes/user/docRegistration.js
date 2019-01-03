@@ -34,7 +34,7 @@ router.post('/insertDocToptype', function (req, res) {
         let userId = req.session.userId;
         let docNameEng = req.body.docNameEng;
         let docNameKor = req.body.docNameKor;
-        let param = [docNameKor, userId];
+        let param = [docNameEng, docNameKor, userId];
         
         sync.await(oracle.insertDocToptype(param, sync.defer()));
         res.send(returnObj);
@@ -80,7 +80,7 @@ router.post('/updateDocList', function (req, res) {
         
         // doctoptype 추가
         if(docToptype == 0) {
-            let param = [docNameKor, userId];           
+            let param = [docNameEng, docNameKor, userId];           
             docToptype = sync.await(oracle.insertDocToptype(param, sync.defer()));
             console.log(docToptype);
         }

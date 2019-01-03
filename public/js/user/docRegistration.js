@@ -29,6 +29,8 @@ function fn_selectDocTopType(docToptype) {
         datatype: "json",        
         contentType: 'application/json; charset=UTF-8',
         beforeSend: function () {
+            $('#docToptype').empty();
+            $('.newDocEdit').hide();
             $("#progressMsgTitle").html("Search DocList...");
             progressId = showProgressBar();
         },
@@ -45,9 +47,9 @@ function fn_selectDocTopType(docToptype) {
 
                     for(var i = 0; i < docToptypeListLength; i++) {
                         if(docToptype) {
-                            appendOptionHtml += '<option value="' + docToptypeList[i].SEQNUM + '"' + (docToptype == docToptypeList[i].SEQNUM ? 'selected' : '') + '>' + docToptypeList[i].DOCNAME + '</option>';
+                            appendOptionHtml += '<option value="' + docToptypeList[i].SEQNUM + '"' + (docToptype == docToptypeList[i].SEQNUM ? 'selected' : '') + '>' + docToptypeList[i].ENGNM + '</option>';
                         } else {
-                            appendOptionHtml += '<option value="' + docToptypeList[i].SEQNUM + '"' + (i == 0 ? 'selected' : '') + '>' + docToptypeList[i].DOCNAME + '</option>';
+                            appendOptionHtml += '<option value="' + docToptypeList[i].SEQNUM + '"' + (i == 0 ? 'selected' : '') + '>' + docToptypeList[i].ENGNM + '</option>';
                         }
                     }
                 }
@@ -149,7 +151,7 @@ function fn_selectDocList(docToptype) {
                 if(labeltypeList[i] == 'T') {
                     makeOptionHtml += '값 + 위치';
                 } else if(labeltypeList[i] == 'P') {
-                    makeOptionHtml += '값';
+                    makeOptionHtml += '위치';
                 } else {
                     makeOptionHtml += labeltypeList[i];
                 }
@@ -209,7 +211,7 @@ $(document).on('click', '#addTbody', function(){
                         '<select class="inputst_box04">'+
                         '<option>single</option>'+
                         '<option>multi</option>'+
-                        '<option>subMulti</option>'+
+                        '<option>submulti</option>'+
                         '</select>'+
                         '</td>'+
                         '<td>'+
@@ -367,6 +369,7 @@ $(document).on('click', '#btn_save', function() {
             progressId = showProgressBar();
         },
         success: function (data) {
+            endProgressBar(progressId);
             if(data.docToptype) {
                 docToptype = data.docToptype;
             }
