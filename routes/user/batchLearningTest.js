@@ -2280,7 +2280,7 @@ router.post('/exportExcel', function (req, res) {
                 fgColor:{argb:'FFDCDCDC'}
             };
             worksheet.mergeCells('B2:B4');
-            worksheet.getCell('B4').value = "접번";
+            worksheet.getCell('B4').value = "파일명";
             worksheet.getCell('B4').fill = {
                 type: 'pattern',
                 pattern:'solid',
@@ -3139,7 +3139,7 @@ router.post('/exportExcel', function (req, res) {
                 }
                 
                 worksheet.addRow([
-                    (i + 1), imgId[i], '',
+                    (i + 1), imgId[i].substr(imgId[i].lastIndexOf('/') + 1), '',
                     excelObj.col1, excelObj.col2, excelObj.col3, excelObj.col4, excelObj.col5,
                     excelObj.col6, excelObj.col7, excelObj.col8, excelObj.col9, excelObj.col10,
                     excelObj.col11, excelObj.col12, excelObj.col13, excelObj.col14, excelObj.col15,

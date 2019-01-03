@@ -22,6 +22,7 @@
 body{ font-family:NanumGothicR,sans-serif,�������; }
 .selected { color: #EA7169 !important; opacity: 1 !important; }
 .clear_both { clear: both; }
+.redFont {color: red;}
 .page-wrap .now-count { font-weight: bold; color: #EA7169;  }
 .pagination {display: inline-block;}
 .pagination li { display: inline; }
@@ -271,8 +272,8 @@ canvas.preview { border-radius: 5px; }
 .ips_content_title { font-weight: bold; font-family: 'NanumGothicR'; font-size: 20px; margin: 3px 0 20px 0; color: #4C5059; }
 .ips_content_sub { width: 100%; height: 780px; }
 .ips_content_sub span { font: bold 15px 'NanumGothicR'; color: #000; }
-.ips_content_sub_top { width: 100%; height: 55%; }
-.ips_content_sub_bottom { width: 100%; height: 45%; }
+.ips_content_sub_top { width: 100%; height: 54%; }
+.ips_content_sub_bottom { width: 100%; height: 39%; }
 .ips_line_graph { float:left; height: 100%; width: 50%; }
 .ips_tot_document_count { float:left; height: 100%; width: 15%; }
 .ips_date { float:left; height: 100%; width: 35%; }
@@ -325,7 +326,7 @@ canvas.preview { border-radius: 5px; }
 .um_list dd:first-child { margin-left: 20px; }
 .btn_rt .button_st1 { margin-bottom: 6px; }
 .table_style02 table > tbody > tr.on {
-    background-color: #e5e5e5;
+    background-color: #EA7169;
 }
 /*
     ����¡
@@ -1877,10 +1878,7 @@ select:disabled + ul.idealSelect:before {
 .box_stsearch {
     position: relative;
     width: 100%;
-    width: calc(100% - 46px);
-    width: -webkit-calc(100% - 46px);
-    width: -moz-calc(100% - 46px);
-    padding: 14px 22px;
+    padding: 14px 0;
 }
 
 .box_stsearch .btn_rt {
@@ -3313,7 +3311,7 @@ table.ivoiceR_tblHead2 > thead > tr > th {
 }
 
 .table_style02 table > tbody > tr > td {
-    padding: 8px 10px 9px;
+    padding: 10px 10px 10px;
     color: #666;
     border-bottom: solid 1px #e1e0e0;
     max-width: 80%;
@@ -3482,6 +3480,52 @@ table.ivoiceR_tblHead2 > thead > tr > th {
     width: 100%;
 }
 
+.inputst_box03 {
+    display: table;
+    width: 100%;
+    border: 1px solid #EA7169;
+    border-radius: 10px;
+    color: #4f5468;
+}
+select.inputst_box03 {
+    height: 30px;
+}
+.box_stsearch select.inputst_box03{
+    height: 40px !important;
+}
+
+select.inputst_box03 option {
+    color: black;
+
+}
+.inputst_box04 {
+    display: table;
+    width: 100%;
+}
+
+.inputst_box04 {
+    display: table;
+    width: 100%;
+    border: 1px solid darkgray;
+    border-radius: 10px;
+    color: darkgray;
+}
+
+select.inputst_box04 {
+    height: 30px;
+}
+
+select.inputst_box04 option {
+    color: black;
+
+}
+
+.inputst_box02 {
+    display: table;
+    width: 100%;
+    border: 1px solid #d5d5d5 !important;
+    border-radius: 14px;
+}
 .inputst_box01 .dset {
     display: table-cell;
     position: relative;
