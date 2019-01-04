@@ -3347,47 +3347,59 @@ router.post('/batchLearnTraining', function (req, res) {
 
 function batchLearnTraining(filepath, callback) {
     sync.fiber(function () {
+        try {
+            var imgid = sync.await(oracle.selectImgid(filepath, sync.defer()));
+            imgid = imgid.rows[0].IMGID;
 
-        var imgid = sync.await(oracle.selectImgid(filepath, sync.defer()));
-        imgid = imgid.rows[0].IMGID;
+            var filename = filepath.substring(0, filepath.lastIndexOf("."));
+            var fullFilePath = filename + ".jpg"
 
-        var filename = filepath.substring(0, filepath.lastIndexOf("."));
-        var fullFilePath = filename + ".jpg"
+            var selOcr = sync.await(oracle.selectOcrData(filepath, sync.defer()));
+            if (selOcr.length == 0) {
+                var ocrResult = sync.await(ocrUtil.localOcr(fullFilePath, sync.defer()));
 
-        var selOcr = sync.await(oracle.selectOcrData(filepath, sync.defer()));
-        if (selOcr.length == 0) {
-            var ocrResult = sync.await(ocrUtil.localOcr(fullFilePath, sync.defer()));
-            sync.await(oracle.insertOcrData(filepath, JSON.stringify(ocrResult), sync.defer()));
-            selOcr = sync.await(oracle.selectOcrData(filepath, sync.defer()));
+                if (ocrResult.textAngle) {
+                    console.log(ocrResult);
+                }
+
+                sync.await(oracle.insertOcrData(filepath, JSON.stringify(ocrResult), sync.defer()));
+                selOcr = sync.await(oracle.selectOcrData(filepath, sync.defer()));
+            }
+
+            var seqNum = selOcr.SEQNUM;
+            pythonConfig.columnMappingOptions.args = [];
+            pythonConfig.columnMappingOptions.args.push(seqNum);
+            var resPyStr = sync.await(PythonShell.run('batchClassifyTest.py', pythonConfig.columnMappingOptions, sync.defer()));
+            var testStr = resPyStr[0].replace('b', '');
+            testStr = testStr.replace(/'/g, '');
+            var decode = new Buffer(testStr, 'base64').toString('utf-8');
+
+            var resPyArr = JSON.parse(decode);
+            //resPyArr = sync.await(transPantternVar.trans(resPyArr, sync.defer()));
+            console.log(resPyArr);
+
+            var retData = {};
+            retData = resPyArr;
+            retData.fileinfo = { filepath: filepath, imgId: imgid };
+            sync.await(oracle.insertMLData(retData, sync.defer()));
+            sync.await(oracle.updateBatchLearnListDocType(retData, sync.defer()));
+
+            var colMappingList = sync.await(oracle.selectColumn(null, sync.defer()));
+            var entryMappingList = sync.await(oracle.selectEntryMappingCls(null, sync.defer()));
+            var labelData = sync.await(oracle.selectIcrLabelDef(null, sync.defer()));
+
+            retData.column = colMappingList;
+            retData.entryMappingList = entryMappingList;
+            retData.labelData = labelData.rows;
+
+            callback(null, retData);
+
+        } catch (e) {
+            console.log(e);
+            callback(null, null);
         }
-        
-        var seqNum = selOcr.SEQNUM;
-        pythonConfig.columnMappingOptions.args = [];
-        pythonConfig.columnMappingOptions.args.push(seqNum);
-        var resPyStr = sync.await(PythonShell.run('batchClassifyTest.py', pythonConfig.columnMappingOptions, sync.defer()));
-        var testStr = resPyStr[0].replace('b', '');
-        testStr = testStr.replace(/'/g, '');
-        var decode = new Buffer(testStr, 'base64').toString('utf-8');
 
-        var resPyArr = JSON.parse(decode);
-        //resPyArr = sync.await(transPantternVar.trans(resPyArr, sync.defer()));
-        console.log(resPyArr);
 
-        var retData = {};
-        retData = resPyArr;
-        retData.fileinfo = { filepath: filepath, imgId: imgid };
-        sync.await(oracle.insertMLData(retData, sync.defer()));
-        sync.await(oracle.updateBatchLearnListDocType(retData, sync.defer()));
-
-        var colMappingList = sync.await(oracle.selectColumn(null, sync.defer()));
-        var entryMappingList = sync.await(oracle.selectEntryMappingCls(null, sync.defer()));
-        var labelData = sync.await(oracle.selectIcrLabelDef(null, sync.defer()));
-
-        retData.column = colMappingList;
-        retData.entryMappingList = entryMappingList;
-        retData.labelData = labelData.rows;
-
-        callback(null, retData);
     });
 }
 
