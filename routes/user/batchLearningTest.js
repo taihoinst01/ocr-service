@@ -29,6 +29,7 @@ var mlStudio = require('../util/mlStudio.js');
 var transPantternVar = require('./transPattern');
 var Step = require('step');
 var paging = require(appRoot + '/config/paging');
+var execSync = require('sync-exec');
 
 var selectBatchLearningDataListQuery = queryConfig.batchLearningConfig.selectBatchLearningDataList;
 var selectBatchLearningDataQuery = queryConfig.batchLearningConfig.selectBatchLearningData;
@@ -3352,14 +3353,35 @@ function batchLearnTraining(filepath, callback) {
             imgid = imgid.rows[0].IMGID;
 
             var filename = filepath.substring(0, filepath.lastIndexOf("."));
-            var fullFilePath = filename + ".jpg"
+            var fileExt = filepath.substring(filepath.lastIndexOf(".") + 1, filepath.length);
+
+            var fullFilePath = "";
+            if (fileExt == "pdf") {
+                fullFilePath = filename + ".png"
+            } else {
+                fullFilePath = filename + ".jpg"
+            }
 
             var selOcr = sync.await(oracle.selectOcrData(filepath, sync.defer()));
             if (selOcr.length == 0) {
                 var ocrResult = sync.await(ocrUtil.localOcr(fullFilePath, sync.defer()));
 
-                if (ocrResult.textAngle) {
-                    console.log(ocrResult);
+                if (ocrResult.textAngle || ocrResult.orientation != "Up") {
+                    var angle = 0;
+
+                    if (ocrResult.orientation == "Left") {
+                        angle += 90;
+                    } else if (ocrResult.orientation == "Right") {
+                        angle += -90;
+                    } else if (ocrResult.orientation == "Down") {
+                        angle += 180;
+                    }
+
+                    angle += Math.floor(ocrResult.textAngle * 100) - 2;
+
+                    execSync('module\\imageMagick\\convert.exe -rotate "' + angle + '" ' + fullFilePath + ' ' + fullFilePath);
+
+                    ocrResult = sync.await(ocrUtil.localOcr(fullFilePath, sync.defer()));
                 }
 
                 sync.await(oracle.insertOcrData(filepath, JSON.stringify(ocrResult), sync.defer()));
