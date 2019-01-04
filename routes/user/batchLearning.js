@@ -26,6 +26,9 @@ var ocrUtil = require('../util/ocr.js');
 var batch = require('../util/batch.js');
 var pythonConfig = require(appRoot + '/config/pythonConfig');
 var mlStudio = require('../util/mlStudio.js');
+var transPantternVar = require('./transPattern');
+var Step = require('step');
+var paging = require(appRoot + '/config/paging');
 
 var selectBatchLearningDataListQuery = queryConfig.batchLearningConfig.selectBatchLearningDataList;
 var selectBatchLearningDataQuery = queryConfig.batchLearningConfig.selectBatchLearningData;
@@ -215,26 +218,46 @@ var callbackbatchLearnIdList = function (rows, req, res) {
     commonDB.reqQueryParam(queryConfig.batchLearningConfig.selectBatchLearnDataList + sql, cond, callbackBatchLearningDataList, req, res);
 };
 
+// TBL_ICR_DOC_TOPTYPE doctoptype 검색
+router.post('/selectDocTopType', function (req, res) {
+    sync.fiber(function () {
+        let returnObj = {};
+        let userId = req.session.userId;
+        let param = [userId];
+        
+        let docToptypeList = sync.await(oracle.selectDocTopType(param, sync.defer()));
+
+        returnObj = {'docToptypeList': docToptypeList};
+        res.send(returnObj);
+    });
+});
+
 //main menu batch learning 4 DB search
 var fnSearchBatchLearningDataList = function (req, res) {
 
     sync.fiber(function () {
         try {
+            var currentPage = req.body.page;
 
             //var retData = {};
             //hskim 20180828 일괄학습 화면 상단 셀렉트 버튼에서 값 가져오게 변경
             //var reqNum = 12;
-            var originImageArr = sync.await(oracle.selectBatchLearnList(req, sync.defer()));
-            var filePathList = [];
             var mlData;
+            var imgIdList = [];
+
+            var originImageArr = sync.await(oracle.selectBatchLearnList(req, sync.defer()));
 
             if (originImageArr.length != 0) {
                 for (var i = 0; i < originImageArr.length; i++) {
-                    filePathList.push(originImageArr[i].rows[0].FILEPATH);
+                    imgIdList.push(originImageArr[i].IMGID);
                 }
-                mlData = sync.await(oracle.selectBatchLearnMlList(filePathList, sync.defer()));
+                mlData = sync.await(oracle.selectBatchLearnMlListTest(imgIdList, sync.defer()));
+
+                res.send({ data: originImageArr, mlData: mlData, code: 200, pageList: paging.pagination(currentPage, originImageArr[0].TOTCNT) });
+            } else {
+                res.send({ data: originImageArr, mlData: mlData, code: 200});
             }
-            res.send({ data: originImageArr, mlData: mlData, code: 200 });
+
 
             // 9월11일 전 버전
             /*if (req.body.addCond == "LEARN_Y") {
@@ -451,51 +474,52 @@ router.post('/excelCopy', function (req, res) {
 // [POST] 엑셀 업로드
 router.post('/excelUpload', upload.any(), function (req, res) {
     console.log("!!!!!!!!!!!!!!!!!!!!!!! excelupload");
+    res.send({'code': '200'});
     // 엑셀 파일 확인
-    var pathExcel = propertiesConfig.filepath.excelBatchFilePath;
-    var dataExcel = propertiesConfig.filepath.excelBatchFileData;
-    console.log(dataExcel);
-    var pathExcelWorkbook = xlsx.readFile(pathExcel);
-    var dataExcelWorkbook = xlsx.readFile(dataExcel);
-    var pathExcelSheet = pathExcelWorkbook.Sheets[pathExcelWorkbook.SheetNames[0]];
-    var dataExcelSheet = dataExcelWorkbook.Sheets[dataExcelWorkbook.SheetNames[0]];
+    // var pathExcel = propertiesConfig.filepath.excelBatchFilePath;
+    // var dataExcel = propertiesConfig.filepath.excelBatchFileData;
+    // console.log(dataExcel);
+    // var pathExcelWorkbook = xlsx.readFile(pathExcel);
+    // var dataExcelWorkbook = xlsx.readFile(dataExcel);
+    // var pathExcelSheet = pathExcelWorkbook.Sheets[pathExcelWorkbook.SheetNames[0]];
+    // var dataExcelSheet = dataExcelWorkbook.Sheets[dataExcelWorkbook.SheetNames[0]];
 
-    var pathResult = [];
-    var pathRow;
-    var pathRowNum;
-    var pathColNum;
-    var pathRange = xlsx.utils.decode_range(pathExcelSheet['!ref']);
-    for (pathRowNum = pathRange.s.r; pathRowNum <= pathRange.e.r; pathRowNum++) {
-        pathRow = [];
-        for (pathColNum = pathRange.s.c; pathColNum <= pathRange.e.c; pathColNum++) {
-            var nextCell = pathExcelSheet[
-                xlsx.utils.encode_cell({ r: pathRowNum, c: pathColNum })
-            ];
-            if (typeof nextCell === 'undefined') {
-                pathRow.push(void 0);
-            } else pathRow.push(nextCell.w);
-        }
-        pathResult.push(pathRow);
-    }
-    var dataResult = [];
-    var dataRow;
-    var dataRowNum;
-    var dataColNum;
-    var dataRange = xlsx.utils.decode_range(dataExcelSheet['!ref']);
-    for (dataRowNum = dataRange.s.r; dataRowNum <= dataRange.e.r; dataRowNum++) {
-        dataRow = [];
-        for (dataColNum = dataRange.s.c; dataColNum <= dataRange.e.c; dataColNum++) {
-            var nextCell = dataExcelSheet[
-                xlsx.utils.encode_cell({ r: dataRowNum, c: dataColNum })
-            ];
-            if (typeof nextCell === 'undefined') {
-                dataRow.push(void 0);
-            } else dataRow.push(nextCell.w);
-        }
-        dataResult.push(dataRow);
-    }
+    // var pathResult = [];
+    // var pathRow;
+    // var pathRowNum;
+    // var pathColNum;
+    // var pathRange = xlsx.utils.decode_range(pathExcelSheet['!ref']);
+    // for (pathRowNum = pathRange.s.r; pathRowNum <= pathRange.e.r; pathRowNum++) {
+    //     pathRow = [];
+    //     for (pathColNum = pathRange.s.c; pathColNum <= pathRange.e.c; pathColNum++) {
+    //         var nextCell = pathExcelSheet[
+    //             xlsx.utils.encode_cell({ r: pathRowNum, c: pathColNum })
+    //         ];
+    //         if (typeof nextCell === 'undefined') {
+    //             pathRow.push(void 0);
+    //         } else pathRow.push(nextCell.w);
+    //     }
+    //     pathResult.push(pathRow);
+    // }
+    // var dataResult = [];
+    // var dataRow;
+    // var dataRowNum;
+    // var dataColNum;
+    // var dataRange = xlsx.utils.decode_range(dataExcelSheet['!ref']);
+    // for (dataRowNum = dataRange.s.r; dataRowNum <= dataRange.e.r; dataRowNum++) {
+    //     dataRow = [];
+    //     for (dataColNum = dataRange.s.c; dataColNum <= dataRange.e.c; dataColNum++) {
+    //         var nextCell = dataExcelSheet[
+    //             xlsx.utils.encode_cell({ r: dataRowNum, c: dataColNum })
+    //         ];
+    //         if (typeof nextCell === 'undefined') {
+    //             dataRow.push(void 0);
+    //         } else dataRow.push(nextCell.w);
+    //     }
+    //     dataResult.push(dataRow);
+    // }
 
-    commonDB.reqInsertExcelDataPath(pathResult, dataResult, req, res);
+    // commonDB.reqInsertExcelDataPath(pathResult, dataResult, req, res);
     //commonDB.reqInsertExcelData(dataResult);
     // insert filepath.xlsx 
     //for (var i = 1, x = pathResult.length; i < x; i++) { // 첫번째 행은 무시
@@ -2088,7 +2112,8 @@ router.post('/uiLearnTraining', function (req, res) {
         var filepath = req.body.imgIdArray;
         var uiData;
         for (var i = 0; i < filepath.length; i++) {
-            uiData = sync.await(batchLearnTraining(filepath[i], "LEARN_Y", sync.defer()));
+            //uiData = sync.await(batchLearnTraining(filepath[i], "LEARN_Y", sync.defer()));
+            uiData = sync.await(batchLearnTraining(filepath[i], sync.defer()));
 
             res.send({ data: uiData });
         }       
@@ -2228,7 +2253,7 @@ function addBatchTraining(filepath, done) {
     });
 }
 
-router.post('/batchLearnTraining', function (req, res) {
+router.post('/batchLearnTraining_old', function (req, res) {
     req.setTimeout(500000);
 
     sync.fiber(function () {
@@ -2252,7 +2277,1135 @@ router.post('/batchLearnTraining', function (req, res) {
     });
 });
 
-function batchLearnTraining(filepath, flag, done) {
+router.post('/exportExcel', function (req, res) {
+    sync.fiber(function () {
+        var imgId = req.body.imgIdArray;
+        var docTopType = req.body.docTopType;
+        var workbook = new exceljs.Workbook();
+        var worksheet = workbook.addWorksheet('My Sheet');
+
+        if (docTopType == "2") {
+
+            worksheet.mergeCells('A2:A4');
+            worksheet.getCell('A4').value = "NO";
+            worksheet.getCell('A4').fill = {
+                type: 'pattern',
+                pattern:'solid',
+                fgColor:{argb:'FFDCDCDC'}
+            };
+            worksheet.mergeCells('B2:B4');
+            worksheet.getCell('B4').value = "파일명";
+            worksheet.getCell('B4').fill = {
+                type: 'pattern',
+                pattern:'solid',
+                fgColor:{argb:'FFDCDCDC'}
+            };
+            worksheet.mergeCells('C2:C4');
+            worksheet.getCell('C4').value = "KEY";
+            worksheet.getCell('C4').fill = {
+                type: 'pattern',
+                pattern:'solid',
+                fgColor:{argb:'FFDCDCDC'}
+            };
+            worksheet.mergeCells('D2:AC2');
+            worksheet.getCell('D2').value = "본인부담";
+            worksheet.getCell('D2').fill = {
+                type: 'pattern',
+                pattern:'solid',
+                fgColor:{argb:'FF9ACD32'}
+            };
+            worksheet.mergeCells('AD2:BC2');
+            worksheet.getCell('AD2').value = "공단부담금";
+            worksheet.getCell('AD2').fill = {
+                type: 'pattern',
+                pattern:'solid',
+                fgColor:{argb:'FFB0C4DE'}
+            };
+            worksheet.mergeCells('BD2:CC2');
+            worksheet.getCell('BD2').value = "전액본인부담";
+            worksheet.getCell('BD2').fill = {
+                type: 'pattern',
+                pattern:'solid',
+                fgColor:{argb:'FFD8BFD8'}
+            };
+            worksheet.mergeCells('CD2:DC2');
+            worksheet.getCell('CD2').value = "선택진료료";
+            worksheet.getCell('CD2').fill = {
+                type: 'pattern',
+                pattern:'solid',
+                fgColor:{argb:'FFFFB6C1'}
+            };
+            worksheet.mergeCells('DD2:EC2');
+            worksheet.getCell('DD2').value = "선택진료료이외";
+            worksheet.getCell('DD2').fill = {
+                type: 'pattern',
+                pattern:'solid',
+                fgColor:{argb:'FF808000'}
+            };
+            worksheet.mergeCells('ED2:EF2');
+            worksheet.getCell('ED2').value = "금액정보";
+            worksheet.getCell('ED2').fill = {
+                type: 'pattern',
+                pattern:'solid',
+                fgColor:{argb:'FFDCDCDC'}
+            };
+            worksheet.mergeCells('EG2:EI2');
+            worksheet.getCell('EG2').value = "병원정보";
+            worksheet.getCell('EG2').fill = {
+                type: 'pattern',
+                pattern:'solid',
+                fgColor:{argb:'FFDCDCDC'}
+            };
+            worksheet.mergeCells('EJ2:EK2');
+            worksheet.getCell('EJ2').value = "환자정보";
+            worksheet.getCell('EJ2').fill = {
+                type: 'pattern',
+                pattern:'solid',
+                fgColor:{argb:'FFDCDCDC'}
+            };
+            worksheet.mergeCells('EL2:EM2');
+            worksheet.getCell('EL2').value = "치료정보";
+            worksheet.getCell('EL2').fill = {
+                type: 'pattern',
+                pattern:'solid',
+                fgColor:{argb:'FFDCDCDC'}
+            };
+
+            
+            worksheet.getCell("D3").value = "진찰료";
+            worksheet.getCell("E3").value = "입원료(주1)";
+            worksheet.getCell("F3").value = "식대";
+            worksheet.getCell("G3").value = "투약및조제료(행위료)";
+            worksheet.getCell("H3").value = "투약및조제료(약품비)";
+            worksheet.getCell("I3").value = "주사료(행위료)";
+            worksheet.getCell("J3").value = "주사료(약품비)";
+            worksheet.getCell("K3").value = "마취료";
+            worksheet.getCell("L3").value = "처치및수술료";
+            worksheet.getCell("M3").value = "검사료";
+            worksheet.getCell("N3").value = "영상진단";
+            worksheet.getCell("O3").value = "방사선료";
+            worksheet.getCell("P3").value = "치료재료대";
+            worksheet.getCell("Q3").value = "재활및물리치료료";
+            worksheet.getCell("R3").value = "정신요법료";
+            worksheet.getCell("S3").value = "전혈/혈액성분제재";
+            worksheet.getCell("T3").value = "CT진단료";
+            worksheet.getCell("U3").value = "MRI진단료";
+            worksheet.getCell("V3").value = "PET진단료";
+            worksheet.getCell("W3").value = "초음파진단료";
+            worksheet.getCell("X3").value = "보철교정료";
+            worksheet.getCell("Y3").value = "기타진료비";
+            worksheet.getCell("Z3").value = "65세이상(신설)";
+            worksheet.getCell("AA3").value = "포괄수가진료비";
+            worksheet.getCell("AB3").value = "표준항목외";
+            worksheet.getCell("AC3").value = "합계";
+            
+            var cellList = ["D3", "E3", "F3", "G3", "H3", "I3", "J3", "K3", "L3", "M3", "N3", "O3", "P3", "Q3", "R3", "S3", "T3", "U3", 
+                    "V3", "W3", "X3", "Y3", "Z3", "AA3", "AB3", "AC3"];
+            var cellListLength = cellList.length;                   
+            for(var i = 0; i < cellListLength; i++) {
+                
+                if(cellList[i] == "AB3") {
+                    worksheet.getCell(cellList[i]).fill = {
+                        type: 'pattern',
+                        pattern:'solid',
+                        fgColor:{argb: "FFFA8072"}
+                    };
+                    worksheet.getCell(cellList[i]).font = {
+                        color: { argb: 'FFFF0000' }
+                    };
+                } else {
+                    worksheet.getCell(cellList[i]).fill = {
+                        type: 'pattern',
+                        pattern:'solid',
+                        fgColor:{argb: "FF9ACD32"}
+                    };
+                }
+
+            }
+            
+            
+            worksheet.getCell("AD3").value = "진찰료";
+            worksheet.getCell("AE3").value = "입원료(주1)";
+            worksheet.getCell("AF3").value = "식대";
+            worksheet.getCell("AG3").value = "투약및조제료(행위료)";
+            worksheet.getCell("AH3").value = "투약및조제료(약품비)";
+            worksheet.getCell("AI3").value = "주사료(행위료)";
+            worksheet.getCell("AJ3").value = "주사료(약품비)";
+            worksheet.getCell("AK3").value = "마취료";
+            worksheet.getCell("AL3").value = "처치및수술료";
+            worksheet.getCell("AM3").value = "검사료";
+            worksheet.getCell("AN3").value = "영상진단";
+            worksheet.getCell("AO3").value = "방사선료";
+            worksheet.getCell("AP3").value = "치료재료대";
+            worksheet.getCell("AQ3").value = "재활및물리치료료";
+            worksheet.getCell("AR3").value = "정신요법료";
+            worksheet.getCell("AS3").value = "전혈/혈액성분제재";
+            worksheet.getCell("AT3").value = "CT진단료";
+            worksheet.getCell("AU3").value = "MRI진단료";
+            worksheet.getCell("AV3").value = "PET진단료";
+            worksheet.getCell("AW3").value = "초음파진단료";
+            worksheet.getCell("AX3").value = "보철교정료";
+            worksheet.getCell("AY3").value = "기타진료비";
+            worksheet.getCell("AZ3").value = "65세이상(신설)";
+            worksheet.getCell("BA3").value = "포괄수가진료비";
+            worksheet.getCell("BB3").value = "표준항목외";
+            worksheet.getCell("BC3").value = "합계";
+            
+            cellList = ["AD3", "AE3", "AF3", "AG3", "AH3", "AI3", "AJ3", "AK3", "AL3", "AM3", "AN3", "AO3", "AP3", "AQ3", "AR3", "AS3", "AT3", "AU3", 
+                    "AV3", "AW3", "AX3", "AY3", "AZ3", "BA3", "BB3", "BC3"];
+            cellListLength = cellList.length;                   
+            for(var i = 0; i < cellListLength; i++) {
+                
+                if(cellList[i] == "BA3") {
+                    worksheet.getCell(cellList[i]).fill = {
+                        type: 'pattern',
+                        pattern:'solid',
+                        fgColor:{argb: "FFFA8072"}
+                    };
+                    worksheet.getCell(cellList[i]).font = {
+                        color: { argb: 'FFFF0000' }
+                    };
+                } else {
+                    worksheet.getCell(cellList[i]).fill = {
+                        type: 'pattern',
+                        pattern:'solid',
+                        fgColor:{argb: "FFB0C4DE"}
+                    };
+                }
+
+            }
+
+            worksheet.getCell("BD3").value = "진찰료";
+            worksheet.getCell("BE3").value = "입원료(주1)";
+            worksheet.getCell("BF3").value = "식대";
+            worksheet.getCell("BG3").value = "투약및조제료(행위료)";
+            worksheet.getCell("BH3").value = "투약및조제료(약품비)";
+            worksheet.getCell("BI3").value = "주사료(행위료)";
+            worksheet.getCell("BJ3").value = "주사료(약품비)";
+            worksheet.getCell("BK3").value = "마취료";
+            worksheet.getCell("BL3").value = "처치및수술료";
+            worksheet.getCell("BM3").value = "검사료";
+            worksheet.getCell("BN3").value = "영상진단";
+            worksheet.getCell("BO3").value = "방사선료";
+            worksheet.getCell("BP3").value = "치료재료대";
+            worksheet.getCell("BQ3").value = "재활및물리치료료";
+            worksheet.getCell("BR3").value = "정신요법료";
+            worksheet.getCell("BS3").value = "전혈/혈액성분제재";
+            worksheet.getCell("BT3").value = "CT진단료";
+            worksheet.getCell("BU3").value = "MRI진단료";
+            worksheet.getCell("BV3").value = "PET진단료";
+            worksheet.getCell("BW3").value = "초음파진단료";
+            worksheet.getCell("BX3").value = "보철교정료";
+            worksheet.getCell("BY3").value = "기타진료비";
+            worksheet.getCell("BZ3").value = "65세이상(신설)";
+            worksheet.getCell("CA3").value = "포괄수가진료비";
+            worksheet.getCell("CB3").value = "표준항목외";
+            worksheet.getCell("CC3").value = "합계";
+
+            cellList = ["BD3", "BE3", "BF3", "BG3", "BH3", "BI3", "BJ3", "BK3", "BL3", "BM3", "BN3", "BO3", "BP3", "BQ3", "BR3", "BS3", "BT3", "BU3", 
+                    "BV3", "BW3", "BX3", "BY3", "BZ3", "CA3", "CB3", "CC3"];
+            cellListLength = cellList.length;                   
+            for(var i = 0; i < cellListLength; i++) {
+                
+                if(cellList[i] == "CA3") {
+                    worksheet.getCell(cellList[i]).fill = {
+                        type: 'pattern',
+                        pattern:'solid',
+                        fgColor:{argb: "FFFA8072"}
+                    };
+                    worksheet.getCell(cellList[i]).font = {
+                        color: { argb: 'FFFF0000' }
+                    };
+                } else {
+                    worksheet.getCell(cellList[i]).fill = {
+                        type: 'pattern',
+                        pattern:'solid',
+                        fgColor:{argb: "FFD8BFD8"}
+                    };
+                }
+
+            }
+
+            worksheet.getCell("CD3").value = "진찰료";
+            worksheet.getCell("CE3").value = "입원료(주1)";
+            worksheet.getCell("CF3").value = "식대";
+            worksheet.getCell("CG3").value = "투약및조제료(행위료)";
+            worksheet.getCell("CH3").value = "투약및조제료(약품비)";
+            worksheet.getCell("CI3").value = "주사료(행위료)";
+            worksheet.getCell("CJ3").value = "주사료(약품비)";
+            worksheet.getCell("CK3").value = "마취료";
+            worksheet.getCell("CL3").value = "처치및수술료";
+            worksheet.getCell("CM3").value = "검사료";
+            worksheet.getCell("CN3").value = "영상진단";
+            worksheet.getCell("CO3").value = "방사선료";
+            worksheet.getCell("CP3").value = "치료재료대";
+            worksheet.getCell("CQ3").value = "재활및물리치료료";
+            worksheet.getCell("CR3").value = "정신요법료";
+            worksheet.getCell("CS3").value = "전혈/혈액성분제재";
+            worksheet.getCell("CT3").value = "CT진단료";
+            worksheet.getCell("CU3").value = "MRI진단료";
+            worksheet.getCell("CV3").value = "PET진단료";
+            worksheet.getCell("CW3").value = "초음파진단료";
+            worksheet.getCell("CX3").value = "보철교정료";
+            worksheet.getCell("CY3").value = "기타진료비";
+            worksheet.getCell("CZ3").value = "65세이상(신설)";
+            worksheet.getCell("DA3").value = "포괄수가진료비";
+            worksheet.getCell("DB3").value = "표준항목외";
+            worksheet.getCell("DC3").value = "합계";
+
+            cellList = ["CD3", "CE3", "CF3", "CG3", "CH3", "CI3", "CJ3", "CK3", "CL3", "CM3", "CN3", "CO3", "CP3", "CQ3", "CR3", "CS3", "CT3", "CU3", 
+                    "CV3", "CW3", "CX3", "CY3", "CZ3", "DA3", "DB3", "DC3"];
+            cellListLength = cellList.length;                   
+            for(var i = 0; i < cellListLength; i++) {
+                
+                if(cellList[i] == "DA3") {
+                    worksheet.getCell(cellList[i]).fill = {
+                        type: 'pattern',
+                        pattern:'solid',
+                        fgColor:{argb: "FFFA8072"}
+                    };
+                    worksheet.getCell(cellList[i]).font = {
+                        color: { argb: 'FFFF0000' }
+                    };
+                } else {
+                    worksheet.getCell(cellList[i]).fill = {
+                        type: 'pattern',
+                        pattern:'solid',
+                        fgColor:{argb: "FFFFB6C1"}
+                    };
+                }
+
+            }
+
+            worksheet.getCell("DD3").value = "진찰료";
+            worksheet.getCell("DE3").value = "입원료(주1)";
+            worksheet.getCell("DF3").value = "식대";
+            worksheet.getCell("DG3").value = "투약및조제료(행위료)";
+            worksheet.getCell("DH3").value = "투약및조제료(약품비)";
+            worksheet.getCell("DI3").value = "주사료(행위료)";
+            worksheet.getCell("DJ3").value = "주사료(약품비)";
+            worksheet.getCell("DK3").value = "마취료";
+            worksheet.getCell("DL3").value = "처치및수술료";
+            worksheet.getCell("DM3").value = "검사료";
+            worksheet.getCell("DN3").value = "영상진단";
+            worksheet.getCell("DO3").value = "방사선료";
+            worksheet.getCell("DP3").value = "치료재료대";
+            worksheet.getCell("DQ3").value = "재활및물리치료료";
+            worksheet.getCell("DR3").value = "정신요법료";
+            worksheet.getCell("DS3").value = "전혈/혈액성분제재";
+            worksheet.getCell("DT3").value = "CT진단료";
+            worksheet.getCell("DU3").value = "MRI진단료";
+            worksheet.getCell("DV3").value = "PET진단료";
+            worksheet.getCell("DW3").value = "초음파진단료";
+            worksheet.getCell("DX3").value = "보철교정료";
+            worksheet.getCell("DY3").value = "기타진료비";
+            worksheet.getCell("DZ3").value = "65세이상(신설)";
+            worksheet.getCell("EA3").value = "포괄수가진료비";
+            worksheet.getCell("EB3").value = "표준항목외";
+            worksheet.getCell("EC3").value = "합계";
+
+            cellList = ["DD3", "DE3", "DF3", "DG3", "DH3", "DI3", "DJ3", "DK3", "DL3", "DM3", "DN3", "DO3", "DP3", "DQ3", "DR3", "DS3", "DT3", "DU3", 
+                    "DV3", "DW3", "DX3", "DY3", "DZ3", "EA3", "EB3", "EC3"];
+            cellListLength = cellList.length;                   
+            for(var i = 0; i < cellListLength; i++) {
+                
+                if(cellList[i] == "EA3") {
+                    worksheet.getCell(cellList[i]).fill = {
+                        type: 'pattern',
+                        pattern:'solid',
+                        fgColor:{argb: "FFFA8072"}
+                    };
+                    worksheet.getCell(cellList[i]).font = {
+                        color: { argb: 'FFFF0000' }
+                    };
+                } else {
+                    worksheet.getCell(cellList[i]).fill = {
+                        type: 'pattern',
+                        pattern:'solid',
+                        fgColor:{argb: "FF808000"}
+                    };
+                }
+
+            }
+
+            worksheet.getCell("ED3").value = "이미납부한금액";
+            worksheet.getCell("EE3").value = "납부한금액";
+            worksheet.getCell("EF3").value = "진료비총액";
+            worksheet.getCell("EG3").value = "요양기관종류";
+            worksheet.getCell("EH3").value = "사업자등록번호";
+            worksheet.getCell("EI3").value = "상호";
+            worksheet.getCell("EJ3").value = "성명";
+            worksheet.getCell("EK3").value = "환자구분";
+            worksheet.getCell("EL3").value = "외래/입원";
+            worksheet.getCell("EM3").value = "퇴원/중간";
+
+            cellList = ["ED3", "EE3", "EF3", "EG3", "EH3", "EI3", "EJ3", "EK3", "EL3", "EM3"];
+            cellListLength = cellList.length;                   
+            for(var i = 0; i < cellListLength; i++) {
+                
+                if(cellList[i] == "EF3") {
+                    worksheet.getCell(cellList[i]).fill = {
+                        type: 'pattern',
+                        pattern:'solid',
+                        fgColor:{argb: "FFFA8072"}
+                    };
+                    worksheet.getCell(cellList[i]).font = {
+                        color: { argb: 'FFFF0000' }
+                    };
+                } else {
+                    worksheet.getCell(cellList[i]).fill = {
+                        type: 'pattern',
+                        pattern:'solid',
+                        fgColor:{argb: "FFDCDCDC"}
+                    };
+                }
+
+            }
+
+            worksheet.getCell("D4").value = "1";
+            worksheet.getCell("E4").value = "2";
+            worksheet.getCell("F4").value = "3";
+            worksheet.getCell("G4").value = "4";
+            worksheet.getCell("H4").value = "5";
+            worksheet.getCell("I4").value = "6";
+            worksheet.getCell("J4").value = "7";
+            worksheet.getCell("K4").value = "8";
+            worksheet.getCell("L4").value = "9";
+            worksheet.getCell("M4").value = "10";
+            worksheet.getCell("N4").value = "11";
+            worksheet.getCell("O4").value = "12";
+            worksheet.getCell("P4").value = "13";
+            worksheet.getCell("Q4").value = "14";
+            worksheet.getCell("R4").value = "15";
+            worksheet.getCell("S4").value = "16";
+            worksheet.getCell("T4").value = "17";
+            worksheet.getCell("U4").value = "18";
+            worksheet.getCell("V4").value = "19";
+            worksheet.getCell("W4").value = "20";
+            worksheet.getCell("X4").value = "21";
+            worksheet.getCell("Y4").value = "22";
+            worksheet.getCell("Z4").value = "23";
+            worksheet.getCell("AA4").value = "24";
+            worksheet.getCell("AB4").value = "25";
+            worksheet.getCell("AC4").value = "26";
+
+            cellList = ["D4", "E4", "F4", "G4", "H4", "I4", "J4", "K4", "L4", "M4", "N4", "O4", "P4", "Q4", "R4", "S4", "T4", "U4", "V4", "W4", "X4", "Y4", "Z4",
+                    "AA4", "AB4", "AC4"];
+            cellListLength = cellList.length;                   
+            for(var i = 0; i < cellListLength; i++) {                
+                worksheet.getCell(cellList[i]).fill = {
+                    type: 'pattern',
+                    pattern:'solid',
+                    fgColor:{argb: "FF9ACD32"}
+                };               
+            }
+
+            worksheet.getCell("AD4").value = "27";
+            worksheet.getCell("AE4").value = "28";
+            worksheet.getCell("AF4").value = "29";
+            worksheet.getCell("AG4").value = "30";
+            worksheet.getCell("AH4").value = "31";
+            worksheet.getCell("AI4").value = "32";
+            worksheet.getCell("AJ4").value = "33";
+            worksheet.getCell("AK4").value = "34";
+            worksheet.getCell("AL4").value = "35";
+            worksheet.getCell("AM4").value = "36";
+            worksheet.getCell("AN4").value = "37";
+            worksheet.getCell("AO4").value = "38";
+            worksheet.getCell("AP4").value = "39";
+            worksheet.getCell("AQ4").value = "40";
+            worksheet.getCell("AR4").value = "41";
+            worksheet.getCell("AS4").value = "42";
+            worksheet.getCell("AT4").value = "43";
+            worksheet.getCell("AU4").value = "44";
+            worksheet.getCell("AV4").value = "45";
+            worksheet.getCell("AW4").value = "46";
+            worksheet.getCell("AX4").value = "47";
+            worksheet.getCell("AY4").value = "48";
+            worksheet.getCell("AZ4").value = "49";
+            worksheet.getCell("BA4").value = "50";
+            worksheet.getCell("BB4").value = "51";
+            worksheet.getCell("BC4").value = "52";
+
+            cellList = ["AD4", "AE4", "AF4", "AG4", "AH4", "AI4", "AJ4", "AK4", "AL4", "AM4", "AN4", "AO4", "AP4", "AQ4", "AR4", "AS4", "AT4", 
+            "AU4", "AV4", "AW4", "AX4", "AY4", "AZ4", "BA4", "BB4", "BC4"];
+            cellListLength = cellList.length;                   
+            for(var i = 0; i < cellListLength; i++) {                
+                worksheet.getCell(cellList[i]).fill = {
+                    type: 'pattern',
+                    pattern:'solid',
+                    fgColor:{argb: "FFB0C4DE"}
+                };               
+            }
+
+            worksheet.getCell("BD4").value = "53";
+            worksheet.getCell("BE4").value = "54";
+            worksheet.getCell("BF4").value = "55";
+            worksheet.getCell("BG4").value = "56";
+            worksheet.getCell("BH4").value = "57";
+            worksheet.getCell("BI4").value = "58";
+            worksheet.getCell("BJ4").value = "59";
+            worksheet.getCell("BK4").value = "60";
+            worksheet.getCell("BL4").value = "61";
+            worksheet.getCell("BM4").value = "62";
+            worksheet.getCell("BN4").value = "63";
+            worksheet.getCell("BO4").value = "64";
+            worksheet.getCell("BP4").value = "65";
+            worksheet.getCell("BQ4").value = "66";
+            worksheet.getCell("BR4").value = "67";
+            worksheet.getCell("BS4").value = "68";
+            worksheet.getCell("BT4").value = "69";
+            worksheet.getCell("BU4").value = "70";
+            worksheet.getCell("BV4").value = "71";
+            worksheet.getCell("BW4").value = "72";
+            worksheet.getCell("BX4").value = "73";
+            worksheet.getCell("BY4").value = "74";
+            worksheet.getCell("BZ4").value = "75";
+            worksheet.getCell("CA4").value = "76";
+            worksheet.getCell("CB4").value = "77";
+            worksheet.getCell("CC4").value = "78";
+
+            cellList = ["BD4", "BE4", "BF4", "BG4", "BH4", "BI4", "BJ4", "BK4", "BL4", "BM4", "BN4", "BO4", "BP4", "BQ4", "BR4", "BS4", "BT4", 
+            "BU4", "BV4", "BW4", "BX4", "BY4", "BZ4", "CA4", "CB4", "CC4"];
+            cellListLength = cellList.length;                   
+            for(var i = 0; i < cellListLength; i++) {                
+                worksheet.getCell(cellList[i]).fill = {
+                    type: 'pattern',
+                    pattern:'solid',
+                    fgColor:{argb: "FFD8BFD8"}
+                };               
+            }
+
+            worksheet.getCell("CD4").value = "79";
+            worksheet.getCell("CE4").value = "80";
+            worksheet.getCell("CF4").value = "81";
+            worksheet.getCell("CG4").value = "82";
+            worksheet.getCell("CH4").value = "83";
+            worksheet.getCell("CI4").value = "84";
+            worksheet.getCell("CJ4").value = "85";
+            worksheet.getCell("CK4").value = "86";
+            worksheet.getCell("CL4").value = "87";
+            worksheet.getCell("CM4").value = "88";
+            worksheet.getCell("CN4").value = "89";
+            worksheet.getCell("CO4").value = "90";
+            worksheet.getCell("CP4").value = "91";
+            worksheet.getCell("CQ4").value = "92";
+            worksheet.getCell("CR4").value = "93";
+            worksheet.getCell("CS4").value = "94";
+            worksheet.getCell("CT4").value = "95";
+            worksheet.getCell("CU4").value = "96";
+            worksheet.getCell("CV4").value = "97";
+            worksheet.getCell("CW4").value = "98";
+            worksheet.getCell("CX4").value = "99";
+            worksheet.getCell("CY4").value = "100";
+            worksheet.getCell("CZ4").value = "101";
+            worksheet.getCell("DA4").value = "102";
+            worksheet.getCell("DB4").value = "103";
+            worksheet.getCell("DC4").value = "104";
+
+            cellList = ["CD4", "CE4", "CF4", "CG4", "CH4", "CI4", "CJ4", "CK4", "CL4", "CM4", "CN4", "CO4", "CP4", "CQ4", "CR4", "CS4", "CT4", 
+            "CU4", "CV4", "CW4", "CX4", "CY4", "CZ4", "DA4", "DB4", "DC4"];
+            cellListLength = cellList.length;                   
+            for(var i = 0; i < cellListLength; i++) {                
+                worksheet.getCell(cellList[i]).fill = {
+                    type: 'pattern',
+                    pattern:'solid',
+                    fgColor:{argb: "FFFFB6C1"}
+                };               
+            }
+
+            worksheet.getCell("DD4").value = "105";
+            worksheet.getCell("DE4").value = "106";
+            worksheet.getCell("DF4").value = "107";
+            worksheet.getCell("DG4").value = "108";
+            worksheet.getCell("DH4").value = "109";
+            worksheet.getCell("DI4").value = "110";
+            worksheet.getCell("DJ4").value = "111";
+            worksheet.getCell("DK4").value = "112";
+            worksheet.getCell("DL4").value = "113";
+            worksheet.getCell("DM4").value = "114";
+            worksheet.getCell("DN4").value = "115";
+            worksheet.getCell("DO4").value = "116";
+            worksheet.getCell("DP4").value = "117";
+            worksheet.getCell("DQ4").value = "118";
+            worksheet.getCell("DR4").value = "119";
+            worksheet.getCell("DS4").value = "120";
+            worksheet.getCell("DT4").value = "121";
+            worksheet.getCell("DU4").value = "122";
+            worksheet.getCell("DV4").value = "123";
+            worksheet.getCell("DW4").value = "124";
+            worksheet.getCell("DX4").value = "125";
+            worksheet.getCell("DY4").value = "126";
+            worksheet.getCell("DZ4").value = "127";
+            worksheet.getCell("EA4").value = "128";
+            worksheet.getCell("EB4").value = "129";
+            worksheet.getCell("EC4").value = "130";
+
+            cellList = ["DD4", "DE4", "DF4", "DG4", "DH4", "DI4", "DJ4", "DK4", "DL4", "DM4", "DN4", "DO4", "DP4", "DQ4", "DR4", "DS4", "DT4", 
+            "DU4", "DV4", "DW4", "DX4", "DY4", "DZ4", "EA4", "EB4", "EC4"];
+            cellListLength = cellList.length;                   
+            for(var i = 0; i < cellListLength; i++) {                
+                worksheet.getCell(cellList[i]).fill = {
+                    type: 'pattern',
+                    pattern:'solid',
+                    fgColor:{argb: "FF808000"}
+                };               
+            }
+
+            worksheet.getCell("ED4").value = "131";
+            worksheet.getCell("EE4").value = "132";
+            worksheet.getCell("EF4").value = "133";
+            worksheet.getCell("EG4").value = "134";
+            worksheet.getCell("EH4").value = "135";
+            worksheet.getCell("EI4").value = "136";
+            worksheet.getCell("EJ4").value = "137";
+            worksheet.getCell("EK4").value = "138";
+            worksheet.getCell("EL4").value = "139";
+            worksheet.getCell("EM4").value = "140";
+            
+
+            cellList = ["ED4", "EE4", "EF4", "EG4", "EH4", "EI4", "EJ4", "EK4", "EL4", "EM4"];
+            cellListLength = cellList.length;                   
+            for(var i = 0; i < cellListLength; i++) {                
+                worksheet.getCell(cellList[i]).fill = {
+                    type: 'pattern',
+                    pattern:'solid',
+                    fgColor:{argb: "FFDCDCDC"}
+                };               
+            }
+
+            for (var i = 0; i < imgId.length; i++) {
+                var result = sync.await(oracle.selectBatchLearnMlList([imgId[i]], sync.defer()));
+                console.log(result);
+                var excelObj = {};
+                for (var j = 0; j < result.rows.length; j++) {
+                    if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "1") {
+                        excelObj.col1 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "2") {
+                        excelObj.col2 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "3") {
+                        excelObj.col3 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "4") {
+                        excelObj.col4 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "5") {
+                        excelObj.col5 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "6") {
+                        excelObj.col6 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "7") {
+                        excelObj.col7 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "8") {
+                        excelObj.col8 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "9") {
+                        excelObj.col9 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "10") {
+                        excelObj.col10 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "11") {
+                        excelObj.col11 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "12") {
+                        excelObj.col12 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "13") {
+                        excelObj.col13 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "14") {
+                        excelObj.col14 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "15") {
+                        excelObj.col15 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "16") {
+                        excelObj.col16 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "17") {
+                        excelObj.col17 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "18") {
+                        excelObj.col18 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "19") {
+                        excelObj.col19 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "20") {
+                        excelObj.col20 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "21") {
+                        excelObj.col21 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "22") {
+                        excelObj.col22 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "23") {
+                        excelObj.col23 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "24") {
+                        excelObj.col24 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "25") {
+                        excelObj.col25 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "26") {
+                        excelObj.col26 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "27") {
+                        excelObj.col27 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "28") {
+                        excelObj.col28 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "29") {
+                        excelObj.col29 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "30") {
+                        excelObj.col30 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "31") {
+                        excelObj.col31 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "32") {
+                        excelObj.col32 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "33") {
+                        excelObj.col33 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "34") {
+                        excelObj.col34 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "35") {
+                        excelObj.col35 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "36") {
+                        excelObj.col36 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "37") {
+                        excelObj.col37 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "38") {
+                        excelObj.col38 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "39") {
+                        excelObj.col39 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "40") {
+                        excelObj.col40 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "41") {
+                        excelObj.col41 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "42") {
+                        excelObj.col42 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "43") {
+                        excelObj.col43 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "44") {
+                        excelObj.col44 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "45") {
+                        excelObj.col45 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "46") {
+                        excelObj.col46 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "47") {
+                        excelObj.col47 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "48") {
+                        excelObj.col48 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "49") {
+                        excelObj.col49 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "50") {
+                        excelObj.col50 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "51") {
+                        excelObj.col51 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "52") {
+                        excelObj.col52 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "53") {
+                        excelObj.col53 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "54") {
+                        excelObj.col54 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "55") {
+                        excelObj.col55 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "56") {
+                        excelObj.col56 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "57") {
+                        excelObj.col57 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "58") {
+                        excelObj.col58 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "59") {
+                        excelObj.col59 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "60") {
+                        excelObj.col60 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "61") {
+                        excelObj.col61 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "62") {
+                        excelObj.col62 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "63") {
+                        excelObj.col63 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "64") {
+                        excelObj.col64 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "65") {
+                        excelObj.col65 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "66") {
+                        excelObj.col66 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "67") {
+                        excelObj.col67 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "68") {
+                        excelObj.col68 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "69") {
+                        excelObj.col69 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "70") {
+                        excelObj.col70 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "71") {
+                        excelObj.col71 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "72") {
+                        excelObj.col72 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "73") {
+                        excelObj.col73 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "74") {
+                        excelObj.col74 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "75") {
+                        excelObj.col75 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "76") {
+                        excelObj.col76 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "77") {
+                        excelObj.col77 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "78") {
+                        excelObj.col78 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "79") {
+                        excelObj.col79 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "80") {
+                        excelObj.col80 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "81") {
+                        excelObj.col81 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "82") {
+                        excelObj.col82 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "83") {
+                        excelObj.col83 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "84") {
+                        excelObj.col84 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "85") {
+                        excelObj.col85 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "86") {
+                        excelObj.col86 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "87") {
+                        excelObj.col87 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "88") {
+                        excelObj.col88 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "89") {
+                        excelObj.col89 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "90") {
+                        excelObj.col90 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "91") {
+                        excelObj.col91 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "92") {
+                        excelObj.col92 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "93") {
+                        excelObj.col93 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "94") {
+                        excelObj.col94 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "95") {
+                        excelObj.col95 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "96") {
+                        excelObj.col96 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "97") {
+                        excelObj.col97 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "98") {
+                        excelObj.col98 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "99") {
+                        excelObj.col99 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "100") {
+                        excelObj.col100 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "101") {
+                        excelObj.col101 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "102") {
+                        excelObj.col102 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "103") {
+                        excelObj.col103 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "104") {
+                        excelObj.col104 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "105") {
+                        excelObj.col105 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "106") {
+                        excelObj.col106 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "107") {
+                        excelObj.col107 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "108") {
+                        excelObj.col108 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "109") {
+                        excelObj.col109 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "110") {
+                        excelObj.col110 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "111") {
+                        excelObj.col111 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "112") {
+                        excelObj.col112 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "113") {
+                        excelObj.col113 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "114") {
+                        excelObj.col114 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "115") {
+                        excelObj.col115 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "116") {
+                        excelObj.col116 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "117") {
+                        excelObj.col117 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "118") {
+                        excelObj.col118 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "119") {
+                        excelObj.col119 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "120") {
+                        excelObj.col120 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "121") {
+                        excelObj.col121 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "122") {
+                        excelObj.col122 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "123") {
+                        excelObj.col123 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "124") {
+                        excelObj.col124 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "125") {
+                        excelObj.col125 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "126") {
+                        excelObj.col126 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "0" && result.rows[j].ENTRYLABEL == "127") {
+                        excelObj.col127 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "128") {
+                        excelObj.col128 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "129") {
+                        excelObj.col129 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "130") {
+                        excelObj.col130 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "131") {
+                        excelObj.col131 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "132") {
+                        excelObj.col132 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "133") {
+                        excelObj.col133 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "134") {
+                        excelObj.col134 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "135") {
+                        excelObj.col135 = result.rows[j].COLVALUE;
+                    }
+                }
+                
+                worksheet.addRow([
+                    (i + 1), imgId[i].substr(imgId[i].lastIndexOf('/') + 1), '',
+                    excelObj.col1, excelObj.col2, excelObj.col3, excelObj.col4, excelObj.col5,
+                    excelObj.col6, excelObj.col7, excelObj.col8, excelObj.col9, excelObj.col10,
+                    excelObj.col11, excelObj.col12, excelObj.col13, excelObj.col14, excelObj.col15,
+                    excelObj.col16, excelObj.col17, excelObj.col18, excelObj.col19, excelObj.col20,
+                    excelObj.col21, excelObj.col22, excelObj.col23, excelObj.col24, "", excelObj.col25, excelObj.col26,
+                    excelObj.col27, excelObj.col28, excelObj.col29, excelObj.col30, excelObj.col31,
+                    excelObj.col32, excelObj.col33, excelObj.col34, excelObj.col35, excelObj.col36,
+                    excelObj.col37, excelObj.col38, excelObj.col39, excelObj.col40, excelObj.col41,
+                    excelObj.col42, excelObj.col43, excelObj.col44, excelObj.col45, excelObj.col46,
+                    excelObj.col47, "", excelObj.col48, excelObj.col49, excelObj.col50, excelObj.col51,
+                    excelObj.col52, excelObj.col53, excelObj.col54, excelObj.col55, excelObj.col56,
+                    excelObj.col57, excelObj.col58, excelObj.col59, excelObj.col60, excelObj.col61,
+                    excelObj.col62, excelObj.col63, excelObj.col64, excelObj.col65, excelObj.col66,
+                    excelObj.col67, excelObj.col68, excelObj.col69, excelObj.col70, excelObj.col71,
+                    excelObj.col72, "", excelObj.col73, excelObj.col74, excelObj.col75, excelObj.col76,
+                    excelObj.col77, excelObj.col78, excelObj.col79, excelObj.col80, excelObj.col81,
+                    excelObj.col82, excelObj.col83, excelObj.col84, excelObj.col85, excelObj.col86,
+                    excelObj.col87, excelObj.col88, excelObj.col89, excelObj.col90, excelObj.col91,
+                    excelObj.col92, excelObj.col93, excelObj.col94, excelObj.col95, excelObj.col96,
+                    excelObj.col97, "", excelObj.col98, excelObj.col99, excelObj.col100, excelObj.col101, 
+                    excelObj.col102, excelObj.col103, excelObj.col104, excelObj.col105, excelObj.col106,
+                    excelObj.col107, excelObj.col108, excelObj.col109, excelObj.col110, excelObj.col111,
+                    excelObj.col112, excelObj.col113, excelObj.col114, excelObj.col115, excelObj.col116,
+                    excelObj.col117, excelObj.col118, excelObj.col119, excelObj.col120, excelObj.col121,
+                    excelObj.col122, "", excelObj.col123, excelObj.col124, excelObj.col125, excelObj.col126,
+                    "", excelObj.col127, excelObj.col128, excelObj.col129, excelObj.col130, excelObj.col131,
+                    excelObj.col132, excelObj.col133, excelObj.col134, excelObj.col135, excelObj.col136,
+                    excelObj.col137, excelObj.col138, excelObj.col139, excelObj.col140
+                ]);
+
+            }
+
+        } else {
+            worksheet.columns = [
+                { header: '파일명', key: 'fileName' },
+                { header: '예측문서', key: 'docType' },
+                { header: '출재사명', key: 'OGCOMPANYNAME' },
+                { header: '계약명', key: 'CTNM' },
+                { header: 'UY', key: 'UY' },
+                { header: '화폐코드', key: 'CURCD' },
+                { header: '화폐단위', key: 'CURUNIT' },
+                { header: 'Paid(100%)', key: 'PAIDPERCENT' },
+                { header: 'Paid(Our Share)', key: 'PAIDSHARE' },
+                { header: 'OSL(100%)', key: 'OSLPERCENT' },
+                { header: 'OSL(Our Share)', key: 'OSLSHARE' },
+                { header: 'PREMIUM', key: 'PM' },
+                { header: 'PREMIUM P/F ENT', key: 'PMPFEND' },
+                { header: 'PREMIUM P/F WOS', key: 'PMPFWOS' },
+                { header: 'XOL PREMIUM', key: 'XOLPM' },
+                { header: 'RETURN PREMIUM', key: 'RETURNPM' },
+                { header: 'COMMISSION', key: 'CN' },
+                { header: 'PROFIT COMMISSION', key: 'PROFITCN' },
+                { header: 'BROKERAGE', key: 'BROKERAGE' },
+                { header: 'TAX', key: 'TAX' },
+                { header: 'OVERRIDING COM', key: 'OVERRIDINGCOM' },
+                { header: 'CHARGE', key: 'CHARGE' },
+                { header: 'PREMIUM RESERVE RTD', key: 'PMRESERVERTD1' },
+                { header: 'P/F PREMIUM RESERVE RTD', key: 'PFPMRESERVERTD1' },
+                { header: 'PREMIUM RESERVE RLD', key: 'PMRESERVERTD2' },
+                { header: 'P/F PREMIUM RESERVE RLD', key: 'PFPMRESERVERTD2' },
+                { header: 'CLAIM', key: 'CLAIM' },
+                { header: 'LOSS RECOVERY', key: 'LOSSRECOVERY' },
+                { header: 'CASH LOSS', key: 'CASHLOSS' },
+                { header: 'CASH LOSS REFUND', key: 'CASHLOSSRD' },
+                { header: 'LOSS RESERVE RTD', key: 'LOSSRR' },
+                { header: 'LOSS RESERVE RLD	', key: 'LOSSRR2' },
+                { header: 'LOSS P/F ENT', key: 'LOSSPFENT' },
+                { header: 'LOSS P/F WOA', key: 'LOSSPFWOA' },
+                { header: 'INTEREST	', key: 'INTEREST' },
+                { header: 'TAX ON', key: 'TAXON' },
+                { header: 'MISCELLANEOUS', key: 'MISCELLANEOUS' },
+                { header: 'Your Ref', key: 'CSCOSARFRNCNNT2' }
+            ];
+
+            for (var i = 0; i < imgId.length; i++) {
+                var result = sync.await(oracle.selectBatchLearnMlList([imgId[i]], sync.defer()));
+                console.log(result);
+                var excelObj = {};
+                for (var j = 0; j < result.rows.length; j++) {
+                    if (result.rows[j].COLLABEL == "0") {
+                        excelObj.OGCOMPANYNAME = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "1") {
+                        excelObj.CTNM = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "2") {
+                        excelObj.UY = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "37" && result.rows[j].ENTRYLABEL == "4") {
+                        excelObj.PM = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "37" && result.rows[j].ENTRYLABEL == "5") {
+                        excelObj.PMPFEND = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "37" && result.rows[j].ENTRYLABEL == "6") {
+                        excelObj.PMPFWOS = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "37" && result.rows[j].ENTRYLABEL == "7") {
+                        excelObj.XOLPM = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "37" && result.rows[j].ENTRYLABEL == "8") {
+                        excelObj.RETURNPM = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "37" && result.rows[j].ENTRYLABEL == "9") {
+                        excelObj.CN = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "37" && result.rows[j].ENTRYLABEL == "10") {
+                        excelObj.PROFITCN = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "37" && result.rows[j].ENTRYLABEL == "11") {
+                        excelObj.BROKERAGE = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "37" && result.rows[j].ENTRYLABEL == "12") {
+                        excelObj.TAX = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "37" && result.rows[j].ENTRYLABEL == "13") {
+                        excelObj.OVERRIDINGCOM = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "37" && result.rows[j].ENTRYLABEL == "14") {
+                        excelObj.CHARGE = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "37" && result.rows[j].ENTRYLABEL == "15") {
+                        excelObj.PMRESERVERTD1 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "37" && result.rows[j].ENTRYLABEL == "16") {
+                        excelObj.PFPMRESERVERTD1 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "37" && result.rows[j].ENTRYLABEL == "17") {
+                        excelObj.PMRESERVERTD2 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "37" && result.rows[j].ENTRYLABEL == "18") {
+                        excelObj.PFPMRESERVERTD2 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "37" && result.rows[j].ENTRYLABEL == "19") {
+                        excelObj.CLAIM = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "37" && result.rows[j].ENTRYLABEL == "20") {
+                        excelObj.LOSSRECOVERY = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "37" && result.rows[j].ENTRYLABEL == "21") {
+                        excelObj.CASHLOSS = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "37" && result.rows[j].ENTRYLABEL == "22") {
+                        excelObj.CASHLOSSRD = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "37" && result.rows[j].ENTRYLABEL == "23") {
+                        excelObj.LOSSRR = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "37" && result.rows[j].ENTRYLABEL == "24") {
+                        excelObj.LOSSRR2 = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "37" && result.rows[j].ENTRYLABEL == "25") {
+                        excelObj.LOSSPFENT = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "37" && result.rows[j].ENTRYLABEL == "26") {
+                        excelObj.LOSSPFWOA = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "37" && result.rows[j].ENTRYLABEL == "27") {
+                        excelObj.INTEREST = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "37" && result.rows[j].ENTRYLABEL == "28") {
+                        excelObj.TAXON = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "37" && result.rows[j].ENTRYLABEL == "29") {
+                        excelObj.MISCELLANEOUS = result.rows[j].COLVALUE;
+                    } else if (result.rows[j].COLLABEL == "35") {
+                        excelObj.CSCOSARFRNCNNT2 = result.rows[j].COLVALUE;
+                    }
+                }
+
+                worksheet.addRow({
+                    fileName: imgId[i], docType: '', OGCOMPANYNAME: excelObj.OGCOMPANYNAME, CTNM: excelObj.CTNM,
+                    UY: excelObj.UY, CURCD: excelObj.CURCD, CURUNIT: excelObj.CURUNIT, PAIDPERCENT: excelObj.PAIDPERCENT,
+                    PAIDSHARE: excelObj.PAIDSHARE, OSLPERCENT: excelObj.OSLPERCENT, OSLSHARE: excelObj.OSLSHARE, PM: excelObj.PM,
+                    PMPFEND: excelObj.PMPFEND, PMPFWOS: excelObj.PMPFWOS, XOLPM: excelObj.XOLPM, RETURNPM: excelObj.RETURNPM,
+                    CN: excelObj.CN, PROFITCN: excelObj.PROFITCN, BROKERAGE: excelObj.BROKERAGE, TAX: excelObj.TAX,
+                    OVERRIDINGCOM: excelObj.OVERRIDINGCOM, CHARGE: excelObj.CHARGE, PMRESERVERTD1: excelObj.PMRESERVERTD1, PFPMRESERVERTD1: excelObj.PFPMRESERVERTD1,
+                    PMRESERVERTD2: excelObj.PMRESERVERTD2, PFPMRESERVERTD2: excelObj.PFPMRESERVERTD2, CLAIM: excelObj.CLAIM, LOSSRECOVERY: excelObj.LOSSRECOVERY,
+                    CASHLOSS: excelObj.CASHLOSS, CASHLOSSRD: excelObj.CASHLOSSRD, LOSSRR: excelObj.LOSSRR, LOSSRR2: excelObj.LOSSRR2,
+                    LOSSPFENT: excelObj.LOSSPFENT, LOSSPFWOA: excelObj.LOSSPFWOA, INTEREST: excelObj.INTEREST, TAXON: excelObj.TAXON,
+                    MISCELLANEOUS: excelObj.MISCELLANEOUS, CSCOSARFRNCNNT2: excelObj.CSCOSARFRNCNNT2
+                });
+
+            }
+        }
+
+        workbook.xlsx.writeFile("ICR.xlsx").then(function () {
+            // done
+            console.log("success");
+            res.send({ fileName: "ICR.xlsx" });
+        });
+    });
+});
+
+router.get('/downloadExcel', function (req, res) {
+    res.download(appRoot + "\\ICR.xlsx");
+});
+
+router.post('/uiDocTopType', function (req, res) {
+    sync.fiber(function () {
+        var docTopType = req.body.docTopType;
+        var docTopData = sync.await(oracle.selectIcrDocTopType(req, sync.defer()));
+        var labelData = sync.await(oracle.selectIcrLabelDef(docTopType, sync.defer()));
+
+        res.send({ docTopData: docTopData.rows, labelData: labelData.rows });
+    });
+});
+
+router.post('/batchLearnTraining', function (req, res) {
+
+    var filepath = req.body.imgIdArray;
+    var flag = req.body.flag;
+    var retData = [];
+    var uiTraining = '';
+
+    Step(
+        function executeML() {
+            var self = this;
+            filepath.forEach(function (element) {
+                batchLearnTraining(element, self.parallel());
+            });
+        },
+        function finalize(err) {
+            if (err) console.log(err);
+            console.log('done');
+            res.send({ data: retData });
+        }
+    );
+    //var batchData = sync.await(batchLearnTraining(filepath, flag, sync.defer()));
+
+
+});
+
+function batchLearnTraining(filepath, callback) {
+    sync.fiber(function () {
+
+        var imgid = sync.await(oracle.selectImgid(filepath, sync.defer()));
+        imgid = imgid.rows[0].IMGID;
+
+        var filename = filepath.substring(0, filepath.lastIndexOf("."));
+        var fullFilePath = filename + ".jpg"
+
+        var selOcr = sync.await(oracle.selectOcrData(filepath, sync.defer()));
+        if (selOcr.length == 0) {
+            var ocrResult = sync.await(ocrUtil.localOcr(fullFilePath, sync.defer()));
+            sync.await(oracle.insertOcrData(filepath, JSON.stringify(ocrResult), sync.defer()));
+            selOcr = sync.await(oracle.selectOcrData(filepath, sync.defer()));
+        }
+        
+        var seqNum = selOcr.SEQNUM;
+        pythonConfig.columnMappingOptions.args = [];
+        pythonConfig.columnMappingOptions.args.push(seqNum);
+        var resPyStr = sync.await(PythonShell.run('batchClassifyTest.py', pythonConfig.columnMappingOptions, sync.defer()));
+        var testStr = resPyStr[0].replace('b', '');
+        testStr = testStr.replace(/'/g, '');
+        var decode = new Buffer(testStr, 'base64').toString('utf-8');
+
+        var resPyArr = JSON.parse(decode);
+        //resPyArr = sync.await(transPantternVar.trans(resPyArr, sync.defer()));
+        console.log(resPyArr);
+
+        var retData = {};
+        retData = resPyArr;
+        retData.fileinfo = { filepath: filepath, imgId: imgid };
+        sync.await(oracle.insertMLData(retData, sync.defer()));
+        sync.await(oracle.updateBatchLearnListDocType(retData, sync.defer()));
+
+        var colMappingList = sync.await(oracle.selectColumn(null, sync.defer()));
+        var entryMappingList = sync.await(oracle.selectEntryMappingCls(null, sync.defer()));
+        var labelData = sync.await(oracle.selectIcrLabelDef(null, sync.defer()));
+
+        retData.column = colMappingList;
+        retData.entryMappingList = entryMappingList;
+        retData.labelData = labelData.rows;
+
+        callback(null, retData);
+    });
+}
+
+function batchLearnTraining_old(filepath, flag, done) {
     sync.fiber(function () {
         try {
 
@@ -3212,17 +4365,15 @@ router.post('/selectLikeDocCategory', function (req, res) {
     });
 });
 
-// tif 파일 없는거 tbl_batch_learn_list 테이블에 status = 'R' insert
-router.post('/deleteAnswerFile', function (req, res) {
+// tif 파일 없는거 tbl_batch_learn_list 테이블에서 status = 'R' update
+router.post('/deleteBatchLearnList', function (req, res) {
     var filepath = req.body.filepath;
-    var data = [];
-    data.push(req.body.filepath);
-    data.push(req.body.imgId);
+    var data = [req.body.imgId];
     var returnObj;
 
     sync.fiber(function () {
         try {
-            var result = sync.await(oracle.deleteAnswerFile(data, sync.defer()));
+            var result = sync.await(oracle.deleteBatchLearnList(data, sync.defer()));
         } catch (e) {
             console.log(e);
             returnObj = { code: 500, message: e };
@@ -3242,9 +4393,8 @@ router.post('/selectClassificationSt', function (req, res) {
     sync.fiber(function () {
         try {
             var result = sync.await(oracle.selectClassificationSt(data, sync.defer()));
-            var resultBanned = sync.await(oracle.selectBannedWord(sync.defer()));
             if (result.rows) {
-                returnObj = { data: result.rows, bannedData: resultBanned };
+                returnObj = { data: result.rows };
             } else {
                 returnObj = { data: null };
             }
@@ -3275,6 +4425,48 @@ router.post('/insertDoctypeMapping', function (req, res) {
             let data = req.body;
             returnObj = sync.await(batch.insertDoctypeMapping(data, sync.defer()));
            
+        } catch (e) {
+            console.log(e);
+            returnObj = { code: 500, message: e };
+        } finally {
+            res.send(returnObj);
+        }
+    });
+});
+
+// 파일업로드시 TBL_BATCH_LEARN_LIST 에 파일정보 INSERT
+router.post('/insertBatchLearningFileInfo', function (req, res) {
+    var returnObj;
+
+    var data = {
+        imgId: req.body.fileInfo.imgId,
+        filepath: req.body.fileInfo.filePath,
+        docTopType: req.body.docToptype
+    }
+
+    sync.fiber(function () {
+        try {
+            returnObj = sync.await(oracle.insertBatchLearningFileInfo(data, sync.defer()));
+        } catch (e) {
+            console.log(e);
+            returnObj = { code: 500, message: e };
+        } finally {
+            res.send(returnObj);
+        }
+    });
+});
+
+router.post('/selectIcrLabelDef', function (req, res) {
+    var returnObj;
+    var data = req.body.docType;
+    if (data) {
+        data = data;
+    } else {
+        data = "2";
+    }
+    sync.fiber(function () {
+        try {
+            returnObj = sync.await(oracle.selectIcrLabelDef(data, sync.defer()));
         } catch (e) {
             console.log(e);
             returnObj = { code: 500, message: e };

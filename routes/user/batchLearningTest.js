@@ -4421,7 +4421,7 @@ router.post('/insertDoctypeMapping', function (req, res) {
 });
 
 // 파일업로드시 TBL_BATCH_LEARN_LIST 에 파일정보 INSERT
-router.post('/insertBatchLearningFileInfo', function (req, res) {
+router.post('/insertBatchLearningFileInfoTest', function (req, res) {
     var returnObj;
 
     var data = {
@@ -4431,7 +4431,7 @@ router.post('/insertBatchLearningFileInfo', function (req, res) {
 
     sync.fiber(function () {
         try {
-            returnObj = sync.await(oracle.insertBatchLearningFileInfo(data, sync.defer()));
+            returnObj = sync.await(oracle.insertBatchLearningFileInfoTest(data, sync.defer()));
         } catch (e) {
             console.log(e);
             returnObj = { code: 500, message: e };

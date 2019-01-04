@@ -17,18 +17,30 @@ var oracle = require('../util/oracle.js');
 var execSync = require('sync-exec');
 var ocrUtil = require('../util/ocr.js');
 var Step = require('step');
+const xlsx = require('xlsx');
+const async = require("async");
+var oracle = require('../util/oracle.js');
+var sync = require('../util/sync.js');
 
 const upload = multer({
     storage: multer.diskStorage({
         destination: function (req, file, cb) {
             //cb(null, 'uploads/');
-            cb(null, propertiesConfig.filepath.uploadsPath);
+            let fileExtensions = file.originalname.split('.')[1];
+            if(fileExtensions == 'xlsx') {
+                cb(null, propertiesConfig.filepath.excelUploadPath);
+            } else {
+
+                cb(null, propertiesConfig.filepath.uploadsPath);
+            }
         },
         filename: function (req, file, cb) {
             cb(null, file.originalname);
         }
     }),
 });
+
+
 const defaults = {
     encoding: 'utf8',
 };
@@ -38,8 +50,75 @@ var router = express.Router();
 /***************************************************************
  * Router
  * *************************************************************/
+// [POST] 엑셀 업로드
+router.post('/excelUpload', upload.any(), function (req, res) {
+   
+    sync.fiber(function () {
+        console.log("!!!!!!!!!!!!!!!!!!!!!!! excelupload");
+        let returnObj = {};
+        let param = {};
+        var docId = req.body.docTopType;
+        var dataExcel = req.files[0].path;
+        var dataExcelWorkbook = xlsx.readFile(dataExcel);
+        var dataExcelSheet = dataExcelWorkbook.Sheets[dataExcelWorkbook.SheetNames[0]];      
+        var dataResult = [];
+        var dataRow;
+        var dataRowNum;
+        var dataColNum;
+        var dataRange = xlsx.utils.decode_range(dataExcelSheet['!ref']);
+        for (dataRowNum = (dataRange.s.r + 1); dataRowNum <= dataRange.e.r; dataRowNum++) {
+             dataRow = [];
+             for (dataColNum = dataRange.s.c; dataColNum <= dataRange.e.c; dataColNum++) {
+                 var nextCell = dataExcelSheet[
+                     xlsx.utils.encode_cell({ r: dataRowNum, c: dataColNum })
+                 ];
+                 if (typeof nextCell === 'undefined') {
+                     dataRow.push(void 0);
+                 } else dataRow.push(nextCell.w);
+             }
+             dataResult.push(dataRow);
+        }
+        console.log(dataResult);
+        param = {'dataResult': dataResult, 'docId': docId};
+        sync.await(oracle.insertExcelAnswerData(param, sync.defer()));     
+        res.send();
+    });
 
-router.post('/imageUpload', upload.any(), function (req, res) {
+    //console.log(dataExcelWorkbook);
+    // commonDB.reqInsertExcelDataPath(pathResult, dataResult, req, res);
+    //commonDB.reqInsertExcelData(dataResult);
+    // insert filepath.xlsx 
+    //for (var i = 1, x = pathResult.length; i < x; i++) { // 첫번째 행은 무시
+    //    if (!commonUtil.isNull(pathResult[i][0])) {
+    //        let data = [];
+    //        for (var j = 0, y = pathResult[i].length; j < y; j++) {
+    //            data.push(commonUtil.nvl(pathResult[i][j]));
+    //        }
+    //        console.log(`insert pathResult : ` + i);
+    //        commonDB.queryNoRows(queryConfig.batchLearningConfig.insertBatchAnswerFile, data, callbackBlank);
+    //    } else {
+    //        console.log(`finish insert pathResult...`);
+    //        continue;
+    //    }
+    //}
+    // insert data.xlsx
+    //for (var i = 1, x = dataResult.length; i < x; i++) { // 첫번째 행은 무시
+    //    if (!commonUtil.isNull(dataResult[i][0])) {
+    //        let data = [];
+    //        for (var j = 0, y = dataResult[i].length; j < y; j++) {
+    //            data.push(commonUtil.nvl(dataResult[i][j]));
+    //        }
+    //        console.log(`insert dataResult : ` + x);
+    //        commonDB.queryNoRows(queryConfig.batchLearningConfig.insertBatchAnswerData, data, callbackBlank);
+    //    } else {
+    //        console.log(`finish insert dataResult...`);
+    //        continue;
+    //    }
+    //}
+    res.send({'code': '200', 'type': 'excel'});
+});
+
+ router.post('/imageUpload', upload.any(), function (req, res) {
     sync.fiber(function () {
         var files = req.files;
         

@@ -11,11 +11,12 @@
     <%include  ../common/commonLib.html%>
 
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-
+    
+    <link rel="stylesheet" href="/common/css/font-awesome.min.css">
     <!-- tui-grid css import-->
     <link rel="stylesheet" href="/common/css/fileupload/jquery.fileupload.css">
     <!-- tui-grid css import-->
-    <link rel="stylesheet" href="css/user/batchLearning.css">
+    <link rel="stylesheet" href="css/user/batchLearningTest.css">
     <!-- form submit aync & multi-upload js import -->
     <script type="text/javascript" src="js/import/fileupload/jquery.ui.widget.js"></script>
     <script type="text/javascript" src="js/import/fileupload/jquery.iframe-transport.js"></script>
@@ -131,11 +132,21 @@
                 <div class="clear_both"></div>
                 <form id="multiUploadForm" action="/batchLearning/multiUpload" method="post" enctype="multipart/form-data">
                     <div class="bl_btn_div">
+                        <div class="st00_sh um_select fl dc_box_select">
+                            <select id="docToptype" class="inputst_box03"></select>
+                        </div>
                         <p class="attach_btn fl">
                             <i class="upload_icon"></i>
                             <input type="file" id="document_file" name="file" multiple />
                             <label for="document_file">Document Upload</label>
                         </p>
+                        <p class="attach_btn fl">
+                            <i class="upload_icon"></i>
+                            <input type="file" id="btn_importExcel" name="file" multiple />
+                            <input type="hidden" id="docTopTypeValue" name="docTopType" />
+                            <label for="btn_importExcel">Excel Import</label>
+                        </p>
+                        <button type="button" id="btn_exportExcel" class="button_st5"><i class="train_icon_03"></i><p>Excel Export</p></button>
                         <button type="button" id="btn_imageDelete" class="button_st5"><i class="delete_icon"></i><p>Document Delete</p></button>
                         <button type="button" id="btn_batchTraining" class="button_st5"><i class="train_icon_01"></i><p>Batch Training</p></button>
                         <button type="button" id="btn_uiTraining" class="button_st5"><i class="train_icon_02"></i><p>UI Training</p></button>
@@ -149,7 +160,7 @@
                         <li><a href="#none" class="btn_tep_02" id="tab_after" title="After Training">After Training</a></li>
                     </ul>
                     <!-- Looks like select box-->
-                    <input type="hidden" id="select_view_count" value="12" />
+                    <input type="hidden" id="select_view_count" value="30" />
                     <!--<button type="button" id="btn_sync" class="button_st1 ml5 fl">Sync</button>-->
                     <!--<button type="button" id="btn_sync" class="bgColor ml5 fl"><img src="publish/image/sync_btn.png" /></button>-->
                     <!-- // Looks like select box-->
@@ -176,13 +187,11 @@
                                                     <colgroup>
                                                         <col style="width:50px" />
                                                         <col style="width:200px" />
-                                                        <col style="width:200px" />
                                                     </colgroup>
                                                     <thead>
                                                         <tr>
                                                             <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" class="sta00_all" value="" id="listCheckAll_before" name="listCheckAll_before" /></div></th>
                                                             <th scope="row">파일명</th>
-                                                            <th scope="row">예측문서</th>
                                                         </tr>
                                                     </thead>
                                                 </table>
@@ -194,9 +203,8 @@
                                                     <colgroup>
                                                         <col style="width:50px" />
                                                         <col style="width:200px" />
-                                                        <col style="width:200px" />
                                                     </colgroup>
-                                                    <tbody id="batch_left_contents_before"></tbody>
+                                                    <tbody id="batch_left_contents_before" class="batchListLeftTbody"></tbody>
                                                 </table>
                                             </div>
                                             <!-- LEFT CONTENTS(FIXED) END-->
@@ -206,22 +214,10 @@
                                         <div class="table_style03">
                                             <!-- RIGHT HEADER(CROSSTAB) START -->
                                             <div id="right_header" class="batch_tbl_right_header" style="overflow-x:hidden; overflow-y:hidden;">
-                                                <table cellspacing="0" cellpadding="0">
+                                                <table cellspacing="0" cellpadding="0" class="docTableColumn">
                                                     <colgroup>
                                                         <col style="width:300px" />
                                                         <col style="width:300px" />
-                                                        <col style="width:200px" />
-                                                        <col style="width:200px" />
-                                                        <col style="width:200px" />
-                                                        <col style="width:200px" />
-                                                        <col style="width:200px" />
-                                                        <col style="width:200px" />
-                                                        <col style="width:200px" />
-                                                        <col style="width:200px" />
-                                                        <col style="width:200px" />
-                                                        <col style="width:200px" />
-                                                        <col style="width:200px" />
-                                                        <col style="width:200px" />
                                                         <col style="width:200px" />
                                                         <col style="width:200px" />
                                                         <col style="width:200px" />
@@ -248,42 +244,30 @@
                                                     </colgroup>
                                                     <thead>
                                                         <tr>
-                                                            <th scope="row">출재사명</th>
-                                                            <th scope="row">계약명</th>
-                                                            <th scope="row">UY</th>
-                                                            <th scope="row">화폐코드</th>
-                                                            <th scope="row">화폐단위</th>
-                                                            <th scope="row">Paid(100%)</th>
-                                                            <th scope="row">Paid(Our Share)</th>
-                                                            <th scope="row">OSL(100%)</th>
-                                                            <th scope="row">OSL(Our Share)</th>
-                                                            <th scope="row">PREMIUM</th>
-                                                            <th scope="row">PREMIUM P/F ENT</th>
-                                                            <th scope="row">PREMIUM P/F WOS</th>
-                                                            <th scope="row">XOL PREMIUM</th>
-                                                            <th scope="row">RETURN PREMIUM</th>
-                                                            <th scope="row">COMMISSION</th>
-                                                            <th scope="row">PROFIT COMMISSION</th>
-                                                            <th scope="row">BROKERAGE</th>
-                                                            <th scope="row">TEX</th>
-                                                            <th scope="row">OVERRIDING COM</th>
-                                                            <th scope="row">CHARGE</th>
-                                                            <th scope="row">PREMUIM RESERVE RTD</th>
-                                                            <th scope="row">P/F PREMIUM RESERVE RTD</th>
-                                                            <th scope="row">PREMIUM RESERVE RLD</th>
-                                                            <th scope="row">P/F PREMIUM RESERVE RLD</th>
-                                                            <th scope="row">CLAIM</th>
-                                                            <th scope="row">LOSS RECOVERY</th>
-                                                            <th scope="row">CASH LOSS</th>
-                                                            <th scope="row">CASH LOSS REFUND</th>
-                                                            <th scope="row">LOSS RESERVE RTD</th>
-                                                            <th scope="row">LOSS RESERVE RLD</th>
-                                                            <th scope="row">LOSS P/F ENT</th>
-                                                            <th scope="row">LOSS P/F WOA</th>
-                                                            <th scope="row">INTEREST</th>
-                                                            <th scope="row">TAX ON</th>
-                                                            <th scope="row">MISCELLANEOUS</th>
-                                                            <th scope="row">Your Ref</th>
+                                                            <th scope="row">진찰료</th>
+                                                            <th scope="row">입원료</th>
+                                                            <th scope="row">식대</th>
+                                                            <th scope="row">투약및조제료(행위료)</th>
+                                                            <th scope="row">투약 및 조제료(약품비)</th>
+                                                            <th scope="row">주사료(행위료)</th>
+                                                            <th scope="row">주사료(약품비)</th>
+                                                            <th scope="row">마취료</th>
+                                                            <th scope="row">처치 및 수술료</th>
+                                                            <th scope="row">검사료</th>
+                                                            <th scope="row">영상진단</th>
+                                                            <th scope="row">방사선료</th>
+                                                            <th scope="row">치료재료대</th>
+                                                            <th scope="row">재활및물리치료료</th>
+                                                            <th scope="row">정신요법료</th>
+                                                            <th scope="row">전혈/혈액성분제재</th>
+                                                            <th scope="row">CT진단료</th>
+                                                            <th scope="row">MRI 진단료</th>
+                                                            <th scope="row">PET진단료</th>
+                                                            <th scope="row">초음파진단료</th>
+                                                            <th scope="row">보철교정료</th>
+                                                            <th scope="row">기타진료비</th>
+                                                            <th scope="row">65세이상(신설)</th>
+                                                            <th scope="row">포괄수가진료비</th>
                                                             <th></th>
                                                         </tr>
                                                     </thead>
@@ -292,22 +276,10 @@
                                             <!-- RIGHT HEADER(CROSSTAB) END -->
                                             <!-- RIGHT CONTENTS(CROSSTAB) START -->
                                             <div id="right_contents" style="overflow-x:scroll; overflow-y:scroll;" class="batch_tbl_right_divBodyScroll divBodyScroll">
-                                                <table cellspacing="0" cellpadding="0" style="table-layout:fixed">
+                                                <table cellspacing="0" cellpadding="0" style="table-layout:fixed" id="docTableList">
                                                     <colgroup>
                                                         <col style="width:300px" />
                                                         <col style="width:300px" />
-                                                        <col style="width:200px" />
-                                                        <col style="width:200px" />
-                                                        <col style="width:200px" />
-                                                        <col style="width:200px" />
-                                                        <col style="width:200px" />
-                                                        <col style="width:200px" />
-                                                        <col style="width:200px" />
-                                                        <col style="width:200px" />
-                                                        <col style="width:200px" />
-                                                        <col style="width:200px" />
-                                                        <col style="width:200px" />
-                                                        <col style="width:200px" />
                                                         <col style="width:200px" />
                                                         <col style="width:200px" />
                                                         <col style="width:200px" />
@@ -342,10 +314,11 @@
                         </div>
 
                         <!-- 하단 정보 영역 -->
-                        <div class="box_cotent_bottom mt10">
-                            <div class="page-wrap">
-                                <strong>총 100건의 학습중 <strong class="now-count">1</strong>건이 선택됨</strong>
-                                <span class="page">Page 1 of 4</span>
+                        <div class="box_cotent_bottom">
+                            <div id="paginationDiv">
+                                <ul class="pagination">
+    
+                                </ul>
                             </div>
                         </div>
                         <!-- // 하단 정보 영역 -->
@@ -369,13 +342,11 @@
                                                     <colgroup>
                                                         <col style="width:50px" />
                                                         <col style="width:200px" />
-                                                        <col style="width:200px" />
                                                     </colgroup>
                                                     <thead>
                                                         <tr>
                                                             <th scope="row"><div class="checkbox-options mauto"><input type="checkbox" class="stb00_all" value="" id="listCheckAll_after" name="listCheckAll_after" /></div></th>
                                                             <th scope="row">파일명</th>
-                                                            <th scope="row">예측문서</th>
                                                         </tr>
                                                     </thead>
                                                 </table>
@@ -387,9 +358,8 @@
                                                     <colgroup>
                                                         <col style="width:50px" />
                                                         <col style="width:200px" />
-                                                        <col style="width:200px" />
                                                     </colgroup>
-                                                    <tbody id="batch_left_contents_after"></tbody>
+                                                    <tbody id="batch_left_contents_after" class="batchListLeftTbody"></tbody>
                                                 </table>
                                             </div>
                                             <!-- LEFT CONTENTS(FIXED) END-->
@@ -399,22 +369,10 @@
                                         <div class="table_style03">
                                             <!-- RIGHT HEADER(CROSSTAB) START -->
                                             <div id="right_header" class="batch_tbl_right_header" style="overflow-x:hidden; overflow-y:hidden;">
-                                                <table cellspacing="0" cellpadding="0">
+                                                <table cellspacing="0" cellpadding="0" class="docTableColumn">
                                                     <colgroup>
                                                         <col style="width:300px" />
                                                         <col style="width:300px" />
-                                                        <col style="width:200px" />
-                                                        <col style="width:200px" />
-                                                        <col style="width:200px" />
-                                                        <col style="width:200px" />
-                                                        <col style="width:200px" />
-                                                        <col style="width:200px" />
-                                                        <col style="width:200px" />
-                                                        <col style="width:200px" />
-                                                        <col style="width:200px" />
-                                                        <col style="width:200px" />
-                                                        <col style="width:200px" />
-                                                        <col style="width:200px" />
                                                         <col style="width:200px" />
                                                         <col style="width:200px" />
                                                         <col style="width:200px" />
@@ -441,42 +399,30 @@
                                                     </colgroup>
                                                     <thead>
                                                         <tr>
-                                                            <th scope="row">출재사명</th>
-                                                            <th scope="row">계약명</th>
-                                                            <th scope="row">UY</th>
-                                                            <th scope="row">화폐코드</th>
-                                                            <th scope="row">화폐단위</th>
-                                                            <th scope="row">Paid(100%)</th>
-                                                            <th scope="row">Paid(Our Share)</th>
-                                                            <th scope="row">OSL(100%)</th>
-                                                            <th scope="row">OSL(Our Share)</th>
-                                                            <th scope="row">PREMIUM</th>
-                                                            <th scope="row">PREMIUM P/F ENT</th>
-                                                            <th scope="row">PREMIUM P/F WOS</th>
-                                                            <th scope="row">XOL PREMIUM</th>
-                                                            <th scope="row">RETURN PREMIUM</th>
-                                                            <th scope="row">COMMISSION</th>
-                                                            <th scope="row">PROFIT COMMISSION</th>
-                                                            <th scope="row">BROKERAGE</th>
-                                                            <th scope="row">TEX</th>
-                                                            <th scope="row">OVERRIDING COM</th>
-                                                            <th scope="row">CHARGE</th>
-                                                            <th scope="row">PREMUIM RESERVE RTD</th>
-                                                            <th scope="row">P/F PREMIUM RESERVE RTD</th>
-                                                            <th scope="row">PREMIUM RESERVE RLD</th>
-                                                            <th scope="row">P/F PREMIUM RESERVE RLD</th>
-                                                            <th scope="row">CLAIM</th>
-                                                            <th scope="row">LOSS RECOVERY</th>
-                                                            <th scope="row">CASH LOSS</th>
-                                                            <th scope="row">CASH LOSS REFUND</th>
-                                                            <th scope="row">LOSS RESERVE RTD</th>
-                                                            <th scope="row">LOSS RESERVE RLD</th>
-                                                            <th scope="row">LOSS P/F ENT</th>
-                                                            <th scope="row">LOSS P/F WOA</th>
-                                                            <th scope="row">INTEREST</th>
-                                                            <th scope="row">TAX ON</th>
-                                                            <th scope="row">MISCELLANEOUS</th>
-                                                            <th scope="row">Your Ref</th>
+                                                            <th scope="row">진찰료</th>
+                                                            <th scope="row">입원료</th>
+                                                            <th scope="row">식대</th>
+                                                            <th scope="row">투약및조제료(행위료)</th>
+                                                            <th scope="row">투약 및 조제료(약품비)</th>
+                                                            <th scope="row">주사료(행위료)</th>
+                                                            <th scope="row">주사료(약품비)</th>
+                                                            <th scope="row">마취료</th>
+                                                            <th scope="row">처치 및 수술료</th>
+                                                            <th scope="row">검사료</th>
+                                                            <th scope="row">영상진단</th>
+                                                            <th scope="row">방사선료</th>
+                                                            <th scope="row">치료재료대</th>
+                                                            <th scope="row">재활및물리치료료</th>
+                                                            <th scope="row">정신요법료</th>
+                                                            <th scope="row">전혈/혈액성분제재</th>
+                                                            <th scope="row">CT진단료</th>
+                                                            <th scope="row">MRI 진단료</th>
+                                                            <th scope="row">PET진단료</th>
+                                                            <th scope="row">초음파진단료</th>
+                                                            <th scope="row">보철교정료</th>
+                                                            <th scope="row">기타진료비</th>
+                                                            <th scope="row">65세이상(신설)</th>
+                                                            <th scope="row">포괄수가진료비</th>
                                                             <th></th>
                                                         </tr>
                                                     </thead>
@@ -489,18 +435,6 @@
                                                     <colgroup>
                                                         <col style="width:300px" />
                                                         <col style="width:300px" />
-                                                        <col style="width:200px" />
-                                                        <col style="width:200px" />
-                                                        <col style="width:200px" />
-                                                        <col style="width:200px" />
-                                                        <col style="width:200px" />
-                                                        <col style="width:200px" />
-                                                        <col style="width:200px" />
-                                                        <col style="width:200px" />
-                                                        <col style="width:200px" />
-                                                        <col style="width:200px" />
-                                                        <col style="width:200px" />
-                                                        <col style="width:200px" />
                                                         <col style="width:200px" />
                                                         <col style="width:200px" />
                                                         <col style="width:200px" />
@@ -826,11 +760,16 @@
                                 <div class="title">
                                     <h3 class="tits">
                                         <span class="mr10">문서 양식 예측</span>
-                                        <!--<b id="docName" class="mr5"></b>   <b id="docPredictionScore"></b>-->
+                                        <b id="docName" class="mr5"></b>   <b id="docPredictionScore"></b>
                                     </h3>
                                     <!--<button type="button" id="docCompareBtn" class="tits11_btn01" onclick="docComparePopup2();"></button>-->
                                     <div class="fr">
                                         <button type="button" id="uiTrainBtn" class="button_st1"><i class="train_icon_03"></i><p>Add Training</p></button>
+                                    </div>
+                                    <div id="uiDocTopTypeDiv" class="fr um_select">
+                                        <select id="uiDocTopType">
+                                            <option>Test</option>
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="mCustomScrollbar box_scroll_st99" data-mcs-theme="dark-3">
@@ -909,58 +848,34 @@
                                                     <col style="width:200px" />
                                                     <col style="width:200px" />
                                                     <col style="width:200px" />
-                                                    <col style="width:200px" />
-                                                    <col style="width:200px" />
-                                                    <col style="width:200px" />
-                                                    <col style="width:200px" />
-                                                    <col style="width:200px" />
-                                                    <col style="width:200px" />
-                                                    <col style="width:200px" />
-                                                    <col style="width:200px" />
-                                                    <col style="width:200px" />
-                                                    <col style="width:200px" />
-                                                    <col style="width:200px" />
-                                                    <col style="width:200px" />
                                                     <col style="width:17px" />
                                                 </colgroup>
                                                 <thead>
                                                     <tr>
-                                                        <th scope="row">출재사명</th>
-                                                        <th scope="row">계약명</th>
-                                                        <th scope="row">UY</th>
-                                                        <th scope="row">화폐코드</th>
-                                                        <th scope="row">화폐단위</th>
-                                                        <th scope="row">Paid(100%)</th>
-                                                        <th scope="row">Paid(Our Share)</th>
-                                                        <th scope="row">OSL(100%)</th>
-                                                        <th scope="row">OSL(Our Share)</th>
-                                                        <th scope="row">PREMIUM</th>
-                                                        <th scope="row">PREMIUM P/F ENT</th>
-                                                        <th scope="row">PREMIUM P/F WOS</th>
-                                                        <th scope="row">XOL PREMIUM</th>
-                                                        <th scope="row">RETURN PREMIUM</th>
-                                                        <th scope="row">COMMISSION</th>
-                                                        <th scope="row">PROFIT COMMISSION</th>
-                                                        <th scope="row">BROKERAGE</th>
-                                                        <th scope="row">TEX</th>
-                                                        <th scope="row">OVERRIDING COM</th>
-                                                        <th scope="row">CHARGE</th>
-                                                        <th scope="row">PREMUIM RESERVE RTD</th>
-                                                        <th scope="row">P/F PREMIUM RESERVE RTD</th>
-                                                        <th scope="row">PREMIUM RESERVE RLD</th>
-                                                        <th scope="row">P/F PREMIUM RESERVE RLD</th>
-                                                        <th scope="row">CLAIM</th>
-                                                        <th scope="row">LOSS RECOVERY</th>
-                                                        <th scope="row">CASH LOSS</th>
-                                                        <th scope="row">CASH LOSS REFUND</th>
-                                                        <th scope="row">LOSS RESERVE RTD</th>
-                                                        <th scope="row">LOSS RESERVE RLD</th>
-                                                        <th scope="row">LOSS P/F ENT</th>
-                                                        <th scope="row">LOSS P/F WOA</th>
-                                                        <th scope="row">INTEREST</th>
-                                                        <th scope="row">TAX ON</th>
-                                                        <th scope="row">MISCELLANEOUS</th>
-                                                        <th scope="row">Your Ref</th>
+                                                        <th scope="row">진찰료</th>
+                                                        <th scope="row">입원료</th>
+                                                        <th scope="row">식대</th>
+                                                        <th scope="row">투약및조제료(행위료)</th>
+                                                        <th scope="row">투약 및 조제료(약품비)</th>
+                                                        <th scope="row">주사료(행위료)</th>
+                                                        <th scope="row">주사료(약품비)</th>
+                                                        <th scope="row">마취료</th>
+                                                        <th scope="row">처치 및 수술료</th>
+                                                        <th scope="row">검사료</th>
+                                                        <th scope="row">영상진단</th>
+                                                        <th scope="row">방사선료</th>
+                                                        <th scope="row">치료재료대</th>
+                                                        <th scope="row">재활및물리치료료</th>
+                                                        <th scope="row">정신요법료</th>
+                                                        <th scope="row">전혈/혈액성분제재</th>
+                                                        <th scope="row">CT진단료</th>
+                                                        <th scope="row">MRI 진단료</th>
+                                                        <th scope="row">PET진단료</th>
+                                                        <th scope="row">초음파진단료</th>
+                                                        <th scope="row">보철교정료</th>
+                                                        <th scope="row">기타진료비</th>
+                                                        <th scope="row">65세이상(신설)</th>
+                                                        <th scope="row">포괄수가진료비</th>
                                                         <th></th>
                                                     </tr>
                                                 </thead>
@@ -971,18 +886,6 @@
                                                 <colgroup>
                                                     <col style="width:300px" />
                                                     <col style="width:300px" />
-                                                    <col style="width:200px" />
-                                                    <col style="width:200px" />
-                                                    <col style="width:200px" />
-                                                    <col style="width:200px" />
-                                                    <col style="width:200px" />
-                                                    <col style="width:200px" />
-                                                    <col style="width:200px" />
-                                                    <col style="width:200px" />
-                                                    <col style="width:200px" />
-                                                    <col style="width:200px" />
-                                                    <col style="width:200px" />
-                                                    <col style="width:200px" />
                                                     <col style="width:200px" />
                                                     <col style="width:200px" />
                                                     <col style="width:200px" />
@@ -1044,7 +947,7 @@
                         <input type="text" name="orgDocName" id="orgDocName" class="inputst_box01 ui_doc_pop_ipt" value="" disabled />
                         <input type="text" name="newDocName" id="newDocName" class="inputst_box01 ui_doc_pop_ipt" value="" placeholder="신규문서명을 입력해 주세요" style="display:none" />
                         <input type="text" name="notInvoice" id="notInvoice" class="inputst_box01 ui_doc_pop_ipt" value="NotInvoice" placeholder="NotInvoice" disabled style="display:none" />
-                        <button type="button" id="btn_pop_doc_cancel" class="ui_doc_pop_btn2 cbtn">취 소</button>
+                        <button type="button" class="ui_doc_pop_btn2 cbtn">취 소</button>
                         <button type="button" id="btn_pop_doc_run" class="ui_doc_pop_btn1 ml5">저장</button>
                     </div>
                     <div class="pop_content">
