@@ -146,7 +146,7 @@ function uploadConvert(files, callback) {
         var ifile = convertedImagePath + fileObj.originalname;
         var ofile = convertedImagePath + fileObj.originalname.split('.')[0] + '.jpg';
         
-        var result = execSync('module\\imageMagick\\convert.exe -density 800x800 ' + ifile + ' ' + ofile);
+        var result = execSync('module\\imageMagick\\convert.exe -colorspace Gray -density 800x800 ' + ifile + ' ' + ofile);
         if (result.status != 0) {
             throw new Error(result.stderr);
         }
