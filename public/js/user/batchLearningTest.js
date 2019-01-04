@@ -420,7 +420,8 @@ function fileUpload() {
 // INSERT DB BATCH LEARNING FILE INFO
 var insertBatchLearningFileInfo = function (fileInfo, fileName, lastYN) {
     if (fileInfo) {
-        var param = { fileInfo: fileInfo };
+        var docToptype = $('#docTopType').val();
+        var param = { fileInfo: fileInfo, docTopType: docToptype };
         $.ajax({
             url: '/batchLearningTest/insertBatchLearningFileInfoTest',
             type: 'post',
