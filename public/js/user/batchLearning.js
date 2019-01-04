@@ -25,6 +25,8 @@ var ocrPopData; //UI Popup DATA
 
 var docPopImages; // 문서조회팝업 이미지 리스트
 var docPopImagesCurrentCount = 1; // 문서조회팝업 이미지 현재 카운트
+var labelDataList; // ui트레이닝 팝업 labeldata
+var mlDataList; // ui트레이닝 팝업 mldata
 
 $(function () {
     _init();
@@ -41,12 +43,39 @@ var selectViewCount = function (value) {
 var checkboxEvent = function () {
     // all checkbox
     $("#listCheckAll_before").on("click", function () {
-        if ($("#listCheckAll_before").prop("checked")) $("input[name=listCheck_before]").prop("checked", true);
-        else $("input[name=listCheck_before]").prop("checked", false);
+        if ($("#listCheckAll_before").prop("checked")) {
+            $("input[name=listCheck_before]").each(function(){
+                if($(this).is(":checked") == false) {
+                    $(this).click();
+                }
+            })
+
+        } 
+        else {
+            $("input[name=listCheck_before]").each(function(){
+                if($(this).is(":checked") == true) {
+                    $(this).click();
+                }
+            })
+        }
     });
+
     $("#listCheckAll_after").on("click", function () {
-        if ($("#listCheckAll_after").prop("checked")) $("input[name=listCheck_after]").prop("checked", true);
-        else $("input[name=listCheck_after]").prop("checked", false);
+        if ($("#listCheckAll_after").prop("checked")) {
+            $("input[name=listCheck_after]").each(function(){
+                if($(this).is(":checked") == false) {
+                    $(this).click();
+                }
+            })
+
+        } 
+        else {
+            $("input[name=listCheck_after]").each(function(){
+                if($(this).is(":checked") == true) {
+                    $(this).click();
+                }
+            })
+        }
     });
 
     // checkbox change
@@ -90,9 +119,9 @@ var buttonEvent = function () {
         fn_syncServerFile();
     });
     // 엑셀 업로드 (read file in server)
-    $("#btn_excelUpload").on("click", function () {
-        fn_excelUpload();
-    });
+    // $("#btn_importExcel").on("click", function () {
+    //     fn_excelUpload();
+    // });
     // 이미지 업로드
     $("#btn_imageUpload").on("click", function () {
         fn_imageUpload();
@@ -108,6 +137,10 @@ var buttonEvent = function () {
     // 최종학습
     $("#btn_uiTraining").on("click", function () {
         fn_uiTraining();
+    });
+    // excel down
+    $("#btn_exportExcel").on("click", function () {
+        fn_exportExcel();
     });
 
     // popupButton
@@ -140,13 +173,7 @@ var buttonEvent = function () {
 
     // UI train 실행
     $('#uiTrainBtn').on("click", function () {
-        //modifyTextData();
-        progressId = showProgressBar();
-
-        setTimeout(function () {
-            endProgressBar(progressId);
-            fn_alert('alert', '학습이 완료 되었습니다.');
-        }, 5000);
+        modifyTextData();
         /*
         var docData = modifyData.docCategory;
         if ($('#docData').val() != '') {
@@ -163,23 +190,76 @@ var buttonEvent = function () {
 
     //layer4 라디오버튼
     $('input:radio[name=radio_batch]').on('click', function () {
+
         var chkValue = $(this).val();
 
         if (chkValue == '1') {
             $('#orgDocName').show();
             $('#newDocName').hide();
             $('#notInvoice').hide();
+
+            for (var i = 0; i < $("input[type='checkbox'].batch_layer4_result_chk").length; i++) {
+                $("input[type='checkbox'].batch_layer4_result_chk").eq(i).parent().removeClass("ez-hide");
+                $("input[type='checkbox'].batch_layer4_result_chk").eq(i).prop("checked", true);
+                $("input[type='checkbox'].batch_layer4_result_chk").eq(i).parent().addClass("ez-checked")
+
+                if (i == 20) {
+                    break;
+                }
+            }
+
         } else if (chkValue == '2') {
             $('#newDocName').show();
             $('#orgDocName').hide();
             $('#notInvoice').hide();
+
+            for (var i = 0; i < $("input[type='checkbox'].batch_layer4_result_chk").length; i++) {
+                $("input[type='checkbox'].batch_layer4_result_chk").eq(i).parent().removeClass("ez-hide");
+                $("input[type='checkbox'].batch_layer4_result_chk").eq(i).prop("checked", true);
+                $("input[type='checkbox'].batch_layer4_result_chk").eq(i).parent().addClass("ez-checked")
+
+                if (i == 20) {
+                    break;
+                }
+            }
+
         } else if (chkValue == '3') {
             $('#notInvoice').show();
             $('#orgDocName').hide();
             $('#newDocName').hide();
+
+            for (var i = 0; i < $("input[type='checkbox'].batch_layer4_result_chk").length; i++) {
+                $("input[type='checkbox'].batch_layer4_result_chk").eq(i).parent().removeClass("ez-hide");
+                $("input[type='checkbox'].batch_layer4_result_chk").eq(i).prop("checked", false);
+                $("input[type='checkbox'].batch_layer4_result_chk").eq(i).parent().removeClass("ez-checked");
+            }
+
         }
     })
+
+    $("#docToptype").on('change', function () {
+        var docType = $("#docToptype option:selected").val();
+        $('#docTopTypeValue').val(docType);
+        //console.log(docType);
+        searchBatchLearnDataList (addCond);
+
+    });
 };
+
+$(document).on('change', '#uiDocTopType', function () {
+    var docType = $("#uiDocTopType option:selected").val();
+    //console.log(docType);
+    var appendSelOptionHtml1 = '';
+    var appendEntryOtionHtml1 = '';
+
+    for(var i = 0 ; i < mlDataList.length; i++) {
+        appendSelOptionHtml1 = appendSelOptionHtml((mlDataList[i].colLbl + '') ? mlDataList[i].colLbl : 999, labelDataList, docType);
+        appendEntryOtionHtml1 = appendSelEntryOptionHtml((mlDataList[i].entryLbl + '') ? mlDataList[i].entryLbl : 999, labelDataList, docType);
+        $('#textResultTbl dl:eq(' + i + ')').find('dd:eq(1)').empty().append(appendSelOptionHtml1);
+        $('#textResultTbl dl:eq(' + i + ')').find('dd:eq(2)').empty().append(appendEntryOtionHtml1);
+    }
+
+});
 
 // [popup event]
 var popupEvent = (function () {
@@ -248,7 +328,7 @@ var popupEvent = (function () {
 var fn_excelUpload = function () {
     var param = {};
     $.ajax({
-        url: '/batchLearning/excelUpload',
+        url: '/batchLearningTest/excelUpload',
         type: 'post',
         datatype: "json",
         data: JSON.stringify(param),
@@ -258,38 +338,22 @@ var fn_excelUpload = function () {
         },
         success: function (data) {
             console.log("SUCCESS insertFileInfo : " + JSON.stringify(data));
-            if (data["code"] == "200") {
-                if (data["fileCnt"] > 0 || data["dataCnt"] > 0) {
-                    fn_alert('alert', "엑셀 파일의 정답 데이터가 INSERT 되었습니다.");
-                } else {
-                    fn_alert('alert', "INSERT 할 파일이 없습니다.");
-                }
-            } else {
-                fn_alert('alert', "엑셀 파일 업로드 중 오류가 발생하였습니다.");
-            }
-            $('#btn_excelUpload').removeClass('on');
+            // if (data["code"] == "200") {
+            //     if (data["fileCnt"] > 0 || data["dataCnt"] > 0) {
+            //         fn_alert('alert', "엑셀 파일의 정답 데이터가 INSERT 되었습니다.");
+            //     } else {
+            //         fn_alert('alert', "INSERT 할 파일이 없습니다.");
+            //     }
+            // } else {
+            //     fn_alert('alert', "엑셀 파일 업로드 중 오류가 발생하였습니다.");
+            // }
+            // $('#btn_excelUpload').removeClass('on');
         },
         error: function (err) {
-            $('#btn_excelUpload').removeClass('on');
+            //$('#btn_excelUpload').removeClass('on');
             console.log(err);
         }
     });
-};
-// excel upload (deprecate)
-var excelUploadEvent = function () {
-    var multiUploadForm = $("#multiUploadForm");
-
-    $('#excel_file').on("change", function () {
-        //startProgressBar();
-        //addProgressBar(1, 5);
-        multiUploadForm.attr("action", "/batchLearning/excelUpload");
-        if ($(this).val() !== '') {
-            multiUploadForm.submit();
-        }
-    });
-
-    // FILE UPLOAD
-    fileUpload();
 };
 
 function fileUpload() {
@@ -324,7 +388,8 @@ function fileUpload() {
                         endProgressBar(progressId);
                     }
                     //insertFileDB(responseText.fileInfo[i], responseText.message[i], lastYN); // FILE INFO INSERT
-                    insertBatchLearningBaseData(responseText.fileInfo[i], responseText.message[i], lastYN);  // BATCH LEARNING BASE DATA INSERT
+                    //insertBatchLearningBaseData(responseText.fileInfo[i], responseText.message[i], lastYN);  // BATCH LEARNING BASE DATA INSERT
+                    insertBatchLearningFileInfo(responseText.fileInfo[i], responseText.message[i], lastYN); // BATCH LEARNING FILE INFO INSERT
                 }
                 //endProgressBar();
             }
@@ -336,36 +401,13 @@ function fileUpload() {
     });
 }
 
-// [imageUpload event]
-// INSERT DB IMAGE
-var insertFileDB = function (fileInfo, fileName, lastYN) {
+// INSERT DB BATCH LEARNING FILE INFO
+var insertBatchLearningFileInfo = function (fileInfo, fileName, lastYN) {
     if (fileInfo) {
-        var param = { fileInfo: fileInfo };
+        var docToptype = $('#docToptype').val();
+        var param = { 'fileInfo': fileInfo, 'docToptype': docToptype };
         $.ajax({
-            url: '/batchLearning/insertFileInfo',
-            type: 'post',
-            datatype: "json",
-            data: JSON.stringify(param),
-            contentType: 'application/json; charset=UTF-8',
-            beforeSend: function () {
-                //addProgressBar(81, 90);
-            },
-            success: function (data) {
-                console.log("SUCCESS insertFileInfo : " + JSON.stringify(data));
-            },
-            error: function (err) {
-                console.log(err);
-            }
-        });
-    }
-};
-
-// INSERT DB BATCH LEARNING BASE DATA
-var insertBatchLearningBaseData = function (fileInfo, fileName, lastYN) {
-    if (fileInfo) {
-        var param = { fileInfo: fileInfo };
-        $.ajax({
-            url: '/batchLearning/insertBatchLearningBaseData',
+            url: '/batchLearning/insertBatchLearningFileInfo',
             type: 'post',
             datatype: "json",
             data: JSON.stringify(param),
@@ -388,6 +430,76 @@ var insertBatchLearningBaseData = function (fileInfo, fileName, lastYN) {
     }
 };
 
+// [imageUpload event]
+// INSERT DB IMAGE
+var insertFileDB = function (fileInfo, fileName, lastYN) {
+    if (fileInfo) {
+        var param = { fileInfo: fileInfo };
+        $.ajax({
+            url: '/batchLearningTest/insertFileInfo',
+            type: 'post',
+            datatype: "json",
+            data: JSON.stringify(param),
+            contentType: 'application/json; charset=UTF-8',
+            beforeSend: function () {
+                //addProgressBar(81, 90);
+            },
+            success: function (data) {
+                console.log("SUCCESS insertFileInfo : " + JSON.stringify(data));
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    }
+};
+
+// INSERT DB BATCH LEARNING BASE DATA
+var insertBatchLearningBaseData = function (fileInfo, fileName, lastYN) {
+    if (fileInfo) {
+        var param = { fileInfo: fileInfo };
+        $.ajax({
+            url: '/batchLearningTest/insertBatchLearningBaseData',
+            type: 'post',
+            datatype: "json",
+            data: JSON.stringify(param),
+            contentType: 'application/json; charset=UTF-8',
+            beforeSend: function () {
+                //addProgressBar(91, 100);
+            },
+            success: function (data) {
+                console.log("SUCCESS insertFileInfo : " + JSON.stringify(data));
+                endProgressBar();
+                if (lastYN) {
+                    //fn_alert('alert', "파일 등록이 완료되었습니다.");
+                    searchBatchLearnDataList("LEARN_N");
+                }
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    }
+};
+
+// UPLOAD EXCEL todo
+var excelUploadEvent = function () {
+    var multiUploadForm = $("#multiUploadForm");
+
+    $('#btn_importExcel').on("change", function () {
+        //startProgressBar();
+        //addProgressBar(1, 5);
+        //multiUploadForm.attr("action", "/batchLearningTest/imageUpload");
+        progressId = showProgressBar();
+        multiUploadForm.attr("action", "/common/excelUpload");
+        if ($(this).val() !== '') {
+            multiUploadForm.submit();
+        }
+    });
+    // FILE UPLOAD
+    fileUpload();
+};
+
 // UPLOAD IMAGE ON SERVER
 var imageUploadEvent = function () {
     var multiUploadForm = $("#multiUploadForm");
@@ -395,7 +507,7 @@ var imageUploadEvent = function () {
     $('#document_file').on("change", function () {
         //startProgressBar();
         //addProgressBar(1, 5);
-        //multiUploadForm.attr("action", "/batchLearning/imageUpload");
+        //multiUploadForm.attr("action", "/batchLearningTest/imageUpload");
         progressId = showProgressBar();
         multiUploadForm.attr("action", "/common/imageUpload");
         if ($(this).val() !== '') {
@@ -795,7 +907,7 @@ function appendEntryOptionHtml(targetColumn, columns) {
 }
 
 function execBatchLearningData(ocrData, data) {
-    var learningUrl = (uiFlag == 'Y') ? '/batchLearning/execBatchLearningData2' : '/batchLearning/execBatchLearningData';
+    var learningUrl = (uiFlag == 'Y') ? '/batchLearningTest/execBatchLearningData2' : '/batchLearningTest/execBatchLearningData';
 
     $.ajax({
         url: learningUrl,
@@ -876,7 +988,7 @@ function compareBatchLearningData(ocrData, data) {
     var dataVal = data.data;
 
     $.ajax({
-        url: '/batchLearning/selectColMappingCls',
+        url: '/batchLearningTest/selectColMappingCls',
         type: 'post',
         datatype: "json",
         contentType: 'application/json; charset=UTF-8',
@@ -886,7 +998,7 @@ function compareBatchLearningData(ocrData, data) {
 
             var param = { data: ocrData };
             $.ajax({
-                url: '/batchLearning/selectBatchAnswerData',
+                url: '/batchLearningTest/selectBatchAnswerData',
                 type: 'post',
                 datatype: "json",
                 data: JSON.stringify(param),
@@ -929,7 +1041,7 @@ function compareBatchLearningData(ocrData, data) {
 
                 var param = { dataObj: dataObj };
                 $.ajax({
-                    url: '/batchLearning/compareBatchLearningData',
+                    url: '/batchLearningTest/compareBatchLearningData',
                     type: 'post',
                     datatype: "json",
                     data: JSON.stringify(param),
@@ -1188,7 +1300,7 @@ function uiPopUpTrain(data, fileInfo) {
 function updateBatchLearningData(retData, ocrData, mlData) {
 
     $.ajax({
-        url: '/batchLearning/updateBatchLearningData',
+        url: '/batchLearningTest/updateBatchLearningData',
         type: 'post',
         datatype: "json",
         data: JSON.stringify({ mldata: mlData, ocrData: ocrData }),
@@ -1261,7 +1373,7 @@ function updateBatchLearningData(fileNames, data) {
         dataObj["imgId"] = imgId;
         var param = { dataObj: dataObj };
         $.ajax({
-            url: '/batchLearning/updateBatchLearningData',
+            url: '/batchLearningTest/updateBatchLearningData',
             type: 'post',
             datatype: "json",
             data: JSON.stringify(param),
@@ -1279,13 +1391,18 @@ function updateBatchLearningData(fileNames, data) {
 
 // [Function]
 // main menu batch learning 1 [List] 배치학습데이터 조회
-var searchBatchLearnDataList = function (addCond) {
+var searchBatchLearnDataList = function (addCond, page) {
+    var docToptype = $('#docToptype').val();
     var param = {
+        /*
         'startNum': startNum,
         'moreNum': nvl2($("#select_view_count").val(), 20),
-        'addCond': nvl(addCond)
+        */
+        'addCond': nvl(addCond),
+        'page': nvl2(page, 1),
+        'docToptype': docToptype
     };
-    var appendHtml = "";
+
     var checkboxHtml = "";
     var appendLeftContentsHtml = '';
     var appendRightContentsHtml = '';
@@ -1304,116 +1421,84 @@ var searchBatchLearnDataList = function (addCond) {
         success: function (data) {
             console.log(data);
             var list = data.data;
-
+            
+            fnDocTypeColumn(docToptype);
+            
             if (list.length != 0) {
 
                 for (var i = 0; i < list.length; i++) {
-                    var rows = list[i].rows;
-
-                    if (addCond == "LEARN_N") checkboxHtml = '<td scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="' + nvl(rows[0].FILEPATH) + '" class="sta00" name="listCheck_before" /></td>';
-                    else checkboxHtml = '<td scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="' + nvl(rows[0].FILEPATH) + '" class="stb00" name="listCheck_after" /></div></td>';
-
-                    var trHeight = i == 0 ? 30 * (rows.length + 1) + rows.length : 30 * (rows.length + 1) + (rows.length + 1);
+                    //var rows = list[i].rows;
+                    var fileName = nvl(list[i].FILEPATH.substring((list[i].FILEPATH.lastIndexOf('/') + 1) ));
+                    if (addCond == "LEARN_N") checkboxHtml = '<td scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="' + nvl(list[i].FILEPATH) + '" class="sta00" name="listCheck_before" /></td>';
+                    else checkboxHtml = '<td scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="' + nvl(list[i].FILEPATH) + '" class="stb00" name="listCheck_after" /></div></td>';
+                    var trHeight = i == 0 ? 30 : 31;
                     appendLeftContentsHtml += '<tr id="leftRowNum_' + i + '" style="height:' + trHeight + 'px;">' +
-                        checkboxHtml +
-                        '<td><a class="fileNamePath" data-filepath="' + nvl(rows[0].FILEPATH) + '" data-imgId="' + nvl(rows[0].IMGID) + '" ' +
-                        'onclick = "javascript:fn_viewImageData(\'' + nvl(rows[0].FILEPATH) + '\',\'' + i + '\', \'' + nvl(rows[0].IMGID) + '\', this)" href = "javascript:void(0);" > ' + nvl(rows[0].FILENAME) + '</a ></td > < !--FILENAME--> ' +
-                        '<td></td> <!--doctype -->' +
-                        '</tr>';
-
-                    for (var y = 0; y < rows.length; y++) {
-                        appendRightContentsHtml += '<tr class="rowNum' + i + '">' +
-                            '<td>' + nvl(rows[y].OGCOMPANYNAME) + '</td> <!--출재사명-->' +
-                            '<td>' + nvl(rows[y].CTNM) + '</td> <!--계약명-->' +
-                            '<td>' + nvl(rows[y].UY) + '</td> <!--UY-->' +
-                            '<td>' + nvl(rows[y].CURCD) + '</td> <!--화폐코드-->' +
-                            '<td>' + nvl(rows[y].CURUNIT) + '</td> <!--화폐단위-->' +
-                            '<td>' + nvl(rows[y].PAIDPERCENT) + '</td> <!--Paid(100%)-->' +
-                            '<td>' + nvl(rows[y].PAIDSHARE) + '</td> <!--Paid(Our Share)-->' +
-                            '<td>' + nvl(rows[y].OSLPERCENT) + '</td> <!--OSL(100%)-->' +
-                            '<td>' + nvl(rows[y].OSLSHARE) + '</td> <!--OSL(Our Share)-->' +
-                            '<td>' + nvl(rows[y].PM) + '</td> <!--PREMIUM-->' +
-                            '<td>' + nvl(rows[y].PMPFEND) + '</td> <!--PREMIUM P/F ENT-->' +
-                            '<td>' + nvl(rows[y].PMPFWOS) + '</td> <!--PREMIUM P/F WOS-->' +
-                            '<td>' + nvl(rows[y].XOLPM) + '</td> <!--XOL PREMIUM-->' +
-                            '<td>' + nvl(rows[y].RETURNPM) + '</td> <!--RETURN PREMIUM-->' +
-                            '<td>' + nvl(rows[y].CN) + '</td> <!--COMMISSION-->' +
-                            '<td>' + nvl(rows[y].PROFITCN) + '</td> <!--PROFIT COMMISION-->' +
-                            '<td>' + nvl(rows[y].BROKERAGE) + '</td> <!--BROKERAGE-->' +
-                            '<td>' + nvl(rows[y].TAX) + '</td> <!--TEX-->' +
-                            '<td>' + nvl(rows[y].OVERRIDINGCOM) + '</td> <!-- OVERIDING COM-->' +
-                            '<td>' + nvl(rows[y].CHARGE) + '</td> <!--CHARGE-->' +
-                            '<td>' + nvl(rows[y].PMRESERVERTD) + '</td> <!--PREMIUM RESERVE RTD-->' +
-                            '<td>' + nvl(rows[y].PFPMRESERVERTD) + '</td> <!--P/F PREMIUM RESERVE RTD-->' +
-                            '<td>' + nvl(rows[y].PMRESERVERTD2) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
-                            '<td>' + nvl(rows[y].PFPMRESERVERTD2) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
-                            '<td>' + nvl(rows[y].CLAIM) + '</td> <!--CLAIM -->' +
-                            '<td>' + nvl(rows[y].LOSSRECOVERY) + '</td> <!--LOSS RECOVERY -->' +
-                            '<td>' + nvl(rows[y].CASHLOSS) + '</td> <!--CASH LOSS -->' +
-                            '<td>' + nvl(rows[y].CASHLOSSRD) + '</td> <!--CASH LOSS REFUND -->' +
-                            '<td>' + nvl(rows[y].LOSSRR) + '</td> <!--LOSS RESERVE RTD -->' +
-                            '<td>' + nvl(rows[y].LOSSRR2) + '</td> <!--LOSS RESERVE RLD -->' +
-                            '<td>' + nvl(rows[y].LOSSPFEND) + '</td> <!--LOSS P/F ENT -->' +
-                            '<td>' + nvl(rows[y].LOSSPFWOA) + '</td> <!--LOSS P/F WOA -->' +
-                            '<td>' + nvl(rows[y].INTEREST) + '</td> <!--INTEREST -->' +
-                            '<td>' + nvl(rows[y].TAXON) + '</td> <!--TAX ON -->' +
-                            '<td>' + nvl(rows[y].MISCELLANEOUS) + '</td> <!--MISCELLANEOUS -->' +
-                            '<td>' + nvl(rows[y].CSCOSARFRNCNNT2) + '</td> <!--YOUR REF -->' +
-                            '</tr>';
-                    }
+                                                checkboxHtml +
+                                                '<td><a class="fileNamePath" data-filepath="' + nvl(list[i].FILEPATH) + '" data-imgId="' + nvl(list[i].IMGID) + '" ' +
+                                                'onclick = "javascript:fn_viewImageData(\'' + fileName + '\',\'' + i + '\', \'' + nvl(list[i].IMGID) + '\', this)" ' +
+                                                'href = "javascript:void(0);" > ' + fileName + '</a ></td > < !--FILENAME--> ' +                                                
+                                                '</tr>';
+                    //appendRightContentsHtml += '<tr class="rowNum' + i + '" style="height:' + (trHeight + 12) + 'px;"><td colspan="36"></td></tr>'
+                    
                     var mlData = data.mlData;
-                    /*
-                    if (mlData.rows.length != 0) {
-                        appendRightContentsHtml += '<tr class="mlTr mlRowNum' + i + '">' +
-                            '<td>' + makeMLSelect(mlData.rows, 0, null, rows[0].FILEPATH) + '</td> <!--출재사명-->' +
-                            '<td>' + makeMLSelect(mlData.rows, 1, null, rows[0].FILEPATH) + '</td> <!--계약명-->' +
-                            '<td>' + makeMLSelect(mlData.rows, 2, null, rows[0].FILEPATH) + '</td> <!--UY-->' +
-                            '<td>' + makeMLSelect(mlData.rows, 3, null, rows[0].FILEPATH) + '</td> <!--화폐코드-->' +
-                            '<td>' + makeMLSelect(mlData.rows, 4, null, rows[0].FILEPATH) + '</td> <!--화폐단위-->' +
-                            '<td>' + makeMLSelect(mlData.rows, 5, 0, rows[0].FILEPATH) + '</td> <!--Paid(100%)-->' +
-                            '<td>' + makeMLSelect(mlData.rows, 6, 1, rows[0].FILEPATH) + '</td> <!--Paid(Our Share)-->' +
-                            '<td>' + makeMLSelect(mlData.rows, 7, 2, rows[0].FILEPATH) + '</td> <!--OSL(100%)-->' +
-                            '<td>' + makeMLSelect(mlData.rows, 8, 3, rows[0].FILEPATH) + '</td> <!--OSL(Our Share)-->' +
-                            '<td>' + makeMLSelect(mlData.rows, 9, 4, rows[0].FILEPATH) + '</td> <!--PREMIUM-->' +
-                            '<td>' + makeMLSelect(mlData.rows, 10, 5, rows[0].FILEPATH) + '</td> <!--PREMIUM P/F ENT-->' +
-                            '<td>' + makeMLSelect(mlData.rows, 11, 6, rows[0].FILEPATH) + '</td> <!--PREMIUM P/F WOS-->' +
-                            '<td>' + makeMLSelect(mlData.rows, 12, 7, rows[0].FILEPATH) + '</td> <!--XOL PREMIUM-->' +
-                            '<td>' + makeMLSelect(mlData.rows, 13, 8, rows[0].FILEPATH) + '</td> <!--RETURN PREMIUM-->' +
-                            '<td>' + makeMLSelect(mlData.rows, 14, 9, rows[0].FILEPATH) + '</td> <!--COMMISION -->' +
-                            '<td>' + makeMLSelect(mlData.rows, 15, 10, rows[0].FILEPATH) + '</td> <!--PROFIT COMMISION-->' +
-                            '<td>' + makeMLSelect(mlData.rows, 16, 11, rows[0].FILEPATH) + '</td> <!--BROKERAGE-->' +
-                            '<td>' + makeMLSelect(mlData.rows, 17, 12, rows[0].FILEPATH) + '</td> <!--TEX-->' +
-                            '<td>' + makeMLSelect(mlData.rows, 18, 13, rows[0].FILEPATH) + '</td> <!-- OVERIDING COM-->' +
-                            '<td>' + makeMLSelect(mlData.rows, 19, 14, rows[0].FILEPATH) + '</td> <!--CHARGE-->' +
-                            '<td>' + makeMLSelect(mlData.rows, 20, 15, rows[0].FILEPATH) + '</td> <!--PREMIUM RESERVE RTD-->' +
-                            '<td>' + makeMLSelect(mlData.rows, 21, 16, rows[0].FILEPATH) + '</td> <!--P/F PREMIUM RESERVE RTD-->' +
-                            '<td>' + makeMLSelect(mlData.rows, 22, 17, rows[0].FILEPATH) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
-                            '<td>' + makeMLSelect(mlData.rows, 23, 18, rows[0].FILEPATH) + '</td> <!--P/F PREMIUM RESERVE RLD-->' +
-                            '<td>' + makeMLSelect(mlData.rows, 24, 19, rows[0].FILEPATH) + '</td> <!--CLAIM -->' +
-                            '<td>' + makeMLSelect(mlData.rows, 25, 20, rows[0].FILEPATH) + '</td> <!--LOSS RECOVERY -->' +
-                            '<td>' + makeMLSelect(mlData.rows, 26, 21, rows[0].FILEPATH) + '</td> <!--CASH LOSS -->' +
-                            '<td>' + makeMLSelect(mlData.rows, 27, 22, rows[0].FILEPATH) + '</td> <!--CASH LOSS REFUND -->' +
-                            '<td>' + makeMLSelect(mlData.rows, 28, 23, rows[0].FILEPATH) + '</td> <!--LOSS RESERVE RTD -->' +
-                            '<td>' + makeMLSelect(mlData.rows, 29, 24, rows[0].FILEPATH) + '</td> <!--LOSS RESERVE RLD -->' +
-                            '<td>' + makeMLSelect(mlData.rows, 30, 25, rows[0].FILEPATH) + '</td> <!--LOSS P/F ENT -->' +
-                            '<td>' + makeMLSelect(mlData.rows, 31, 26, rows[0].FILEPATH) + '</td> <!--LOSS P/F WOA -->' +
-                            '<td>' + makeMLSelect(mlData.rows, 32, 27, rows[0].FILEPATH) + '</td> <!--INTEREST -->' +
-                            '<td>' + makeMLSelect(mlData.rows, 33, 28, rows[0].FILEPATH) + '</td> <!--TAX ON -->' +
-                            '<td>' + makeMLSelect(mlData.rows, 34, 29, rows[0].FILEPATH) + '</td> <!--MISCELLANEOUS -->' +
-                            '<td>' + makeMLSelect(mlData.rows, 35, null, rows[0].FILEPATH) + '</td> <!--YOUR REF -->' +
+                    if (mlData.length != 0) {
+                        if(docToptype == 2) {
+                            appendRightContentsHtml += '<tr class="mlRowNum' + i + ' rowNum' + i + '" style="height:' + (trHeight + 12) + 'px;">' +
+                                '<td>' + makeMLSelect(mlData, null, [1, 26, 51, 76, 101], list[i].IMGID) + '</td> <!--진찰료-->' +
+                                '<td>' + makeMLSelect(mlData, null, [2, 27, 52, 77, 102], list[i].IMGID) + '</td> <!--입원료-->' +
+                                '<td>' + makeMLSelect(mlData, null, [3, 28, 53, 78, 103], list[i].IMGID) + '</td> <!--식대-->' +
+                                '<td>' + makeMLSelect(mlData, null, [4, 29, 54, 79, 104], list[i].IMGID) + '</td> <!--투약및조제료(행위료)-->' +
+                                '<td>' + makeMLSelect(mlData, null, [5, 30, 55, 80, 105], list[i].IMGID) + '</td> <!--투약 및 조제료(약품비)-->' +
+                                '<td>' + makeMLSelect(mlData, null, [6, 31, 56, 81, 106], list[i].IMGID) + '</td> <!--주사료(행위료)-->' +
+                                '<td>' + makeMLSelect(mlData, null, [7, 32, 57, 82, 107], list[i].IMGID) + '</td> <!--주사료(약품비)-->' +
+                                '<td>' + makeMLSelect(mlData, null, [8, 33, 58, 83, 108], list[i].IMGID) + '</td> <!--마취료-->' +
+                                '<td>' + makeMLSelect(mlData, null, [9, 34, 59, 84, 109], list[i].IMGID) + '</td> <!--처치 및 수술료-->' +
+                                '<td>' + makeMLSelect(mlData, null, [10, 35, 60, 85, 110], list[i].IMGID) + '</td> <!--검사료-->' +
+                                '<td>' + makeMLSelect(mlData, null, [11, 36, 61, 86, 111], list[i].IMGID) + '</td> <!--영상진단-->' +
+                                '<td>' + makeMLSelect(mlData, null, [12, 37, 62, 87, 112], list[i].IMGID) + '</td> <!--방사선료-->' +
+                                '<td>' + makeMLSelect(mlData, null, [13, 38, 63, 88, 113], list[i].IMGID) + '</td> <!--치료재료대-->' +
+                                '<td>' + makeMLSelect(mlData, null, [14, 39, 64, 89, 114], list[i].IMGID) + '</td> <!--재활및물리치료료-->' +
+                                '<td>' + makeMLSelect(mlData, null, [15, 40, 65, 90, 115], list[i].IMGID) + '</td> <!--정신요법료 -->' +
+                                '<td>' + makeMLSelect(mlData, null, [16, 41, 66, 91, 116], list[i].IMGID) + '</td> <!--전혈/혈액성분제재-->' +
+                                '<td>' + makeMLSelect(mlData, null, [17, 42, 67, 92, 117], list[i].IMGID) + '</td> <!--CT진단료-->' +
+                                '<td>' + makeMLSelect(mlData, null, [18, 43, 68, 93, 118], list[i].IMGID) + '</td> <!--MRI 진단료-->' +
+                                '<td>' + makeMLSelect(mlData, null, [19, 44, 69, 94, 119], list[i].IMGID) + '</td> <!-- PET진단료-->' +
+                                '<td>' + makeMLSelect(mlData, null, [20, 45, 70, 95, 120], list[i].IMGID) + '</td> <!--초음파진단료-->' +
+                                '<td>' + makeMLSelect(mlData, null, [21, 46, 71, 96, 121], list[i].IMGID) + '</td> <!--보철교정료-->' +
+                                '<td>' + makeMLSelect(mlData, null, [22, 47, 72, 97, 122], list[i].IMGID) + '</td> <!--기타진료비-->' +
+                                '<td>' + makeMLSelect(mlData, null, [23, 48, 73, 98, 123], list[i].IMGID) + '</td> <!--65세이상(신설)-->' +
+                                '<td>' + makeMLSelect(mlData, null, [24, 49, 74, 99, 124], list[i].IMGID) + '</td> <!--포괄수가진료비-->' +
+                                '<td>' + makeMLSelect(mlData, null, [25, 50, 75, 100, 125], list[i].IMGID) + '</td> <!--합계-->' +                            
+                                '<td>' + makeMLSelect(mlData, null, [126], list[i].IMGID) + '</td> <!--이미납부한금액-->' +
+                                '<td>' + makeMLSelect(mlData, null, [127], list[i].IMGID) + '</td> <!--납부한금액-->' +
+                                '<td>' + makeMLSelect(mlData, 128, null, list[i].IMGID) + '</td> <!--요양기관종류-->' +
+                                '<td>' + makeMLSelect(mlData, 129, null, list[i].IMGID) + '</td> <!--사업자등록번호-->' +
+                                '<td>' + makeMLSelect(mlData, 130, null, list[i].IMGID) + '</td> <!--상호-->' +
+                                '<td>' + makeMLSelect(mlData, 131, null, list[i].IMGID) + '</td> <!--성명-->' +
+                                '<td>' + makeMLSelect(mlData, 132, null, list[i].IMGID) + '</td> <!--환자구분-->' +
+                                '<td>' + makeMLSelect(mlData, 133, null, list[i].IMGID) + '</td> <!--외래/입원-->' +
+                                '<td>' + makeMLSelect(mlData, 134, null, list[i].IMGID) + '</td> <!--퇴원/중간-->' +
+                                '<td>' + makeMLSelect(mlData, 135, null, list[i].IMGID) + '</td> <!--진료기간-->' +
+                                '</tr>';
+                        } else if(docToptype == 3) {
+                            //임시
+                            appendRightContentsHtml +=
+                            '<tr class="mlRowNum' + i + '" style="height:' + (trHeight + 12) + 'px;">' +
+                            '<td colspan="35"></td>' +
                             '</tr>';
+                        }
                     } else {
                         appendRightContentsHtml +=
-                            '<tr class="mlTr mlRowNum' + i + '">' +
-                            '<td colspan="36"></td>' +
+                            '<tr class="mlRowNum' + i + '" style="height:' + (trHeight + 12) + 'px;">' +
+                            '<td colspan="35"></td>' +
                             '</tr>';
 
-                    }*/  
-                    appendRightContentsHtml += '<tr class="mlTr"><td colspan="36"></td></tr>';                  
+                    }
+                    
                 }
             } else {
                 appendLeftContentsHtml += '<tr style="height: 30px"><td colspan="3"></td></tr>'
-                appendRightContentsHtml += '<tr><td colspan="36">조회할 데이터가 없습니다.</td></tr>';
+                appendRightContentsHtml += '<tr><td colspan="35">조회할 데이터가 없습니다.</td></tr>';
             }
             //$(appendHtml).appendTo($("#tbody_batchList")).slideDown('slow');
             if (addCond == "LEARN_N") {
@@ -1429,12 +1514,11 @@ var searchBatchLearnDataList = function (addCond) {
             }
             endProgressBar(progressId); // end progressbar
             checkboxEvent(); // refresh checkbox event
-            $('input[type=checkbox]').ezMark();
+            $('.batchListLeftTbody input[type=checkbox]').ezMark();
             imgPopupEvent();
-            $('#batch_left_contents_after select').stbDropdown();
-            $('#batch_right_contents_after select').stbDropdown();
             checkBoxCssEvent('#batch_left_contents_before');
             checkBoxCssEvent('#batch_left_contents_after');
+            $('#paginationDiv').empty().append(data.pageList);
         },
         error: function (err) {
             endProgressBar(progressId); // end progressbar
@@ -1448,21 +1532,24 @@ var searchBatchLearnDataList = function (addCond) {
         return values[num] == "null" ? '' : values[num];
     }
 
-    function makeMLSelect(mlData, colnum, entry, filepath) {
+    function makeMLSelect(mlData, colnum, entry, IMGID) {
 
         var appendMLSelect = '<select>';
         var hasColvalue = false;
         for (var y = 0; y < mlData.length; y++) {
 
-            if (mlData[y].FILEPATH == filepath) {
-                if (mlData[y].COLLABEL == colnum && (mlData[y].COLLABEL <= 3 || mlData[y].COLLABEL >= 35)) {
-                    hasColvalue = true;
-                    appendMLSelect += '<option>' + mlData[y].COLVALUE + '</option>';
-                } else if (mlData[y].COLLABEL == 37 && mlData[y].ENTRYLABEL == entry) {
+            if (mlData[y].IMGID == IMGID) {
+
+                if(entry) {
+                    if (mlData[y].COLLABEL == 0 && (mlData[y].ENTRYLABEL == entry[0] || mlData[y].ENTRYLABEL == entry[1] || mlData[y].ENTRYLABEL == entry[2] || 
+                            mlData[y].ENTRYLABEL == entry[3] || mlData[y].ENTRYLABEL == entry[4] )) {
+                        hasColvalue = true;
+                        appendMLSelect += '<option>' + mlData[y].COLVALUE + '</option>';
+                    } 
+                } else if (mlData[y].COLLABEL == colnum) {
                     hasColvalue = true;
                     appendMLSelect += '<option>' + mlData[y].COLVALUE + '</option>';
                 }
-
             }
         }
         appendMLSelect += '</select>';
@@ -1471,12 +1558,67 @@ var searchBatchLearnDataList = function (addCond) {
     }
 };
 
+$(document).on('click','.li_paging',function(e){
+    if(!$(this).hasClass('active')){
+        searchBatchLearnDataList(addCond, $(this).val());
+    }
+});
+
+function fnDocTypeColumn(docType) {
+    var param = {
+        'docType': docType
+    };
+
+    $.ajax({
+        url: '/batchLearningTest/selectIcrLabelDef',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify(param),
+        contentType: 'application/json; charset=UTF-8',
+        success: function (data) {
+            console.log(data);
+            var list = data.rows;
+            $(".docTableColumn").html("");
+            var htmlText = "";
+            htmlText = "<colgroup>";
+            for (var i = 0; i < list.length; i++) {
+                if(list[i].DOCID == docType) {
+                        htmlText += '<col style="width:200px">';                         
+                }
+            }
+            htmlText += '<col style="width:17px">';
+            htmlText += "</colgroup><thead><tr>";
+            for (var i = 0; i < list.length; i++) {
+                if(list[i].DOCID == docType) {
+                    htmlText += '<th scope="row">' + list[i].ENGNM + '</th>';
+                    
+                }
+            }
+            htmlText += '<th></th>'
+            htmlText += "</tr></thead>";
+            $(".docTableColumn").html(htmlText);
+
+            $("#docTableList > colgroup").html("");
+            htmlText = "";
+            for (var i = 0; i < list.length; i++) {
+                if(list[i].DOCID == docType) {
+                    htmlText += '<col style="width:200px">';               
+                }
+            }
+            $("#docTableList > colgroup").html(htmlText);
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
+}
+
 function checkBoxCssEvent(tableTag) {
     var isAfter = tableTag.indexOf('after') != -1;
-    $(tableTag + ' .ez-checkbox').unbind('click');
-    $(tableTag + ' .ez-checkbox').click(function (e) {
+    $(tableTag + ' .ez-checkbox input[type=checkbox]').unbind('click');
+    $(tableTag + ' .ez-checkbox input[type=checkbox]').click(function (e) {
         var trIdNum = $(this).closest('tr').attr('id').split('_')[1];
-        if (!$(this).hasClass('ez-checked')) {
+        if (!$(this).parent().hasClass('ez-checked')) {
             $(this).closest('tr').css('background', '#EA7169').children('td').css('color', '#FFF').children('a').css('color', '#FFF');
             $(tableTag.replace('left', 'right') + ' .rowNum' + trIdNum).css('background', '#EA7169').children('td').css('color', '#FFF');
             if (isAfter) $(tableTag.replace('left', 'right') + ' .mlRowNum' + trIdNum).css('background', '#EA7169').children('td').css('color', '#FFF');
@@ -1496,9 +1638,9 @@ function checkBoxMLCssEvent() {
         }
     });
 
-    $('#textResultTbl .ez-checkbox').unbind('click');
-    $('#textResultTbl .ez-checkbox').click(function () {
-        if (!$(this).hasClass('ez-checked')) {
+    $('#textResultTbl .ez-checkbox input[type=checkbox]').unbind('click');
+    $('#textResultTbl .ez-checkbox input[type=checkbox]').click(function () {
+        if (!$(this).parent().hasClass('ez-checked')) {
             $(this).closest('dl').children().css('background', '#EA7169')
                 .find('input[type="text"]').css('color', '#FFF').css('background', '#EA7169');
         } else {
@@ -1515,24 +1657,11 @@ function appendPredDoc(data) {
         returnString = '<input type="hidden" name="docType" class="docType" value="' + data.DOCTYPE + '" />';
         returnString += '<a onclick="javascript:fn_viewDoctypePop(this);" href="javascript:void(0);">' + data.DOCNAME + '</a>';
     } else {
-        returnString = '<a onclick="javascript:fn_viewDoctypePop(this);" href="javascript:void(0);">INTREAS 100%</a>';
+        returnString = '<!--<a onclick="javascript:fn_viewDoctypePop(this);" href="javascript:void(0);"></a>-->';
     }
 
     return returnString;
 }
-
-function appendPredDoc2(data) {
-    var returnString = '';
-    if (data.DOCNAME) {
-        returnString = '<input type="hidden" name="docType" class="docType" value="' + data.DOCTYPE + '" />';
-        returnString += '<a onclick="javascript:fn_viewDoctypePop(this);" href="javascript:void(0);">' + data.DOCNAME + '</a>';
-    } else {
-        returnString = '<a onclick="javascript:fn_viewDoctypePop(this);" href="javascript:void(0);">unknown 0%</a>';
-    }
-
-    return returnString;
-}
-
 
 function compareMLAndAnswer(mlData) {
     if (mlData.length != 0) {
@@ -1543,7 +1672,7 @@ function compareMLAndAnswer(mlData) {
         }
         queryIn += ")";
         $.ajax({
-            url: '/batchLearning/selectMultiBatchAnswerDataToFilePath',
+            url: '/batchLearningTest/selectMultiBatchAnswerDataToFilePath',
             type: 'post',
             datatype: "json",
             data: JSON.stringify({ 'queryIn': queryIn }),
@@ -1627,7 +1756,7 @@ function compareMLAndAnswer(mlData) {
     }
 }
 
-function fn_viewImageData(filepath, rowNum, imgId, obj) {
+function fn_viewImageData(filename, rowNum, imgId, obj) {
 
     var appendHtml = '';
     $('#tbody_batchList_answer').empty();
@@ -1638,7 +1767,7 @@ function fn_viewImageData(filepath, rowNum, imgId, obj) {
         data = $("#batch_right_contents_after .rowNum" + rowNum);
     }
 
-    loadImage('/tif' + filepath, function (tifResult) {
+    loadImage('/tif/' + filename, function (tifResult) {
 
         if (tifResult) {
             $(tifResult).css({
@@ -1659,11 +1788,10 @@ function fn_viewImageData(filepath, rowNum, imgId, obj) {
             fn_alert('confirm', "없는 파일입니다 삭제하시겠습니까?", function () {
 
                 var param = {
-                    filepath: filepath,
                     imgId: imgId
                 };
                 $.ajax({
-                    url: '/batchLearning/deleteAnswerFile',
+                    url: '/batchLearningTest/deleteBatchLearnList',
                     type: 'post',
                     datatype: "json",
                     data: JSON.stringify(param),
@@ -1705,7 +1833,7 @@ var searchBatchLearnData = function (imgIdArray, flag) {
     };
 
     $.ajax({
-        url: '/batchLearning/searchBatchLearnData',
+        url: '/batchLearningTest/searchBatchLearnData',
         type: 'post',
         datatype: "json",
         data: JSON.stringify(param),
@@ -1720,7 +1848,7 @@ var searchBatchLearnData = function (imgIdArray, flag) {
         success: function (data) {
             $("#progressMsgTitle").html("processing learn data...");
             //addProgressBar(31, 40);
-            //console.log("/batchLearning/searchBatchLearnData result :");
+            //console.log("/batchLearningTest/searchBatchLearnData result :");
             //console.log(data);           
             if (data.code == 400) {
                 fn_alert('alert', data.msg);
@@ -1757,7 +1885,7 @@ var fn_syncServerFile = function () {
     //addProgressBar(1, 1); // proceed progressbar
     progressId = showProgressBar();
     $.ajax({
-        url: '/batchLearning/syncFile',
+        url: '/batchLearningTest/syncFile',
         type: 'post',
         datatype: "json",
         data: JSON.stringify(param),
@@ -1815,7 +1943,7 @@ var insertSyncFileDB = function (fileInfo, fileName, lastYN) {
     if (fileInfo) {
         var param = { fileInfo: fileInfo };
         $.ajax({
-            url: '/batchLearning/insertFileInfo',
+            url: '/batchLearningTest/insertFileInfo',
             type: 'post',
             datatype: "json",
             data: JSON.stringify(param),
@@ -1839,7 +1967,7 @@ var insertSyncBatchLearningBaseData = function (fileInfo, fileName, lastYN) {
     if (fileInfo) {
         var param = { fileInfo: fileInfo };
         $.ajax({
-            url: '/batchLearning/insertBatchLearningBaseData',
+            url: '/batchLearningTest/insertBatchLearningBaseData',
             type: 'post',
             datatype: "json",
             data: JSON.stringify(param),
@@ -1872,6 +2000,49 @@ var fn_imageUpload = function () {
 
 };
 
+var fn_exportExcel = function () {
+    var imgIdArray = [];
+    var docToptype = $("#docToptype option:selected").val();
+    var chkSize = 0;
+    if (addCond == "LEARN_N") {
+        $('input[name="listCheck_before"]').each(function (index, element) {
+            if ($(this).is(":checked")) {
+                imgIdArray.push($(this).val());
+                chkSize++;
+            }
+        });
+    } else {
+        $('input[name="listCheck_after"]').each(function (index, element) {
+            if ($(this).is(":checked")) {
+                imgIdArray.push($(this).val());
+                chkSize++;
+            }
+        });
+    }
+    if (chkSize > 0) {
+        var param = { imgIdArray: imgIdArray, docToptype: docToptype };
+        $.ajax({
+            url: '/batchLearningTest/exportExcel',
+            type: 'post',
+            datatype: "json",
+            data: JSON.stringify(param),
+            contentType: 'application/json; charset=UTF-8',
+            success: function (responseText, statusText) {
+                //fn_alert('alert', "success");
+                downloadExcel(responseText.fileName);
+                searchBatchLearnDataList(addCond);
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    }
+}
+
+var downloadExcel = function () {
+    location.href = '/batchLearningTest/downloadExcel';
+}
+
 // 이미지 삭제
 var fn_imageDelete = function () {
     var imgIdArray = [];
@@ -1895,7 +2066,7 @@ var fn_imageDelete = function () {
         fn_alert('confirm', "삭제하시겠습니까?", function() {
             var param = { imgIdArray: imgIdArray };
             $.ajax({
-                url: '/batchLearning/deleteBatchLearningData',
+                url: '/batchLearningTest/deleteBatchLearningData',
                 type: 'post',
                 datatype: "json",
                 data: JSON.stringify(param),
@@ -2035,7 +2206,7 @@ var addBatchTraining = function (filePathArray, docTypeArray, imgIdArray) {
 
 
     $.ajax({
-        url: '/batchLearning/addBatchTraining',
+        url: '/batchLearningTest/addBatchTraining',
         type: 'post',
         datatype: "json",
         data: JSON.stringify(param),
@@ -2074,31 +2245,34 @@ var fn_uiTraining = function () {
     let chkCnt = 0;
     let chkBefore = $("#tab_before").closest("li").hasClass("on");
 
-    if (chkBefore) {
-        fn_alert('alert', "UI학습은 학습이 완료된 파일만 가능합니다.");
+    $(".batchListLeftTbody .ez-checkbox").each(function (index, entry) {
+        if ($(this).hasClass("ez-checked")) {
+            imgId = $(this).children('input').val();
+            chkCnt++;
+        }
+    });
+
+    /*
+    $("input[name=listCheck_after]").each(function (index, entry) {
+        if ($(this).is(":checked")) {
+            imgId = $(this).val();
+            chkCnt++;
+        }
+    });
+    */
+
+    if (chkCnt == 0) {
+        fn_alert('alert', "선택된 파일이 없습니다.");
+        return;
+    } else if (chkCnt > 1) {
+        fn_alert('alert', "한번에 하나의 파일만 UI학습이 가능합니다.");
         return;
     } else {
-        $("input[name=listCheck_after]").each(function (index, entry) {
-            if ($(this).is(":checked")) {
-                imgId = $(this).val();
-                chkCnt++;
-            }
-        });
-
-        if (chkCnt == 0) {
-            fn_alert('alert', "선택된 파일이 없습니다.");
-            return;
-        } else if (chkCnt > 1) {
-            fn_alert('alert', "한번에 하나의 파일만 UI학습이 가능합니다.");
-            return;
-        } else {
-            imgIdArray.push(imgId);
-            totCount++;
-            uiLearnTraining(imgIdArray);
-            //uiFlag = "Y";
-            //searchBatchLearnData(imgIdArray, "PROCESS_IMAGE");
-        }
-
+        imgIdArray.push(imgId);
+        totCount++;
+        uiLearnTraining(imgIdArray);
+        //uiFlag = "Y";
+        //searchBatchLearnData(imgIdArray, "PROCESS_IMAGE");
     }
 
 };
@@ -2109,7 +2283,7 @@ var uiLearnTraining = function (imgIdArray) {
     //selectTypoData(data);
 
     $.ajax({
-        url: '/batchLearning/uiLearnTraining',
+        url: '/batchLearningTest/uiLearnTraining',
         type: 'post',
         datatype: "json",
         data: JSON.stringify({ imgIdArray: imgIdArray }),
@@ -2156,10 +2330,16 @@ function selectTypoData(data) {
 
 function uiLayerHtml(data) {
     var mlData = data.data.data;
+    mlDataList = mlData;
     var columnArr = data.data.column;
     var entryColArr = data.data.entryMappingList;
+    var labelData = data.data.labelData;
+    labelDataList = labelData;
+    var docToptype = data.data.docCategory.docToptype;
     //var fileName = filePath.substring(filePath.lastIndexOf('/') + 1, filePath.length);
     fn_initUiTraining();
+    fn_uiDocTopType(data.data.docCategory);
+    $('#docName').html(data.data.docCategory.DOCNAME);
     layer_open('layer2');
 
 
@@ -2175,9 +2355,10 @@ function uiLayerHtml(data) {
     mainImgHtml += '</div>';
     mainImgHtml += '</div>';
     $('#img_content').html(mainImgHtml);
-    //data.data.fileinfo.filepath.substring(0, lastIndexOf("."))
-    var convertImg = data.data.fileinfo.filepath.substring(0, data.data.fileinfo.filepath.lastIndexOf(".")) + ".jpg";
-    $('#mainImage').css('background-image', 'url("/tif' + convertImg + '")');
+
+    var fileName = nvl(data.data.fileinfo.filepath.substring(data.data.fileinfo.filepath.lastIndexOf('/') + 1));
+    fileName = fileName.substring(0, fileName.indexOf('.')) + '.jpg';
+    $('#mainImage').css('background-image', 'url("/tif/' + fileName + '")');
 
     var tblTag = '';
     var tblSortTag = '';
@@ -2185,24 +2366,8 @@ function uiLayerHtml(data) {
     columnArr.unshift(columnArr.pop());
     entryColArr.unshift(entryColArr.pop());
 
-    /*
     for (var i in mlData) {
-        tblTag += '<dl>';
-        tblTag += '<dt onclick="zoomImg(this)">';
-        tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
-        tblTag += '<input type="text" value="' + mlData[i].text + '" style="width:100%; border:0;" />';
-        tblTag += '<input type="hidden" value="' + mlData[i].location + '" />';
-        tblTag += '</label>';
-        tblTag += '</dt>';
-        tblTag += '<dd>';
-        tblTag += appendOptionHtml((mlData[i].colLbl != undefined) ? mlData[i].colLbl : 36, columnArr);
-        tblTag += '</dd>';
-        tblTag += '</dl>';
-    }
-    */
-    for (var i in mlData) {
-        // colLbl이 37이면 entryLbl 값에 해당하는 entryColoumn 값을 뿌려준다
-        if (mlData[i].colLbl == 37) {
+        if (mlData[i].colLbl == 0) {
             tblTag += '<dl>';
             tblTag += '<dt onclick="zoomImg(this)">';
             tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
@@ -2214,13 +2379,13 @@ function uiLayerHtml(data) {
             tblTag += '<input type="checkbox" class="entryChk" checked>';
             tblTag += '</dd>';
             tblTag += '<dd class="columnSelect" style="display:none">';
-            tblTag += appendOptionHtml((mlData[i].colLbl + '') ? mlData[i].colLbl : 999, columnArr);
+            tblTag += appendSelOptionHtml((mlData[i].colLbl + '') ? mlData[i].colLbl : 999, labelData, docToptype);
             tblTag += '</dd>';
             tblTag += '<dd class="entrySelect">';
-            tblTag += appendEntryOptionHtml((mlData[i].entryLbl + '') ? mlData[i].entryLbl : 999, entryColArr);
+            tblTag += appendSelEntryOptionHtml((mlData[i].entryLbl + '') ? mlData[i].entryLbl : 999, labelData, docToptype);
             tblTag += '</dd>';
             tblTag += '</dl>';
-        } else if (mlData[i].colLbl == 38) {
+        } else if (mlData[i].colLbl == -1) {
             tblSortTag += '<dl>';
             tblSortTag += '<dt onclick="zoomImg(this)">';
             tblSortTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
@@ -2232,10 +2397,10 @@ function uiLayerHtml(data) {
             tblSortTag += '<input type="checkbox" class="entryChk">';
             tblSortTag += '</dd>';
             tblSortTag += '<dd class="columnSelect">';
-            tblSortTag += appendOptionHtml((mlData[i].colLbl + '') ? mlData[i].colLbl : 999, columnArr);
+            tblSortTag += appendSelOptionHtml((mlData[i].colLbl + '') ? mlData[i].colLbl : 999, labelData, docToptype);
             tblSortTag += '</dd>';
             tblSortTag += '<dd class="entrySelect" style="display:none">';
-            tblSortTag += appendEntryOptionHtml((mlData[i].entryLbl + '') ? mlData[i].entryLbl : 999, entryColArr);
+            tblSortTag += appendSelEntryOptionHtml((mlData[i].entryLbl + '') ? mlData[i].entryLbl : 999, labelData, docToptype);
             tblSortTag += '</dd>';
             tblSortTag += '</dl>';
         } else {
@@ -2250,20 +2415,20 @@ function uiLayerHtml(data) {
             tblTag += '<input type="checkbox" class="entryChk">';
             tblTag += '</dd>';
             tblTag += '<dd class="columnSelect">';
-            tblTag += appendOptionHtml((mlData[i].colLbl + '') ? mlData[i].colLbl : 999, columnArr);
+            tblTag += appendSelOptionHtml((mlData[i].colLbl + '') ? mlData[i].colLbl : 999, labelData, docToptype);
             tblTag += '</dd>';
             tblTag += '<dd class="entrySelect" style="display:none">';
-            tblTag += appendEntryOptionHtml((mlData[i].entryLbl + '') ? mlData[i].entryLbl : 999, entryColArr);
+            tblTag += appendSelEntryOptionHtml((mlData[i].entryLbl + '') ? mlData[i].entryLbl : 999, labelData, docToptype);
             tblTag += '</dd>';
             tblTag += '</dl>';
         }
     }
 
     $('#textResultTbl').append(tblTag).append(tblSortTag);
-    $('#textResultTbl select').stbDropdown();
+    //$('#textResultTbl select').stbDropdown();
     
     // input 태그 마우스오버 말풍선 Tooltip 적용
-    $('input[type=checkbox]').ezMark();
+    $('#textResultTbl input[type=checkbox]').ezMark();
     new $.Zebra_Tooltips($('.tip'));
     dbSelectClickEvent();
     checkBoxMLCssEvent();
@@ -2279,6 +2444,99 @@ function uiLayerHtml(data) {
         }
 
     })
+}
+
+function appendSelOptionHtml(targetColumn, columns, docToptype) {
+
+    var selectHTML = '<select>';
+    var optionHTML = '';
+    optionHTML = '<option value="-1">Unknown</option>';
+    selectHTML += optionHTML;
+    for (var i in columns) {
+        if(docToptype == columns[i].DOCID){
+            if (targetColumn == columns[i].SEQNUM) {
+                optionHTML = '<option value="' + columns[i].SEQNUM + '" selected>' + columns[i].KORNM + '</option>';
+            } else {
+                optionHTML = '<option value="' + columns[i].SEQNUM + '">' + columns[i].KORNM + '</option>';
+            }
+            selectHTML += optionHTML;
+        }
+    }
+    selectHTML += '</select>';
+
+    return selectHTML;
+}
+
+function appendSelEntryOptionHtml(targetColumn, columns, docToptype) {
+
+    var selectHTML = '<select>';
+    var optionHTML = '';
+    optionHTML = '<option value="-1">Unknown</option>';
+    selectHTML += optionHTML;
+    for (var i in columns) {
+
+        if (targetColumn > 25 && targetColumn < 51) {
+            targetColumn = targetColumn % 25;
+            if (targetColumn == 0) {
+                targetColumn = 25;
+            }
+        } else if (targetColumn > 50 && targetColumn < 76) {
+            targetColumn = targetColumn % 50;
+        } else if (targetColumn > 75 && targetColumn < 101) {
+            targetColumn = targetColumn % 75;
+        } else if (targetColumn > 100 && targetColumn < 126) {
+            targetColumn = targetColumn % 100;
+        }
+
+        if(docToptype == columns[i].DOCID){
+            if (targetColumn == columns[i].SEQNUM) {
+                optionHTML = '<option value="' + targetColumn + '" selected>' + columns[i].KORNM + '</option>';
+            } else {
+                optionHTML = '<option value="' + targetColumn + '">' + columns[i].KORNM + '</option>';
+            }
+            selectHTML += optionHTML;
+        }
+    }
+    selectHTML += '</select>';
+
+    return selectHTML;
+}
+
+function fn_uiDocTopType(docCategory) {
+    var docToptype = docCategory.docToptype;
+
+    $.ajax({
+        url: '/batchLearningTest/uiDocTopType',
+        type: 'post',
+        datatype: 'json',
+        data: JSON.stringify({ 'docToptype': docToptype }),
+        contentType: 'application/json; charset=UTF-8',
+        success: function (data) {
+            var selHtmlText = "";
+            if (data.docTopData) {
+                $('#uiDocTopTypeDiv').empty();
+                selHtmlText += "<select id='uiDocTopType'>"  
+                                
+                for (var i = 0; i < data.docTopData.length; i++) {
+                    if (docToptype && docToptype == data.docTopData[i].SEQNUM) {
+                        selHtmlText += "<option value='" + data.docTopData[i].SEQNUM + "' selected>" + data.docTopData[i].ENGNM + "</option>";
+                    } else {
+                        selHtmlText += "<option value='" + data.docTopData[i].SEQNUM + "'>" + data.docTopData[i].ENGNM + "</option>";
+                    }
+
+                }
+
+                selHtmlText += "</select>"
+
+            }
+
+            $("#uiDocTopTypeDiv").html(selHtmlText);    
+            $("#uiDocTopType").stbDropdown();
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
 }
 
 function dbSelectClickEvent() {
@@ -2335,7 +2593,7 @@ var batchLearnTraining = function (imgIdArray, flag) {
     };
 
     $.ajax({
-        url: '/batchLearning/batchLearnTraining',
+        url: '/batchLearningTest/batchLearnTraining',
         type: 'post',
         datatype: "json",
         data: JSON.stringify(param),
@@ -2352,7 +2610,6 @@ var batchLearnTraining = function (imgIdArray, flag) {
             //console.log(data);
             //searchBatchLearnDataList(addCond);
             if (flag == "LEARN_N") {
-                /*
                 $("input[name=listCheck_before]").each(function (index, entry) {
                     if ($(this).is(":checked")) {
 
@@ -2370,36 +2627,8 @@ var batchLearnTraining = function (imgIdArray, flag) {
                         }
                     }
                 });
-                */
-                //todo
-                $("input[name=listCheck_before]").each(function (index, entry) {
-                    if ($(this).is(":checked")) {
-                                               
-                            //console.log(index);
-                            var docHtml = '<input type="hidden" name="docType" class="docType" value="" />';
-                            if(index == 2) {
-                                var docHtml = '<a onclick="javascript:fn_viewDoctypePop(this);" href="javascript:void(0);">unknown 0%</a>';    
-                            } else {
-                                docHtml += '<a onclick="javascript:fn_viewDoctypePop(this);" href="javascript:void(0);">CO-OPERATORS 100%</a>';
-                            }
-                            $(this).closest("td").next().next().html(docHtml);
-                                
-                            
-                            //$('.mlTr').empty().append(appendRightContentsHtml);
-                    }
-                });
-                var appendRightContentsHtml = '<td>INTREAS</td>' 
-                                            +   '<td>INTREAS - AG MULTI NATURAL PERILS AGGREGATE XL	</td>'
-                                            +   '<td>2017</td>'
-                                            +   '<td>EUR</td>'
-                                            +   '<td></td>'
-                                            +   '<td></td>';
-                $('.mlTr:eq(0)').empty().append(appendRightContentsHtml);
-                $('.mlTr:eq(1)').empty().append(appendRightContentsHtml);
-                $('.mlTr:eq(2)').empty().append(appendRightContentsHtml);
-                $('.mlTr:eq(3)').empty().append(appendRightContentsHtml);
-                $('.mlTr:eq(4)').empty().append(appendRightContentsHtml);
                 endProgressBar(progressId);
+                searchBatchLearnDataList(addCond);
                 //uiLearnTraining(['/2018/07/img1/6b/133f16b/4554894.tif']);
                 /*
                 setTimeout(function () {
@@ -2655,7 +2884,7 @@ var callbackInsertContractMapping = function () {
 var uiTrainingBtn = function () {
 
     $.ajax({
-        url: '/batchLearning/uitraining',
+        url: '/batchLearningTest/uitraining',
         type: 'post',
         datatype: "json",
         data: null,
@@ -2678,7 +2907,7 @@ var uiTrainingBtn = function () {
 // 양식 레이블 매핑 ml 데이터 insert
 function insertDocLabelMapping(data, callback) {
     $.ajax({
-        url: '/batchLearning/insertDocLabelMapping',
+        url: '/batchLearningTest/insertDocLabelMapping',
         type: 'post',
         datatype: "json",
         data: JSON.stringify({ 'data': data }),
@@ -2712,7 +2941,7 @@ function insertDocMapping(data, callback) {
     //var dacCategory = JSON.parse($('#docData').val());
 
     $.ajax({
-        url: '/batchLearning/insertDocMapping',
+        url: '/batchLearningTest/insertDocMapping',
         type: 'post',
         datatype: "json",
         data: JSON.stringify({ 'data': data }),
@@ -2731,7 +2960,7 @@ function insertDocMapping(data, callback) {
 // 컬럼 매핑 ml 데이터 insert
 function insertColMapping(data) {
     $.ajax({
-        url: '/batchLearning/insertColMapping',
+        url: '/batchLearningTest/insertColMapping',
         type: 'post',
         datatype: "json",
         data: JSON.stringify({ 'data': data }),
@@ -2752,7 +2981,7 @@ function insertColMapping(data) {
 // 계약명 매핑 insert
 function insertContractMapping(data, callback) {
     $.ajax({
-        url: '/batchLearning/insertContractMapping',
+        url: '/batchLearningTest/insertContractMapping',
         type: 'post',
         datatype: "json",
         data: JSON.stringify({ 'data': data, 'fileName': $('#imgNameTag').text().split('.')[0] + '.tif' }),
@@ -2854,7 +3083,7 @@ function popUpSearchDocCategory() {
             $('#searchResultDocName').val('');
             $('#countCurrent').html('1');
             $.ajax({
-                url: '/batchLearning/selectLikeDocCategory',
+                url: '/batchLearningTest/selectLikeDocCategory',
                 type: 'post',
                 datatype: 'json',
                 data: JSON.stringify({ 'keyword': keyword }),
@@ -2935,22 +3164,38 @@ function popUpRunEvent() {
             docName: docName,
             radioType: chkValue,
             textList: textList,
+            docToptype: $('#docToptype').val()
         }
-        $('#progressMsgTitle').html('문서양식 저장중...');
-        progressId = showProgressBar();
-        
-        setTimeout(function () {
-            endProgressBar(progressId);
-            fn_alert('alert', '문서 등록이 완료 되었습니다.');
-            $('#btn_pop_doc_cancel.ui_doc_pop_btn2.cbtn').click();
-            var rowNum = $('#batchListRowNum').val();
-            $('#leftRowNum_2').find('td:eq(2)').html('<a>' + docName + '</a>');
-            $('#leftRowNum_2').find('td:eq(2)').css('color', )
-        }, 8000);
+
+        $.ajax({
+            url: '/batchLearningTest/insertDoctypeMapping',
+            type: 'post',
+            datatype: 'json',
+            data: JSON.stringify(param),
+            contentType: 'application/json; charset=UTF-8',
+            beforeSend: function () {
+                $('#progressMsgTitle').html('문서양식 저장중...');
+                progressId = showProgressBar();
+            },
+            success: function (data) {
+                //location.href = location.href;
+                // 해당 로우 화면상 테이블에서 삭제
+                endProgressBar(progressId);
+                var rowNum = $('#batchListRowNum').val();
+                $('#leftRowNum_' + rowNum).find('td:eq(2) a').html(data.docName);
+                $('#leftRowNum_' + rowNum).find('td:eq(2) input[name=docType]').val(data.docType);
+                fn_alert('alert', '계산서 양식 저장이 완료 되었습니다.');
+                $('#layer4 .cbtn').click();
+            },
+            error: function (err) {
+                console.log(err);
+                endProgressBar(progressId);
+            }
+        });           
         
         /*
         $.ajax({
-            url: '/batchLearning/insertDoctypeMapping',
+            url: '/batchLearningTest/insertDoctypeMapping',
             type: 'post',
             datatype: 'json',
             data: JSON.stringify(param),
@@ -3012,6 +3257,45 @@ function popUpRunEvent() {
     */
 }
 
+//todo
+function fn_selectDocTopType(docToptype) {
+    $.ajax({
+        url: '/batchLearning/selectDocTopType',
+        type: 'post',
+        datatype: "json",        
+        contentType: 'application/json; charset=UTF-8',
+        beforeSend: function () {
+            $('#docToptype').empty();
+            $('.newDocEdit').hide();
+            $("#progressMsgTitle").html("Search DocList...");
+            progressId = showProgressBar();
+        },
+        success: function (data) {
+            //console.log(data);
+            var appendOptionHtml = '';
+            if(data) {
+                var docToptypeList = data.docToptypeList;
+                var docToptypeListLength = docToptypeList.length;
+
+                if(docToptypeListLength > 0) {
+
+                    for(var i = 0; i < docToptypeListLength; i++) {
+                        if(docToptype) {
+                            appendOptionHtml += '<option value="' + docToptypeList[i].SEQNUM + '"' + (docToptype == docToptypeList[i].SEQNUM ? 'selected' : '') + '>' + docToptypeList[i].ENGNM + '</option>';
+                        } else {
+                            appendOptionHtml += '<option value="' + docToptypeList[i].SEQNUM + '"' + (i == 0 ? 'selected' : '') + '>' + docToptypeList[i].ENGNM + '</option>';
+                        }
+                    }
+                }
+
+                $('#docToptype').append(appendOptionHtml);
+                searchBatchLearnDataList(addCond);   // 배치 학습 데이터 조회
+            } 
+        }
+    })       
+}
+
+
 // init
 function _init() {
     $('#uploadFile').css('display', 'none');
@@ -3019,15 +3303,15 @@ function _init() {
     $('#gridDiv').hide();
     $('#reviewDiv').hide();
 
+    fn_selectDocTopType(); //docToptype 검색
     //multiUploadEvent();
     //originFileUploadBtnEvent();
     checkboxEvent();            // checkbox event
     buttonEvent();              // button event
     popupEvent.scrollPopup();   // popup event - scroll
     imageUploadEvent();         // image upload event
-    //excelUploadEvent();         // excel upload event
+    excelUploadEvent();         // excel upload event
     popUpEvent();
-    searchBatchLearnDataList(addCond);   // 배치 학습 데이터 조회
     changeDocPopupImage();      // 문서 양식 조회 이미지 좌우 버튼 이벤트
     popUpRunEvent();            // 문서 양식 조회 및 저장 
     selectLearningMethod();     //학습실행팝업
@@ -3209,7 +3493,7 @@ function appendOcrDataTEST(fileName, regions) {
     }
 
     $.ajax({
-        url: '/batchLearning/execBatchLearningData',
+        url: '/batchLearningTest/execBatchLearningData',
         type: 'post',
         datatype: "json",
         data: JSON.stringify({ 'fileName': fileName, 'data': data }),
@@ -3353,7 +3637,7 @@ function insertRegion(lineText) {
             batchLearningData: lineText
         }
         $.ajax({
-            url: '/batchLearning/insertBatchLearningData',
+            url: '/batchLearningTest/insertBatchLearningData',
             type: 'post',
             datatype: "json",
             data: JSON.stringify(param),
@@ -3411,14 +3695,14 @@ function zoomImg(e) {
     var height = reImg.height;
 
     //imageZoom 고정크기
-    var fixWidth = 992;
-    var fixHeight = 1402;
+    var fixWidth = 1053;
+    var fixHeight = 1800;
 
     var widthPercent = fixWidth / width;
     var heightPercent = fixHeight / height;
 
     $('#mainImage').hide();
-    $('#imageZoom').css('height', '570px').css('background-image', $('#mainImage').css('background-image')).css('background-size', fixWidth + 'px ' + fixHeight + 'px').show();
+    $('#imageZoom').css('height', '1600px').css('background-image', $('#mainImage').css('background-image')).css('background-size', fixWidth + 'px ' + fixHeight + 'px').show();
 
     // 사각형 좌표값
     var location = $(e).find('input[type=hidden]').val().split(',');
@@ -3434,9 +3718,11 @@ function zoomImg(e) {
     //var xPosition = (x * 0.4) > 0 ? '-' + ((x * 0.4) + 'px ') : (x * 0.4)  + 'px ';
     //var yPosition = (y * 0.4) > 0 ? '-' + ((y * 0.4) + 'px') : (y * 0.4) + 'px';
 
-    var xPosition = ((- (x * widthPercent)) + 300) + 'px ';
-    var yPosition = ((- (y * heightPercent)) + 200) + 'px';
+    //var xPosition = ((- (x * widthPercent)) + 300) + 'px ';
+    //var yPosition = ((- (y * heightPercent)) + 200) + 'px';
     //console.log(xPosition + yPosition);
+    var xPosition = '0px ';
+    var yPosition = ((- (y * heightPercent)) + 200) + 'px';
     $('#imageZoom').css('background-position', xPosition + yPosition);
 
 
@@ -3478,14 +3764,16 @@ function fn_viewDoctypePop(obj) {
     var filepath = data.attr('data-filepath');
     var imgId = data.attr('data-imgId');
     var rowIdx = $(obj).closest('tr').attr('id').split('_')[1];
+    var fileName = nvl(filepath.substring(filepath.lastIndexOf('/') + 1));
     $('#batchListRowNum').val(rowIdx);
     $('#docPopImgId').val(imgId);
-    $('#docPopImgPath').val('/2018/07/img1/43/133f143/test.tif');
+    $('#docPopImgPath').val(filepath);
     initLayer4();
-    selectClassificationSt('/2018/07/img1/43/133f143/test.tif'); // 분류제외문장 렌더링
-    $('#mlPredictionDocName').val('UNKNOWN');
-    filepath = "/uploads/sample.tiff";
-    loadImage('/tifTest' + filepath, function (tifResult) {
+    selectClassificationSt(filepath); // 분류제외문장 렌더링
+    //$('#mlPredictionDocName').val('UNKNOWN');
+
+    loadImage('/tif/' + fileName, function (tifResult) {
+ 
         if (tifResult) {
             $(tifResult).css({
                 "width": "100%",
@@ -3494,7 +3782,7 @@ function fn_viewDoctypePop(obj) {
             }).addClass("preview");
             $('#originImgDiv').empty().append(tifResult);
         }
-        $('#docPopImgPath').val('/2018/07/img1/43/133f143/test.tif');
+        $('#docPopImgPath').val(filepath);
 
         layer_open('layer4');
     });
@@ -3519,8 +3807,7 @@ function selectClassificationSt(filepath) {
     };
 
     $.ajax({
-		//todo
-        url: '/batchLearning/selectClassificationSt',
+        url: '/batchLearningTest/selectClassificationSt',
         type: 'post',
         datatype: "json",
         data: JSON.stringify(param),
@@ -3530,7 +3817,7 @@ function selectClassificationSt(filepath) {
         },
         success: function (data) {
             //console.log("SUCCESS selectClassificationSt : " + JSON.stringify(data));
-            if (data.code != 500 || data.data != null) {
+            if (data.code != 500 && data.data.length == 1) {
 
                 var ocrdata = JSON.parse(data.data[0].OCRDATA);
 
@@ -3548,24 +3835,24 @@ function selectClassificationSt(filepath) {
 
                 for (let i = 0; i < tempArr.length; i++) {
 
-                    var bannedCheck = true;
-                    for (let j = 0; j < data.bannedData.length; j++) {
-                        if (tempArr[i][1].text.toLowerCase().indexOf(data.bannedData[j].WORD) == 0) {
-                            bannedCheck = false;
-                            break;
-                        }
-                    }
-                    var resultOcrData = '<tr class="batch_layer4_result_tr">';
-                    if (bannedCheck) {
-                        resultOcrData += '<td><input type="checkbox" class="batch_layer4_result_chk"></td>';
-                    } else {
-                        resultOcrData += '<td><input type="checkbox" checked="checked" class="batch_layer4_result_chk"></td>';
-                    }
-                    resultOcrData += '<td class="td_bannedword"></td></tr>';
+                    var resultOcrData = '<tr class="batch_layer4_result_tr">'
+                                    + '<td><input type="checkbox" class="batch_layer4_result_chk"></td>'
+                                    + '<td class="td_sentence"></td></tr>';
                     $('#batch_layer4_result').append(resultOcrData);
-                    $('.td_bannedword:eq('+ i +')').text(tempArr[i][1].text);
+                    
+                    $('.td_sentence:eq('+ i +')').text(tempArr[i][1].text);
                 }
-                $('input[type=checkbox]').ezMark();
+                $('#batch_layer4_result input[type=checkbox]').ezMark();
+
+                for (var i = 0; i < $("input[type='checkbox'].batch_layer4_result_chk").length; i++) {
+                    $("input[type='checkbox'].batch_layer4_result_chk").eq(i).parent().removeClass("ez-hide");
+                    $("input[type='checkbox'].batch_layer4_result_chk").eq(i).prop("checked", true);
+                    $("input[type='checkbox'].batch_layer4_result_chk").eq(i).parent().addClass("ez-checked")
+    
+                    if (i == 20) {
+                        break;
+                    }
+                }
                 
             }
 
@@ -3586,7 +3873,7 @@ function editBannedword() {
     });
 
     // td영역 클릭시 edit
-    $(document).on('click', '.td_bannedword', function () {
+    $(document).on('click', '.td_sentence', function () {
         var bannedCheck = $(this).prev().find('.batch_layer4_result_chk').is(':checked');
         var isInputFocus = $(this).children('input').is(":focus");
         if (bannedCheck && isInputFocus == false) {

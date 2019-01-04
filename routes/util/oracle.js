@@ -642,6 +642,49 @@ exports.selectOcrFilePaths = function (req, done) {
     });
 };
 
+exports.selectBatchLearnList = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        var res = [];
+        let conn;
+
+        var condQuery
+        if (!commonUtil.isNull(req.body.addCond)) {
+            if (req.body.addCond == "LEARN_N") condQuery = "((STATUS != 'D' AND STATUS != 'R') OR STATUS IS NULL OR STATUS = 'T')";
+            else if (req.body.addCond == "LEARN_Y") condQuery = "(STATUS = 'D')";
+        }
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);          
+            var rowNum = req.body.moreNum;
+            let resAnswerFile = await conn.execute(`select bll.* from 
+                                                        (select ROW_NUMBER() OVER(ORDER BY REGDATE DESC, FILEPATH) AS NUM, 
+                                                        COUNT('1') OVER(PARTITION BY '1') AS TOTCNT, 
+                                                        CEIL((ROW_NUMBER() OVER(ORDER BY REGDATE DESC, FILEPATH))/ 40) PAGEIDX, 
+                                                        IMGID, STATUS, FILEPATH, DOCTYPE, DOCNAME, REGDATE
+                                                        from (
+                                                            SELECT IMGID, STATUS, FILEPATH, A.DOCTYPE, B.DOCNAME, REGDATE
+                                                            FROM TBL_BATCH_LEARN_LIST A,
+                                                            TBL_DOCUMENT_CATEGORY B
+                                                            WHERE A.DOCTYPE = B.DOCTYPE(+) AND A.DOCTOPTYPE = ` + req.body.docToptype + `
+                                                            ) WHERE` + condQuery + `) bll
+                                                        WHERE PAGEIDX = :pageIdx`
+                                                    , [req.body.page]);
+            return done(null, resAnswerFile.rows);
+        } catch (err) { // catches errors in getConnection and the query
+            console.log(err);
+            return done(null, "error");
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
 exports.selectBatchLearnListTest = function (req, done) {
     return new Promise(async function (resolve, reject) {
         var res = [];
@@ -686,72 +729,72 @@ exports.selectBatchLearnListTest = function (req, done) {
 };
 
 
-exports.selectBatchLearnList = function (req, done) {
-    return new Promise(async function (resolve, reject) {
-        var res = [];
-        let conn;
-        let colNameArr = ['SEQNUM', 'FILEPATH', 'ORIGINFILENAME'];
-        var condQuery
-        if (!commonUtil.isNull(req.body.addCond)) {
-            if (req.body.addCond == "LEARN_N") condQuery = "((L.STATUS != 'D' AND L.STATUS != 'R') OR L.STATUS IS NULL OR L.STATUS = 'T')";
-            else if (req.body.addCond == "LEARN_Y") condQuery = "(L.STATUS = 'D')";
-        }
+// exports.selectBatchLearnList = function (req, done) {
+//     return new Promise(async function (resolve, reject) {
+//         var res = [];
+//         let conn;
+//         let colNameArr = ['SEQNUM', 'FILEPATH', 'ORIGINFILENAME'];
+//         var condQuery
+//         if (!commonUtil.isNull(req.body.addCond)) {
+//             if (req.body.addCond == "LEARN_N") condQuery = "((L.STATUS != 'D' AND L.STATUS != 'R') OR L.STATUS IS NULL OR L.STATUS = 'T')";
+//             else if (req.body.addCond == "LEARN_Y") condQuery = "(L.STATUS = 'D')";
+//         }
 
-        try {
-            conn = await oracledb.getConnection(dbConfig);          
-            var rowNum = req.body.moreNum;
-            let resAnswerFile = await conn.execute(`SELECT T.IMGID, T.PAGENUM, T.FILEPATH, T.DOCTYPE 
-                                                    FROM (
-                                                      SELECT F.IMGID, F.PAGENUM, F.FILEPATH, L.DOCTYPE
-                                                      FROM 
-                                                        TBL_BATCH_ANSWER_FILE F 
-                                                        LEFT OUTER JOIN TBL_BATCH_LEARN_LIST L 
-                                                        ON F.FILEPATH = L.FILEPATH 
-                                                      WHERE ` + condQuery + `
-                                                      AND F.FILEPATH LIKE '/2018/%' 
-                                                      ORDER BY F.FILEPATH ASC
-                                                    ) T
-                                                    WHERE ROWNUM <= :num `, [req.body.moreNum]);
+//         try {
+//             conn = await oracledb.getConnection(dbConfig);          
+//             var rowNum = req.body.moreNum;
+//             let resAnswerFile = await conn.execute(`SELECT T.IMGID, T.PAGENUM, T.FILEPATH, T.DOCTYPE 
+//                                                     FROM (
+//                                                       SELECT F.IMGID, F.PAGENUM, F.FILEPATH, L.DOCTYPE
+//                                                       FROM 
+//                                                         TBL_BATCH_ANSWER_FILE F 
+//                                                         LEFT OUTER JOIN TBL_BATCH_LEARN_LIST L 
+//                                                         ON F.FILEPATH = L.FILEPATH 
+//                                                       WHERE ` + condQuery + `
+//                                                       AND F.FILEPATH LIKE '/2018/%' 
+//                                                       ORDER BY F.FILEPATH ASC
+//                                                     ) T
+//                                                     WHERE ROWNUM <= :num `, [req.body.moreNum]);
             
-            for (var i = 0; i < resAnswerFile.rows.length; i++) {
-                var imgId = resAnswerFile.rows[i].IMGID;
-                var imgStartNo = resAnswerFile.rows[i].PAGENUM;
-                var filepath = resAnswerFile.rows[i].FILEPATH;
-                var filename = filepath.substring(filepath.lastIndexOf('/') + 1, filepath.length);
+//             for (var i = 0; i < resAnswerFile.rows.length; i++) {
+//                 var imgId = resAnswerFile.rows[i].IMGID;
+//                 var imgStartNo = resAnswerFile.rows[i].PAGENUM;
+//                 var filepath = resAnswerFile.rows[i].FILEPATH;
+//                 var filename = filepath.substring(filepath.lastIndexOf('/') + 1, filepath.length);
 
-                let resAnswerData = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_DATA WHERE IMGID = :imgId AND TO_NUMBER(IMGFILESTARTNO) <= :imgStartNo AND TO_NUMBER(IMGFILEENDNO) >= :imgStartNo `, [imgId, imgStartNo, imgStartNo]);
-                for (var row = 0; row < resAnswerData.rows.length; row++) {
-					resAnswerData.rows[row].FILEPATH = filepath;
-                    resAnswerData.rows[row].FILENAME = filename;
-					if(resAnswerFile.rows[i].DOCTYPE){
-						let resBatchLearnList = await conn.execute(`SELECT * FROM TBL_DOCUMENT_CATEGORY WHERE DOCTYPE = :docType `, [resAnswerFile.rows[i].DOCTYPE]);
-						if(resBatchLearnList.rows.length > 0){
-							resAnswerData.rows[row].DOCTYPE = resAnswerFile.rows[i].DOCTYPE;
-							resAnswerData.rows[row].DOCNAME = resBatchLearnList.rows[0].DOCNAME;
-						}
-					}
-                }
+//                 let resAnswerData = await conn.execute(`SELECT * FROM TBL_BATCH_ANSWER_DATA WHERE IMGID = :imgId AND TO_NUMBER(IMGFILESTARTNO) <= :imgStartNo AND TO_NUMBER(IMGFILEENDNO) >= :imgStartNo `, [imgId, imgStartNo, imgStartNo]);
+//                 for (var row = 0; row < resAnswerData.rows.length; row++) {
+// 					resAnswerData.rows[row].FILEPATH = filepath;
+//                     resAnswerData.rows[row].FILENAME = filename;
+// 					if(resAnswerFile.rows[i].DOCTYPE){
+// 						let resBatchLearnList = await conn.execute(`SELECT * FROM TBL_DOCUMENT_CATEGORY WHERE DOCTYPE = :docType `, [resAnswerFile.rows[i].DOCTYPE]);
+// 						if(resBatchLearnList.rows.length > 0){
+// 							resAnswerData.rows[row].DOCTYPE = resAnswerFile.rows[i].DOCTYPE;
+// 							resAnswerData.rows[row].DOCNAME = resBatchLearnList.rows[0].DOCNAME;
+// 						}
+// 					}
+//                 }
 
-                if (resAnswerData.rows.length > 0) {
-                    res.push(resAnswerData);
-                }
-            }
+//                 if (resAnswerData.rows.length > 0) {
+//                     res.push(resAnswerData);
+//                 }
+//             }
 
-            return done(null, res);
-        } catch (err) { // catches errors in getConnection and the query
-            console.log(err);
-            return done(null, "error");
-        } finally {
-            if (conn) {   // the conn assignment worked, must release
-                try {
-                    await conn.release();
-                } catch (e) {
-                    console.error(e);
-                }
-            }
-        }
-    });
-};
+//             return done(null, res);
+//         } catch (err) { // catches errors in getConnection and the query
+//             console.log(err);
+//             return done(null, "error");
+//         } finally {
+//             if (conn) {   // the conn assignment worked, must release
+//                 try {
+//                     await conn.release();
+//                 } catch (e) {
+//                     console.error(e);
+//                 }
+//             }
+//         }
+//     });
+// };
 
 
 exports.convertTiftoJpg = function (originFilePath, done) {
@@ -3240,6 +3283,33 @@ exports.insertBatchLearningFileInfo = function (req, done) {
         try {
             conn = await oracledb.getConnection(dbConfig);
 
+            await conn.execute("INSERT INTO TBL_BATCH_LEARN_LIST VALUES (:imgId, 'T', :filePath, null, sysdate, :docToptype)", req);
+
+            return done(null, null);
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+
+// 파일업로드시 TBL_BATCH_LEARN_LIST 에 파일정보 INSERT
+exports.insertBatchLearningFileInfoTest = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        var dateArr = [];
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
             await conn.execute("INSERT INTO TBL_BATCH_LEARN_LIST VALUES (:imgId, 'T', :filePath, null, sysdate)", req);
 
             return done(null, null);
@@ -3315,7 +3385,7 @@ exports.selectIcrLabelDef = function (req, done) {
         try {
             conn = await oracledb.getConnection(dbConfig);
 
-            result = await conn.execute("select kornm, seqnum, docid from tbl_icr_label_def");
+            result = await conn.execute("select engnm, kornm, seqnum, docid from tbl_icr_label_def");
 
             return done(null, result);
         } catch (err) { // catches errors in getConnection and the query
@@ -3632,6 +3702,39 @@ exports.deleteDocList = function (req, done) {
             let query = "update tbl_icr_label_def set status = 0 where seqnum in " + inQuery;
             result = await conn.execute(query, []);
 
+            return done(null, null);
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });    
+};
+
+// tbl_batch_po_answer_data 추가
+exports.insertExcelAnswerData = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+
+        try {
+            let insertList = req.dataResult;
+            let docId = req.docId;
+            conn = await oracledb.getConnection(dbConfig);
+
+            for(var i = 0; i < insertList.length; i++) {
+                let jsonData = JSON.stringify(insertList[i]);
+                let param = [docId, jsonData];
+                let query = "insert into tbl_batch_po_answer_data(seq, docid, answerdata) values(seq_batch_po_answer_data.nextval, :docId, :answerData)";
+                result = await conn.execute(query, param);
+            }
+ 
             return done(null, null);
         } catch (err) { // catches errors in getConnection and the query
             reject(err);

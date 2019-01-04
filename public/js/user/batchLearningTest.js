@@ -422,7 +422,7 @@ var insertBatchLearningFileInfo = function (fileInfo, fileName, lastYN) {
     if (fileInfo) {
         var param = { fileInfo: fileInfo };
         $.ajax({
-            url: '/batchLearningTest/insertBatchLearningFileInfo',
+            url: '/batchLearningTest/insertBatchLearningFileInfoTest',
             type: 'post',
             datatype: "json",
             data: JSON.stringify(param),
