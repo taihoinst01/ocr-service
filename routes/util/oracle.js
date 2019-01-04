@@ -3310,7 +3310,7 @@ exports.insertBatchLearningFileInfoTest = function (req, done) {
         try {
             conn = await oracledb.getConnection(dbConfig);
 
-            await conn.execute("INSERT INTO TBL_BATCH_LEARN_LIST VALUES (:imgId, 'T', :filePath, null, sysdate)", req);
+            await conn.execute("INSERT INTO TBL_BATCH_LEARN_LIST VALUES (:imgId, 'T', :filePath, null, sysdate, :docTopType)", req);
 
             return done(null, null);
         } catch (err) { // catches errors in getConnection and the query
