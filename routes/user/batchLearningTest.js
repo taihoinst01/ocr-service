@@ -3366,7 +3366,7 @@ function batchLearnTraining(filepath, callback) {
             if (selOcr.length == 0) {
                 var ocrResult = sync.await(ocrUtil.localOcr(fullFilePath, sync.defer()));
 
-                if (ocrResult.textAngle || ocrResult.orientation != "Up") {
+                if ((ocrResult.textAngle != "undefined" && ocrResult.textAngle > 0.01 || ocrResult.textAngle < -0.01) || ocrResult.orientation != "Up") {
                     var angle = 0;
 
                     if (ocrResult.orientation == "Left") {
@@ -3377,7 +3377,13 @@ function batchLearnTraining(filepath, callback) {
                         angle += 180;
                     }
 
-                    angle += Math.floor(ocrResult.textAngle * 100) - 2;
+                    angle += Math.floor(ocrResult.textAngle * 100);
+
+                    if (angle < 0) {
+                        angle += 2;
+                    } else {
+                        angle -= 2;
+                    }
 
                     execSync('module\\imageMagick\\convert.exe -rotate "' + angle + '" ' + fullFilePath + ' ' + fullFilePath);
 
