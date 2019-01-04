@@ -12,8 +12,8 @@ var propertiesConfig = {
 
     },
     ocr: {
-        uri: 'https://eastasia.api.cognitive.microsoft.com/vision/v1.0/ocr',
-        subscriptionKey: '00ec4f5cd65e4dc0977047b69554235c',
+        uri: 'https://japaneast.api.cognitive.microsoft.com/vision/v1.0/ocr',
+        subscriptionKey: 'a9e6be39d42d40929a95d1d7214ed764',
     },
     filepath: {
         uploadsPath: 'C:\\ICR\\uploads\\',
