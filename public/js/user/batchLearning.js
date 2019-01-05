@@ -238,7 +238,7 @@ var buttonEvent = function () {
     })
 
     $("#docToptype").on('change', function () {
-        var docType = $("#docToptype option:selected").val();
+        var docType = $("#docToptype").val();
         $('#docTopTypeValue').val(docType);
         //console.log(docType);
         searchBatchLearnDataList (addCond);

@@ -78,7 +78,7 @@ router.post('/excelUpload', upload.any(), function (req, res) {
              }
              dataResult.push(dataRow);
         }
-        console.log(dataResult);
+        //console.log(dataResult);
         param = {'dataResult': dataResult, 'docId': docId};
         sync.await(oracle.insertExcelAnswerData(param, sync.defer()));     
         res.send();

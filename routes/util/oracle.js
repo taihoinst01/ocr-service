@@ -1770,6 +1770,41 @@ exports.selectBatchLearnMlList = function (filePathList, done) {
     });
 };
 
+exports.selectBatchLearnAnswerData = function (fileNameList, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            var inQuery = "(";
+            for (var i in fileNameList) {
+                inQuery += "'" + fileNameList[i] + "',";
+            }
+            inQuery = inQuery.substring(0, inQuery.length - 1);
+            inQuery += ")";
+
+            var query = "select docid, answerdata, filename from tbl_batch_po_answer_data where filename in" + inQuery;
+                        
+            result = await conn.execute(query, []);
+
+
+            return done(null, result.rows);
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
 exports.selectBatchLearnMlListTest = function (imgIdList, done) {
     return new Promise(async function (resolve, reject) {
         let conn;
@@ -3729,9 +3764,11 @@ exports.insertExcelAnswerData = function (req, done) {
             conn = await oracledb.getConnection(dbConfig);
 
             for(var i = 0; i < insertList.length; i++) {
-                let jsonData = JSON.stringify(insertList[i]);
-                let param = [docId, jsonData];
-                let query = "insert into tbl_batch_po_answer_data(seq, docid, answerdata) values(seq_batch_po_answer_data.nextval, :docId, :answerData)";
+                let filename = insertList[i].splice(0, 1)[0];
+                insertList[i].splice(0, 1);
+                let answerData = JSON.stringify(insertList[i]);
+                let param = [docId, filename, answerData];
+                let query = "insert into tbl_batch_po_answer_data(seq, docid, filename, answerdata) values(seq_batch_po_answer_data.nextval, :docId, :fileName, :answerData)";
                 result = await conn.execute(query, param);
             }
  
