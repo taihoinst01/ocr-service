@@ -3419,6 +3419,31 @@ exports.selectIcrLabelDef = function (req, done) {
         try {
             conn = await oracledb.getConnection(dbConfig);
 
+            result = await conn.execute("select engnm, kornm, seqnum, docid from tbl_icr_label_def where status = 1 and DOCID = :docid", [req]);
+
+            return done(null, result);
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+exports.selectIcrLabelDefTest = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        var dateArr = [];
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
             result = await conn.execute("select engnm, kornm, seqnum, docid from tbl_icr_label_def");
 
             return done(null, result);
