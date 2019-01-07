@@ -238,7 +238,7 @@ var buttonEvent = function () {
     })
 
     $("#docToptype").on('change', function () {
-        var docType = $("#docToptype option:selected").val();
+        var docType = $("#docToptype").val();
         $('#docTopTypeValue').val(docType);
         //console.log(docType);
         searchBatchLearnDataList (addCond);
@@ -482,7 +482,7 @@ var insertBatchLearningBaseData = function (fileInfo, fileName, lastYN) {
     }
 };
 
-// UPLOAD EXCEL todo
+// UPLOAD EXCEL
 var excelUploadEvent = function () {
     var multiUploadForm = $("#multiUploadForm");
 
@@ -1421,7 +1421,7 @@ var searchBatchLearnDataList = function (addCond, page) {
         success: function (data) {
             console.log(data);
             var list = data.data;
-            
+            var answerDataList = data.answerDataList;
             fnDocTypeColumn(docToptype);
             
             if (list.length != 0) {
@@ -1487,12 +1487,35 @@ var searchBatchLearnDataList = function (addCond, page) {
                             '<td colspan="35"></td>' +
                             '</tr>';
                         }
+                        if(docToptype == 37) {
+                            var hasAnswerData = false;
+                            if(answerDataList.length != 0) {
+                                var appendAnswerDataHtml = '';
+                                for(var j = 0; j < answerDataList.length; j++) {
+                                    if(answerDataList[j].FILENAME == fileName) {
+                                        hasAnswerData = true;
+                                        console.log(JSON.parse(data.answerDataList[j].ANSWERDATA));
+                                        var answerData = JSON.parse(data.answerDataList[j].ANSWERDATA)
+                                        appendAnswerDataHtml += '<tr class="mlTr">';
+                                        for(var k = 0; k < answerData.length; k++) {
+                                            appendAnswerDataHtml += '<td style="width:200;overflow:hidden;text-overflow;ellipsis;">' + nvl(answerData[k]) + '</td>';
+                                        }
+                                        appendAnswerDataHtml += '</tr>';
+                                    }  
+                                } 
+                                if(hasAnswerData == false) {
+                                    appendAnswerDataHtml += '<tr class="mlTr"><td colspan="' + ($('#theadTr th').length - 1) + '"></td></tr>';
+                                }
+                            } else {
+                                appendAnswerDataHtml += '<tr class="mlTr"><td colspan="' + ($('#theadTr th').length - 1) + '"></td></tr>';
+                            }
+                            appendRightContentsHtml += appendAnswerDataHtml;
+                        }
                     } else {
                         appendRightContentsHtml +=
                             '<tr class="mlRowNum' + i + '" style="height:' + (trHeight + 12) + 'px;">' +
                             '<td colspan="35"></td>' +
                             '</tr>';
-
                     }
                     
                 }
@@ -1587,7 +1610,7 @@ function fnDocTypeColumn(docType) {
                 }
             }
             htmlText += '<col style="width:17px">';
-            htmlText += "</colgroup><thead><tr>";
+            htmlText += "</colgroup><thead><tr id='theadTr'>";
             for (var i = 0; i < list.length; i++) {
                 if(list[i].DOCID == docType) {
                     htmlText += '<th scope="row">' + list[i].ENGNM + '</th>';
@@ -3257,7 +3280,7 @@ function popUpRunEvent() {
     */
 }
 
-//todo
+//
 function fn_selectDocTopType(docToptype) {
     $.ajax({
         url: '/batchLearning/selectDocTopType',
