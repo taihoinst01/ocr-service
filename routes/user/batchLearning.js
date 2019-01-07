@@ -4443,7 +4443,8 @@ router.post('/insertBatchLearningFileInfo', function (req, res) {
     var data = {
         imgId: req.body.fileInfo.imgId,
         filepath: req.body.fileInfo.filePath,
-        docTopType: req.body.docToptype
+        docTopType: req.body.docToptype,
+        imgCount: req.body.imgCount
     }
 
     sync.fiber(function () {

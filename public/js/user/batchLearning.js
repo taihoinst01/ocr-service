@@ -1433,7 +1433,7 @@ var searchBatchLearnDataList = function (addCond, page) {
                     var fileName = nvl(list[i].FILEPATH.substring((list[i].FILEPATH.lastIndexOf('/') + 1) ));
                     if (addCond == "LEARN_N") checkboxHtml = '<td scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="' + nvl(list[i].FILEPATH) + '" class="sta00" name="listCheck_before" /></td>';
                     else checkboxHtml = '<td scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="' + nvl(list[i].FILEPATH) + '" class="stb00" name="listCheck_after" /></div></td>';
-                    appendLeftContentsHtml += '<tr id="leftRowNum_' + i + '" style="height:' + trHeight + 'px;">' +
+                    appendLeftContentsHtml += '<tr id="leftRowNum_' + i + '">' +
                     checkboxHtml +
                     '<td><a class="fileNamePath" data-filepath="' + nvl(list[i].FILEPATH) + '" data-imgId="' + nvl(list[i].IMGID) + '" ' +
                     'onclick = "javascript:fn_viewImageData(\'' + fileName + '\',\'' + i + '\', \'' + nvl(list[i].IMGID) + '\', this)" ' +
