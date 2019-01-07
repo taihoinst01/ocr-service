@@ -3357,10 +3357,12 @@ function batchLearnTraining(filepath, callback) {
 
             var fullFilePath = "";
             if (fileExt == "pdf") {
-                fullFilePath = filename + ".png"
+                fullFilePath = filename + ".png";
+            } else if (fileExt == "png") {
+                fullFilePath = filename + ".png";
             } else {
-                fullFilePath = filename + ".jpg"
-            }
+                fullFilePath = filename + ".jpg";
+            } 
 
             var selOcr = sync.await(oracle.selectOcrData(filepath, sync.defer()));
             if (selOcr.length == 0) {
@@ -3382,7 +3384,7 @@ function batchLearnTraining(filepath, callback) {
                     if (angle < 0) {
                         angle += 2;
                     } else {
-                        angle -= 2;
+                        angle -= 1;
                     }
 
                     execSync('module\\imageMagick\\convert.exe -rotate "' + angle + '" ' + fullFilePath + ' ' + fullFilePath);
