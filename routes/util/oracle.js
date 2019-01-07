@@ -656,19 +656,18 @@ exports.selectBatchLearnList = function (req, done) {
         try {
             conn = await oracledb.getConnection(dbConfig);          
             var rowNum = req.body.moreNum;
-            let resAnswerFile = await conn.execute(`select bll.* from 
-                                                        (select ROW_NUMBER() OVER(ORDER BY REGDATE DESC, FILEPATH) AS NUM, 
-                                                        COUNT('1') OVER(PARTITION BY '1') AS TOTCNT, 
-                                                        CEIL((ROW_NUMBER() OVER(ORDER BY REGDATE DESC, FILEPATH))/ 40) PAGEIDX, 
-                                                        IMGID, STATUS, FILEPATH, DOCTYPE, DOCNAME, REGDATE
-                                                        from (
-                                                            SELECT IMGID, STATUS, FILEPATH, A.DOCTYPE, B.DOCNAME, REGDATE
-                                                            FROM TBL_BATCH_LEARN_LIST A,
-                                                            TBL_DOCUMENT_CATEGORY B
-                                                            WHERE A.DOCTYPE = B.DOCTYPE(+) AND A.DOCTOPTYPE = ` + req.body.docToptype + `
-                                                            ) WHERE` + condQuery + `) bll
-                                                        WHERE PAGEIDX = :pageIdx`
-                                                    , [req.body.page]);
+            var query = `select bll.* from 
+                        (select ROW_NUMBER() OVER(ORDER BY REGDATE DESC, FILEPATH) AS NUM, 
+                        COUNT('1') OVER(PARTITION BY '1') AS TOTCNT, 
+                        CEIL((ROW_NUMBER() OVER(ORDER BY REGDATE DESC, FILEPATH))/ 40) PAGEIDX, 
+                        IMGID, STATUS, FILEPATH, DOCTYPE, REGDATE
+                        from (
+                            SELECT IMGID, STATUS, FILEPATH, A.DOCTYPE, REGDATE
+                            FROM TBL_BATCH_LEARN_LIST A
+                            WHERE A.DOCTOPTYPE = ` + req.body.docToptype + `
+                            ) WHERE` + condQuery + `) bll
+                        WHERE PAGEIDX = :pageIdx`;
+            let resAnswerFile = await conn.execute(query, [req.body.page]);
             return done(null, resAnswerFile.rows);
         } catch (err) { // catches errors in getConnection and the query
             console.log(err);
