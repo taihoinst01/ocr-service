@@ -240,10 +240,10 @@ function uploadConvert(files, callback) {
             fileSize: fileObj.size,
             contentType: fileObj.mimetype
         };
-        fileInfo.push(fileItem);
+        returnResult.fileInfo = fileItem;
 
         var fileNames = [];
-        returnObj.push(fileItem.convertFileName);
+        returnResult.returnObj = fileItem.convertFileName;
 
         var ifile = convertedImagePath + fileObj.originalname;
         var ofile = convertedImagePath + fileObj.originalname.split('.')[0] + '.png';
