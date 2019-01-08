@@ -2100,82 +2100,117 @@ router.post('/uiLearnTraining', function (req, res) {
         var uiData;
         for (var i = 0; i < filepath.length; i++) {
             //uiData = sync.await(batchLearnTraining(filepath[i], "LEARN_Y", sync.defer()));
-            uiData = sync.await(batchLearnTraining(filepath[i], sync.defer()));
+            uiData = sync.await(uiLearnTraining(filepath[i], sync.defer()));
 
             res.send({ data: uiData });
         }       
     });
 });
 
-function uiLearnTraining(filepath, done) {
-
+function uiLearnTraining(filepath, callback) {
     sync.fiber(function () {
         try {
-            var data;
-            var convertedFileName;
-            var columnArr;
+            var imgid = sync.await(oracle.selectImgid(filepath, sync.defer()));
+            imgid = imgid.rows[0].IMGID;
 
-            // convertTiftoJpg
-            if (filepath.split('.')[1].toLowerCase() === 'tif' || filepath.split('.')[1].toLowerCase() === 'tiff') {
-                let result = sync.await(oracle.convertTiftoJpg2(filepath, sync.defer()));
+            var filename = filepath.substring(0, filepath.lastIndexOf("."));
+            var fileExt = filepath.substring(filepath.lastIndexOf(".") + 1, filepath.length);
 
-                if (result == "error") {
-                    return done(null, "error convertTiftoJpg");
+            var fullFilePath = "";
+            var fullFilePathList = [];
+            if (fileExt == "pdf") {
+                var fileCount = 0;
+                while (true) {
+                    if (exists(filename + "-" + fileCount + ".png")) {
+                        fullFilePathList.push(filename + "-" + fileCount + ".png");
+                        fileCount++;
+                    } else {
+                        if (fileCount == 0) {
+                            fullFilePathList.push(filename + ".png");
+                        }
+                        break;
+                    }
                 }
-                if (result) {                    
-                    convertedFileName = result;
+
+            } else if (fileExt == "png") {
+                fullFilePath = filename + ".png";
+            } else {
+                fullFilePath = filename + ".jpg";
+            }
+
+            var retData = {};
+            for (var i = 0; i < fullFilePathList.length; i++) {
+                var selOcr = sync.await(oracle.selectOcrData(fullFilePathList[i], sync.defer()));
+                if (selOcr.length == 0) {
+                    var ocrResult = sync.await(ocrUtil.localOcr(fullFilePathList[i], sync.defer()));
+
+                    if ((ocrResult.textAngle != "undefined" && ocrResult.textAngle > 0.01 || ocrResult.textAngle < -0.01) || ocrResult.orientation != "Up") {
+                        var angle = 0;
+
+                        if (ocrResult.orientation == "Left") {
+                            angle += 90;
+                        } else if (ocrResult.orientation == "Right") {
+                            angle += -90;
+                        } else if (ocrResult.orientation == "Down") {
+                            angle += 180;
+                        }
+
+                        angle += Math.floor(ocrResult.textAngle * 100);
+
+                        if (angle < 0) {
+                            angle += 2;
+                        } else {
+                            angle -= 1;
+                        }
+
+                        execSync('module\\imageMagick\\convert.exe -rotate "' + angle + '" ' + fullFilePathList[i] + ' ' + fullFilePathList[i]);
+
+                        ocrResult = sync.await(ocrUtil.localOcr(fullFilePathList[i], sync.defer()));
+                    }
+
+                    sync.await(oracle.insertOcrData(fullFilePathList[i], JSON.stringify(ocrResult), sync.defer()));
+                    selOcr = sync.await(oracle.selectOcrData(fullFilePathList[i], sync.defer()));
                 }
+
+                var seqNum = selOcr.SEQNUM;
+                pythonConfig.columnMappingOptions.args = [];
+                pythonConfig.columnMappingOptions.args.push(seqNum);
+                //var resPyStr = sync.await(PythonShell.run('batchClassifyTest.py', pythonConfig.columnMappingOptions, sync.defer()));
+                var resPyStr = sync.await(PythonShell.run('samClassifyTest.py', pythonConfig.columnMappingOptions, sync.defer()));
+                var testStr = resPyStr[0].replace('b', '');
+                testStr = testStr.replace(/'/g, '');
+                var decode = new Buffer(testStr, 'base64').toString('utf-8');
+
+                var resPyArr = JSON.parse(decode);
+                //resPyArr = sync.await(transPantternVar.trans(resPyArr, sync.defer()));
+                console.log(resPyArr);
+
+
+                retData = resPyArr;
+                retData.fileinfo = { filepath: fullFilePathList[i], imgId: imgid };
+                sync.await(oracle.insertMLData(retData, sync.defer()));
+                sync.await(oracle.updateBatchLearnListDocType(retData, sync.defer()));
+
+                var colMappingList = sync.await(oracle.selectColumn(null, sync.defer()));
+                var entryMappingList = sync.await(oracle.selectEntryMappingCls(null, sync.defer()));
+                var labelData = sync.await(oracle.selectIcrLabelDef(retData.docCategory.DOCTOPTYPE, sync.defer()));
+
+                retData.column = colMappingList;
+                retData.entryMappingList = entryMappingList;
+                retData.labelData = labelData.rows;
+
             }
-            console.log('convertTiftoJpg');
+            callback(null, retData);
 
-            // ocr
-            var ocrResult = sync.await(oracle.callApiOcr('uploads/' + convertedFileName, sync.defer()));
-
-            if (ocrResult == "error") {
-                return done(null, "error ocr");
-            }
-            console.log('ocr');
-
-            // typo ML
-            pythonConfig.typoOptions.args = [];
-            pythonConfig.typoOptions.args.push(JSON.stringify(dataToTypoArgs(ocrResult)));
-            var resPyStr = sync.await(PythonShell.run('typo2.py', pythonConfig.typoOptions, sync.defer()));
-            var resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
-            var sidData = sync.await(oracle.select(resPyArr, sync.defer()));
-            console.log('typo ML');
-            
-            // column mapping DL           
-            // tensorflow
-            pythonConfig.columnMappingOptions.args = [];
-            pythonConfig.columnMappingOptions.args.push(JSON.stringify(sidData));
-            resPyStr = sync.await(PythonShell.run('eval3.py', pythonConfig.columnMappingOptions, sync.defer()));
-            resPyArr = JSON.parse(resPyStr[0].replace(/'/g, '"'));
-            console.log('column mapping DL');
-            
-
-            /*
-            // ml studio
-            resPyArr = {};
-            resPyArr.data = sidData;
-            resPyArr = sync.await(oracle.selectColumnMappingFromMLStudio(resPyArr, sync.defer()));
-            resPyArr = sync.await(mlStudio.run(resPyArr, 'columnMapping', sync.defer()));
-            console.log('column mapping DL');
-            */
-
-            // select TBL_COLUMN_MAPPING_CLS            
-            var result = sync.await(oracle.selectColumnMappingCls(null, sync.defer()));
-            if (result.rows.length > 0) {
-                columnArr = result.rows;
-            }
-            console.log('column TBL_COLUMN_MAPPING_CLS');
-
-            return done(null, { data: resPyArr.data, column: columnArr, convertedFileName: convertedFileName });
         } catch (e) {
             console.log(e);
-            return done(null, e);
+            callback(null, null);
         }
+
+
     });
 }
+
 
 router.post('/insertBatchLearnList', function (req, res) {
 

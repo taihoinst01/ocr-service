@@ -2234,7 +2234,7 @@ function uiLayerHtml(data) {
     var entryColArr = data.data.entryMappingList;
     var labelData = data.data.labelData;
     labelDataList = labelData;
-    var docToptype = data.data.docCategory.docToptype;
+    var docToptype = data.data.docCategory.DOCTOPTYPE;
     //var fileName = filePath.substring(filePath.lastIndexOf('/') + 1, filePath.length);
     fn_initUiTraining();
     fn_uiDocTopType(data.data.docCategory);
@@ -2256,7 +2256,7 @@ function uiLayerHtml(data) {
     $('#img_content').html(mainImgHtml);
 
     var fileName = nvl(data.data.fileinfo.filepath.substring(data.data.fileinfo.filepath.lastIndexOf('/') + 1));
-    fileName = fileName.substring(0, fileName.indexOf('.')) + '.jpg';
+    fileName = fileName.substring(0, fileName.indexOf('.')) + '.png';
     $('#mainImage').css('background-image', 'url("/tif/' + fileName + '")');
 
     var tblTag = '';
@@ -2265,6 +2265,62 @@ function uiLayerHtml(data) {
     columnArr.unshift(columnArr.pop());
     entryColArr.unshift(entryColArr.pop());
 
+    for (var i in mlData) {
+        if (mlData[i].entryLbl > 0) {
+            tblTag += '<dl>';
+            tblTag += '<dt onclick="zoomImg(this)">';
+            tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
+            tblTag += '<input type="text" value="' + mlData[i].text + '" style="width:100%; border:0;" />';
+            tblTag += '<input type="hidden" value="' + mlData[i].location + '" />';
+            tblTag += '</label>';
+            tblTag += '</dt>';
+            tblTag += '<dd>';
+            tblTag += '<input type="checkbox" class="entryChk" checked>';
+            tblTag += '</dd>';
+            tblTag += '<dd class="columnSelect" style="display:none">';
+            tblTag += '</dd>';
+            tblTag += '<dd class="entrySelect">';
+            tblTag += appendSelOptionHtml((mlData[i].entryLbl + '') ? mlData[i].entryLbl : 999, labelData, docToptype);
+            tblTag += '</dd>';
+            tblTag += '</dl>';
+        } else if (mlData[i].colLbl > 0) {
+            tblSortTag += '<dl>';
+            tblSortTag += '<dt onclick="zoomImg(this)">';
+            tblSortTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
+            tblSortTag += '<input type="text" value="' + mlData[i].text + '" style="width:100%; border:0;" />';
+            tblSortTag += '<input type="hidden" value="' + mlData[i].location + '" />';
+            tblSortTag += '</label>';
+            tblSortTag += '</dt>';
+            tblSortTag += '<dd>';
+            tblSortTag += '<input type="checkbox" class="entryChk">';
+            tblSortTag += '</dd>';
+            tblSortTag += '<dd class="columnSelect">';
+            tblSortTag += appendSelOptionHtml((mlData[i].colLbl + '') ? mlData[i].colLbl : 999, labelData, docToptype);
+            tblSortTag += '</dd>';
+            tblSortTag += '<dd class="entrySelect" style="display:none">';
+            tblSortTag += '</dd>';
+            tblSortTag += '</dl>';
+        } else {
+            tblSortTag += '<dl>';
+            tblSortTag += '<dt onclick="zoomImg(this)">';
+            tblSortTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
+            tblSortTag += '<input type="text" value="' + mlData[i].text + '" style="width:100%; border:0;" />';
+            tblSortTag += '<input type="hidden" value="' + mlData[i].location + '" />';
+            tblSortTag += '</label>';
+            tblSortTag += '</dt>';
+            tblSortTag += '<dd>';
+            tblSortTag += '<input type="checkbox" class="entryChk">';
+            tblSortTag += '</dd>';
+            tblSortTag += '<dd class="columnSelect">';
+            tblSortTag += appendSelOptionHtml((mlData[i].colLbl + '') ? mlData[i].colLbl : 999, labelData, docToptype);
+            tblSortTag += '</dd>';
+            tblSortTag += '<dd class="entrySelect" style="display:none">';
+            tblSortTag += '</dd>';
+            tblSortTag += '</dl>';
+        }
+    }
+
+    /*
     for (var i in mlData) {
         if (mlData[i].colLbl == 0) {
             tblTag += '<dl>';
@@ -2322,7 +2378,7 @@ function uiLayerHtml(data) {
             tblTag += '</dl>';
         }
     }
-
+    */
     $('#textResultTbl').append(tblTag).append(tblSortTag);
     //$('#textResultTbl select').stbDropdown();
     
@@ -2354,9 +2410,9 @@ function appendSelOptionHtml(targetColumn, columns, docToptype) {
     for (var i in columns) {
         if(docToptype == columns[i].DOCID){
             if (targetColumn == columns[i].SEQNUM) {
-                optionHTML = '<option value="' + columns[i].SEQNUM + '" selected>' + columns[i].KORNM + '</option>';
+                optionHTML = '<option value="' + columns[i].SEQNUM + '" selected>' + columns[i].ENGNM + '</option>';
             } else {
-                optionHTML = '<option value="' + columns[i].SEQNUM + '">' + columns[i].KORNM + '</option>';
+                optionHTML = '<option value="' + columns[i].SEQNUM + '">' + columns[i].ENGNM + '</option>';
             }
             selectHTML += optionHTML;
         }
