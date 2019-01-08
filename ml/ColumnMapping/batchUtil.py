@@ -578,7 +578,7 @@ def findEntry(ocrData, docTopType, docType):
                 # variable Label mapping
                 # 문서종류 and (Y좌표 뭉 (X좌표 or 넓이))
                 if (mappingSid[0] == trainData[0]) and int(trainRow[2]) in variLabel and (boundaryCheck(mappingSid[2], trainData[2]) and (boundaryCheck(mappingSid[1], trainData[1]) or boundaryCheck(mappingSid[3], trainData[3]))):
-                    item["colLbl"] = trainRow[2]
+                    item["entryLbl"] = trainRow[2]
 
         # subMulti entry 추출
         for item in ocrData:
@@ -782,6 +782,8 @@ def findDelivery(ocrData):
                     item["text"] = "Blue Orange IT Ltd Rainbow House Railway Road ADLINGTON CHORLEY PR6 9RB"
                 elif item["text"].lower() == "Midwich Ltd c/o Kuehne + Nagel(Goods In)".lower():
                     item["text"] = "Midwich Ltd c/o Kuehne + Nagel(Goods In) DC3 Prologis Park Midpoint Way Minworth SUTTON COLDFIELD BIRMINGHAM B76 9EH"
+                elif item["text"].lower() == "Westcoast Limited".lower():
+                    item["text"] = "Westcoast Limited Arrowhead Park Arrowhead Road Theale READING Berkshire RG7 4AH"
 
         return ocrData
     except Exception as ex:
