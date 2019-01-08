@@ -1435,7 +1435,7 @@ var searchBatchLearnDataList = function (addCond, page) {
                     else checkboxHtml = '<td scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="' + nvl(list[i].FILEPATH) + '" class="stb00" name="listCheck_after" /></div></td>';
                     appendLeftContentsHtml += '<tr id="leftRowNum_' + i + '">' +
                     checkboxHtml +
-                    '<td><a class="fileNamePath" data-filepath="' + nvl(list[i].FILEPATH) + '" data-imgId="' + nvl(list[i].IMGID) + '" ' +
+                    '<td><a class="fileNamePath" data-imgCount="' + nvl(list[i].IMGCOUNT) + '" data-filepath="' + nvl(list[i].FILEPATH) + '" data-imgId="' + nvl(list[i].IMGID) + '" ' +
                     'onclick = "javascript:fn_viewImageData(\'' + fileName + '\',\'' + i + '\', \'' + nvl(list[i].IMGID) + '\', this)" ' +
                     'href = "javascript:void(0);" >' + fileName + '</a ></td > < !--FILENAME--> ' +                                                
                     '</tr>';
@@ -1455,7 +1455,7 @@ var searchBatchLearnDataList = function (addCond, page) {
                                 if(answerDataList[j].FILENAME == fileName) {
                                     hasAnswerData = true;
                                     
-                                    console.log(JSON.parse(data.answerDataList[j].ANSWERDATA));
+                                    //console.log(JSON.parse(data.answerDataList[j].ANSWERDATA));
                                     var answerData = JSON.parse(data.answerDataList[j].ANSWERDATA)
                                     appendAnswerDataHtml += '<tr class="mlTr" data-filename="' + answerDataList[j].FILENAME + '">';
                                     for(var k = 0; k < answerData.length; k++) {
@@ -1551,6 +1551,7 @@ var searchBatchLearnDataList = function (addCond, page) {
 $(document).on('click','.li_paging',function(e){
     if(!$(this).hasClass('active')){
         searchBatchLearnDataList(addCond, $(this).val());
+        $('#right_contents').scrollTop(0).scrollLeft(0);
     }
 });
 
@@ -1742,6 +1743,8 @@ function compareMLAndAnswer(mlData) {
 function fn_viewImageData(filename, rowNum, imgId, obj) {
 
     var appendHtml = '';
+    var imgCount = $(obj).attr('data-imgCount');
+    console.log("imgCount: " + imgCount);
     $('#tbody_batchList_answer').empty();
     var data;
     if (addCond == "LEARN_N") {
@@ -1750,55 +1753,77 @@ function fn_viewImageData(filename, rowNum, imgId, obj) {
         data = $("#batch_right_contents_after .rowNum" + rowNum);
     }
 
-    loadImage('/tif/' + filename, function (tifResult) {
+    var filename = filename.split('.')[0];
+    var appendPngHtml = '';
+    if(imgCount == 1) {
+        var pngName = filename + '.png';
+        appendPngHtml += '<img src="/img/' + pngName +'" style="width: 100%; height: auto">';
+    } else {
 
-        if (tifResult) {
-            $(tifResult).css({
-                "width": "100%",
-                "height": "auto",
-                "display": "block"
-            }).addClass("preview");
-
-            $('#div_view_image').empty().append(tifResult);
-            $('#tbody_batchList_answer').append(data.clone());
-            layer_open('layer3');
-            $('#div_view_image').scrollTop(0);
-            $('.batch_pop_divHeadScroll').scrollLeft(0);
-            $('.batch_pop_divBodyScroll').scrollLeft(0);
-            $('.batch_pop_divBodyScroll').scrollTop(0);
-
-        } else {
-            fn_alert('confirm', "없는 파일입니다 삭제하시겠습니까?", function () {
-
-                var param = {
-                    imgId: imgId
-                };
-                $.ajax({
-                    url: '/batchLearningTest/deleteBatchLearnList',
-                    type: 'post',
-                    datatype: "json",
-                    data: JSON.stringify(param),
-                    contentType: 'application/json; charset=UTF-8',
-                    beforeSend: function () {
-                        progressId = showProgressBar();
-                    },
-                    success: function (data) {
-                        fn_alert('alert', "삭제되었습니다.");
-                        endProgressBar(progressId);
-                        $(obj).closest('tr').remove();
-                        $('.rowNum' + rowNum).remove();
-                        $('.mlRowNum' + rowNum).remove();
-                        //searchBatchLearnDataList(addCond);
-                    },
-                    error: function (err) {
-                        endProgressBar(progressId); // end progressbar
-                        console.log(err);
-                    }
-                });
-
-            });
+        for(var i = 0; i < imgCount; i++) {
+            var pngName = filename + '-' + i + '.png';
+            appendPngHtml += '<img src="/img/' + pngName +'" style="width: 100%; height: auto; margin-bottom: 20px;">';
         }
-    });
+    }
+
+    $('#div_view_image').empty().append(appendPngHtml);
+    $('#tbody_batchList_answer').append(data.clone());
+    $('.batch_pop_tblHead thead').empty().append($('#theadTr').clone());
+    layer_open('layer3');
+    $('#div_view_image').scrollTop(0);
+    $('.batch_pop_divHeadScroll').scrollLeft(0);
+    $('.batch_pop_divBodyScroll').scrollLeft(0);
+    $('.batch_pop_divBodyScroll').scrollTop(0);
+
+    //loadImage('/tif/' + filename, function (tifResult) {
+
+    //     if (tifResult) {
+    //         $(tifResult).css({
+    //             "width": "100%",
+    //             "height": "auto",
+    //             "display": "block"
+    //         }).addClass("preview");
+
+    //         $('#div_view_image').empty().append(tifResult);
+    //         $('#tbody_batchList_answer').append(data.clone());
+    //         layer_open('layer3');
+    //         $('#div_view_image').scrollTop(0);
+    //         $('.batch_pop_divHeadScroll').scrollLeft(0);
+    //         $('.batch_pop_divBodyScroll').scrollLeft(0);
+    //         $('.batch_pop_divBodyScroll').scrollTop(0);
+
+    //     } else {
+    //         fn_alert('confirm', "없는 파일입니다 삭제하시겠습니까?", function () {
+
+    //             var param = {
+    //                 imgId: imgId
+    //             };
+    //             $.ajax({
+    //                 url: '/batchLearningTest/deleteBatchLearnList',
+    //                 type: 'post',
+    //                 datatype: "json",
+    //                 data: JSON.stringify(param),
+    //                 contentType: 'application/json; charset=UTF-8',
+    //                 beforeSend: function () {
+    //                     progressId = showProgressBar();
+    //                 },
+    //                 success: function (data) {
+    //                     fn_alert('alert', "삭제되었습니다.");
+    //                     endProgressBar(progressId);
+    //                     $(obj).closest('tr').remove();
+    //                     $('.rowNum' + rowNum).remove();
+    //                     $('.mlRowNum' + rowNum).remove();
+    //                     //searchBatchLearnDataList(addCond);
+    //                 },
+    //                 error: function (err) {
+    //                     endProgressBar(progressId); // end progressbar
+    //                     console.log(err);
+    //                 }
+    //             });
+
+    //         });
+    //     }
+    // });
 
 }
 
