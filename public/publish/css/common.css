@@ -6524,7 +6524,7 @@ input:disabled {
 }
 
 #div_view_image {
-    height: 500px !important;
+    height: 720px !important;
     overflow-y: scroll;
     width: 1620px;
 }

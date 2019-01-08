@@ -238,7 +238,7 @@ var fnSearchBatchLearningDataList = function (req, res) {
     sync.fiber(function () {
         try {
             var currentPage = req.body.page;
-
+            var addCond = req.body.addCond;
             //var retData = {};
             //hskim 20180828 일괄학습 화면 상단 셀렉트 버튼에서 값 가져오게 변경
             //var reqNum = 12;
@@ -254,7 +254,9 @@ var fnSearchBatchLearningDataList = function (req, res) {
                     filenameList.push(filename);
                     imgIdList.push(originImageArr[i].IMGID);
                 }
-                mlData = sync.await(oracle.selectBatchLearnMlListTest(imgIdList, sync.defer()));
+                if(addCond == 'LEARN_Y') {
+                    mlData = sync.await(oracle.selectBatchLearnMlListTest(imgIdList, sync.defer()));
+                }
                 answerDataList = sync.await(oracle.selectBatchLearnAnswerData(filenameList, sync.defer()));
                 res.send({ 'data': originImageArr, 'mlData': mlData, 'answerDataList': answerDataList, 'code': 200, 'pageList': paging.pagination(currentPage, originImageArr[0].TOTCNT) });
             } else {

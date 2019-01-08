@@ -1305,7 +1305,7 @@ function updateBatchLearningData(fileNames, data) {
 }
 */
 
-// [Function]
+// [Function] todo
 // main menu batch learning 1 [List] 배치학습데이터 조회
 var searchBatchLearnDataList = function (addCond, page) {
     var docToptype = $('#docToptype').val();
@@ -1359,9 +1359,23 @@ var searchBatchLearnDataList = function (addCond, page) {
                     //appendRightContentsHtml += '<tr class="rowNum' + i + '" style="height:' + (trHeight + 12) + 'px;"><td colspan="36"></td></tr>'
                     
                     var mlData = data.mlData;
-                    if (mlData) {
-                        
-                        
+
+                    if (addCond == 'LEARN_Y' && mlData && mlData.length != 0) {
+                        appendRightContentsHtml += '<tr class="mlRowNum' + i + '">' +
+                                                    '<td>' + makeMLSelect(mlData, null, 221, list[i].IMGID) + '</td> <!--BUYER-->' +
+                                                    '<td>' + makeMLSelect(mlData, null, 222, list[i].IMGID) + '</td> <!--PO Number-->' +
+                                                    '<td>' + makeMLSelect(mlData, null, 223, list[i].IMGID) + '</td> <!--PO Date-->' +
+                                                    '<td>' + makeMLSelect(mlData, null, 224, list[i].IMGID) + '</td> <!--Delivery Address-->' +
+                                                    '<td>' + makeMLSelect(mlData, null, 226, list[i].IMGID) + '</td> <!--Total Price-->' +
+                                                    '<td>' + makeMLSelect(mlData, null, 227, list[i].IMGID) + '</td> <!--Currency-->' +
+                                                    '<td>' + makeMLSelect(mlData, null, 228, list[i].IMGID) + '</td> <!--Material-->' +
+                                                    '<td>' + makeMLSelect(mlData, null, 229, list[i].IMGID) + '</td> <!--EAN-->' +
+                                                    '<td>' + makeMLSelect(mlData, null, 230, list[i].IMGID) + '</td> <!--Requested Delivery Date-->' +
+                                                    '<td>' + makeMLSelect(mlData, null, 231, list[i].IMGID) + '</td> <!--Quantity-->' +
+                                                    '<td>' + makeMLSelect(mlData, null, 232, list[i].IMGID) + '</td> <!--Unit Price-->' +
+                                                    '<td>' + makeMLSelect(mlData, null, 233, list[i].IMGID) + '</td> <!--Item Total-->' +
+                                                    '<td>' + makeMLSelect(mlData, null, 234, list[i].IMGID) + '</td> <!--Serial Number-->' +
+                                                    '</tr>';                                 
                     } 
                     if(answerDataList) {
                         var hasAnswerData = false;
@@ -1399,14 +1413,47 @@ var searchBatchLearnDataList = function (addCond, page) {
                 $('#batch_left_contents_before').empty().append(appendLeftContentsHtml);
                 $('#batch_right_contents_before').empty().append(appendRightContentsHtml);
                 
+                $('#batch_left_contents_before tr').each(function(){
+                    var leftFilename = $(this).find('td:eq(1) a').text();
+                    var length = 0;
+                    $('.mlTr').each(function(){
+                        var rightFilename = $(this).attr('data-filename');
+                        if(rightFilename == leftFilename) {
+                            length++;
+                        }
+                    })
+                    if(addCond == "LEARN_N") {
+    
+                        $(this).css('height', length == 0 ? '30px' : (length * 30) + 'px' );
+                    } else {
+                        $(this).css('height', length == 0 ? '60px' : ((length * 30) + 30) + 'px' );
+                    }
+                })
                 //$("#tbody_batchList_before").empty().append(appendHtml);
                 //compareMLAndAnswer(data);
             } else {
+
+                $('#batch_left_contents_after tr').each(function(){
+                    var leftFilename = $(this).find('td:eq(1) a').text();
+                    var length = 0;
+                    $('.mlTr').each(function(){
+                        var rightFilename = $(this).attr('data-filename');
+                        if(rightFilename == leftFilename) {
+                            length++;
+                        }
+                    })
+                    if(addCond == "LEARN_N") {
+    
+                        $(this).css('height', length == 0 ? '30px' : (length * 30) + 'px' );
+                    } else {
+                        $(this).css('height', length == 0 ? '60px' : ((length * 30) + 30) + 'px' );
+                    }
+                })
                 $('#batch_left_contents_after').empty().append(appendLeftContentsHtml);
                 $('#batch_right_contents_after').empty().append(appendRightContentsHtml);
                 //$("#tbody_batchList_after").empty().append(appendHtml);               
             }
-
+            
             $('.batchListLeftTbody tr').each(function(){
                 var leftFilename = $(this).find('td:eq(1) a').text();
                 var length = 0;
@@ -1416,8 +1463,14 @@ var searchBatchLearnDataList = function (addCond, page) {
                         length++;
                     }
                 })
-                $(this).css('height', length == 0 ? '30px' : (length * 30) + 'px' );
+                if(addCond == "LEARN_N") {
+
+                    $(this).css('height', length == 0 ? '30px' : (length * 30) + 'px' );
+                } else {
+                    $(this).css('height', length == 0 ? '60px' : ((length * 30) + 30) + 'px' );
+                }
             })
+
             endProgressBar(progressId); // end progressbar
             checkboxEvent(); // refresh checkbox event
             $('.batchListLeftTbody input[type=checkbox]').ezMark();
@@ -1440,21 +1493,17 @@ var searchBatchLearnDataList = function (addCond, page) {
 
     function makeMLSelect(mlData, colnum, entry, IMGID) {
 
-        var appendMLSelect = '<select>';
+        var appendMLSelect = '<select style="width: 100%">';
         var hasColvalue = false;
         for (var y = 0; y < mlData.length; y++) {
 
             if (mlData[y].IMGID == IMGID) {
 
                 if(entry) {
-                    if (mlData[y].COLLABEL == 0 && (mlData[y].ENTRYLABEL == entry[0] || mlData[y].ENTRYLABEL == entry[1] || mlData[y].ENTRYLABEL == entry[2] || 
-                            mlData[y].ENTRYLABEL == entry[3] || mlData[y].ENTRYLABEL == entry[4] )) {
+                    if (mlData[y].ENTRYLABEL == entry ) {
                         hasColvalue = true;
                         appendMLSelect += '<option>' + mlData[y].COLVALUE + '</option>';
                     } 
-                } else if (mlData[y].COLLABEL == colnum) {
-                    hasColvalue = true;
-                    appendMLSelect += '<option>' + mlData[y].COLVALUE + '</option>';
                 }
             }
         }
@@ -1500,12 +1549,12 @@ function fnDocTypeColumn(docTopType) {
             htmlText += "</tr></thead>";
             $(".docTableColumn").html(htmlText);
 
-            $("#docTableList > colgroup").html("");
+            $(".docTableList > colgroup").html("");
             htmlText = "";
             for (var i = 0; i < list.length; i++) {
                 htmlText += '<col style="width:200px">';               
             }
-            $("#docTableList > colgroup").html(htmlText);
+            $(".docTableList > colgroup").html(htmlText);
         },
         error: function (err) {
             console.log(err);
@@ -1683,13 +1732,8 @@ function fn_viewImageData(filename, rowNum, imgId, obj) {
     }
 
     $('#div_view_image').empty().append(appendPngHtml);
-    $('#tbody_batchList_answer').append(data.clone());
-    $('.batch_pop_tblHead thead').empty().append($('#theadTr').clone());
     layer_open('layer3');
     $('#div_view_image').scrollTop(0);
-    $('.batch_pop_divHeadScroll').scrollLeft(0);
-    $('.batch_pop_divBodyScroll').scrollLeft(0);
-    $('.batch_pop_divBodyScroll').scrollTop(0);
 
     //loadImage('/tif/' + filename, function (tifResult) {
 
@@ -2552,7 +2596,8 @@ var batchLearnTraining = function (imgIdArray, flag) {
                     }
                 });
                 endProgressBar(progressId);
-                searchBatchLearnDataList(addCond);
+                $('#tab_after').click();
+                //searchBatchLearnDataList(addCond);
                 //uiLearnTraining(['/2018/07/img1/6b/133f16b/4554894.tif']);
                 /*
                 setTimeout(function () {
