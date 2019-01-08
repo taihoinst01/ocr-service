@@ -418,9 +418,6 @@ if __name__ == '__main__':
         ocrData = sortArrLocation(ocrData)
         
         
-        # 문서양식 추출
-        docType =  bUtil.findDocType(ocrData)
-        
         # bannedword에 상관없이 similar에 사용할 5개 문장 추출
         # similarSentence = []
         # for item in ocrData:

@@ -398,8 +398,8 @@ def colLblDefaultValue(data):
 
 if __name__ == '__main__':
     try:
-        # seqnum = sys.argv[1]
-        seqnum = 391
+        seqnum = sys.argv[1]
+        # seqnum = 428
 
         ocrData = bUtil.selectOcrData(seqnum)
 
@@ -411,7 +411,7 @@ if __name__ == '__main__':
         langDetect = bUtil.langDetect(ocrData)
 
         # ocr데이터 오타수정
-        ocrData = bUtil.typoSentence(ocrData, langDetect)
+        # ocrData = bUtil.typoSentence(ocrData, langDetect)
 
         #sid 추출
         ocrData = getSid(ocrData)
@@ -419,90 +419,35 @@ if __name__ == '__main__':
         # 고정영역 추출
         ocrData = bUtil.findFixLabel(ocrData)
 
-        # TBL_OCR_BANNED_WORD 에 WORD칼럼 배열로 전부 가져오기
-        bannedWords = selectBannedWord()
+        # ml studio 호출
+        bUtil.requestML(ocrData)
 
-        # 20180911 ocr데이터 정렬 y축 기준
-        ocrData = sortArrLocation(ocrData)
+        # 문서양식 추출
+        # docType =  bUtil.findDocType(ocrData)
+        docTopType, docType = bUtil.findDocTopType(ocrData)
 
-        # bannedword에 상관없이 similar에 사용할 5개 문장 추출
-        # similarSentence = []
-        # for item in ocrData:
-        #     similarSentence.append(item)
-        #     if len(similarSentence) == 5:
-        #
+        # mappingSid 추출
+        ocrData = bUtil.getMappingSid(ocrData, docTopType)
 
-        # 문장단위로 for문
-        sentences = []
-        for item in ocrData:
-            # 문장의 앞부분이 가져올 BANNEDWORD와 일치하면 5개문장에서 제외
-            isBanned = False
-            for i in bannedWords:
-                text = item["text"]
-                if text.lower().find(str(i)) == 0:
-                    isBanned = True
-                    break
-            if not isBanned:
-                sentences.append(item)
-                if len(sentences) == 5:
-                    break
-
-                    # 최종 5개 문장이 추출되면 각문장의 단어를 TBL_OCR_SYMSPELL 에 조회후 없으면 INSERT
-        insertOcrSymspell(sentences)
-
-        # 5개문장의 SID를 EXPORT_SENTENCE_SID 함수를 통해 SID 추출
-        sentencesSid = getDocSid(sentences)
-
-        # TBL_FORM_MAPPING에 5개문장의 SID를 조회
-        formMappingRows = selectFormMapping(sentencesSid)
-
-        # TBL_DOCUMENT_SENTENCE에 5개의 문장 조회
-        ratio, documentSentenceDoctype = bUtil.classifyDocument(ocrData)
-
-        # 20180911 doc type 이 1인 경우(NOT INVOICE)는 바로 리턴 EVAL 안함 1이외의 경우는 레이블 정보 추출
         obj = {}
-
-        if formMappingRows:
-            obj["docCategory"] = selectDocCategory(formMappingRows[0][0])
-        elif documentSentenceDoctype and ratio > 0.5:
-            obj["docCategory"] = selectDocCategory(documentSentenceDoctype)
-        else:
+        if docTopType == 0:
             obj["docCategory"] = selectDocCategory(0)
+            obj["data"] = ocrData
+        else :
+            # 가변영역추출
+            ocrData = bUtil.findEntry(ocrData, docTopType, docType)
 
-        # if formMappingRows and formMappingRows[0][0] == 1:
-        #     obj["data"] = ocrData
-        #     obj["data"] = colLblDefaultValue(obj["data"])
-        # elif formMappingRows and formMappingRows[0][0] == 0:
-        #     obj["data"] = ocrData
-        #     obj["data"] = colLblDefaultValue(obj["data"])
-        # elif formMappingRows:
-        #     obj["data"] = eval(ocrData, formMappingRows[0][0])
-        # elif documentSentenceDoctype and ratio > 0.5:
-        #     obj["data"] = eval(ocrData, documentSentenceDoctype)
-        # else:
-        #     obj["data"] = eval(ocrData, azureFormMappingRows["DOCTYPE"])
+            # 주소부분추출
+            ocrData = bUtil.findDelivery(ocrData)
 
-        if formMappingRows:
-            if formMappingRows[0][0] == 1 or formMappingRows[0][0] == 0:
-                obj["data"] = ocrData
-                obj["data"] = colLblDefaultValue(obj["data"])
-            else:
-                obj["data"] = eval(ocrData, formMappingRows[0][0])
-        elif documentSentenceDoctype and ratio > 0.5:
-            if documentSentenceDoctype == 1 or documentSentenceDoctype == 0:
-                obj["data"] = ocrData
-                obj["data"] = colLblDefaultValue(obj["data"])
-            else:
-                obj["data"] = eval(ocrData, obj["docCategory"]["DOCTYPE"], obj["docCategory"]["DOCTOPTYPE"])
-        else:
-            obj["data"] = eval(ocrData, obj["docCategory"]["DOCTYPE"], obj["docCategory"]["DOCTOPTYPE"])
-
-        obj["docSid"] = sentencesSid
+            obj["docCategory"] = selectDocCategory(docType)
+            obj["data"] = ocrData
 
         result = re.sub('None', "null", json.dumps(obj, ensure_ascii=False))
 
         # 개발용
-        # print(result)
+        # for item in ocrData:
+        #    print(item)
         # 배포용
         print(base64.b64encode(result.encode('utf-8')))
 
