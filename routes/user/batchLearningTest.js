@@ -3346,6 +3346,15 @@ router.post('/batchLearnTraining', function (req, res) {
 
 });
 
+function exists(path) {
+    try {
+        fs.accessSync(path);
+    } catch (err) {
+        return false;
+    }
+    return true;
+}
+
 function batchLearnTraining(filepath, callback) {
     sync.fiber(function () {
         try {
@@ -3356,72 +3365,90 @@ function batchLearnTraining(filepath, callback) {
             var fileExt = filepath.substring(filepath.lastIndexOf(".") + 1, filepath.length);
 
             var fullFilePath = "";
+            var fullFilePathList = [];
             if (fileExt == "pdf") {
-                fullFilePath = filename + ".png";
+                var fileCount = 0;
+                while(true){
+                    if (exists(filename + "-" + fileCount + ".png")) {
+                        fullFilePathList.push(filename + "-" + fileCount + ".png");
+                        fileCount++;
+                    } else {
+                        if (fileCount == 0) {
+                            fullFilePathList.push(filename + ".png");
+                        }
+                        break;
+                    }
+                }
+                
             } else if (fileExt == "png") {
                 fullFilePath = filename + ".png";
             } else {
                 fullFilePath = filename + ".jpg";
-            } 
-
-            var selOcr = sync.await(oracle.selectOcrData(filepath, sync.defer()));
-            if (selOcr.length == 0) {
-                var ocrResult = sync.await(ocrUtil.localOcr(fullFilePath, sync.defer()));
-
-                if ((ocrResult.textAngle != "undefined" && ocrResult.textAngle > 0.01 || ocrResult.textAngle < -0.01) || ocrResult.orientation != "Up") {
-                    var angle = 0;
-
-                    if (ocrResult.orientation == "Left") {
-                        angle += 90;
-                    } else if (ocrResult.orientation == "Right") {
-                        angle += -90;
-                    } else if (ocrResult.orientation == "Down") {
-                        angle += 180;
-                    }
-
-                    angle += Math.floor(ocrResult.textAngle * 100);
-
-                    if (angle < 0) {
-                        angle += 2;
-                    } else {
-                        angle -= 1;
-                    }
-
-                    execSync('module\\imageMagick\\convert.exe -rotate "' + angle + '" ' + fullFilePath + ' ' + fullFilePath);
-
-                    ocrResult = sync.await(ocrUtil.localOcr(fullFilePath, sync.defer()));
-                }
-
-                sync.await(oracle.insertOcrData(filepath, JSON.stringify(ocrResult), sync.defer()));
-                selOcr = sync.await(oracle.selectOcrData(filepath, sync.defer()));
             }
 
-            var seqNum = selOcr.SEQNUM;
-            pythonConfig.columnMappingOptions.args = [];
-            pythonConfig.columnMappingOptions.args.push(seqNum);
-            var resPyStr = sync.await(PythonShell.run('batchClassifyTest.py', pythonConfig.columnMappingOptions, sync.defer()));
-            var testStr = resPyStr[0].replace('b', '');
-            testStr = testStr.replace(/'/g, '');
-            var decode = new Buffer(testStr, 'base64').toString('utf-8');
-
-            var resPyArr = JSON.parse(decode);
-            //resPyArr = sync.await(transPantternVar.trans(resPyArr, sync.defer()));
-            console.log(resPyArr);
-
             var retData = {};
-            retData = resPyArr;
-            retData.fileinfo = { filepath: filepath, imgId: imgid };
-            sync.await(oracle.insertMLData(retData, sync.defer()));
-            sync.await(oracle.updateBatchLearnListDocType(retData, sync.defer()));
+            for (var i = 0; i < fullFilePathList.length; i++) {
+                var selOcr = sync.await(oracle.selectOcrData(fullFilePathList[i], sync.defer()));
+                if (selOcr.length == 0) {
+                    var ocrResult = sync.await(ocrUtil.localOcr(fullFilePathList[i], sync.defer()));
 
-            var colMappingList = sync.await(oracle.selectColumn(null, sync.defer()));
-            var entryMappingList = sync.await(oracle.selectEntryMappingCls(null, sync.defer()));
-            var labelData = sync.await(oracle.selectIcrLabelDef(null, sync.defer()));
+                    if ((ocrResult.textAngle != "undefined" && ocrResult.textAngle > 0.01 || ocrResult.textAngle < -0.01) || ocrResult.orientation != "Up") {
+                        var angle = 0;
 
-            retData.column = colMappingList;
-            retData.entryMappingList = entryMappingList;
-            retData.labelData = labelData.rows;
+                        if (ocrResult.orientation == "Left") {
+                            angle += 90;
+                        } else if (ocrResult.orientation == "Right") {
+                            angle += -90;
+                        } else if (ocrResult.orientation == "Down") {
+                            angle += 180;
+                        }
 
+                        angle += Math.floor(ocrResult.textAngle * 100);
+
+                        if (angle < 0) {
+                            angle += 2;
+                        } else {
+                            angle -= 1;
+                        }
+
+                        execSync('module\\imageMagick\\convert.exe -rotate "' + angle + '" ' + fullFilePathList[i] + ' ' + fullFilePathList[i]);
+
+                        ocrResult = sync.await(ocrUtil.localOcr(fullFilePathList[i], sync.defer()));
+                    }
+
+                    sync.await(oracle.insertOcrData(fullFilePathList[i], JSON.stringify(ocrResult), sync.defer()));
+                    selOcr = sync.await(oracle.selectOcrData(fullFilePathList[i], sync.defer()));
+                }
+
+                var seqNum = selOcr.SEQNUM;
+                pythonConfig.columnMappingOptions.args = [];
+                pythonConfig.columnMappingOptions.args.push(seqNum);
+                //var resPyStr = sync.await(PythonShell.run('batchClassifyTest.py', pythonConfig.columnMappingOptions, sync.defer()));
+                var resPyStr = sync.await(PythonShell.run('samClassifyTest.py', pythonConfig.columnMappingOptions, sync.defer()));
+                var testStr = resPyStr[0].replace('b', '');
+                testStr = testStr.replace(/'/g, '');
+                var decode = new Buffer(testStr, 'base64').toString('utf-8');
+
+                var resPyArr = JSON.parse(decode);
+                //resPyArr = sync.await(transPantternVar.trans(resPyArr, sync.defer()));
+                console.log(resPyArr);
+
+                
+                retData = resPyArr;
+                retData.fileinfo = { filepath: fullFilePathList[i], imgId: imgid };
+                sync.await(oracle.insertMLData(retData, sync.defer()));
+                sync.await(oracle.updateBatchLearnListDocType(retData, sync.defer()));
+
+                var colMappingList = sync.await(oracle.selectColumn(null, sync.defer()));
+                var entryMappingList = sync.await(oracle.selectEntryMappingCls(null, sync.defer()));
+                var labelData = sync.await(oracle.selectIcrLabelDef(null, sync.defer()));
+
+                retData.column = colMappingList;
+                retData.entryMappingList = entryMappingList;
+                retData.labelData = labelData.rows;
+
+            }
+            sync.await(oracle.updateBatchLearnListStatus(imgid, sync.defer()));
             callback(null, retData);
 
         } catch (e) {

@@ -1102,7 +1102,7 @@ exports.insertMLData = function (req, done) {
                 cond.push(req.data[i].sid);
                 cond.push(req.data[i].entryLbl);
 
-                if (cond.length == 7) {
+                if (cond.length == 7 && (cond[2] > 0 || cond[6] > 0)) {
                     let colData = await conn.execute(insSql, cond);
                 }
             }
@@ -2831,6 +2831,31 @@ exports.updateBatchLearnList = function (req, done) {
             conn = await oracledb.getConnection(dbConfig);
 
             await conn.execute(`UPDATE TBL_BATCH_LEARN_LIST SET STATUS = 'D', DOCTYPE = :docType WHERE IMGID = :imgId AND FILEPATH = :filepath `, req);
+            conn.commit();
+
+            return done(null, null);
+        } catch (err) { // catches errors in getConnection and the query
+            return done(null, err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+exports.updateBatchLearnListStatus = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            await conn.execute(`UPDATE TBL_BATCH_LEARN_LIST SET STATUS = 'D' WHERE IMGID = :imgId`, [req]);
             conn.commit();
 
             return done(null, null);
