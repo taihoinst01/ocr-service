@@ -660,9 +660,9 @@ exports.selectBatchLearnList = function (req, done) {
                         (select ROW_NUMBER() OVER(ORDER BY REGDATE DESC, FILEPATH) AS NUM, 
                         COUNT('1') OVER(PARTITION BY '1') AS TOTCNT, 
                         CEIL((ROW_NUMBER() OVER(ORDER BY REGDATE DESC, FILEPATH))/ 40) PAGEIDX, 
-                        IMGID, STATUS, FILEPATH, DOCTYPE, REGDATE
+                        IMGID, STATUS, FILEPATH, DOCTYPE, REGDATE, IMGCOUNT
                         from (
-                            SELECT IMGID, STATUS, FILEPATH, A.DOCTYPE, REGDATE
+                            SELECT IMGID, STATUS, FILEPATH, A.DOCTYPE, REGDATE, IMGCOUNT
                             FROM TBL_BATCH_LEARN_LIST A
                             WHERE A.DOCTOPTYPE = ` + req.body.docToptype + `
                             ) WHERE` + condQuery + `) bll
