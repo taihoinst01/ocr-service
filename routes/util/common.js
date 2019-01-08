@@ -318,7 +318,8 @@ function uploadConvert(files, callback) {
                                 convertFileName: fileObj.originalname.split('.')[0] + '.png',
                                 fileExt: fileExt,
                                 fileSize: fileObj.size,
-                                contentType: fileObj.mimetype
+                                contentType: fileObj.mimetype,
+                                imgCount : (j + 1)
                             };
                             returnResult.fileInfo = fileItem;
                             returnResult.returnObj = fileItem.convertFileName;
