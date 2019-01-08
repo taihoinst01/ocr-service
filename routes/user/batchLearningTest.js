@@ -4494,7 +4494,7 @@ router.post('/selectIcrLabelDef', function (req, res) {
     }
     sync.fiber(function () {
         try {
-            returnObj = sync.await(oracle.selectIcrLabelDef(data, sync.defer()));
+            returnObj = sync.await(oracle.selectIcrLabelDefTest(data, sync.defer()));
         } catch (e) {
             console.log(e);
             returnObj = { code: 500, message: e };

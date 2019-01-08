@@ -4443,7 +4443,8 @@ router.post('/insertBatchLearningFileInfo', function (req, res) {
     var data = {
         imgId: req.body.fileInfo.imgId,
         filepath: req.body.fileInfo.filePath,
-        docTopType: req.body.docToptype
+        docTopType: req.body.docToptype,
+        imgCount: req.body.fileInfo.imgCount
     }
 
     sync.fiber(function () {
@@ -4460,15 +4461,11 @@ router.post('/insertBatchLearningFileInfo', function (req, res) {
 
 router.post('/selectIcrLabelDef', function (req, res) {
     var returnObj;
-    var data = req.body.docType;
-    if (data) {
-        data = data;
-    } else {
-        data = "2";
-    }
+    var docTopType = req.body.docTopType;
+
     sync.fiber(function () {
         try {
-            returnObj = sync.await(oracle.selectIcrLabelDef(data, sync.defer()));
+            returnObj = sync.await(oracle.selectIcrLabelDef(docTopType, sync.defer()));
         } catch (e) {
             console.log(e);
             returnObj = { code: 500, message: e };

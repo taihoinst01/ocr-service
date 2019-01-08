@@ -1425,99 +1425,54 @@ var searchBatchLearnDataList = function (addCond, page) {
             fnDocTypeColumn(docToptype);
             
             if (list.length != 0) {
-
+                var trHeight = 30;
+                var trLengthList = [];
                 for (var i = 0; i < list.length; i++) {
                     //var rows = list[i].rows;
+                    
                     var fileName = nvl(list[i].FILEPATH.substring((list[i].FILEPATH.lastIndexOf('/') + 1) ));
                     if (addCond == "LEARN_N") checkboxHtml = '<td scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="' + nvl(list[i].FILEPATH) + '" class="sta00" name="listCheck_before" /></td>';
                     else checkboxHtml = '<td scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="' + nvl(list[i].FILEPATH) + '" class="stb00" name="listCheck_after" /></div></td>';
-                    var trHeight = i == 0 ? 30 : 31;
-                    appendLeftContentsHtml += '<tr id="leftRowNum_' + i + '" style="height:' + trHeight + 'px;">' +
-                                                checkboxHtml +
-                                                '<td><a class="fileNamePath" data-filepath="' + nvl(list[i].FILEPATH) + '" data-imgId="' + nvl(list[i].IMGID) + '" ' +
-                                                'onclick = "javascript:fn_viewImageData(\'' + fileName + '\',\'' + i + '\', \'' + nvl(list[i].IMGID) + '\', this)" ' +
-                                                'href = "javascript:void(0);" > ' + fileName + '</a ></td > < !--FILENAME--> ' +                                                
-                                                '</tr>';
+                    appendLeftContentsHtml += '<tr id="leftRowNum_' + i + '">' +
+                    checkboxHtml +
+                    '<td><a class="fileNamePath" data-filepath="' + nvl(list[i].FILEPATH) + '" data-imgId="' + nvl(list[i].IMGID) + '" ' +
+                    'onclick = "javascript:fn_viewImageData(\'' + fileName + '\',\'' + i + '\', \'' + nvl(list[i].IMGID) + '\', this)" ' +
+                    'href = "javascript:void(0);" >' + fileName + '</a ></td > < !--FILENAME--> ' +                                                
+                    '</tr>';
+
                     //appendRightContentsHtml += '<tr class="rowNum' + i + '" style="height:' + (trHeight + 12) + 'px;"><td colspan="36"></td></tr>'
                     
                     var mlData = data.mlData;
-                    if (mlData.length != 0) {
-                        if(docToptype == 2) {
-                            appendRightContentsHtml += '<tr class="mlRowNum' + i + ' rowNum' + i + '" style="height:' + (trHeight + 12) + 'px;">' +
-                                '<td>' + makeMLSelect(mlData, null, [1, 26, 51, 76, 101], list[i].IMGID) + '</td> <!--진찰료-->' +
-                                '<td>' + makeMLSelect(mlData, null, [2, 27, 52, 77, 102], list[i].IMGID) + '</td> <!--입원료-->' +
-                                '<td>' + makeMLSelect(mlData, null, [3, 28, 53, 78, 103], list[i].IMGID) + '</td> <!--식대-->' +
-                                '<td>' + makeMLSelect(mlData, null, [4, 29, 54, 79, 104], list[i].IMGID) + '</td> <!--투약및조제료(행위료)-->' +
-                                '<td>' + makeMLSelect(mlData, null, [5, 30, 55, 80, 105], list[i].IMGID) + '</td> <!--투약 및 조제료(약품비)-->' +
-                                '<td>' + makeMLSelect(mlData, null, [6, 31, 56, 81, 106], list[i].IMGID) + '</td> <!--주사료(행위료)-->' +
-                                '<td>' + makeMLSelect(mlData, null, [7, 32, 57, 82, 107], list[i].IMGID) + '</td> <!--주사료(약품비)-->' +
-                                '<td>' + makeMLSelect(mlData, null, [8, 33, 58, 83, 108], list[i].IMGID) + '</td> <!--마취료-->' +
-                                '<td>' + makeMLSelect(mlData, null, [9, 34, 59, 84, 109], list[i].IMGID) + '</td> <!--처치 및 수술료-->' +
-                                '<td>' + makeMLSelect(mlData, null, [10, 35, 60, 85, 110], list[i].IMGID) + '</td> <!--검사료-->' +
-                                '<td>' + makeMLSelect(mlData, null, [11, 36, 61, 86, 111], list[i].IMGID) + '</td> <!--영상진단-->' +
-                                '<td>' + makeMLSelect(mlData, null, [12, 37, 62, 87, 112], list[i].IMGID) + '</td> <!--방사선료-->' +
-                                '<td>' + makeMLSelect(mlData, null, [13, 38, 63, 88, 113], list[i].IMGID) + '</td> <!--치료재료대-->' +
-                                '<td>' + makeMLSelect(mlData, null, [14, 39, 64, 89, 114], list[i].IMGID) + '</td> <!--재활및물리치료료-->' +
-                                '<td>' + makeMLSelect(mlData, null, [15, 40, 65, 90, 115], list[i].IMGID) + '</td> <!--정신요법료 -->' +
-                                '<td>' + makeMLSelect(mlData, null, [16, 41, 66, 91, 116], list[i].IMGID) + '</td> <!--전혈/혈액성분제재-->' +
-                                '<td>' + makeMLSelect(mlData, null, [17, 42, 67, 92, 117], list[i].IMGID) + '</td> <!--CT진단료-->' +
-                                '<td>' + makeMLSelect(mlData, null, [18, 43, 68, 93, 118], list[i].IMGID) + '</td> <!--MRI 진단료-->' +
-                                '<td>' + makeMLSelect(mlData, null, [19, 44, 69, 94, 119], list[i].IMGID) + '</td> <!-- PET진단료-->' +
-                                '<td>' + makeMLSelect(mlData, null, [20, 45, 70, 95, 120], list[i].IMGID) + '</td> <!--초음파진단료-->' +
-                                '<td>' + makeMLSelect(mlData, null, [21, 46, 71, 96, 121], list[i].IMGID) + '</td> <!--보철교정료-->' +
-                                '<td>' + makeMLSelect(mlData, null, [22, 47, 72, 97, 122], list[i].IMGID) + '</td> <!--기타진료비-->' +
-                                '<td>' + makeMLSelect(mlData, null, [23, 48, 73, 98, 123], list[i].IMGID) + '</td> <!--65세이상(신설)-->' +
-                                '<td>' + makeMLSelect(mlData, null, [24, 49, 74, 99, 124], list[i].IMGID) + '</td> <!--포괄수가진료비-->' +
-                                '<td>' + makeMLSelect(mlData, null, [25, 50, 75, 100, 125], list[i].IMGID) + '</td> <!--합계-->' +                            
-                                '<td>' + makeMLSelect(mlData, null, [126], list[i].IMGID) + '</td> <!--이미납부한금액-->' +
-                                '<td>' + makeMLSelect(mlData, null, [127], list[i].IMGID) + '</td> <!--납부한금액-->' +
-                                '<td>' + makeMLSelect(mlData, 128, null, list[i].IMGID) + '</td> <!--요양기관종류-->' +
-                                '<td>' + makeMLSelect(mlData, 129, null, list[i].IMGID) + '</td> <!--사업자등록번호-->' +
-                                '<td>' + makeMLSelect(mlData, 130, null, list[i].IMGID) + '</td> <!--상호-->' +
-                                '<td>' + makeMLSelect(mlData, 131, null, list[i].IMGID) + '</td> <!--성명-->' +
-                                '<td>' + makeMLSelect(mlData, 132, null, list[i].IMGID) + '</td> <!--환자구분-->' +
-                                '<td>' + makeMLSelect(mlData, 133, null, list[i].IMGID) + '</td> <!--외래/입원-->' +
-                                '<td>' + makeMLSelect(mlData, 134, null, list[i].IMGID) + '</td> <!--퇴원/중간-->' +
-                                '<td>' + makeMLSelect(mlData, 135, null, list[i].IMGID) + '</td> <!--진료기간-->' +
-                                '</tr>';
-                        } else if(docToptype == 3) {
-                            //임시
-                            appendRightContentsHtml +=
-                            '<tr class="mlRowNum' + i + '" style="height:' + (trHeight + 12) + 'px;">' +
-                            '<td colspan="35"></td>' +
-                            '</tr>';
-                        }
-                        if(docToptype == 37) {
-                            var hasAnswerData = false;
-                            if(answerDataList.length != 0) {
-                                var appendAnswerDataHtml = '';
-                                for(var j = 0; j < answerDataList.length; j++) {
-                                    if(answerDataList[j].FILENAME == fileName) {
-                                        hasAnswerData = true;
-                                        console.log(JSON.parse(data.answerDataList[j].ANSWERDATA));
-                                        var answerData = JSON.parse(data.answerDataList[j].ANSWERDATA)
-                                        appendAnswerDataHtml += '<tr class="mlTr">';
-                                        for(var k = 0; k < answerData.length; k++) {
-                                            appendAnswerDataHtml += '<td style="width:200;overflow:hidden;text-overflow;ellipsis;">' + nvl(answerData[k]) + '</td>';
-                                        }
-                                        appendAnswerDataHtml += '</tr>';
-                                    }  
-                                } 
-                                if(hasAnswerData == false) {
-                                    appendAnswerDataHtml += '<tr class="mlTr"><td colspan="' + ($('#theadTr th').length - 1) + '"></td></tr>';
-                                }
-                            } else {
+                    if (mlData) {
+                        
+                        
+                    } 
+                    if(answerDataList) {
+                        var hasAnswerData = false;
+                        if(answerDataList.length != 0) {
+                            var appendAnswerDataHtml = '';
+                            for(var j = 0; j < answerDataList.length; j++) {
+                                if(answerDataList[j].FILENAME == fileName) {
+                                    hasAnswerData = true;
+                                    
+                                    console.log(JSON.parse(data.answerDataList[j].ANSWERDATA));
+                                    var answerData = JSON.parse(data.answerDataList[j].ANSWERDATA)
+                                    appendAnswerDataHtml += '<tr class="mlTr" data-filename="' + answerDataList[j].FILENAME + '">';
+                                    for(var k = 0; k < answerData.length; k++) {
+                                        appendAnswerDataHtml += '<td style="width:200;overflow:hidden;text-overflow;ellipsis;">' + nvl(answerData[k]) + '</td>';
+                                    }
+                                    appendAnswerDataHtml += '</tr>';
+                                }  
+                            } 
+                            if(hasAnswerData == false) {
                                 appendAnswerDataHtml += '<tr class="mlTr"><td colspan="' + ($('#theadTr th').length - 1) + '"></td></tr>';
                             }
-                            appendRightContentsHtml += appendAnswerDataHtml;
+                        } else {
+                            appendAnswerDataHtml += '<tr class="mlTr"><td colspan="' + ($('#theadTr th').length - 1) + '"></td></tr>';
                         }
-                    } else {
-                        appendRightContentsHtml +=
-                            '<tr class="mlRowNum' + i + '" style="height:' + (trHeight + 12) + 'px;">' +
-                            '<td colspan="35"></td>' +
-                            '</tr>';
+                        appendRightContentsHtml += appendAnswerDataHtml;
                     }
-                    
+               
                 }
             } else {
                 appendLeftContentsHtml += '<tr style="height: 30px"><td colspan="3"></td></tr>'
@@ -1527,7 +1482,7 @@ var searchBatchLearnDataList = function (addCond, page) {
             if (addCond == "LEARN_N") {
                 $('#batch_left_contents_before').empty().append(appendLeftContentsHtml);
                 $('#batch_right_contents_before').empty().append(appendRightContentsHtml);
-
+                
                 //$("#tbody_batchList_before").empty().append(appendHtml);
                 //compareMLAndAnswer(data);
             } else {
@@ -1535,6 +1490,18 @@ var searchBatchLearnDataList = function (addCond, page) {
                 $('#batch_right_contents_after').empty().append(appendRightContentsHtml);
                 //$("#tbody_batchList_after").empty().append(appendHtml);               
             }
+
+            $('.batchListLeftTbody tr').each(function(){
+                var leftFilename = $(this).find('td:eq(1) a').text();
+                var length = 0;
+                $('.mlTr').each(function(){
+                    var rightFilename = $(this).attr('data-filename');
+                    if(rightFilename == leftFilename) {
+                        length++;
+                    }
+                })
+                $(this).css('height', length == 0 ? '30px' : (length * 30) + 'px' );
+            })
             endProgressBar(progressId); // end progressbar
             checkboxEvent(); // refresh checkbox event
             $('.batchListLeftTbody input[type=checkbox]').ezMark();
@@ -1587,13 +1554,13 @@ $(document).on('click','.li_paging',function(e){
     }
 });
 
-function fnDocTypeColumn(docType) {
+function fnDocTypeColumn(docTopType) {
     var param = {
-        'docType': docType
+        'docTopType': docTopType
     };
 
     $.ajax({
-        url: '/batchLearningTest/selectIcrLabelDef',
+        url: '/batchLearning/selectIcrLabelDef',
         type: 'post',
         datatype: "json",
         data: JSON.stringify(param),
@@ -1605,17 +1572,12 @@ function fnDocTypeColumn(docType) {
             var htmlText = "";
             htmlText = "<colgroup>";
             for (var i = 0; i < list.length; i++) {
-                if(list[i].DOCID == docType) {
-                        htmlText += '<col style="width:200px">';                         
-                }
+                htmlText += '<col style="width:200px">';                         
             }
             htmlText += '<col style="width:17px">';
             htmlText += "</colgroup><thead><tr id='theadTr'>";
             for (var i = 0; i < list.length; i++) {
-                if(list[i].DOCID == docType) {
-                    htmlText += '<th scope="row">' + list[i].ENGNM + '</th>';
-                    
-                }
+                htmlText += '<th scope="row">' + list[i].ENGNM + '</th>';              
             }
             htmlText += '<th></th>'
             htmlText += "</tr></thead>";
@@ -1624,9 +1586,7 @@ function fnDocTypeColumn(docType) {
             $("#docTableList > colgroup").html("");
             htmlText = "";
             for (var i = 0; i < list.length; i++) {
-                if(list[i].DOCID == docType) {
-                    htmlText += '<col style="width:200px">';               
-                }
+                htmlText += '<col style="width:200px">';               
             }
             $("#docTableList > colgroup").html(htmlText);
         },

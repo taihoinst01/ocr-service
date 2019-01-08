@@ -281,6 +281,7 @@ function uploadConvert(files, callback) {
 
             var isStop = false;
             var j = 0;
+
             while (!isStop) {
                 try { // 하나의 파일 안의 여러 페이지면
                     var convertFileFullPath = files.path.split('.')[0] + '-' + j + '.png';
@@ -294,10 +295,12 @@ function uploadConvert(files, callback) {
                             convertFileName: fileObj.originalname.split('.')[0] + '-' + j + '.png',
                             fileExt: fileExt,
                             fileSize: fileObj.size,
-                            contentType: fileObj.mimetype
+                            contentType: fileObj.mimetype,
+                            imgCount : (j + 1)
                         };
-                        returnResult.fileInfo.push(fileItem);
-                        returnObj.push(fileItem.convertFileName);
+ 
+                        returnResult.fileInfo = fileItem;
+                        returnResult.returnObj = fileItem.convertFileName;
                     } else {
                         isStop = true;
                         break;

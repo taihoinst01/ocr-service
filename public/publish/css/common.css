@@ -6414,7 +6414,7 @@ input:disabled {
     background-color: #D8D8D8;
 }
 
-.batchListTbody > tr > td {
+.batchListTbody > tr {
     padding: 0px !important;
     height: 30px !important;
 }
@@ -6483,7 +6483,7 @@ input:disabled {
 }
 
 .table_style03 table > tbody > tr > td {
-    padding: 8px 10px 9px;
+    /*padding: 8px 10px 9px;*/
     color: #666;
     border-bottom: solid 1px #e1e0e0;
     max-width: 80%;
@@ -6491,7 +6491,9 @@ input:disabled {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
-
+.table_style03 table > tbody > tr:first-of-type {
+    border-top: solid 1px #e1e0e0;
+}
 .table_style03 table > tbody > tr.on > td input {
     background-color: #e5e5e5;
 }
