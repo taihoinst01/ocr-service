@@ -3,9 +3,12 @@ import cx_Oracle
 import json
 import operator
 import re
+import os
 from difflib import SequenceMatcher
 from symspellpy.symspellpy import SymSpell, Verbosity
 from langdetect import detect
+import math
+import urllib.request
 
 id = "ocr"
 pw = "taiho123"
@@ -19,6 +22,9 @@ conn = cx_Oracle.connect(connInfo, encoding="UTF-8", nencoding = "UTF-8")
 curs = conn.cursor()
 rootFilePath = 'C:/ICR/image/MIG/MIG'
 regExp = "[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]"
+
+def boundaryCheck(str1, str2):
+    return abs(int(str1) - int(str2)) < 15
 
 def getColumnMappingCls():
     try:
@@ -362,7 +368,7 @@ def checkVertical(entLoc, lblLoc):
         lblwidthLoc = (int(lblLoc[3]) + int(lblLoc[1])) / 2
         entwidthLoc = (int(entLoc[3]) + int(entLoc[1])) / 2
         # entryLabel이 오른쪽에서 가까울 경우 제외
-        if -50 < entwidthLoc - lblwidthLoc < 160:
+        if -300 < entwidthLoc - lblwidthLoc < 160:
             return True
         else:
             return False
@@ -489,7 +495,7 @@ def findFixLabel(ocrData):
         for item in ocrData:
             data = item["sid"]
             if data != ["1,1,1,1,1"]:
-                trainSql = "SELECT SEQNUM, DATA, CLASS FROM TBL_BATCH_COLUMN_MAPPING_TRAIN WHERE DATA LIKE '%" + data + "%'"
+                trainSql = "SELECT SEQNUM, DATA, CLASS FROM TBL_BATCH_COLUMN_MAPPING_TRAIN WHERE DATA LIKE '%," + data + "%'"
                 curs.execute(trainSql)
                 trainRows = curs.fetchall()
 
@@ -498,47 +504,191 @@ def findFixLabel(ocrData):
                         if int(row[2]) in e:
                             item["colLbl"] = e[0]
 
-        # 고정라벨의 엔트리 추출
-        # for item in ocrData:
-        #
-        #     if "colLbl" in item:
-        #         label = item["location"]
-        #         label = label.split(",")
-        #         # 엔트리 정규식
-        #         labelValid = re.compile(item["valid"])
-        #
-        #         if item["amount"] == "single":
-        #             for entryItem in ocrData:
-        #                 entry = entryItem["location"]
-        #                 entry = entry.split(",")
-        #
-        #                 # 라벨과 엔트리가 수평으로 일치하는지 Check
-        #                 if boundaryCheck(label[1], entry[1]):
-        #                     valid = labelValid.match(entryItem["text"])
-        #
-        #                     # 해당 라벨의 정규식과 일치 하는지 확인
-        #                     if hasattr(valid, "string"):
-        #                         entryItem['entryLbl'] = item["colLbl"]
-        #                         break
-        #
-        #                 # 라벨과 엔트리가 수직으로 일치하는지 Check
-        #                 if verticalCheck(label, entry):
-        #                     valid = labelValid.match(entryItem["text"])
-        #
-        #                     # 해당 라벨의 정규식과 일치 하는지 확인
-        #                     if hasattr(valid, "string"):
-        #                         entryItem['entryLbl'] = item["colLbl"]
-        #                         break
+        return ocrData
+    except Exception as e:
+        raise Exception(str({'code': 500, 'message': 'findFixLabel error',
+                             'error': str(e).replace("'", "").replace('"', '')}))
 
+def getMappingSid(ocrData, docTopType):
+    try:
+        for item in ocrData:
+            loc = item["location"].split(',')
+            item["mappingSid"] = str(docTopType) + "," + str(loc[0]) + "," + str(loc[1]) + "," + str(
+                int(loc[0]) + int(loc[2])) + "," + str(item["sid"])
+
+        return ocrData
+    except Exception as e:
+        raise Exception(str({'code': 500, 'message': 'getMappingSid error',
+                             'error': str(e).replace("'", "").replace('"', '')}))
+
+
+def findEntry(ocrData, docTopType, docType):
+    try:
+        if docType == 7:
+            lineCheck = True
+            for item in ocrData:
+                if item["text"].lower == "line":
+                    lineCheck = False
+                    break
+
+            if lineCheck:
+                data = {'location':'182,1223,90,26','text':'LINE','originText':'LINE','sid':'99624,0,0,0,0','mappingSid':'37,182,1223,272,99624,0,0,0,0'}
+                ocrData.append(data)
+
+        labelSql = "SELECT * FROM TBL_ICR_LABEL_DEF WHERE DOCID = :docid"
+        curs.execute(labelSql, {"docid":str(docTopType)})
+        labelRows = curs.fetchall()
+
+        subLabel = []
+        fixSingleLabel = []
+        fixMultiLabel = []
+
+        for labelRow in labelRows:
+            if labelRow[4] == 'T' and labelRow[5] == 'submulti':
+                subLabel.append(labelRow[0])
+            elif labelRow[4] == 'T' and labelRow[5] == 'multi':
+                fixMultiLabel.append(labelRow[0])
+            elif labelRow[4] == 'T' and labelRow[5] == 'single':
+                fixSingleLabel.append(labelRow[0])
+
+        fixLabel = []
+        for labelRow in labelRows:
+            if labelRow[4] == 'T':
+                fixLabel.append(labelRow[0])
+
+        variLabel = []
+        for labelRow in labelRows:
+            if labelRow[4] == 'P':
+                variLabel.append(labelRow[0])
+
+        trainSql = "SELECT * FROM TBL_BATCH_COLUMN_MAPPING_TRAIN WHERE data LIKE '" + str(docTopType) + "%'"
+        curs.execute(trainSql)
+        trainRows = curs.fetchall()
+
+        # label Mapping
+        for item in ocrData:
+            mappingSid = item["mappingSid"].split(",")
+
+            for trainRow in trainRows:
+                trainData = trainRow[1].split(",")
+
+                # fix Label mapping
+                if mappingSid[4:] == trainData[4:] and int(trainRow[2]) in fixLabel:
+                    item["colLbl"] = trainRow[2]
+                # variable Label mapping
+                # 문서종류 and (Y좌표 뭉 (X좌표 or 넓이))
+                if (mappingSid[0] == trainData[0]) and int(trainRow[2]) in variLabel and (boundaryCheck(mappingSid[2], trainData[2]) and (boundaryCheck(mappingSid[1], trainData[1]) or boundaryCheck(mappingSid[3], trainData[3]))):
+                    item["colLbl"] = trainRow[2]
+
+        # subMulti entry 추출
+        for item in ocrData:
+            mappingSid = item["mappingSid"].split(",")
+
+            # subMulti label
+            if "colLbl" in item and  int(item["colLbl"]) in subLabel:
+                valid = ""
+                for labelRow in labelRows:
+                    if int(labelRow[0]) == int(item["colLbl"]):
+                        valid = labelRow[6]
+
+                # subMulti entry
+                for entry in ocrData:
+                    entrySid = entry["mappingSid"].split(",")
+                    p = re.compile(valid)
+                    # 정규식 검사 and y축 검사
+                    if p.match(entry["text"]) and checkVertical(entrySid, mappingSid):
+                        entry["subEntryLbl"] = item["colLbl"]
+
+        # multi entry 추출
+        for item in ocrData:
+            mappingSid = item["mappingSid"].split(",")
+            preVerticalLoc = int(mappingSid[2]);
+            materialCheck = 1
+
+            # multi label
+            if "colLbl" in item and int(item["colLbl"]) in fixMultiLabel:
+                valid = ""
+                for labelRow in labelRows:
+                    if int(labelRow[0]) == int(item["colLbl"]):
+                        valid = labelRow[6]
+
+                # multi entry
+                for entry in ocrData:
+                    entrySid = entry["mappingSid"].split(",")
+                    p = re.compile(valid)
+
+                    if p.match(entry["text"]) and checkVertical(entrySid, mappingSid) and int(mappingSid[2]) -15 < int(entrySid[2]) and item["text"] != entry["text"]:
+
+                        if not (int(entrySid[2]) - preVerticalLoc > 500) and "entryLbl" not in entry:
+
+                            if docType == 7 and int(item["colLbl"]) == 228:
+                                if materialCheck == 1:
+                                    if not re.search(" ", entry["text"]):
+                                        entry["entryLbl"] = item["colLbl"]
+                                        materialCheck += 1
+                                    else:
+                                        break
+                                elif materialCheck == 2:
+                                    if re.search(" ", entry["text"]):
+                                        materialCheck -= 1
+
+                            else :
+                                entry["entryLbl"] = item["colLbl"]
+
+                        preVerticalLoc = int(entrySid[2])
+
+        # single entry 추출
+        for item in ocrData:
+            mappingSid = item["mappingSid"].split(",")
+            distance = 1000
+
+            # single label
+            if "colLbl" in item and int(item["colLbl"]) in fixSingleLabel:
+                valid = ""
+                for labelRow in labelRows:
+                    if int(labelRow[0]) == int(item["colLbl"]):
+                        valid = labelRow[6]
+
+                # label 에서 가장 가까운 entry distance 측정
+                for entry in ocrData:
+                    entrySid = entry["mappingSid"].split(",")
+
+                    dx = int(entrySid[1]) - int(mappingSid[1])
+                    dy = int(entrySid[2]) - int(mappingSid[2])
+
+                    # label과 entry 거리 측정
+                    entryDistance = math.sqrt((dx * dx) + (dy * dy))
+
+                    p = re.compile(valid)
+
+                    # (정규식) and (거리) and (label 보다 낮은 위치 검사) and (자신의 label 제외)
+                    if p.match(entry["text"]) and distance > entryDistance and int(mappingSid[2]) - 15 < int(entrySid[2]) and item["text"] != entry["text"]:
+
+                        if docType == 4:
+                            if "colLbl" not in entry and (boundaryCheck(mappingSid[2], entrySid[2]) or checkVertical(entrySid,mappingSid)):
+                                distance = entryDistance
+                        else:
+                            if "colLbl" not in entry:
+                                distance = entryDistance
+
+                # 가장 가까운 entry mapping
+                for entry in ocrData:
+                    entrySid = entry["mappingSid"].split(",")
+
+                    dx = int(entrySid[1]) - int(mappingSid[1])
+                    dy = int(entrySid[2]) - int(mappingSid[2])
+
+                    entryDistance = math.sqrt((dx * dx) + (dy * dy))
+
+                    if entryDistance == distance:
+                        entry["entryLbl"] = item["colLbl"]
 
         return ocrData
     except Exception as e:
         raise Exception(str({'code': 500, 'message': 'findFixLabel error',
                              'error': str(e).replace("'", "").replace('"', '')}))
 
-        
-        
-        # 문서양식 추출 함수
+# 문서양식 추출 함수
 def findDocType(ocrData):
     try:
         # document sentence 테이블 검색
@@ -582,4 +732,86 @@ def findDocType(ocrData):
     except Exception as ex:
         raise Exception(str({'code': 500, 'message': 'findDocType error',
                              'error': str(ex).replace("'", "").replace('"', '')}))
-        
+
+def findDocTopType(ocrData):
+    try:
+        docTopType = 0
+        docType = 0
+
+        sql = "SELECT * FROM TBL_DOCUMENT_SENTENCE"
+        curs.execute(sql)
+        sentenceRows = curs.fetchall()
+
+
+        for sentenceRow in sentenceRows:
+            data = sentenceRow[1]
+
+            for item in ocrData:
+                text = re.sub(" |-|\(|\)", "", item["text"])
+
+                if data.lower() == text.lower():
+                    docType = int(sentenceRow[2])
+                    break
+
+            if docType > 0:
+                break
+
+        if docType > 0:
+            docTopTypeSql = "SELECT * FROM TBL_DOCUMENT_CATEGORY WHERE DOCTYPE = :doctype"
+            curs.execute(docTopTypeSql,{"doctype":docType})
+            docTopTypeRows = curs.fetchall()
+            docTopType = docTopTypeRows[0][4]
+
+        return docTopType, docType
+    except Exception as ex:
+        raise Exception(str({'code': 500, 'message': 'findDocType error',
+                             'error': str(ex).replace("'", "").replace('"', '')}))
+
+
+def findDelivery(ocrData):
+    try:
+        for item in ocrData:
+            if "entryLbl" in item and int(item["entryLbl"]) == 224:
+                if item["text"].lower() == "Exertis Warehouse (Altham)".lower():
+                    item["text"] =  "Exertis Warehouse (Altham) Shorten Brook Way Altham Business Park Altham Accrington, Lancashire, BB5 5YJ United Kingdom"
+                elif item["text"].lower() == "WESTCOAST MK LTD".lower():
+                    item["text"] = "WESTCOAST MK LTD EMERALD GATE FOX MILNE TONGWELL STREET MILTON KEYNES MK15 0SF"
+                elif item["text"].lower() == "MVN Betrieb Neuendorf".lower():
+                    item["text"] = "MVN Betrieb Neuendorf 4623 Neuendorf"
+                elif item["text"].lower() == "Blue Orange IT Ltd".lower():
+                    item["text"] = "Blue Orange IT Ltd Rainbow House Railway Road ADLINGTON CHORLEY PR6 9RB"
+                elif item["text"].lower() == "Midwich Ltd c/o Kuehne + Nagel(Goods In)".lower():
+                    item["text"] = "Midwich Ltd c/o Kuehne + Nagel(Goods In) DC3 Prologis Park Midpoint Way Minworth SUTTON COLDFIELD BIRMINGHAM B76 9EH"
+
+        return ocrData
+    except Exception as ex:
+        raise Exception(str({'code': 500, 'message': 'findDocType error',
+                             'error': str(ex).replace("'", "").replace('"', '')}))
+
+def requestML(ocrData):
+    data = {
+        "Inputs": {
+        },
+        "GlobalParameters": {
+        }
+    }
+
+    body = str.encode(json.dumps(data))
+
+    url = 'https://ussouthcentral.services.azureml.net/workspaces/2fe3537ce3444ca393232350f4305538/services/e3435bf4201e4d59825751de4332a9f5/execute?api-version=2.0&format=swagger'
+    api_key = 'H95TSIp0dMEYy6fiz0Rfrg/MCR5PgGqdSDfDKT0QQGhqRuzIRr6reb5JfvbB2BnAWrsNEZJC4pUOOsCBF2tDFQ=='  # Replace this with the API key for the web service
+    headers = {'Content-Type': 'application/json', 'Authorization': ('Bearer ' + api_key)}
+
+    req = urllib.request.Request(url, body, headers)
+
+    try:
+        response = urllib.request.urlopen(req)
+
+        result = response.read()
+
+    except urllib.request.HTTPError as error:
+        print("The request failed with status code: " + str(error.code))
+
+        # Print the headers - they include the requert ID and the timestamp, which are useful for debugging the failure
+        print(error.info())
+        print(json.loads(error.read()))
