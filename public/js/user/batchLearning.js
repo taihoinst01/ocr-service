@@ -361,7 +361,6 @@ function fileUpload() {
     multiUploadForm.ajaxForm({
         beforeSubmit: function (data, frm, opt) {
             $("#progressMsgTitle").html("Preparing to upload files...");
-            progressId = showProgressBar();
             //startProgressBar();
             //addProgressBar(6, 99);
             return true;
@@ -371,26 +370,21 @@ function fileUpload() {
                 console.log("upload excel data : " + JSON.stringify(responseText));
                 $("#progressMsgTitle").html("uploading excel files...");
                 endProgressBar(progressId);
+                searchBatchLearnDataList(addCond);
             } else if (responseText.type == 'image') {
                 console.log("upload image data : " + JSON.stringify(responseText));
                 $("#progressMsgTitle").html("uploading image files...");
                 // FILE INFO, BATCH LEARNING BASE DATA INSERT TO DB
                 var totCount = responseText.message.length;
+                var fileInfoList = [];
+                var fileNameList = [];
                 for (var i = 0; i < totCount; i++) {
-                    var lastYN = false;
-                    var fileInfo = responseText.fileInfo[i];
-                    var fileName = responseText.message[i];
-                    console.log("fileInfo : " + JSON.stringify(fileInfo));
-                    console.log("fileName : " + JSON.stringify(fileName));
-                    if (i === (totCount - 1)) {
-                        lastYN = true;
-                        fn_alert('alert', "등록이 완료되었습니다.");
-                        endProgressBar(progressId);
-                    }
+                    fileInfoList.push(responseText.fileInfo[i]);
+                    fileNameList.push(responseText.message[i]);
                     //insertFileDB(responseText.fileInfo[i], responseText.message[i], lastYN); // FILE INFO INSERT
                     //insertBatchLearningBaseData(responseText.fileInfo[i], responseText.message[i], lastYN);  // BATCH LEARNING BASE DATA INSERT
-                    insertBatchLearningFileInfo(responseText.fileInfo[i], responseText.message[i], lastYN); // BATCH LEARNING FILE INFO INSERT
                 }
+                insertBatchLearningFileInfo(fileInfoList); // BATCH LEARNING FILE INFO INSERT
                 //endProgressBar();
             }
         },
@@ -402,10 +396,10 @@ function fileUpload() {
 }
 
 // INSERT DB BATCH LEARNING FILE INFO
-var insertBatchLearningFileInfo = function (fileInfo, fileName, lastYN) {
-    if (fileInfo) {
+var insertBatchLearningFileInfo = function (fileInfoList) {
+    if (fileInfoList) {
         var docToptype = $('#docToptype').val();
-        var param = { 'fileInfo': fileInfo, 'docToptype': docToptype };
+        var param = { 'fileInfoList': fileInfoList, 'docToptype': docToptype };
         $.ajax({
             url: '/batchLearning/insertBatchLearningFileInfo',
             type: 'post',
@@ -416,12 +410,11 @@ var insertBatchLearningFileInfo = function (fileInfo, fileName, lastYN) {
                 //addProgressBar(91, 100);
             },
             success: function (data) {
-                console.log("SUCCESS insertFileInfo : " + JSON.stringify(data));
+                //onsole.log("SUCCESS insertFileInfo : " + JSON.stringify(data));
                 endProgressBar();
-                if (lastYN) {
-                    //fn_alert('alert', "파일 등록이 완료되었습니다.");
-                    searchBatchLearnDataList("LEARN_N");
-                }
+                searchBatchLearnDataList("LEARN_N");
+                fn_alert('alert', "파일 등록이 완료되었습니다.");
+                
             },
             error: function (err) {
                 console.log(err);
@@ -1338,7 +1331,6 @@ var searchBatchLearnDataList = function (addCond, page) {
             console.log(data);
             var list = data.data;
             var answerDataList = data.answerDataList;
-            fnDocTypeColumn(docToptype);
             
             if (list.length != 0) {
                 var trHeight = 30;
@@ -1379,8 +1371,9 @@ var searchBatchLearnDataList = function (addCond, page) {
                     } 
                     if(answerDataList) {
                         var hasAnswerData = false;
+                        var appendAnswerDataHtml = '';
+                        var colspanLength = $('.theadTr:eq(0) th').length;
                         if(answerDataList.length != 0) {
-                            var appendAnswerDataHtml = '';
                             for(var j = 0; j < answerDataList.length; j++) {
                                 if(answerDataList[j].FILENAME == fileName) {
                                     hasAnswerData = true;
@@ -1395,10 +1388,10 @@ var searchBatchLearnDataList = function (addCond, page) {
                                 }  
                             } 
                             if(hasAnswerData == false) {
-                                appendAnswerDataHtml += '<tr class="mlTr"><td colspan="' + ($('#theadTr th').length - 1) + '"></td></tr>';
+                                appendAnswerDataHtml += '<tr class="mlTr"><td colspan="' + colspanLength + '"></td></tr>';
                             }
                         } else {
-                            appendAnswerDataHtml += '<tr class="mlTr"><td colspan="' + ($('#theadTr th').length - 1) + '"></td></tr>';
+                            appendAnswerDataHtml += '<tr class="mlTr"><td colspan="' + colspanLength + '"></td></tr>';
                         }
                         appendRightContentsHtml += appendAnswerDataHtml;
                     }
@@ -1541,7 +1534,7 @@ function fnDocTypeColumn(docTopType) {
                 htmlText += '<col style="width:200px">';                         
             }
             htmlText += '<col style="width:17px">';
-            htmlText += "</colgroup><thead><tr id='theadTr'>";
+            htmlText += "</colgroup><thead><tr class='theadTr'>";
             for (var i = 0; i < list.length; i++) {
                 htmlText += '<th scope="row">' + list[i].ENGNM + '</th>';              
             }
@@ -3291,12 +3284,12 @@ function fn_selectDocTopType(docToptype) {
         contentType: 'application/json; charset=UTF-8',
         beforeSend: function () {
             $('#docToptype').empty();
-            $('.newDocEdit').hide();
             $("#progressMsgTitle").html("Search DocList...");
             progressId = showProgressBar();
         },
         success: function (data) {
             //console.log(data);
+            endProgressBar(progressId);
             var appendOptionHtml = '';
             if(data) {
                 var docToptypeList = data.docToptypeList;
@@ -3314,6 +3307,10 @@ function fn_selectDocTopType(docToptype) {
                 }
 
                 $('#docToptype').append(appendOptionHtml);
+                var docToptype = $('#docToptype').val();
+                $('#docTopTypeValue').val(docToptype);
+                $('#docToptype').stbDropdown();
+                fnDocTypeColumn(docToptype);
                 searchBatchLearnDataList(addCond);   // 배치 학습 데이터 조회
             } 
         }

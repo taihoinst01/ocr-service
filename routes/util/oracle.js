@@ -1769,24 +1769,25 @@ exports.selectBatchLearnMlList = function (filePathList, done) {
     });
 };
 
-exports.selectBatchLearnAnswerData = function (fileNameList, done) {
+exports.selectBatchLearnAnswerData = function (arg, done) {
     return new Promise(async function (resolve, reject) {
         let conn;
         let result;
 
         try {
             conn = await oracledb.getConnection(dbConfig);
-
+            var filenameList = arg.filenameList;
+            var docToptype = arg.docToptype;
             var inQuery = "(";
-            for (var i in fileNameList) {
-                inQuery += "'" + fileNameList[i] + "',";
+            for (var i in filenameList) {
+                inQuery += "'" + filenameList[i] + "',";
             }
             inQuery = inQuery.substring(0, inQuery.length - 1);
             inQuery += ")";
 
-            var query = "select docid, answerdata, filename from tbl_batch_po_answer_data where filename in" + inQuery;
+            var query = "select docid, answerdata, filename from tbl_batch_po_answer_data where docid = :doctoptype and filename in" + inQuery;
                         
-            result = await conn.execute(query, []);
+            result = await conn.execute(query, [docToptype]);
 
 
             return done(null, result.rows);
@@ -3340,9 +3341,13 @@ exports.insertBatchLearningFileInfo = function (req, done) {
         let result;
         var dateArr = [];
         try {
+            var fileInfoList = req.fileInfoList;
             conn = await oracledb.getConnection(dbConfig);
-
-            await conn.execute("INSERT INTO TBL_BATCH_LEARN_LIST VALUES (:imgId, 'T', :filePath, null, sysdate, :docToptype, :imgCount)", req);
+            
+            for(var i = 0; i < fileInfoList.length; i++) {
+                var param = [fileInfoList[i].imgId, fileInfoList[i].filePath, req.docToptype, fileInfoList[i].imgCount];
+                await conn.execute("INSERT INTO TBL_BATCH_LEARN_LIST VALUES (:imgId, 'T', :filePath, null, sysdate, :docToptype, :imgCount)", param);
+            }
 
             return done(null, null);
         } catch (err) { // catches errors in getConnection and the query

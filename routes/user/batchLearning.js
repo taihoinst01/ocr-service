@@ -239,6 +239,7 @@ var fnSearchBatchLearningDataList = function (req, res) {
         try {
             var currentPage = req.body.page;
             var addCond = req.body.addCond;
+            var docToptype = req.body.docToptype;
             //var retData = {};
             //hskim 20180828 일괄학습 화면 상단 셀렉트 버튼에서 값 가져오게 변경
             //var reqNum = 12;
@@ -257,7 +258,11 @@ var fnSearchBatchLearningDataList = function (req, res) {
                 if(addCond == 'LEARN_Y') {
                     mlData = sync.await(oracle.selectBatchLearnMlListTest(imgIdList, sync.defer()));
                 }
-                answerDataList = sync.await(oracle.selectBatchLearnAnswerData(filenameList, sync.defer()));
+                var param = {
+                    'filenameList': filenameList,
+                    'docToptype': docToptype
+                };
+                answerDataList = sync.await(oracle.selectBatchLearnAnswerData(param, sync.defer()));
                 res.send({ 'data': originImageArr, 'mlData': mlData, 'answerDataList': answerDataList, 'code': 200, 'pageList': paging.pagination(currentPage, originImageArr[0].TOTCNT) });
             } else {
                 res.send({ 'data': originImageArr, 'mlData': mlData, 'code': 200});
@@ -4442,16 +4447,14 @@ router.post('/insertDoctypeMapping', function (req, res) {
 router.post('/insertBatchLearningFileInfo', function (req, res) {
     var returnObj;
 
-    var data = {
-        imgId: req.body.fileInfo.imgId,
-        filepath: req.body.fileInfo.filePath,
-        docTopType: req.body.docToptype,
-        imgCount: req.body.fileInfo.imgCount
+    var param = {
+        fileInfoList: req.body.fileInfoList,
+        docToptype: req.body.docToptype
     }
 
     sync.fiber(function () {
         try {
-            returnObj = sync.await(oracle.insertBatchLearningFileInfo(data, sync.defer()));
+            returnObj = sync.await(oracle.insertBatchLearningFileInfo(param, sync.defer()));
         } catch (e) {
             console.log(e);
             returnObj = { code: 500, message: e };
