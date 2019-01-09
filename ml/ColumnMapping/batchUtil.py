@@ -683,6 +683,10 @@ def findEntry(ocrData, docTopType, docType):
                     if entryDistance == distance:
                         entry["entryLbl"] = item["colLbl"]
 
+        for item in ocrData:
+            if "colLbl" not in item and "entryLbl" not in item:
+                item["colLbl"] = -1
+
         return ocrData
     except Exception as e:
         raise Exception(str({'code': 500, 'message': 'findFixLabel error',

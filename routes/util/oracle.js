@@ -460,7 +460,7 @@ exports.insertColumnMapping = function (req, done) {
     });
 };
 
-exports.insertBatchColumnMapping = function (req, filepath, before, done) {
+exports.insertBatchColumnMapping = function (req, docTopType, before, done) {
     return new Promise(async function (resolve, reject) {
         let conn;
         try {
@@ -470,26 +470,26 @@ exports.insertBatchColumnMapping = function (req, filepath, before, done) {
             let selectLearnListSqlText = `SELECT DOCTYPE FROM TBL_BATCH_LEARN_LIST WHERE FILEPATH = :filepath`;
             let updateBatchColumnMapping = 'UPDATE TBL_BATCH_COLUMN_MAPPING_TRAIN SET CLASS = :class WHERE DATA = :data';
 
-            var resLearnList = await conn.execute(selectLearnListSqlText, [filepath]);
-            if (resLearnList.rows[0]) {
-                var sidSplit = req.sid.split(",");
-                var len = sidSplit.length;
-                var textSid = sidSplit[len - 5] + "," + sidSplit[len - 4] + "," + sidSplit[len - 3] + "," + sidSplit[len - 2] + "," + sidSplit[len - 1];
+            //var resLearnList = await conn.execute(selectLearnListSqlText, [filepath]);
 
-                var locSplit = req.location.split(",");
+            var sidSplit = req.sid.split(",");
+            var len = sidSplit.length;
+            var textSid = sidSplit[len - 5] + "," + sidSplit[len - 4] + "," + sidSplit[len - 3] + "," + sidSplit[len - 2] + "," + sidSplit[len - 1];
 
-                var sid = resLearnList.rows[0].DOCTYPE + "," + req.sid;
+            var locSplit = req.location.split(",");
 
-                var result = await conn.execute(selectSqlText, [sid, before.colLbl]);
+            var sid = docTopType + "," + req.sid;
 
-                if (result.rows.length == 0) {
-                    if ((req.colLbl != 0 && textSid != "0,0,0,0,0") && !(req.colLbl == -1 && textSid == "1,1,1,1,1")) {
-                        await conn.execute(insertSqlText, [sid, req.colLbl]);
-                    }
-                } else {
-                    await conn.execute(updateBatchColumnMapping, [req.colLbl, sid]);
+            var result = await conn.execute(selectSqlText, [sid, before.colLbl]);
+
+            if (result.rows.length == 0) {
+                if ((req.colLbl != 0 && textSid != "0,0,0,0,0") && !(req.colLbl == -1 && textSid == "1,1,1,1,1")) {
+                    await conn.execute(insertSqlText, [sid, req.colLbl]);
                 }
+            } else {
+                await conn.execute(updateBatchColumnMapping, [req.colLbl, sid]);
             }
+
             return done(null, req);
         } catch (err) {
             reject(err);

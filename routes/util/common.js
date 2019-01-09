@@ -449,6 +449,7 @@ router.post('/modifyBatchUiTextData', function (req, res) {
     var beforeData = req.body.beforeData;
     var afterData = req.body.afterData;
     var filepath = req.body.beforeData.fileinfo.filepath;
+    var docTopType = beforeData.docCategory.DOCTOPTYPE;
     var returnObj;
     sync.fiber(function () {
         try {
@@ -467,8 +468,8 @@ router.post('/modifyBatchUiTextData', function (req, res) {
                         }
                         afterData.data[i].sid = sync.await(oracle.selectSid(beforeData.data[j], sync.defer()));
                         //라벨이 변경된 경우만 트레이닝 insert
-                        if (afterData.data[i].colLbl != beforeData.data[j].colLbl) {
-                            sync.await(oracle.insertBatchColumnMapping(afterData.data[i], filepath, beforeData.data[j], sync.defer()));
+                        if (afterData.data[i].colLbl != beforeData.data[j].colLbl && beforeData.data[j].colLbl >= -1) {
+                            sync.await(oracle.insertBatchColumnMapping(afterData.data[i], docTopType, beforeData.data[j], sync.defer()));
                         }
                     }
                 }
