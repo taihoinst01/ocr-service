@@ -1460,7 +1460,7 @@ var searchBatchLearnDataList = function (addCond, page) {
                 })               
                 //$("#tbody_batchList_after").empty().append(appendHtml);               
             }
-            
+            $('.batch_tbl_right_divBodyScroll').scrollTop(0).scrollLeft(0);
             endProgressBar(progressId); // end progressbar
             checkboxEvent(); // refresh checkbox event
             $('.batchListLeftTbody input[type=checkbox]').ezMark();
@@ -1506,7 +1506,6 @@ var searchBatchLearnDataList = function (addCond, page) {
 $(document).on('click','.li_paging',function(e){
     if(!$(this).hasClass('active')){
         searchBatchLearnDataList(addCond, $(this).val());
-        $('#right_contents').scrollTop(0).scrollLeft(0);
     }
 });
 
