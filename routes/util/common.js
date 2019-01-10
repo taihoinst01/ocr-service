@@ -57,7 +57,7 @@ router.post('/excelUpload', upload.any(), function (req, res) {
         console.log("!!!!!!!!!!!!!!!!!!!!!!! excelupload");
         let returnObj = {};
         let param = {};
-        var docId = req.body.docTopType;
+        var docId = req.body.docToptype;
         var dataExcel = req.files[0].path;
         var dataExcelWorkbook = xlsx.readFile(dataExcel);
         var dataExcelSheet = dataExcelWorkbook.Sheets[dataExcelWorkbook.SheetNames[0]];      
@@ -81,7 +81,7 @@ router.post('/excelUpload', upload.any(), function (req, res) {
         //console.log(dataResult);
         param = {'dataResult': dataResult, 'docId': docId};
         sync.await(oracle.insertExcelAnswerData(param, sync.defer()));     
-        res.send();
+        res.send({'code': '200', 'type': 'excel'});
     });
 
     //console.log(dataExcelWorkbook);
@@ -115,10 +115,10 @@ router.post('/excelUpload', upload.any(), function (req, res) {
     //        continue;
     //    }
     //}
-    res.send({'code': '200', 'type': 'excel'});
+    //res.send({'code': '200', 'type': 'excel'});
 });
 
- router.post('/imageUpload', upload.any(), function (req, res) {
+router.post('/imageUpload', upload.any(), function (req, res) {
     sync.fiber(function () {
         var files = req.files;
         
@@ -137,7 +137,7 @@ router.post('/excelUpload', upload.any(), function (req, res) {
                 
             function finalize(err) {
                 if (err) console.log(err);
-                console.log('done');
+                console.log('upload suceess');
                 res.send({ code: 200, message: returnObj, fileInfo: fileInfo, type: 'image' });
             }         
         );
