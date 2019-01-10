@@ -3190,7 +3190,7 @@ h3.tits span {
 
 .pop_popup0 .pop_content {
     display: block;
-    max-height: 860px;
+    height: 710px;
     padding: 26px;
 }
 
@@ -6403,7 +6403,7 @@ input:disabled {
 
 .doc_popup {
     width: 1600px !important;
-    height: 720px !important;
+    height: 650px !important;
 }
 
 .batch_pop2 .imgtmb_b {
@@ -6524,11 +6524,14 @@ input:disabled {
 }
 
 #div_view_image {
-    height: 720px !important;
+    height: 680px !important;
     overflow-y: scroll;
-    width: 1620px;
+    width: 100%;
+    margin-bottom: 10px;
 }
-
+.pop3_content2 {
+    height: 50px;
+}
 .pop_image_data {
     height: 200px;
 }
