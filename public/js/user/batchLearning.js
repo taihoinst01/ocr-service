@@ -1418,7 +1418,7 @@ var searchBatchLearnDataList = function (addCond, page) {
                 }
             } else {
                 appendLeftContentsHtml += '<tr style="height: 30px"><td colspan="3"></td></tr>'
-                appendRightContentsHtml += '<tr><td colspan="35">조회할 데이터가 없습니다.</td></tr>';
+                appendRightContentsHtml += '<tr><td colspan="13">조회할 데이터가 없습니다.</td></tr>';
             }
             //$(appendHtml).appendTo($("#tbody_batchList")).slideDown('slow');
             if (addCond == "LEARN_N") {
@@ -1428,61 +1428,38 @@ var searchBatchLearnDataList = function (addCond, page) {
                 $('#batch_left_contents_before tr').each(function(){
                     var leftFilename = $(this).find('td:eq(1) a').text();
                     var length = 0;
-                    $('.mlTr').each(function(){
+                    $('#batch_left_contents_before .mlTr').each(function(){
                         var rightFilename = $(this).attr('data-filename');
                         if(rightFilename == leftFilename) {
                             length++;
                         }
                     })
-                    if(addCond == "LEARN_N") {
-    
-                        $(this).css('height', length == 0 ? '30px' : (length * 30) + 'px' );
-                    } else {
-                        $(this).css('height', length == 0 ? '60px' : ((length * 30) + 30) + 'px' );
-                    }
+
+                    $(this).css('height', length == 0 ? '30px' : (length * 30) + 'px' );
+
                 })
                 //$("#tbody_batchList_before").empty().append(appendHtml);
                 //compareMLAndAnswer(data);
             } else {
+                $('#batch_left_contents_after').empty().append(appendLeftContentsHtml);
+                $('#batch_right_contents_after').empty().append(appendRightContentsHtml);
 
                 $('#batch_left_contents_after tr').each(function(){
                     var leftFilename = $(this).find('td:eq(1) a').text();
                     var length = 0;
-                    $('.mlTr').each(function(){
+                    $('#batch_right_contents_after .mlTr').each(function(){
                         var rightFilename = $(this).attr('data-filename');
                         if(rightFilename == leftFilename) {
                             length++;
                         }
                     })
-                    if(addCond == "LEARN_N") {
-    
-                        $(this).css('height', length == 0 ? '30px' : (length * 30) + 'px' );
-                    } else {
-                        $(this).css('height', length == 0 ? '60px' : ((length * 30) + 30) + 'px' );
-                    }
+
+                    $(this).css('height', length == 0 ? '60px' : ((length * 30) + 30) + 'px' );
+                    
                 })
-                $('#batch_left_contents_after').empty().append(appendLeftContentsHtml);
-                $('#batch_right_contents_after').empty().append(appendRightContentsHtml);
                 //$("#tbody_batchList_after").empty().append(appendHtml);               
             }
             
-            $('.batchListLeftTbody tr').each(function(){
-                var leftFilename = $(this).find('td:eq(1) a').text();
-                var length = 0;
-                $('.mlTr').each(function(){
-                    var rightFilename = $(this).attr('data-filename');
-                    if(rightFilename == leftFilename) {
-                        length++;
-                    }
-                })
-                if(addCond == "LEARN_N") {
-
-                    $(this).css('height', length == 0 ? '30px' : (length * 30) + 'px' );
-                } else {
-                    $(this).css('height', length == 0 ? '60px' : ((length * 30) + 30) + 'px' );
-                }
-            })
-
             endProgressBar(progressId); // end progressbar
             checkboxEvent(); // refresh checkbox event
             $('.batchListLeftTbody input[type=checkbox]').ezMark();
