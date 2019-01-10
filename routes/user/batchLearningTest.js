@@ -2110,7 +2110,7 @@ router.post('/uiLearnTraining', function (req, res) {
 function uiLearnTraining(filepath, callback) {
     sync.fiber(function () {
         try {
-            var imgid = sync.await(oracle.selectImgid(filepath, sync.defer()));
+            var imgid = sync.await(oracle.selectImgidUi(filepath, sync.defer()));
             imgid = imgid.rows[0].IMGID;
 
             var filename = filepath.substring(0, filepath.lastIndexOf("."));
@@ -2138,7 +2138,7 @@ function uiLearnTraining(filepath, callback) {
                 fullFilePath = filename + ".jpg";
             }
 
-            var retData = {};
+            var retDataList = [];
             for (var i = 0; i < fullFilePathList.length; i++) {
                 var selOcr = sync.await(oracle.selectOcrData(fullFilePathList[i], sync.defer()));
                 if (selOcr.length == 0) {
@@ -2185,22 +2185,19 @@ function uiLearnTraining(filepath, callback) {
                 //resPyArr = sync.await(transPantternVar.trans(resPyArr, sync.defer()));
                 console.log(resPyArr);
 
-
+                var retData = {};
                 retData = resPyArr;
                 retData.fileinfo = { filepath: fullFilePathList[i], imgId: imgid };
                 sync.await(oracle.insertMLData(retData, sync.defer()));
                 sync.await(oracle.updateBatchLearnListDocType(retData, sync.defer()));
 
-                var colMappingList = sync.await(oracle.selectColumn(null, sync.defer()));
-                var entryMappingList = sync.await(oracle.selectEntryMappingCls(null, sync.defer()));
                 var labelData = sync.await(oracle.selectIcrLabelDef(retData.docCategory.DOCTOPTYPE, sync.defer()));
 
-                retData.column = colMappingList;
-                retData.entryMappingList = entryMappingList;
                 retData.labelData = labelData.rows;
 
+                retDataList.push(retData);
             }
-            callback(null, retData);
+            callback(null, retDataList);
 
         } catch (e) {
             console.log(e);

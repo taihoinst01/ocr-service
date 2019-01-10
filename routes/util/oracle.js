@@ -3416,6 +3416,31 @@ exports.selectImgid = function (req, done) {
     });
 };
 
+exports.selectImgidUi = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+        var dateArr = [];
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            result = await conn.execute("select imgid from tbl_batch_learn_list where filepath = :filePath and status = 'D'", [req]);
+
+            return done(null, result);
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
 exports.selectIcrDocTopType = function (req, done) {
     return new Promise(async function (resolve, reject) {
         let conn;

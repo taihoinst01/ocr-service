@@ -448,7 +448,7 @@ router.post('/modifyTextData', function (req, res) {
 router.post('/modifyBatchUiTextData', function (req, res) {
     var beforeData = req.body.beforeData;
     var afterData = req.body.afterData;
-    var filepath = req.body.beforeData.fileinfo.filepath;
+    //var filepath = req.body.beforeData.fileinfo.filepath;
     var docTopType = beforeData.docCategory.DOCTOPTYPE;
     var returnObj;
     sync.fiber(function () {
