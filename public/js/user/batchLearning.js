@@ -1466,7 +1466,7 @@ var searchBatchLearnDataList = function (addCond, page) {
             imgPopupEvent();
             checkBoxCssEvent('#batch_left_contents_before');
             checkBoxCssEvent('#batch_left_contents_after');
-            $('#paginationDiv').empty().append(data.pageList);
+            $('.paginationDiv').empty().append(data.pageList);
         },
         error: function (err) {
             endProgressBar(progressId); // end progressbar
