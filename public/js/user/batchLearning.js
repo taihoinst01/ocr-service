@@ -1400,7 +1400,7 @@ var searchBatchLearnDataList = function (addCond, page) {
                                     
                                     //console.log(JSON.parse(data.answerDataList[j].ANSWERDATA));
                                     var answerData = JSON.parse(data.answerDataList[j].ANSWERDATA)
-                                    appendAnswerDataHtml += '<tr class="mlTr" data-filename="' + answerDataList[j].FILENAME + '">';
+                                    appendAnswerDataHtml += '<tr class="answerTr answerRowNum' + i + '" data-filename="' + answerDataList[j].FILENAME + '">';
                                     for(var k = 0; k < answerData.length; k++) {
                                         appendAnswerDataHtml += '<td style="width:200;overflow:hidden;text-overflow;ellipsis;">' + nvl(answerData[k]) + '</td>';
                                     }
@@ -1408,10 +1408,10 @@ var searchBatchLearnDataList = function (addCond, page) {
                                 }  
                             } 
                             if(hasAnswerData == false) {
-                                appendAnswerDataHtml += '<tr class="mlTr"><td colspan="' + colspanLength + '"></td></tr>';
+                                appendAnswerDataHtml += '<tr class="answerTr"><td colspan="' + colspanLength + '"></td></tr>';
                             }
                         } else {
-                            appendAnswerDataHtml += '<tr class="mlTr"><td colspan="' + colspanLength + '"></td></tr>';
+                            appendAnswerDataHtml += '<tr class="answerTr"><td colspan="' + colspanLength + '"></td></tr>';
                         }
                         appendRightContentsHtml += appendAnswerDataHtml;
                     }
@@ -1429,7 +1429,7 @@ var searchBatchLearnDataList = function (addCond, page) {
                 $('#batch_left_contents_before tr').each(function(){
                     var leftFilename = $(this).find('td:eq(1) a').text();
                     var length = 0;
-                    $('#batch_right_contents_before .mlTr').each(function(){
+                    $('#batch_right_contents_before .answerTr').each(function(){
                         var rightFilename = $(this).attr('data-filename');
                         if(rightFilename == leftFilename) {
                             length++;
@@ -1448,7 +1448,7 @@ var searchBatchLearnDataList = function (addCond, page) {
                 $('#batch_left_contents_after tr').each(function(){
                     var leftFilename = $(this).find('td:eq(1) a').text();
                     var length = 0;
-                    $('#batch_right_contents_after .mlTr').each(function(){
+                    $('#batch_right_contents_after .answerTr').each(function(){
                         var rightFilename = $(this).attr('data-filename');
                         if(rightFilename == leftFilename) {
                             length++;
@@ -1457,7 +1457,7 @@ var searchBatchLearnDataList = function (addCond, page) {
 
                     $(this).css('height', length == 0 ? '60px' : ((length * 30) + 30) + 'px' );
                     
-                })
+                })               
                 //$("#tbody_batchList_after").empty().append(appendHtml);               
             }
             

@@ -234,8 +234,8 @@ body.bg_login { background-image: url(../img/bg_login.png); width: 100%;height: 
 .bl_content_title { font-weight: bold; font-family: 'NanumGothicR'; font-size: 20px; margin: 4px 0 10px 5px; color: #4C5059;}
 .bl_btn_div { margin: 20px 0 10px 0; }
 #content-6 { border-left: 1px solid #D8D8D8; border-bottom: 1px solid #D8D8D8; border-radius: 10px 0 0 10px; }
-.batchListTbody .mlTr ul { top: 15px !important; width:-webkit-calc(100% - 5px) !important; border-radius: 0 0 10px 10px !important;}
-.batchListTbody .mlTr li { margin-left: 5px; }
+.batchListTbody .answerTr ul { top: 15px !important; width:-webkit-calc(100% - 5px) !important; border-radius: 0 0 10px 10px !important;}
+.batchListTbody .answerTr li { margin-left: 5px; }
 .td_bannedword { text-align: initial; }
 .inputst_box01.ui_doc_pop_ipt { border-radius: 5px; }
 .batch_layer4_tblHead_title { border-radius: 0 5px 0 0; }
@@ -6408,7 +6408,7 @@ input:disabled {
     height: 596px !important;
 }
 
-.mlTr {
+.answerTr {
     background-color: #D8D8D8;
 }
 
