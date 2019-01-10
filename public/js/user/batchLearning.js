@@ -1361,11 +1361,12 @@ var searchBatchLearnDataList = function (addCond, page) {
                     if (addCond == "LEARN_N") checkboxHtml = '<td scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="' + nvl(list[i].FILEPATH) + '" class="sta00" name="listCheck_before" /></td>';
                     else checkboxHtml = '<td scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="' + nvl(list[i].FILEPATH) + '" class="stb00" name="listCheck_after" /></div></td>';
                     appendLeftContentsHtml += '<tr id="leftRowNum_' + i + '">' +
-                    checkboxHtml +
-                    '<td><a class="fileNamePath" data-imgCount="' + nvl(list[i].IMGCOUNT) + '" data-filepath="' + nvl(list[i].FILEPATH) + '" data-imgId="' + nvl(list[i].IMGID) + '" ' +
-                    'onclick = "javascript:fn_viewImageData(\'' + fileName + '\',\'' + i + '\', \'' + nvl(list[i].IMGID) + '\', this)" ' +
-                    'href = "javascript:void(0);" >' + fileName + '</a ></td > < !--FILENAME--> ' +                                                
-                    '</tr>';
+                                            checkboxHtml +
+                                            '<td><a class="fileNamePath" data-imgCount="' + nvl(list[i].IMGCOUNT) + '" data-filepath="' + nvl(list[i].FILEPATH) + '" data-imgId="' + nvl(list[i].IMGID) + '" ' +
+                                            'onclick = "javascript:fn_viewImageData(\'' + fileName + '\',\'' + i + '\', \'' + nvl(list[i].IMGID) + '\', this)" ' +
+                                            'href = "javascript:void(0);" >' + fileName + '</a ></td >' +                                                
+                                            '<td></td>' +
+                                            '</tr>';
 
                     //appendRightContentsHtml += '<tr class="rowNum' + i + '" style="height:' + (trHeight + 12) + 'px;"><td colspan="36"></td></tr>'
                     
@@ -1428,7 +1429,7 @@ var searchBatchLearnDataList = function (addCond, page) {
                 $('#batch_left_contents_before tr').each(function(){
                     var leftFilename = $(this).find('td:eq(1) a').text();
                     var length = 0;
-                    $('#batch_left_contents_before .mlTr').each(function(){
+                    $('#batch_right_contents_before .mlTr').each(function(){
                         var rightFilename = $(this).attr('data-filename');
                         if(rightFilename == leftFilename) {
                             length++;
