@@ -136,7 +136,11 @@ var buttonEvent = function () {
     });
     // 최종학습
     $("#btn_uiTraining").on("click", function () {
-        fn_uiTraining();
+        if(addCond == 'LEARN_N') {
+            fn_alert('alert', 'Before Traning탭에서는 UI Training을 할 수 없습니다.');
+        } else {
+            fn_uiTraining();
+        }
     });
     // excel down
     $("#btn_exportExcel").on("click", function () {

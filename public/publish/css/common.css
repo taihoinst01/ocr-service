@@ -3190,7 +3190,7 @@ h3.tits span {
 
 .pop_popup0 .pop_content {
     display: block;
-    height: 710px;
+    height: auto;
     padding: 26px;
 }
 
@@ -6554,9 +6554,9 @@ input:disabled {
 
 .layer3_pop_footer {
     width: 1660px;
-    height: 80px;
+    height: auto;
     background: #eaeaea;
-    padding: 30px 13px;
+    padding: 0 13px;
 }
 
 .layer3_pop_footer > .pop_close_btn {
