@@ -1979,7 +1979,7 @@ var fn_exportExcel = function () {
         });
     }
     if (chkSize > 0) {
-        var param = { imgIdArray: imgIdArray, docToptype: docToptype };
+        var param = { imgIdArray: imgIdArray, docTopType: docToptype };
         $.ajax({
             url: '/batchLearningTest/exportExcel',
             type: 'post',
