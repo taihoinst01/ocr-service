@@ -47,7 +47,7 @@ router.get('/', function (req, res) {
                 fs.mkdir(propertiesConfig.filepath.createImgconvertedDirPath);
             }
             */
-            res.render('user/invoiceRegistration', { currentUser: req.user });         
+            res.render('user/docUpload', { currentUser: req.user });         
         } else {
             res.render("index", {
                 messages: { error: req.flash('errors') }
