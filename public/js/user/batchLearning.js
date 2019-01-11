@@ -136,7 +136,11 @@ var buttonEvent = function () {
     });
     // 최종학습
     $("#btn_uiTraining").on("click", function () {
-        fn_uiTraining();
+        if(addCond == 'LEARN_N') {
+            fn_alert('alert', 'Before Traning탭에서는 UI Training을 할 수 없습니다.');
+        } else {
+            fn_uiTraining();
+        }
     });
     // excel down
     $("#btn_exportExcel").on("click", function () {
@@ -1357,11 +1361,12 @@ var searchBatchLearnDataList = function (addCond, page) {
                     if (addCond == "LEARN_N") checkboxHtml = '<td scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="' + nvl(list[i].FILEPATH) + '" class="sta00" name="listCheck_before" /></td>';
                     else checkboxHtml = '<td scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="' + nvl(list[i].FILEPATH) + '" class="stb00" name="listCheck_after" /></div></td>';
                     appendLeftContentsHtml += '<tr id="leftRowNum_' + i + '">' +
-                    checkboxHtml +
-                    '<td><a class="fileNamePath" data-imgCount="' + nvl(list[i].IMGCOUNT) + '" data-filepath="' + nvl(list[i].FILEPATH) + '" data-imgId="' + nvl(list[i].IMGID) + '" ' +
-                    'onclick = "javascript:fn_viewImageData(\'' + fileName + '\',\'' + i + '\', \'' + nvl(list[i].IMGID) + '\', this)" ' +
-                    'href = "javascript:void(0);" >' + fileName + '</a ></td > < !--FILENAME--> ' +                                                
-                    '</tr>';
+                                            checkboxHtml +
+                                            '<td><a class="fileNamePath" data-imgCount="' + nvl(list[i].IMGCOUNT) + '" data-filepath="' + nvl(list[i].FILEPATH) + '" data-imgId="' + nvl(list[i].IMGID) + '" ' +
+                                            'onclick = "javascript:fn_viewImageData(\'' + fileName + '\',\'' + i + '\', \'' + nvl(list[i].IMGID) + '\', this)" ' +
+                                            'href = "javascript:void(0);" >' + fileName + '</a ></td >' +                                                
+                                            '<td></td>' +
+                                            '</tr>';
 
                     //appendRightContentsHtml += '<tr class="rowNum' + i + '" style="height:' + (trHeight + 12) + 'px;"><td colspan="36"></td></tr>'
                     
@@ -1395,7 +1400,7 @@ var searchBatchLearnDataList = function (addCond, page) {
                                     
                                     //console.log(JSON.parse(data.answerDataList[j].ANSWERDATA));
                                     var answerData = JSON.parse(data.answerDataList[j].ANSWERDATA)
-                                    appendAnswerDataHtml += '<tr class="mlTr" data-filename="' + answerDataList[j].FILENAME + '">';
+                                    appendAnswerDataHtml += '<tr class="answerTr answerRowNum' + i + '" data-filename="' + answerDataList[j].FILENAME + '">';
                                     for(var k = 0; k < answerData.length; k++) {
                                         appendAnswerDataHtml += '<td style="width:200;overflow:hidden;text-overflow;ellipsis;">' + nvl(answerData[k]) + '</td>';
                                     }
@@ -1403,10 +1408,10 @@ var searchBatchLearnDataList = function (addCond, page) {
                                 }  
                             } 
                             if(hasAnswerData == false) {
-                                appendAnswerDataHtml += '<tr class="mlTr"><td colspan="' + colspanLength + '"></td></tr>';
+                                appendAnswerDataHtml += '<tr class="answerTr"><td colspan="' + colspanLength + '"></td></tr>';
                             }
                         } else {
-                            appendAnswerDataHtml += '<tr class="mlTr"><td colspan="' + colspanLength + '"></td></tr>';
+                            appendAnswerDataHtml += '<tr class="answerTr"><td colspan="' + colspanLength + '"></td></tr>';
                         }
                         appendRightContentsHtml += appendAnswerDataHtml;
                     }
@@ -1414,7 +1419,7 @@ var searchBatchLearnDataList = function (addCond, page) {
                 }
             } else {
                 appendLeftContentsHtml += '<tr style="height: 30px"><td colspan="3"></td></tr>'
-                appendRightContentsHtml += '<tr><td colspan="35">조회할 데이터가 없습니다.</td></tr>';
+                appendRightContentsHtml += '<tr><td colspan="13">조회할 데이터가 없습니다.</td></tr>';
             }
             //$(appendHtml).appendTo($("#tbody_batchList")).slideDown('slow');
             if (addCond == "LEARN_N") {
@@ -1424,68 +1429,45 @@ var searchBatchLearnDataList = function (addCond, page) {
                 $('#batch_left_contents_before tr').each(function(){
                     var leftFilename = $(this).find('td:eq(1) a').text();
                     var length = 0;
-                    $('.mlTr').each(function(){
+                    $('#batch_right_contents_before .answerTr').each(function(){
                         var rightFilename = $(this).attr('data-filename');
                         if(rightFilename == leftFilename) {
                             length++;
                         }
                     })
-                    if(addCond == "LEARN_N") {
-    
-                        $(this).css('height', length == 0 ? '30px' : (length * 30) + 'px' );
-                    } else {
-                        $(this).css('height', length == 0 ? '60px' : ((length * 30) + 30) + 'px' );
-                    }
+
+                    $(this).css('height', length == 0 ? '30px' : (length * 30) + 'px' );
+
                 })
                 //$("#tbody_batchList_before").empty().append(appendHtml);
                 //compareMLAndAnswer(data);
             } else {
+                $('#batch_left_contents_after').empty().append(appendLeftContentsHtml);
+                $('#batch_right_contents_after').empty().append(appendRightContentsHtml);
 
                 $('#batch_left_contents_after tr').each(function(){
                     var leftFilename = $(this).find('td:eq(1) a').text();
                     var length = 0;
-                    $('.mlTr').each(function(){
+                    $('#batch_right_contents_after .answerTr').each(function(){
                         var rightFilename = $(this).attr('data-filename');
                         if(rightFilename == leftFilename) {
                             length++;
                         }
                     })
-                    if(addCond == "LEARN_N") {
-    
-                        $(this).css('height', length == 0 ? '30px' : (length * 30) + 'px' );
-                    } else {
-                        $(this).css('height', length == 0 ? '60px' : ((length * 30) + 30) + 'px' );
-                    }
-                })
-                $('#batch_left_contents_after').empty().append(appendLeftContentsHtml);
-                $('#batch_right_contents_after').empty().append(appendRightContentsHtml);
+
+                    $(this).css('height', length == 0 ? '60px' : ((length * 30) + 30) + 'px' );
+                    
+                })               
                 //$("#tbody_batchList_after").empty().append(appendHtml);               
             }
-            
-            $('.batchListLeftTbody tr').each(function(){
-                var leftFilename = $(this).find('td:eq(1) a').text();
-                var length = 0;
-                $('.mlTr').each(function(){
-                    var rightFilename = $(this).attr('data-filename');
-                    if(rightFilename == leftFilename) {
-                        length++;
-                    }
-                })
-                if(addCond == "LEARN_N") {
-
-                    $(this).css('height', length == 0 ? '30px' : (length * 30) + 'px' );
-                } else {
-                    $(this).css('height', length == 0 ? '60px' : ((length * 30) + 30) + 'px' );
-                }
-            })
-
+            $('.batch_tbl_right_divBodyScroll').scrollTop(0).scrollLeft(0);
             endProgressBar(progressId); // end progressbar
             checkboxEvent(); // refresh checkbox event
             $('.batchListLeftTbody input[type=checkbox]').ezMark();
             imgPopupEvent();
             checkBoxCssEvent('#batch_left_contents_before');
             checkBoxCssEvent('#batch_left_contents_after');
-            $('#paginationDiv').empty().append(data.pageList);
+            $('.paginationDiv').empty().append(data.pageList);
         },
         error: function (err) {
             endProgressBar(progressId); // end progressbar
@@ -1524,7 +1506,6 @@ var searchBatchLearnDataList = function (addCond, page) {
 $(document).on('click','.li_paging',function(e){
     if(!$(this).hasClass('active')){
         searchBatchLearnDataList(addCond, $(this).val());
-        $('#right_contents').scrollTop(0).scrollLeft(0);
     }
 });
 
