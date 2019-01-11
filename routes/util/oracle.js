@@ -3881,91 +3881,89 @@ exports.selectDocTopType = function (req, done) {
 
 // tbl_icr_label_def 검색
 exports.selectDocList = function (req, done) {
-    return new Promise(async function (resolve, reject) {
-        let conn;
-        let result;
-        
-        try {
-            conn = await oracledb.getConnection(dbConfig);
-            let query = "select seqnum, docid, kornm, engnm, labeltype, amount, valid from tbl_icr_label_def where status = 1 and docid = :docid";
-            result = await conn.execute(query, req);
+	return new Promise(async function (resolve, reject) {
+		let conn;
+		let result;
 
-            return done(null, result.rows);
-        } catch (err) { // catches errors in getConnection and the query
-            reject(err);
-        } finally {
-            if (conn) {   // the conn assignment worked, must release
-                try {
-                    await conn.release();
-                } catch (e) {
-                    console.error(e);
-                }
-            }
-        }
-    });    
+		try {
+			conn = await oracledb.getConnection(dbConfig);
+			let query = "select seqnum, docid, kornm, engnm, labeltype, amount, valid, essentialval from tbl_icr_label_def where status = 1 and docid = :docid";
+			result = await conn.execute(query, req);
+			
+			return done(null, result.rows);
+		} catch (err) { // catches errors in getConnection and the query
+			reject(err);
+		} finally {
+			if (conn) {   // the conn assignment worked, must release
+				try {
+					await conn.release();
+				} catch (e) {
+					console.error(e);
+				}
+			}
+		}
+	});
 };
 
 // tbl_icr_label_def 추가
 exports.isnertDocList = function (req, done) {
-    return new Promise(async function (resolve, reject) {
-        let conn;
-        let result;
+	return new Promise(async function (resolve, reject) {
+		let conn;
+		let result;
 
-        try {
-            let docToptype = req.docToptype;
-            let insertList = req.insertList;
-            conn = await oracledb.getConnection(dbConfig);
+		try {
+			let docToptype = req.docToptype;
+			let insertList = req.insertList;
+			conn = await oracledb.getConnection(dbConfig);
+			for (var i = 0; i < insertList.length; i++) {
+				let param = [docToptype, insertList[i].korNm, insertList[i].engNm, insertList[i].labelType, insertList[i].amount, insertList[i].valid, insertList[i].essentialVal];
+				let query = "insert into tbl_icr_label_def(seqnum, docid, kornm, engnm, labeltype, amount, valid, essentialval) values(seq_icr_label_def.nextval, :docid, :kornm, :engnm, :labeltype, :amount, :valid, :essentialVal)";
+				result = await conn.execute(query, param);
+			}
 
-            for(var i = 0; i < insertList.length; i++) {
-                let param = [docToptype, insertList[i].korNm, insertList[i].engNm, insertList[i].labelType, insertList[i].amount, insertList[i].valid];
-                let query = "insert into tbl_icr_label_def(seqnum, docid, kornm, engnm, labeltype, amount, valid) values(seq_icr_label_def.nextval, :docid, :kornm, :engnm, :labeltype, :amount, :valid)";
-                result = await conn.execute(query, param);
-            }
- 
-            return done(null, null);
-        } catch (err) { // catches errors in getConnection and the query
-            reject(err);
-        } finally {
-            if (conn) {   // the conn assignment worked, must release
-                try {
-                    await conn.release();
-                } catch (e) {
-                    console.error(e);
-                }
-            }
-        }
-    });    
+			return done(null, null);
+		} catch (err) { // catches errors in getConnection and the query
+			reject(err);
+		} finally {
+			if (conn) {   // the conn assignment worked, must release
+				try {
+					await conn.release();
+				} catch (e) {
+					console.error(e);
+				}
+			}
+		}
+	});
 };
 
 // tbl_icr_label_def 수정
 exports.updateDocList = function (req, done) {
-    return new Promise(async function (resolve, reject) {
-        let conn;
-        let result;
+	return new Promise(async function (resolve, reject) {
+		let conn;
+		let result;
 
-        try {
-            let changeList = req.changeList;
-            conn = await oracledb.getConnection(dbConfig);
+		try {
+			let changeList = req.changeList;
+			conn = await oracledb.getConnection(dbConfig);
+			for (var i = 0; i < changeList.length; i++) {
+				let param = [changeList[i].korNm, changeList[i].engNm, changeList[i].labelType, changeList[i].amount, changeList[i].valid, changeList[i].essentialVal, changeList[i].seqNum];
+				let query = "update tbl_icr_label_def set kornm = :kornm, engnm = :engnm, labeltype = :labeltype, amount = :amount, valid = :valid, essentialval = :essentialVal where seqnum = :seqnum";
+				result = await conn.execute(query, param);
+			}
 
-            for(var i = 0; i < changeList.length; i++) {
-                let param = [changeList[i].korNm, changeList[i].engNm, changeList[i].labelType, changeList[i].amount, changeList[i].valid, changeList[i].seqNum];
-                let query = "update tbl_icr_label_def set kornm = :kornm, engnm = :engnm, labeltype = :labeltype, amount = :amount, valid = :valid where seqnum = :seqnum";
-                result = await conn.execute(query, param);
-            }
-
-            return done(null, null);
-        } catch (err) { // catches errors in getConnection and the query
-            reject(err);
-        } finally {
-            if (conn) {   // the conn assignment worked, must release
-                try {
-                    await conn.release();
-                } catch (e) {
-                    console.error(e);
-                }
-            }
-        }
-    });    
+			return done(null, null);
+		} catch (err) { // catches errors in getConnection and the query
+			reject(err);
+		} finally {
+			if (conn) {   // the conn assignment worked, must release
+				try {
+					await conn.release();
+				} catch (e) {
+					console.error(e);
+				}
+			}
+		}
+	});
 };
 
 // tbl_icr_label_def 삭제

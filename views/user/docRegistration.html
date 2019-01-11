@@ -1,170 +1,171 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <title>ICR</title>
+	<title>ICR</title>
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, minimal-ui">
-    <meta name="HandheldFriendly" content="True">
-    <meta name="MobileOptimized" content="320">
-    <%include  ../common/commonLib.html%>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, minimal-ui">
+	<meta name="HandheldFriendly" content="True">
+	<meta name="MobileOptimized" content="320">
+	<%include  ../common/commonLib.html%>
 
-    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-    
-    <link rel="stylesheet" href="/common/css/font-awesome.min.css">
-    <!-- tui-grid css import-->
-    <link rel="stylesheet" href="/common/css/fileupload/jquery.fileupload.css">
-    <!-- tui-grid css import-->
-    <link rel="stylesheet" href="css/user/docRegistration.css">
-     <!-- form submit aync & multi-upload js import -->
-    <script type="text/javascript" src="js/import/fileupload/jquery.ui.widget.js"></script>
-    <script type="text/javascript" src="js/import/fileupload/jquery.iframe-transport.js"></script>
-    <script type="text/javascript" src="js/import/fileupload/jquery.fileupload.js"></script>
-    <script type="text/javascript" src="js/import/jquery.form.min.js"></script>
-    <script type="text/javascript" src="js/common.client.js"></script>
-    <!-- // form submit aync & multi-upload js import -->
-    <!-- tui-grid js import-->
-    <script src="js/import/toast-ui-grid/underscore/underscore.js"></script>
-    <script src="js/import/toast-ui-grid/backbone/backbone.js"></script>
-    <script src="js/import/toast-ui-grid/tui-code-snippet/dist/tui-code-snippet.js"></script>
-    <script src="js/import/toast-ui-grid/tui-pagination/dist/tui-pagination.js"></script>
-    <script src="js/import/toast-ui-grid/tui-date-picker/dist/tui-date-picker.js"></script>
-    <script src="js/import/toast-ui-grid/tui-grid/dist/tui-grid.js"></script>
-    <!--<link rel="stylesheet" type="text/css" href="js/import/toast-ui-grid/tui-grid/dist/tui-grid.css" />-->
-    <!-- // tui-grid js import-->
-    <!-- 공통 js -->
-    <script type="text/javascript" src="js/common.client.js"></script>
-    <!-- // 공통 js -->
-    <!--TIFF 이미지 미리보기-->
-    <script type="text/javascript" src="js/tiff.min.js"></script>
-    <script type="text/javascript" src="js/user/docRegistration.js"></script>
-    <script type="text/javascript">
-        $(document).ready(function () {
-        });
-    </script>
-    <style>
-    </style>
+	<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+
+	<link rel="stylesheet" href="/common/css/font-awesome.min.css">
+	<!-- tui-grid css import-->
+	<link rel="stylesheet" href="/common/css/fileupload/jquery.fileupload.css">
+	<!-- tui-grid css import-->
+	<link rel="stylesheet" href="css/user/docRegistration.css">
+	<!-- form submit aync & multi-upload js import -->
+	<script type="text/javascript" src="js/import/fileupload/jquery.ui.widget.js"></script>
+	<script type="text/javascript" src="js/import/fileupload/jquery.iframe-transport.js"></script>
+	<script type="text/javascript" src="js/import/fileupload/jquery.fileupload.js"></script>
+	<script type="text/javascript" src="js/import/jquery.form.min.js"></script>
+	<script type="text/javascript" src="js/common.client.js"></script>
+	<!-- // form submit aync & multi-upload js import -->
+	<!-- tui-grid js import-->
+	<script src="js/import/toast-ui-grid/underscore/underscore.js"></script>
+	<script src="js/import/toast-ui-grid/backbone/backbone.js"></script>
+	<script src="js/import/toast-ui-grid/tui-code-snippet/dist/tui-code-snippet.js"></script>
+	<script src="js/import/toast-ui-grid/tui-pagination/dist/tui-pagination.js"></script>
+	<script src="js/import/toast-ui-grid/tui-date-picker/dist/tui-date-picker.js"></script>
+	<script src="js/import/toast-ui-grid/tui-grid/dist/tui-grid.js"></script>
+	<!--<link rel="stylesheet" type="text/css" href="js/import/toast-ui-grid/tui-grid/dist/tui-grid.css" />-->
+	<!-- // tui-grid js import-->
+	<!-- 공통 js -->
+	<script type="text/javascript" src="js/common.client.js"></script>
+	<!-- // 공통 js -->
+	<!--TIFF 이미지 미리보기-->
+	<script type="text/javascript" src="js/tiff.min.js"></script>
+	<script type="text/javascript" src="js/user/docRegistration.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function () {
+		});
+	</script>
+	<style>
+	</style>
 
 </head>
 <body>
-    <div id="mask"></div>
-    <div id="wrap">
-        <!--로딩바-->
-        <div id="ocrProgress">
-            <div id="ocrBarBg">
-                <div id="ocrBar">
-                    <span>1%</span>
-                </div>
-            </div>
-            <!-- 호출하는 ajax에 따라 로딩바 이벤트를 호출 할 때 아래 progressMsgTitle 수정-->
-            <div id="progressMsgTitle">
-                <!-- 로딩바 바로 아래 메시지 -->
-            </div>
-        </div>
-        <!-- // 로딩바-->
-        <!-- skip navi -->
-        <div id="accessibility">
-            <ul>
-                <li><a href="#lnb">메뉴 바로가기</a></li>
-                <li><a href="#container">본문으로 바로가기</a></li>
-            </ul>
-        </div>
-        <!-- //skip navi -->
-        <%include  ../common/header.html%>
-        <!-- Content -->
-        <div id="container">
-            <!-- LNB -->
-            <%include  ../common/leftSideBar.html%>
-            <!-- // LNB -->
-            <!-- 본문영역 -->
-            <div id="content">
-                <div class="content_title_icon_bl"></div>
-                <div class="bl_content_title">문서 등록</div>
-                <div class="clear_both"></div>
-                <div class="bl_btn_div mb20">
-                    <div class="box_stsearch">
-                        <div class="box_txt_st01 st00_sh">                         
-                            <dl>
-                                <dt></dt>
-                                <dd>
-                                    <div class="dc_box_select">
-                                        <select id="docToptype" class="inputst_box03">
-                                            <!--<option>신규</option>-->
-                                        </select>
-                                    </div>
-                                </dd>
-                            </dl>
-                            <dl class="newDocEdit" style="display: none;">
-                                <dt><b class="redFont fr">*</b></dt>
-                                <dd>
-                                    <input type="text" id="docNameEng" class="inputst_box01" placeholder="문서명(영문)" >
-                                </dd>
-                                <dt><b class="redFont">*</b>필수 입력입니다</dt>
-                            </dl>
-                            <dl class="newDocEdit" style="display: none;">
-                                <dt></dt>
-                                <dd>                                   
-                                    <input type="text" id="docNameKor" class="inputst_box02" placeholder="문서명(한글)">
-                                </dd>
-                            </dl>
-                        </div>
+	<div id="mask"></div>
+	<div id="wrap">
+		<!--로딩바-->
+		<div id="ocrProgress">
+			<div id="ocrBarBg">
+				<div id="ocrBar">
+					<span>1%</span>
+				</div>
+			</div>
+			<!-- 호출하는 ajax에 따라 로딩바 이벤트를 호출 할 때 아래 progressMsgTitle 수정-->
+			<div id="progressMsgTitle">
+				<!-- 로딩바 바로 아래 메시지 -->
+			</div>
+		</div>
+		<!-- // 로딩바-->
+		<!-- skip navi -->
+		<div id="accessibility">
+			<ul>
+				<li><a href="#lnb">메뉴 바로가기</a></li>
+				<li><a href="#container">본문으로 바로가기</a></li>
+			</ul>
+		</div>
+		<!-- //skip navi -->
+		<%include  ../common/header.html%>
+		<!-- Content -->
+		<div id="container">
+			<!-- LNB -->
+			<%include  ../common/leftSideBar.html%>
+			<!-- // LNB -->
+			<!-- 본문영역 -->
+			<div id="content">
+				<div class="content_title_icon_bl"></div>
+				<div class="bl_content_title">문서 등록</div>
+				<div class="clear_both"></div>
+				<div class="bl_btn_div mb20">
+					<div class="box_stsearch">
+						<div class="box_txt_st01 st00_sh">
+							<dl>
+								<dt></dt>
+								<dd>
+									<div class="dc_box_select">
+										<select id="docToptype" class="inputst_box03">
+											<!--<option>신규</option>-->
+										</select>
+									</div>
+								</dd>
+							</dl>
+							<dl class="newDocEdit" style="display: none;">
+								<dt><b class="redFont fr">*</b></dt>
+								<dd>
+									<input type="text" id="docNameEng" class="inputst_box01" placeholder="문서명(영문)">
+								</dd>
+								<dt><b class="redFont">*</b>필수 입력입니다</dt>
+							</dl>
+							<dl class="newDocEdit" style="display: none;">
+								<dt></dt>
+								<dd>
+									<input type="text" id="docNameKor" class="inputst_box02" placeholder="문서명(한글)">
+								</dd>
+							</dl>
+						</div>
 
-                        <div class="btn_rt">
-                            <button type="button" id="btn_save" class="button_st3">저장</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="mt10">
-                    <div class="table_style02 um_table">
-                        <table>
-                            <caption>사용자관리 타이틀</caption>
-                            <colgroup>
-                                <col style="width:22%" />
-                                <col style="width:22%" />
-                                <col style="width:12%" />
-                                <col style="width:12%" />
-                                <col style="width:22%" />
-                                <col style="width:7%" />
-                            </colgroup>
-                            <thead>
-                                <tr>
-                                    <th scope="row">컬럼명(영문)<b class="redFont">*</b></th>
-                                    <th scope="row">컬럼명(한글)</th>
-                                    <th scope="row">추출 기준(위치, 값)<b class="redFont">*</b></th>
-                                    <th scope="row">복수 추출<b class="redFont">*</b></th>
-                                    <th scope="row">정규식<b class="redFont">*</b></th>
-                                    <th scope="row"></th>
-                                </tr>
-                            </thead>
-                        </table>
-                        <div class="mCustomScrollbar box_scroll_st5" data-mcs-axis="yx" data-mcs-theme="dark-3" style="background: #FFF; height: 600px;">
-                                <div id="tbody_div" style="max-height:560px; overflow: auto;">
-                                        <table>
-                                            <caption>사용자관리 정보</caption>
-                                            <colgroup>
-                                                <col style="width:22%" />
-                                                <col style="width:22%" />
-                                                <col style="width:12%" />
-                                                <col style="width:12%" />
-                                                <col style="width:22%" />
-                                                <col style="width:7%" />
-                                            </colgroup>
-                                            <tbody id="tbody_docList">
-                                                
-                                            </tbody>
-                                        </table>                                                                 
-                                    </div>
-                                    <div id="addTbody" style="height: 100%; text-align: center; padding: 10px 0 0; cursor: pointer;">
-                                        + 추가
-                                    </div>
-                                </div>
-                            </div>
-                </div>
-                <!-- // 사용자관리 목록 -->
-            
-            </div>
-        </div>
-    </div>
+						<div class="btn_rt">
+							<button type="button" id="btn_save" class="button_st3">저장</button>
+						</div>
+					</div>
+				</div>
+				<div class="mt10">
+					<div class="table_style02 um_table">
+						<table>
+							<caption>사용자관리 타이틀</caption>
+							<colgroup>
+								<col style="width:22%" />
+								<col style="width:22%" />
+								<col style="width:10%" />
+								<col style="width:10%" />
+								<col style="width:22%" />
+								<col style="width:4%" />
+								<col style="width:7%" />
+							</colgroup>
+							<thead>
+								<tr>
+									<th scope="row">컬럼명(영문)<b class="redFont">*</b></th>
+									<th scope="row">컬럼명(한글)</th>
+									<th scope="row">추출 기준(위치, 값)<b class="redFont">*</b></th>
+									<th scope="row">복수 추출<b class="redFont">*</b></th>
+									<th scope="row">정규식<b class="redFont">*</b></th>
+									<th scope="row">필수항목<b class="redFont">*</b></th>
+									<th scope="row"></th>
+								</tr>
+							</thead>
+						</table>
+						<div class="mCustomScrollbar box_scroll_st5" data-mcs-axis="yx" data-mcs-theme="dark-3" style="background: #FFF; height: 600px;">
+							<div id="tbody_div" style="max-height:560px; overflow: auto;">
+								<table>
+									<caption>사용자관리 정보</caption>
+									<colgroup>
+										<col style="width:22%" />
+										<col style="width:22%" />
+										<col style="width:10%" />
+										<col style="width:10%" />
+										<col style="width:22%" />
+										<col style="width:4%" />
+										<col style="width:7%" />
+									</colgroup>
+									<tbody id="tbody_docList"></tbody>
+								</table>
+							</div>
+							<div id="addTbody" style="height: 100%; text-align: center; padding: 10px 0 0; cursor: pointer;">
+								+ 추가
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- // 사용자관리 목록 -->
+
+			</div>
+		</div>
+	</div>
 </body>
 </html>
