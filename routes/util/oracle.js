@@ -1122,6 +1122,184 @@ exports.insertMLData = function (req, done) {
         }
     });
 };
+
+exports.insertSamMLData = function (filepath, imgid, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            var insSql = `INSERT INTO TBL_BATCH_PO_ML_EXPORT VALUES(SEQ_BATCH_PO_ML_EXPORT.NEXTVAL, :docid, :filename, :exportData)`;
+            var delSql = `DELETE FROM TBL_BATCH_PO_ML_EXPORT WHERE FILENAME = :filename`;
+            var selSql = `SELECT DOCTOPTYPE FROM TBL_BATCH_LEARN_LIST WHERE IMGID =:imgid`
+
+            filepath = filepath.substring(filepath.lastIndexOf("/") + 1, filepath.length);
+            var fileName = filepath.substring(0, filepath.lastIndexOf("."));
+            var selMlExportSql = "SELECT * FROM TBL_BATCH_ML_EXPORT WHERE ENTRYLABEL IS NOT NULL AND FILEPATH LIKE '%" + fileName + "%'";
+
+            let delRes = await conn.execute(delSql, [filepath], { autoCommit: true });
+
+            let selMlExportRes = await conn.execute(selMlExportSql);
+            let selRes = await conn.execute(selSql, [imgid]);
+
+            var itemList = new Array(0,0,0,0,0,0);
+
+            var mlObj = {};
+            var poMlList = [];
+            for (var i = 0; i < selMlExportRes.rows.length; i++) {
+                console.log(selMlExportRes.rows[i]);
+                var data = selMlExportRes.rows[i];
+                if (data.ENTRYLABEL == "234") {
+                    itemList[0]++;
+                } else if (data.ENTRYLABEL == "228") {
+                    itemList[1]++;
+                } else if (data.ENTRYLABEL == "229") {
+                    itemList[2]++;
+                } else if (data.ENTRYLABEL == "231") {
+                    itemList[3]++;
+                } else if (data.ENTRYLABEL == "232") {
+                    itemList[4]++;
+                } else if (data.ENTRYLABEL == "233") {
+                    itemList[5]++;
+                } else if (data.ENTRYLABEL == "221") {
+                    mlObj.buyer = data.COLVALUE;
+                } else if (data.ENTRYLABEL == "222") {
+                    mlObj.poNumber = data.COLVALUE;
+                } else if (data.ENTRYLABEL == "223") {
+                    mlObj.poDate = data.COLVALUE;
+                } else if (data.ENTRYLABEL == "224") {
+                    mlObj.deliveryAddress = data.COLVALUE;
+                } else if (data.ENTRYLABEL == "226") {
+                    mlObj.totalPrice = data.COLVALUE;
+                } else if (data.ENTRYLABEL == "227") {
+                    mlObj.currency = data.COLVALUE;
+                } else if (data.ENTRYLABEL == "230") {
+                    mlObj.requestDeliveryDate = data.COLVALUE;
+                }
+            }
+
+            var itemMax = Math.max.apply(null, itemList);
+            var entryLbl = 0;
+
+            for (var i = 0; i < itemList.length; i++) {
+                if (itemList[i] == itemMax) {
+                    if (i == 0) {
+                        entryLbl = "234";
+                    } else if (i == 1) {
+                        entryLbl = "228";
+                    } else if (i == 2) {
+                        entryLbl = "229";
+                    } else if (i == 3) {
+                        entryLbl = "231";
+                    } else if (i == 4) {
+                        entryLbl = "232";
+                    } else if (i == 5) {
+                        entryLbl = "233";
+                    }
+                    break;
+                }
+            }
+
+            var mlList = [];
+
+            if (entryLbl != 0) {
+                for (var i = 0; i < selMlExportRes.rows.length; i++) {
+                    var data = selMlExportRes.rows[i];
+
+                    if (data.ENTRYLABEL == entryLbl) {
+                        var list = [];
+                        list.push(data);
+                        mlList.push(list);
+                    }
+                }
+
+                for (var i = 0; i < selMlExportRes.rows.length; i++) {
+                    var data = selMlExportRes.rows[i];
+                    if (data.ENTRYLABEL != entryLbl && data.ENTRYLABEL != "230") {
+                        var mappingSid = data.LOCATION.split(",");
+
+                        for (var j = 0; j < mlList.length; j++) {
+                            var cData = mlList[j][0].LOCATION.split(",");
+
+                            if (mappingSid[1] - cData[1] < 10 && mappingSid[1] - cData[1] > -10) {
+                                mlList[j].push(data);
+                            }
+                        }
+                    }
+                }
+                
+                for (var i = 0; i < mlList.length; i++) {
+                    var data = mlList[i];
+
+                    var obj = {};
+                    obj.buyer = mlObj.buyer;
+                    obj.poNumber = mlObj.poNumber;
+                    obj.poDate = mlObj.poDate;
+                    obj.deliveryAddress = mlObj.deliveryAddress;
+                    obj.totalPrice = mlObj.totalPrice;
+                    obj.currency = mlObj.currency;
+                    obj.requestDeliveryDate = mlObj.requestDeliveryDate;
+
+                    for (var j = 0; j < data.length; j++) {
+                        
+                        if (data[j].ENTRYLABEL == "228") {
+                            obj.material = data[j].COLVALUE;
+                        } else if (data[j].ENTRYLABEL == "229") {
+                            obj.ean = data[j].COLVALUE;
+                        } else if (data[j].ENTRYLABEL == "231") {
+                            obj.quantity = data[j].COLVALUE;
+                        } else if (data[j].ENTRYLABEL == "232") {
+                            obj.unitPrice = data[j].COLVALUE;
+                        } else if (data[j].ENTRYLABEL == "233") {
+                            obj.itemTotal = data[j].COLVALUE;
+                        } else if (data[j].ENTRYLABEL == "234") {
+                            obj.serialNumber = data[j].COLVALUE;
+                        }
+                    }
+                    poMlList.push(obj);
+                }
+
+            }
+
+            for (var i = 0; i < poMlList.length; i++) {
+                var cond = [];
+                cond.push(selRes.rows[0].DOCTOPTYPE);
+                cond.push(filepath);
+                var exportData = [];
+                exportData.push(poMlList[i].buyer != undefined ? poMlList[i].buyer : "null");
+                exportData.push(poMlList[i].poNumber != undefined ? poMlList[i].poNumber : "null");
+                exportData.push(poMlList[i].poDate != undefined ? poMlList[i].poDate : "null");
+                exportData.push(poMlList[i].deliveryAddress != undefined ? poMlList[i].deliveryAddress : "null");
+                exportData.push(poMlList[i].totalPrice != undefined ? poMlList[i].totalPrice : "null");
+                exportData.push(poMlList[i].currency != undefined ? poMlList[i].currency : "null");
+                exportData.push(poMlList[i].material != undefined ? poMlList[i].material : "null");
+                exportData.push(poMlList[i].ean != undefined ? poMlList[i].ean : "null");
+                exportData.push(poMlList[i].requestDeliveryDate != undefined ? poMlList[i].requestDeliveryDate : "null");
+                exportData.push(poMlList[i].quantity != undefined ? poMlList[i].quantity : "null");
+                exportData.push(poMlList[i].unitPrice != undefined ? poMlList[i].unitPrice : "null");
+                exportData.push(poMlList[i].itemTotal != undefined ? poMlList[i].itemTotal : "null");
+                exportData.push(poMlList[i].serialNumber != undefined ? poMlList[i].serialNumber : "null");
+
+                cond.push(JSON.stringify(exportData));
+
+                await conn.execute(insSql, cond, { autoCommit: true });
+            }
+            return done(null, "mlExport");
+        } catch (err) { // catches errors in getConnection and the query
+            console.log(err);
+            return done(null, "error");
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
 exports.insertMLDataCMD = function (req, done) {
     return new Promise(async function (resolve, reject) {
         let conn;
@@ -3399,7 +3577,7 @@ exports.selectImgid = function (req, done) {
         try {
             conn = await oracledb.getConnection(dbConfig);
 
-            result = await conn.execute("select imgid from tbl_batch_learn_list where filepath = :filePath and status = 'T'", [req]);
+            result = await conn.execute("select imgid from tbl_batch_learn_list where filepath = :filePath", [req]);
 
             return done(null, result);
         } catch (err) { // catches errors in getConnection and the query
