@@ -1352,8 +1352,6 @@ var searchBatchLearnDataList = function (addCond, page) {
             var answerDataList = data.answerDataList;
             
             if (list.length != 0) {
-                var trHeight = 30;
-                var trLengthList = [];
                 for (var i = 0; i < list.length; i++) {
                     //var rows = list[i].rows;
                     
@@ -1370,25 +1368,28 @@ var searchBatchLearnDataList = function (addCond, page) {
 
                     //appendRightContentsHtml += '<tr class="rowNum' + i + '" style="height:' + (trHeight + 12) + 'px;"><td colspan="36"></td></tr>'
                     
-                    var mlData = data.mlData;
-
-                    if (addCond == 'LEARN_Y' && mlData && mlData.length != 0) {
-                        appendRightContentsHtml += '<tr class="mlRowNum' + i + '">' +
-                                                    '<td>' + makeMLSelect(mlData, null, 221, list[i].IMGID) + '</td> <!--BUYER-->' +
-                                                    '<td>' + makeMLSelect(mlData, null, 222, list[i].IMGID) + '</td> <!--PO Number-->' +
-                                                    '<td>' + makeMLSelect(mlData, null, 223, list[i].IMGID) + '</td> <!--PO Date-->' +
-                                                    '<td>' + makeMLSelect(mlData, null, 224, list[i].IMGID) + '</td> <!--Delivery Address-->' +
-                                                    '<td>' + makeMLSelect(mlData, null, 226, list[i].IMGID) + '</td> <!--Total Price-->' +
-                                                    '<td>' + makeMLSelect(mlData, null, 227, list[i].IMGID) + '</td> <!--Currency-->' +
-                                                    '<td>' + makeMLSelect(mlData, null, 228, list[i].IMGID) + '</td> <!--Material-->' +
-                                                    '<td>' + makeMLSelect(mlData, null, 229, list[i].IMGID) + '</td> <!--EAN-->' +
-                                                    '<td>' + makeMLSelect(mlData, null, 230, list[i].IMGID) + '</td> <!--Requested Delivery Date-->' +
-                                                    '<td>' + makeMLSelect(mlData, null, 231, list[i].IMGID) + '</td> <!--Quantity-->' +
-                                                    '<td>' + makeMLSelect(mlData, null, 232, list[i].IMGID) + '</td> <!--Unit Price-->' +
-                                                    '<td>' + makeMLSelect(mlData, null, 233, list[i].IMGID) + '</td> <!--Item Total-->' +
-                                                    '<td>' + makeMLSelect(mlData, null, 234, list[i].IMGID) + '</td> <!--Serial Number-->' +
-                                                    '</tr>';                                 
+                    
+                    //mldata tr만들기
+                    var mlDataList = data.mlDataList;
+                    var appendMlExprotDataHtml = '';
+                    if (addCond == 'LEARN_Y' && mlDataList && mlDataList.length != 0) {
+                        
+                        for(var m = 0; m < mlDataList.length; m++){
+                            var mlData = mlDataList[m];
+                            if(mlData.FILENAME == fileName){
+                                var mlExportData = JSON.parse(mlData.EXPORTDATA);
+                                //console.log(mlExportData);
+                                appendMlExprotDataHtml += '<tr data-rowNum="' + i + '">'
+                                for(var n = 0; n < mlExportData.length; n++) {
+                                    appendMlExprotDataHtml += '<td style="width:200;overflow:hidden;text-overflow;ellipsis;">' + nvl(mlExportData[n]) + '</td>';
+                                }
+                                appendMlExprotDataHtml += '</tr>'
+                            }
+                        }
+                        appendRightContentsHtml += appendMlExprotDataHtml;
                     } 
+
+                    // excel정답 tr 만들기
                     if(answerDataList) {
                         var hasAnswerData = false;
                         var appendAnswerDataHtml = '';
@@ -1399,8 +1400,8 @@ var searchBatchLearnDataList = function (addCond, page) {
                                     hasAnswerData = true;
                                     
                                     //console.log(JSON.parse(data.answerDataList[j].ANSWERDATA));
-                                    var answerData = JSON.parse(data.answerDataList[j].ANSWERDATA)
-                                    appendAnswerDataHtml += '<tr class="answerTr answerRowNum' + i + '" data-filename="' + answerDataList[j].FILENAME + '">';
+                                    var answerData = JSON.parse(data.answerDataList[j].ANSWERDATA);
+                                    appendAnswerDataHtml += '<tr class="answerTr answerRowNum' + i + '" data-filename="' + answerDataList[j].FILENAME + '" data-rowNum="' + i + '">';
                                     for(var k = 0; k < answerData.length; k++) {
                                         appendAnswerDataHtml += '<td style="width:200;overflow:hidden;text-overflow;ellipsis;">' + nvl(answerData[k]) + '</td>';
                                     }
@@ -1418,7 +1419,7 @@ var searchBatchLearnDataList = function (addCond, page) {
                
                 }
             } else {
-                appendLeftContentsHtml += '<tr style="height: 30px"><td colspan="3"></td></tr>'
+                appendLeftContentsHtml += '<tr style="height: 30px"><td colspan="2"></td></tr>'
                 appendRightContentsHtml += '<tr><td colspan="13">조회할 데이터가 없습니다.</td></tr>';
             }
             //$(appendHtml).appendTo($("#tbody_batchList")).slideDown('slow');
@@ -1445,29 +1446,32 @@ var searchBatchLearnDataList = function (addCond, page) {
                 $('#batch_left_contents_after').empty().append(appendLeftContentsHtml);
                 $('#batch_right_contents_after').empty().append(appendRightContentsHtml);
 
-                $('#batch_left_contents_after tr').each(function(){
-                    var leftFilename = $(this).find('td:eq(1) a').text();
-                    var length = 0;
-                    $('#batch_right_contents_after .answerTr').each(function(){
-                        var rightFilename = $(this).attr('data-filename');
-                        if(rightFilename == leftFilename) {
-                            length++;
-                        }
-                    })
+                $('#batch_left_contents_after tr').each(function(index){
+                    //console.log('index: ' + index);
+                    var length = $('#batch_right_contents_after tr[data-rowNum=' + index + ']').length;
+                    //console.log("row: " + $('#batch_right_contents_after tr[data-rowNum=' + index + ']').length);
+                    // var leftFilename = $(this).find('td:eq(1) a').text();
+                    // var length = 0;
+                    // $('#batch_right_contents_after .answerTr').each(function(){
+                    //     var rightFilename = $(this).attr('data-filename');
+                    //     if(rightFilename == leftFilename) {
+                    //         length++;
+                    //     }
+                    // })
 
-                    $(this).css('height', length == 0 ? '60px' : ((length * 30) + 30) + 'px' );
+                    $(this).css('height', length == 0 ? '30px' : (length * 30) + 'px' );
                     
                 })               
                 //$("#tbody_batchList_after").empty().append(appendHtml);               
             }
             $('.batch_tbl_right_divBodyScroll').scrollTop(0).scrollLeft(0);
-            endProgressBar(progressId); // end progressbar
             checkboxEvent(); // refresh checkbox event
             $('.batchListLeftTbody input[type=checkbox]').ezMark();
             imgPopupEvent();
             checkBoxCssEvent('#batch_left_contents_before');
             checkBoxCssEvent('#batch_left_contents_after');
             $('.paginationDiv').empty().append(data.pageList);
+            endProgressBar(progressId); // end progressbar
         },
         error: function (err) {
             endProgressBar(progressId); // end progressbar
@@ -1527,12 +1531,18 @@ function fnDocTypeColumn(docTopType) {
             var htmlText = "";
             htmlText = "<colgroup>";
             for (var i = 0; i < list.length; i++) {
-                htmlText += '<col style="width:200px">';                         
+                // Not Entry제외
+                if(list[i].AMOUNT != 'not') {
+                    htmlText += '<col style="width:200px">';                         
+                }
             }
             htmlText += '<col style="width:17px">';
             htmlText += "</colgroup><thead><tr class='theadTr'>";
             for (var i = 0; i < list.length; i++) {
-                htmlText += '<th scope="row">' + list[i].ENGNM + '</th>';              
+                // Not Entry제외
+                if(list[i].AMOUNT != 'not') {
+                    htmlText += '<th scope="row">' + list[i].ENGNM + '</th>';            
+                }  
             }
             htmlText += '<th></th>'
             htmlText += "</tr></thead>";
@@ -1541,7 +1551,10 @@ function fnDocTypeColumn(docTopType) {
             $(".docTableList > colgroup").html("");
             htmlText = "";
             for (var i = 0; i < list.length; i++) {
-                htmlText += '<col style="width:200px">';               
+                // Not Entry제외
+                if(list[i].AMOUNT != 'not') {
+                    htmlText += '<col style="width:200px">';               
+                }
             }
             $(".docTableList > colgroup").html(htmlText);
         },

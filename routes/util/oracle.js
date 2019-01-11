@@ -1737,24 +1737,27 @@ exports.selectColumnMappingFromMLStudio = function (req, done) {
     });
 };
 
-exports.selectBatchLearnMlList = function (filePathList, done) {
+exports.selectBatchLearnMlList = function (arg, done) {
     return new Promise(async function (resolve, reject) {
         let conn;
         let result;
 
         try {
             conn = await oracledb.getConnection(dbConfig);
-
+            var param = [arg.docToptype]
+            var filenameList = arg.filenameList;
             var inQuery = "(";
-            for (var i in filePathList) {
-                inQuery += "'" + filePathList[i] + "',";
+            for (var i in filenameList) {
+                inQuery += "'" + filenameList[i] + "',";
             }
             inQuery = inQuery.substring(0, inQuery.length - 1);
             inQuery += ")";
-            result = await conn.execute(queryConfig.batchLearningConfig.selectBatchLearnMlList + inQuery);
+
+            var selectQuery = 'SELECT DOCID, EXPORTDATA, FILENAME FROM TBL_BATCH_PO_ML_EXPORT WHERE DOCID = :docId AND FILENAME IN ' + inQuery;
+            result = await conn.execute(selectQuery, param);
 
 
-            return done(null, result);
+            return done(null, result.rows);
         } catch (err) { // catches errors in getConnection and the query
             reject(err);
         } finally {
@@ -1788,38 +1791,6 @@ exports.selectBatchLearnAnswerData = function (arg, done) {
             var query = "select docid, answerdata, filename from tbl_batch_po_answer_data where docid = :doctoptype and filename in" + inQuery;
                         
             result = await conn.execute(query, [docToptype]);
-
-
-            return done(null, result.rows);
-        } catch (err) { // catches errors in getConnection and the query
-            reject(err);
-        } finally {
-            if (conn) {   // the conn assignment worked, must release
-                try {
-                    await conn.release();
-                } catch (e) {
-                    console.error(e);
-                }
-            }
-        }
-    });
-};
-
-exports.selectBatchLearnMlListTest = function (imgIdList, done) {
-    return new Promise(async function (resolve, reject) {
-        let conn;
-        let result;
-
-        try {
-            conn = await oracledb.getConnection(dbConfig);
-
-            var inQuery = "(";
-            for (var i in imgIdList) {
-                inQuery += "'" + imgIdList[i] + "',";
-            }
-            inQuery = inQuery.substring(0, inQuery.length - 1);
-            inQuery += ")";
-            result = await conn.execute(queryConfig.batchLearningConfig.selectBatchLearnMlListTest + inQuery);
 
 
             return done(null, result.rows);
@@ -3474,7 +3445,7 @@ exports.selectIcrLabelDef = function (req, done) {
         try {
             conn = await oracledb.getConnection(dbConfig);
 
-            result = await conn.execute("select engnm, kornm, seqnum, docid from tbl_icr_label_def where status = 1 and DOCID = :docid order by seqnum", [req]);
+            result = await conn.execute("select engnm, kornm, seqnum, docid, amount from tbl_icr_label_def where status = 1 and docid = :docid order by seqnum", [req]);
 
             return done(null, result);
         } catch (err) { // catches errors in getConnection and the query
