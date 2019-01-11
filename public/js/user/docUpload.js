@@ -46,7 +46,7 @@ var initForm = function ({ type }) {
 
     $("#span_document_base").html("문서 기본정보");
     $("#span_document_dtl").html("Multi Record");
-    $("#tbody_dtlList").html("");
+    //$("#tbody_dtlList").html("");
     $("#main_image").prop("src", "");
     $("#main_image").prop("alt", "");
     $("#ul_image").html("");

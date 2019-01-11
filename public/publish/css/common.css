@@ -37,6 +37,14 @@ body{ font-family:NanumGothicR,sans-serif,�������; }
     background-color: #EA7169;
     color: white;
 }
+
+.ipt_pink {
+    border-radius: 15px; border: solid 1px #EA7169;
+}
+
+.ipt_gray {
+    border-radius: 15px; border: solid 1px darkgray;
+}
 /*
     header.html (��ܹ�)
 */
