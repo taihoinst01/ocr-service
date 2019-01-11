@@ -24,6 +24,7 @@ var app = express();
 var routes = require('./routes');
 var index = require('./routes/index');
 //user
+var docUpload = require('./routes/user/docUpload');
 var invoiceRegistration = require('./routes/user/invoiceRegistration');
 var myApproval = require('./routes/user/myApproval');
 var uiLearning = require('./routes/user/uiLearning');
@@ -83,6 +84,7 @@ app.use(passport.session());
 // routes
 app.use('/', routes);
 // user
+app.use('/docUpload', docUpload);
 app.use('/invoiceRegistration', invoiceRegistration);
 app.use('/myApproval', myApproval);
 app.use('/uiLearning', uiLearning);
