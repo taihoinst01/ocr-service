@@ -3205,6 +3205,73 @@ router.post('/exportExcel', function (req, res) {
 
             }
 
+        } else if (docTopType == "37") {
+            worksheet.columns = [
+                { header: 'File', key: 'file' },
+                { header: 'Buyer', key: 'Buyer' },
+                { header: 'PO Number', key: 'PONumber' },
+                { header: 'PO Date', key: 'PODate' },
+                { header: 'Delivery Address', key: 'DeliveryAddress' },
+                { header: 'Total Price', key: 'TotalPrice' },
+                { header: 'Currency', key: 'Currency' },
+                { header: 'Material', key: 'Material' },
+                { header: 'EAN', key: 'EAN' },
+                { header: 'Requested Delivery Date', key: 'RequestedDeliveryDate' },
+                { header: 'Quantity', key: 'Quantity' },
+                { header: 'Unit Price', key: 'UnitPrice' },
+                { header: 'Item Total', key: 'ItemTotal' },
+                { header: 'Serial Number', key: 'SerialNumber' },
+            ];
+
+            for (var i = 0; i < imgId.length; i++) {
+                var filename = imgId[i].substring(imgId[i].lastIndexOf("/") + 1, imgId[i].length);
+
+                var result = sync.await(oracle.selectPoMlExport(filename, sync.defer()));
+
+                for (var j = 0; j < result.rows.length; j++) {
+                    var data = result.rows[j].EXPORTDATA;
+                    data = JSON.parse(data);
+                    var excelObj = {};
+                    excelObj.filename = filename;
+                    for (var k = 0; k < data.length; k++) {
+                        if (k == 0) {
+                            excelObj.buyer = (data[k] != "null" ? data[k]:"");
+                        } else if (k == 1) {
+                            excelObj.poNumber = (data[k] != "null" ? data[k] : "");
+                        } else if (k == 2) {
+                            excelObj.poDate = (data[k] != "null" ? data[k] : "");
+                        } else if (k == 3) {
+                            excelObj.deliveryAddress = (data[k] != "null" ? data[k] : "");
+                        } else if (k == 4) {
+                            excelObj.totalPrice = (data[k] != "null" ? data[k] : "");
+                        } else if (k == 5) {
+                            excelObj.currency = (data[k] != "null" ? data[k] : "");
+                        } else if (k == 6) {
+                            excelObj.material = (data[k] != "null" ? data[k] : "");
+                        } else if (k == 7) {
+                            excelObj.ean = (data[k] != "null" ? data[k] : "");
+                        } else if (k == 8) {
+                            excelObj.requestDeliveryDate = (data[k] != "null" ? data[k] : "");
+                        } else if (k == 9) {
+                            excelObj.quantity = (data[k] != "null" ? data[k] : "");
+                        } else if (k == 10) {
+                            excelObj.unitPrice = (data[k] != "null" ? data[k] : "");
+                        } else if (k == 11) {
+                            excelObj.itemTotal = (data[k] != "null" ? data[k] : "");
+                        } else if (k == 12) {
+                            excelObj.serialNumber = (data[k] != "null" ? data[k] : "");
+                        }
+                    }
+                    worksheet.addRow({
+                        file: excelObj.filename, Buyer: excelObj.buyer, PONumber: excelObj.poNumber, PODate: excelObj.poDate,
+                        DeliveryAddress: excelObj.deliveryAddress, TotalPrice: excelObj.totalPrice, Currency: excelObj.currency, Material: excelObj.material,
+                        EAN: excelObj.ean, RequestedDeliveryDate: excelObj.requestDeliveryDate, Quantity: excelObj.quantity, UnitPrice: excelObj.unitPrice,
+                        ItemTotal: excelObj.itemTotal, SerialNumber: excelObj.serialNumber
+                    });
+                }
+
+            }
+
         } else {
             worksheet.columns = [
                 { header: '파일명', key: 'fileName' },
@@ -3480,6 +3547,7 @@ function batchLearnTraining(filepath, callback) {
                 retData.labelData = labelData.rows;
 
             }
+            sync.await(oracle.insertSamMLData(filepath, imgid, sync.defer()));
             sync.await(oracle.updateBatchLearnListStatus(imgid, sync.defer()));
             callback(null, retData);
 
