@@ -1,0 +1,4 @@
+.singleTableDiv::-webkit-scrollbar { 
+    display: none !important; 
+}
+
