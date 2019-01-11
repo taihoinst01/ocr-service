@@ -69,11 +69,11 @@
                 <div class="content_title_icon"></div>
                 <div class="content_title">계산서 등록</div>
                 <div class="clear_both"></div>
-                <div class="box_content st_stsh box_content_K01">
+                <div class="box_content  box_content_K01">
                     <!-- 양식이미지 업로드폼-->
                     <div id="uploadForm" class="box_content_T_01">
                         <div class="st_infortext_01 ir_upload">
-                            <form id="uploadFileForm" action="/invoiceRegistration/uploadFile" method="post" enctype="multipart/form-data" style="display:block; float: left;">
+                            <form id="uploadFileForm" action="/docUpload/uploadFile1" method="post" enctype="multipart/form-data" style="display:block; float: left;">
                                 <p class="attach_btn">
                                     <input type="file" id="uploadFile" name="file" value="upload" multiple />
                                     <div id="uploadFileBtn" for="customer_file"></div>
@@ -82,7 +82,12 @@
                             <span id="uploadInfoText" class="invoiceR_uploadText" style="line-height: 4;">Drag and drop or click here.</span>
                         </div>
                     </div>
-                    <!-- // 양식이미지 업로드폼-->                                 
+                    <!-- // 양식이미지 업로드폼-->     
+                    <!--Single Record-->
+                    <div style="height: 80%; width: 100%; margin-top: 10px;">
+                        <h3 class="tits titsK00"><span>Single Record</span></h3>    
+                    </div>
+                    <!-- // Single Record-->
                 </div>
                 <!-- 양식이미지 -->
                 <div id="div_image" class="box_content box_content_bg st_stsh st_last box_content_bg_K01">

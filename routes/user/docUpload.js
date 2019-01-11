@@ -20,6 +20,7 @@ var oracle = require('../util/oracle.js');
 var pythonConfig = require(appRoot + '/config/pythonConfig');
 var PythonShell = require('python-shell');
 var transPantternVar = require('./transPattern');
+var propertiesConfig = require(appRoot + '/config/propertiesConfig.js');
 
 var insertTextClassification = queryConfig.uiLearningConfig.insertTextClassification;
 var insertLabelMapping = queryConfig.uiLearningConfig.insertLabelMapping;
@@ -33,7 +34,7 @@ var selectColumn = queryConfig.uiLearningConfig.selectColumn;
 const upload = multer({
     storage: multer.diskStorage({
         destination: function (req, file, cb) {
-            cb(null, 'uploads/');
+            cb(null, propertiesConfig.filepath.uploadsPath);
         },
         filename: function (req, file, cb) {
             cb(null, file.originalname);
@@ -148,6 +149,7 @@ var fnSearchDocumentImageList = function (req, res) {
  * FILE UPLOAD
  ****************************************************************************************/
 router.post('/uploadFile', upload.any(), function (req, res) {
+    console.log("dd");
     sync.fiber(function () {
         var files = req.files;
         var endCount = 0;
@@ -156,7 +158,8 @@ router.post('/uploadFile', upload.any(), function (req, res) {
         var returnObj = [];
         var convertType = '';
         var userId = req.session.userId;
-        var convertedImagePath = appRoot + '\\uploads\\';
+        var convertedImagePath = propertiesConfig.filepath.uploadsPath;
+        console.log(convertedImagePath);
 
         for (var i = 0; i < files.length; i++) {
             console.time("file upload & convert");

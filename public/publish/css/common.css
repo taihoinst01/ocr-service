@@ -224,7 +224,7 @@ body.bg_login { background-image: url(../img/bg_login.png); width: 100%;height: 
 .invoice_Dl_03 .select_style.select_style_K01 .stb-select li,
 .invoice_Dl_04 .select_style.select_style_K01 .stb-select li { border:0; }
 .search_header { border-radius: 5px 5px 0 0; }
-.box_content_bg_K01 .tits span, #span_document_base, #span_document_dtl  { color: #4C5059; }
+.box_content_bg_K01 .tits span, #span_document_base, .tits span { color: #4C5059; }
 .invoice_Dl_01 input[type="checkbox"] { height: 20.5px; }
 #tbody_dtlList .stb-select li { color: #666 !important; }
 
@@ -1537,7 +1537,7 @@ select:disabled + ul.idealSelect:before {
 
 #content {
     min-width: 1650px;
-    padding: 95px 22px 14px 32px;
+    padding: 95px 22px 14px 0;
     margin-left: 155px;
 }
 
@@ -5901,7 +5901,7 @@ label[disabled] {
     /*
          *  ȭ�鿡 ������ �� Table�� ����ũ�⸦ ����ݴϴ�.
          */
-    width: 1672px !important;
+    width: 1699px !important;
     table-layout: fixed;
 }
 
