@@ -24,7 +24,7 @@ rootFilePath = 'C:/ICR/image/MIG/MIG'
 regExp = "[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]"
 
 def boundaryCheck(str1, str2):
-    return abs(int(str1) - int(str2)) < 15
+    return abs(int(str1) - int(str2)) < 18
 
 def getColumnMappingCls():
     try:
@@ -535,6 +535,56 @@ def findEntry(ocrData, docTopType, docType):
                 data = {'location':'182,1223,90,26','text':'LINE','originText':'LINE','sid':'99624,0,0,0,0','mappingSid':'37,182,1223,272,99624,0,0,0,0'}
                 ocrData.append(data)
 
+        elif docType == 6:
+            serialCheck = True
+            materialCheck = True
+            quantityCheck = True
+            unitPriceCheck = True
+            reqDateCheck = True
+
+            for item in ocrData:
+
+                if item["text"].lower() == 'tem no'.lower() or item["text"].lower() == 'item no'.lower():
+                    serialCheck = False
+                if item["text"].lower() == 'Item Code'.lower():
+                    materialCheck = False
+                if item["text"].lower() == 'Quantity'.lower():
+                    quantityCheck = False
+                if item["text"].lower() == 'Unit Price'.lower():
+                    unitPriceCheck = False
+                if item["text"].lower() == 'Delivery Date'.lower():
+                    reqDateCheck = False
+
+            if serialCheck:
+                data = {'location': '341,1274,107,24', 'text': 'Item No', 'originText': 'tem No', 'sid': '99798,97435,0,0,0', 'mappingSid': '37,341,1274,448,99798,97435,0,0,0'}
+                ocrData.append(data)
+            if materialCheck:
+                data = {'location': '517,1274,152,24', 'text': 'Item Code', 'originText': 'Item Code', 'sid': '99798,99596,0,0,0', 'mappingSid': '37,517,1274,669,99798,99596,0,0,0'}
+                ocrData.append(data)
+            if quantityCheck:
+                data = {'location': '1554,1272,127,30', 'text': 'Quantity', 'originText': 'Quantity', 'sid': '99588,0,0,0,0','mappingSid': '37,1554,1272,1681,99588,0,0,0,0'}
+                ocrData.append(data)
+            if unitPriceCheck:
+                data = {'location': '1807,1272,146,23', 'text': 'Unit Price', 'originText': 'Unit Price', 'sid': '99587,99507,0,0,0', 'mappingSid': '37,1807,1272,1953,99587,99507,0,0,0'}
+                ocrData.append(data)
+            if reqDateCheck:
+                data = {'location': '2051,1271,200,30', 'text': 'Delivery Date', 'originText': 'Delivery Date', 'sid': '99552,97436,0,0,0', 'mappingSid': '37,2051,1271,2251,99552,97436,0,0,0'}
+                ocrData.append(data)
+        elif docType == 5:
+            for item in ocrData:
+                if item["text"].lower() == "date":
+                    mappingSid = item["mappingSid"].split(",")
+                    for entry in ocrData:
+                        entrySid = entry["mappingSid"].split(",")
+
+                        if abs( int(mappingSid[1]) - int(entrySid[1]) )  < 50 and abs( int(mappingSid[2]) - int(entrySid[2]) )  < 50 and 'delivery' in entry["text"].lower():
+                            item["text"] = "Delivery Date"
+                            item["colLbl"] = "230"
+                            ocrData = getSid(ocrData)
+                            ocrData = getMappingSid(ocrData,docTopType)
+                            break
+                    break
+
         labelSql = "SELECT * FROM TBL_ICR_LABEL_DEF WHERE DOCID = :docid"
         curs.execute(labelSql, {"docid":str(docTopType)})
         labelRows = curs.fetchall()
@@ -578,7 +628,25 @@ def findEntry(ocrData, docTopType, docType):
                 # variable Label mapping
                 # 문서종류 and (Y좌표 뭉 (X좌표 or 넓이))
                 if (mappingSid[0] == trainData[0]) and int(trainRow[2]) in variLabel and (boundaryCheck(mappingSid[2], trainData[2]) and (boundaryCheck(mappingSid[1], trainData[1]) or boundaryCheck(mappingSid[3], trainData[3]))):
-                    item["entryLbl"] = trainRow[2]
+                    valid = ""
+                    for labelRow in labelRows:
+                        if int(labelRow[0]) == int(trainRow[2]):
+                            valid = labelRow[6]
+
+                    p = re.compile(valid)
+
+                    if p.match(item["text"]):
+                        item["entryLbl"] = trainRow[2]
+                elif docType == 4 and  (mappingSid[0] == trainData[0]) and int(trainRow[2]) == 227 and boundaryCheck(mappingSid[1], trainData[1]) and boundaryCheck(mappingSid[3], trainData[3]):
+                    valid = ""
+                    for labelRow in labelRows:
+                        if int(labelRow[0]) == int(trainRow[2]):
+                            valid = labelRow[6]
+
+                    p = re.compile(valid)
+
+                    if p.match(item["text"]):
+                        item["entryLbl"] = trainRow[2]
 
         # subMulti entry 추출
         for item in ocrData:
@@ -617,7 +685,7 @@ def findEntry(ocrData, docTopType, docType):
                     entrySid = entry["mappingSid"].split(",")
                     p = re.compile(valid)
 
-                    if p.match(entry["text"]) and checkVertical(entrySid, mappingSid) and int(mappingSid[2]) -15 < int(entrySid[2]) and item["text"] != entry["text"]:
+                    if p.match(entry["text"]) and checkVertical(entrySid, mappingSid) and int(mappingSid[2]) -15 < int(entrySid[2]) and "colLbl" not in entry and item["text"] != entry["text"]:
 
                         if not (int(entrySid[2]) - preVerticalLoc > 500) and "entryLbl" not in entry:
 
@@ -631,16 +699,19 @@ def findEntry(ocrData, docTopType, docType):
                                 elif materialCheck == 2:
                                     if re.search(" ", entry["text"]):
                                         materialCheck -= 1
-
+                            elif docType == 4 and int(item["colLbl"]) == 228:
+                                t = re.compile("^[0-9| |.|,]*$")
+                                if t.match(entry["text"]):
+                                    entry["entryLbl"] = item["colLbl"]
                             else :
                                 entry["entryLbl"] = item["colLbl"]
 
-                        preVerticalLoc = int(entrySid[2])
+                            preVerticalLoc = int(entrySid[2])
 
         # single entry 추출
         for item in ocrData:
             mappingSid = item["mappingSid"].split(",")
-            distance = 1000
+            distance = 3000
 
             # single label
             if "colLbl" in item and int(item["colLbl"]) in fixSingleLabel:
@@ -662,7 +733,7 @@ def findEntry(ocrData, docTopType, docType):
                     p = re.compile(valid)
 
                     # (정규식) and (거리) and (label 보다 낮은 위치 검사) and (자신의 label 제외)
-                    if p.match(entry["text"]) and distance > entryDistance and int(mappingSid[2]) - 15 < int(entrySid[2]) and item["text"] != entry["text"]:
+                    if p.match(entry["text"]) and distance > entryDistance and int(mappingSid[2]) - 20 < int(entrySid[2]) and item["text"] != entry["text"]:
 
                         if docType == 4:
                             if "colLbl" not in entry and (boundaryCheck(mappingSid[2], entrySid[2]) or checkVertical(entrySid,mappingSid)):
@@ -788,6 +859,10 @@ def findDelivery(ocrData):
                     item["text"] = "Midwich Ltd c/o Kuehne + Nagel(Goods In) DC3 Prologis Park Midpoint Way Minworth SUTTON COLDFIELD BIRMINGHAM B76 9EH"
                 elif item["text"].lower() == "Westcoast Limited".lower():
                     item["text"] = "Westcoast Limited Arrowhead Park Arrowhead Road Theale READING Berkshire RG7 4AH"
+                elif item["text"].lower() == "MVN - Betrieb Neuendorf".lower():
+                    item["text"] = "MVN Betrieb Neuendorf 4623 Neuendorf"
+                elif item["text"].lower() == "Exert is Warehouse (Altham)".lower():
+                    item["text"] = "Exertis Warehouse (Altham) Shorten Brook Way Altham Business Park Altham Accrington, Lancashire, BB5 5YJ United Kingdom"
 
         return ocrData
     except Exception as ex:

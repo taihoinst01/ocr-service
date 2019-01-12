@@ -1135,7 +1135,7 @@ exports.insertSamMLData = function (filepath, imgid, done) {
 
             filepath = filepath.substring(filepath.lastIndexOf("/") + 1, filepath.length);
             var fileName = filepath.substring(0, filepath.lastIndexOf("."));
-            var selMlExportSql = "SELECT * FROM TBL_BATCH_ML_EXPORT WHERE ENTRYLABEL IS NOT NULL AND FILEPATH LIKE '%" + fileName + "%'";
+            var selMlExportSql = "SELECT * FROM TBL_BATCH_ML_EXPORT WHERE ENTRYLABEL IS NOT NULL AND IMGID = " + imgid + " ";
 
             let delRes = await conn.execute(delSql, [filepath], { autoCommit: true });
 
@@ -1221,7 +1221,11 @@ exports.insertSamMLData = function (filepath, imgid, done) {
                         for (var j = 0; j < mlList.length; j++) {
                             var cData = mlList[j][0].LOCATION.split(",");
 
-                            if (mappingSid[1] - cData[1] < 10 && mappingSid[1] - cData[1] > -10) {
+                            if (mappingSid[1] - cData[1] < 25 && mappingSid[1] - cData[1] > -25) {
+                                mlList[j].push(data);
+                            }
+
+                            if (data.ENTRYLABEL == "229" && (mappingSid[1] - cData[1] < 80 && mappingSid[1] - cData[1] > -80)) {
                                 mlList[j].push(data);
                             }
                         }

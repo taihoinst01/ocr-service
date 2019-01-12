@@ -468,7 +468,7 @@ router.post('/modifyBatchUiTextData', function (req, res) {
                         }
                         afterData.data[i].sid = sync.await(oracle.selectSid(beforeData.data[j], sync.defer()));
                         //라벨이 변경된 경우만 트레이닝 insert
-                        if (afterData.data[i].colLbl != beforeData.data[j].colLbl && beforeData.data[j].colLbl >= -1) {
+                        if ((afterData.data[i].colLbl != beforeData.data[j].colLbl && beforeData.data[j].colLbl >= -1) || (beforeData.data[j].entryLbl != afterData.data[i].colLbl && beforeData.data[j].entryLbl > 0)) {
                             sync.await(oracle.insertBatchColumnMapping(afterData.data[i], docTopType, beforeData.data[j], sync.defer()));
                         }
                     }

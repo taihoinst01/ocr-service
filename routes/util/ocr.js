@@ -144,12 +144,25 @@ function ocrParsing(body) {
         // ocr line parsing
         for (var i = 0; i < body.regions.length; i++) {
             for (var j = 0; j < body.regions[i].lines.length; j++) {
+                if ((body.regions[i].lines[j].words[0] != undefined && body.regions[i].lines[j].words[0].text == 'REQ') && (body.regions[i].lines[j].words[1] != undefined && body.regions[i].lines[j].words[1].text == 'QUANTITY')) {
+                    data.push({ 'location': body.regions[i].lines[j].words[0].boundingBox, 'text': body.regions[i].lines[j].words[0].text.trim() });
+                    data.push({ 'location': body.regions[i].lines[j].words[1].boundingBox, 'text': body.regions[i].lines[j].words[1].text.trim() });
+                    break;
+                }
+                if ((body.regions[i].lines[j].words[0] != undefined && body.regions[i].lines[j].words[0].text == 'TOTAL') && (body.regions[i].lines[j].words[1] != undefined && body.regions[i].lines[j].words[1].text == 'GBP')) {
+                    data.push({ 'location': body.regions[i].lines[j].words[0].boundingBox, 'text': body.regions[i].lines[j].words[0].text.trim() });
+                    data.push({ 'location': body.regions[i].lines[j].words[1].boundingBox, 'text': body.regions[i].lines[j].words[1].text.trim() });
+                    break;
+                }
+
+                if ((body.regions[i].lines[j].words[0] != undefined && body.regions[i].lines[j].words[0].text == 'Delivery') && (body.regions[i].lines[j].words[1] != undefined && body.regions[i].lines[j].words[1].text == 'Unit Cost')) {
+                    data.push({ 'location': body.regions[i].lines[j].words[0].boundingBox, 'text': body.regions[i].lines[j].words[0].text.trim() });
+                    data.push({ 'location': body.regions[i].lines[j].words[1].boundingBox, 'text': body.regions[i].lines[j].words[1].text.trim() });
+                    break;
+                }
+
                 var item = '';
                 for (var k = 0; k < body.regions[i].lines[j].words.length; k++) {
-                    if (body.regions[i].lines[j].words[k].text == '공단부담금') {
-                        data.push({ 'location': body.regions[i].lines[j].words[k].boundingBox, 'text': body.regions[i].lines[j].words[k].text.trim() });
-                        break;
-                    }
                     item += body.regions[i].lines[j].words[k].text + ' ';
                 }
                 data.push({ 'location': body.regions[i].lines[j].boundingBox, 'text': item.trim() });
@@ -160,19 +173,21 @@ function ocrParsing(body) {
         var xInterval = 20; // x pixel value
 
         for (var i = 0; i < data.length; i++) {
-            for (var j = 0; j < data.length; j++) {
-                if (data[i].location != data[j].location) {
-                    var targetLocArr = data[i].location.split(',');
-                    var compareLocArr = data[j].location.split(',');
-                    var width = Number(targetLocArr[0]) + Number(targetLocArr[2]); // target text width
-                    var textSpacing = Math.abs(Number(compareLocArr[0]) - width) // spacing between target text and compare text
+            if (!(data[i].text == "TOTAL" || data[i].text == "GBP")) {
+                for (var j = 0; j < data.length; j++) {
+                    if (data[i].location != data[j].location) {
+                        var targetLocArr = data[i].location.split(',');
+                        var compareLocArr = data[j].location.split(',');
+                        var width = Number(targetLocArr[0]) + Number(targetLocArr[2]); // target text width
+                        var textSpacing = Math.abs(Number(compareLocArr[0]) - width) // spacing between target text and compare text
 
-                    if (textSpacing <= xInterval && compareLocArr[1] == targetLocArr[1]) {
-                        data[i].location = targetLocArr[0] + ',' + targetLocArr[1] + ',' +
-                            (Number(targetLocArr[2]) + Number(compareLocArr[2]) + textSpacing) + ',' + targetLocArr[3];
-                        data[i].text += ' ' + data[j].text;
-                        data[j].text = '';
-                        data[j].location = '';
+                        if (textSpacing <= xInterval && compareLocArr[1] == targetLocArr[1]) {
+                            data[i].location = targetLocArr[0] + ',' + targetLocArr[1] + ',' +
+                                (Number(targetLocArr[2]) + Number(compareLocArr[2]) + textSpacing) + ',' + targetLocArr[3];
+                            data[i].text += ' ' + data[j].text;
+                            data[j].text = '';
+                            data[j].location = '';
+                        }
                     }
                 }
             }
