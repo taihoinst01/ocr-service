@@ -440,6 +440,9 @@ if __name__ == '__main__':
             # 주소부분추출
             ocrData = bUtil.findDelivery(ocrData)
 
+            # Currency부분추출
+            ocrData = bUtil.findDeCurrency(ocrData)
+
             obj["docCategory"] = selectDocCategory(docType)
             obj["data"] = ocrData
 

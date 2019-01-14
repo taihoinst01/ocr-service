@@ -891,6 +891,22 @@ def findDelivery(ocrData):
         raise Exception(str({'code': 500, 'message': 'findDocType error',
                              'error': str(ex).replace("'", "").replace('"', '')}))
 
+
+
+def findCurrency(ocrData):
+    try:
+        for item in ocrData:
+            if "entryLbl" in item and int(item["entryLbl"]) == 227:
+                if item["text"].lower() == "Value GBP".lower() or item["text"].lower() == "GAP".lower():
+                    item["text"] =  "GBP"
+                #elif item["text"].lower() == "WESTCOAST MK LTD".lower():
+                #    item["text"] = "WESTCOAST MK LTD EMERALD GATE FOX MILNE TONGWELL STREET MILTON KEYNES MK15 0SF"
+
+        return ocrData
+    except Exception as ex:
+        raise Exception(str({'code': 500, 'message': 'findCurrency error',
+                             'error': str(ex).replace("'", "").replace('"', '')}))
+
 def requestML(ocrData):
     data = {
         "Inputs": {
