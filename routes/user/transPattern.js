@@ -69,12 +69,18 @@ function convertedEntry(reqArr, done) {
             var data = reqArr.data;
    
             for(var i = 0; i < data.length; i ++) {
+                var colLbl = data[i].colLbl;
+                var originText = data[i].originText;
+                var convertText;
+                
                 if(docName == 'Migros') {
 
                 } else if(docName == 'Exertise') {
     
                 } else if(docName == 'Westcoast') {
-                    console.log(1);
+                    if(colLbl == 222){
+
+                    }
                 } else if(docName == 'Midwich') {
 
                 }
