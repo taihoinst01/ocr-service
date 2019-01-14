@@ -368,7 +368,7 @@ def checkVertical(entLoc, lblLoc):
         lblwidthLoc = (int(lblLoc[3]) + int(lblLoc[1])) / 2
         entwidthLoc = (int(entLoc[3]) + int(entLoc[1])) / 2
         # entryLabel이 오른쪽에서 가까울 경우 제외
-        if -300 < entwidthLoc - lblwidthLoc < 160:
+        if -200 < entwidthLoc - lblwidthLoc < 160:
             return True
         else:
             return False
@@ -584,6 +584,43 @@ def findEntry(ocrData, docTopType, docType):
                             ocrData = getMappingSid(ocrData,docTopType)
                             break
                     break
+
+        elif docType == 4:
+            mValid = re.compile("77[0-9]* [a-zA-Z]{1,7}")
+            eValid = re.compile("[0-9a-zA-Z.,;()/+-]* 88[0-9]*")
+            for item in ocrData:
+                if mValid.match(item["text"]):
+                    text = item["text"].split(" ")
+                    location = item["location"].split(",")
+
+                    item["text"] = text[0]
+                    item["location"] = location[0] + "," + location[1] + "," + str(int(int(location[2]) / 2)) + "," + location[3]
+
+                    toData = {"location":str(int(location[0]) + (int(int(location[2]) / 2))) + "," + location[1] + "," + str(int(int(location[2]) / 2)) + "," + location[3],
+                              "text": " ".join(text[1:]),
+                              "originText":item["originText"],
+                              "sid":item["sid"],
+                              "mappingSid":item["mappingSid"]}
+
+                    ocrData.append(toData)
+
+                elif eValid.match(item["text"]):
+                    text = item["text"].split(" ")
+                    location = item["location"].split(",")
+
+                    item["text"] = text[0]
+                    item["location"] = location[0] + "," + location[1] + "," + str(int(int(location[2]) / 2)) + "," + location[3]
+
+                    toData = {"location":str(int(location[0]) + (int(int(location[2]) / 2))) + "," + location[1] + "," + str(int(int(location[2]) / 2)) + "," + location[3],
+                              "text":text[1],
+                              "originText":item["originText"],
+                              "sid":item["sid"],
+                              "mappingSid":item["mappingSid"]}
+
+                    ocrData.append(toData)
+
+            ocrData = getSid(ocrData)
+            ocrData = getMappingSid(ocrData, docTopType)
 
         labelSql = "SELECT * FROM TBL_ICR_LABEL_DEF WHERE DOCID = :docid"
         curs.execute(labelSql, {"docid":str(docTopType)})
