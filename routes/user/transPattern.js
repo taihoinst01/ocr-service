@@ -64,7 +64,7 @@ function convertedUY(reqArr) {
 function convertedEntry(reqArr, done) {
     sync.fiber(function () {
         try {
-            
+            console.log(reqArr)
         } catch (e) {
             console.log(e);
         } finally {

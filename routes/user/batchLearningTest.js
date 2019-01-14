@@ -26,7 +26,7 @@ var ocrUtil = require('../util/ocr.js');
 var batch = require('../util/batch.js');
 var pythonConfig = require(appRoot + '/config/pythonConfig');
 var mlStudio = require('../util/mlStudio.js');
-var transPantternVar = require('./transPattern');
+var transPatternVar = require('./transPattern');
 var Step = require('step');
 var paging = require(appRoot + '/config/paging');
 var execSync = require('sync-exec');
@@ -2183,7 +2183,7 @@ function uiLearnTraining(filepath, callback) {
 
                 var resPyArr = JSON.parse(decode);
                 
-                resPyArr = sync.await(transPantternVar.trans(resPyArr, sync.defer()));
+                resPyArr = sync.await(transPatternVar.trans(resPyArr, sync.defer()));
                 console.log(resPyArr);
 
                 var retData = {};
@@ -3530,7 +3530,7 @@ function batchLearnTraining(filepath, callback) {
                 var decode = new Buffer(testStr, 'base64').toString('utf-8');
 
                 var resPyArr = JSON.parse(decode);
-                resPyArr = sync.await(transPantternVar.trans(resPyArr, sync.defer()));
+                resPyArr = sync.await(transPatternVar.trans(resPyArr, sync.defer()));
                 console.log(resPyArr);
 
                 
