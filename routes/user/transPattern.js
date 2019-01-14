@@ -80,10 +80,16 @@ function convertedEntry(reqArr, done) {
                 } else if(docName == 'Westcoast') {
                     // PODATE
                     if(entryLbl == 223){
+                        // 공백제거
                         convertText = originText.replace(/ /gi, "");
-                        data.text = convertText;
-                        console.log("data.text: " + data.text);
-                        console.log("reqArr.text: " + reqArr.text);
+                        data[i].text = convertText;
+                    }
+
+                    // Currency
+                    if(entryLbl == 227) {
+                        // Value GBP - > GBP 로 변경
+                        convertText = originText.substring(originText.search("GBP"));
+                        data[i].text = convertText;
                     }
                 } else if(docName == 'Midwich') {
 
