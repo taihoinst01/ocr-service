@@ -368,7 +368,7 @@ def checkVertical(entLoc, lblLoc):
         lblwidthLoc = (int(lblLoc[3]) + int(lblLoc[1])) / 2
         entwidthLoc = (int(entLoc[3]) + int(entLoc[1])) / 2
         # entryLabel이 오른쪽에서 가까울 경우 제외
-        if -200 < entwidthLoc - lblwidthLoc < 160:
+        if -150 < entwidthLoc - lblwidthLoc < 180:
             return True
         else:
             return False
