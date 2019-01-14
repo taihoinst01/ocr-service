@@ -1427,15 +1427,8 @@ var searchBatchLearnDataList = function (addCond, page) {
                 $('#batch_left_contents_before').empty().append(appendLeftContentsHtml);
                 $('#batch_right_contents_before').empty().append(appendRightContentsHtml);
                 
-                $('#batch_left_contents_before tr').each(function(){
-                    var leftFilename = $(this).find('td:eq(1) a').text();
-                    var length = 0;
-                    $('#batch_right_contents_before .answerTr').each(function(){
-                        var rightFilename = $(this).attr('data-filename');
-                        if(rightFilename == leftFilename) {
-                            length++;
-                        }
-                    })
+                $('#batch_left_contents_before tr').each(function(index){
+                    var length = $('#batch_right_contents_before tr[data-rowNum=' + index + ']').length;
 
                     $(this).css('height', length == 0 ? '30px' : (length * 30) + 'px' );
 
