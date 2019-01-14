@@ -847,7 +847,7 @@ def findDelivery(ocrData):
     try:
         for item in ocrData:
             if "entryLbl" in item and int(item["entryLbl"]) == 224:
-                if item["text"].lower() == "Exertis Warehouse (Altham)".lower():
+                if item["text"].lower() == "Exertis Warehouse (Altham)".lower() or item["text"].lower() == "Exert is Warehouse (Alt ham)".lower()  or item["text"].lower() == "Exert 1 s Warehouse (Al t ham)".lower() :
                     item["text"] =  "Exertis Warehouse (Altham) Shorten Brook Way Altham Business Park Altham Accrington, Lancashire, BB5 5YJ United Kingdom"
                 elif item["text"].lower() == "WESTCOAST MK LTD".lower():
                     item["text"] = "WESTCOAST MK LTD EMERALD GATE FOX MILNE TONGWELL STREET MILTON KEYNES MK15 0SF"
@@ -863,10 +863,48 @@ def findDelivery(ocrData):
                     item["text"] = "MVN Betrieb Neuendorf 4623 Neuendorf"
                 elif item["text"].lower() == "Exert is Warehouse (Altham)".lower():
                     item["text"] = "Exertis Warehouse (Altham) Shorten Brook Way Altham Business Park Altham Accrington, Lancashire, BB5 5YJ United Kingdom"
+                elif item["text"].lower() == "Vohkus Ltd".lower():
+                    item["text"] = "Vohkus Ltd Centurion House Unit 12 Barnes Wallis Road SEGENSWORTH Hampshire PO15 5TT"
+                elif item["text"].lower() == "The Saville Group Limited".lower():
+                    item["text"] = "The Saville Group Limited The Saville Group Limited Fourth Avenue Trafford Park MANCHESTER M17 1DB"
+                elif item["text"].lower() == "ISDM Solutions Ltd".lower():
+                    item["text"] = "ISDM Solutions Ltd G437 GMill Dean Clough HALIFAX WEST YORKSHIRE HX3 5AX"
+                elif item["text"].lower() == "Comcen Computer Supplies Ltd".lower():
+                    item["text"] = "Comcen Computer Supplies Ltd Bruce Road Swansea Industrial Estate Fforestfach SWANSEA WEST GLAMORGAN SA5 4HS"
+                elif item["text"].lower() == "Butterfield Signs Ltd".lower():
+                    item["text"] = "Butterfield Signs Ltd 174 Sunbridge Road BRADFORD WEST YORKSHIRE BD1 2RZ"
+                elif item["text"].lower() == "Unit Al 5".lower():
+                    item["text"] = "UnitA15 Big Yellow Storage 1A Rugby Road TWICKENHAM LONDON TW1 1DG"
+                elif item["text"].lower() == "Keter UK Ltd".lower():
+                    item["text"] = "Keter UK Ltd West Point Mucklow Hill Halesowen Birmingham B62 8DY"
+                elif item["text"].lower() == "The Fragrance Shop".lower():
+                    item["text"] = "The Fragrance Shop Unit 43 The Chantry Centre Andover SP10 1RN"
+                elif item["text"].lower() == "Ericsson".lower():
+                    item["text"] = "Ericsson C/o Overbury Site Office 8th Floor (Elite AV) Thames Tower Station Road Reading RG1 1LX"
+                elif item["text"].lower() == "TSYS CARD TECH SERVICES LTD".lower():
+                    item["text"] = "TSYS CARD TECH SERVICES LTD 4 Verginas Street Annex 4 Building Nicosia Strovolos, 2030 Cyprus"
+                elif item["text"].lower() == "SUB TV".lower():
+                    item["text"] = "SUB TV A15 BIG YELLOW STORAGE 1A RUGBY ROAD TWICKENHAM TW1 1DG"
 
         return ocrData
     except Exception as ex:
         raise Exception(str({'code': 500, 'message': 'findDocType error',
+                             'error': str(ex).replace("'", "").replace('"', '')}))
+
+
+
+def findCurrency(ocrData):
+    try:
+        for item in ocrData:
+            if "entryLbl" in item and int(item["entryLbl"]) == 227:
+                if item["text"].lower() == "Value GBP".lower() or item["text"].lower() == "GAP".lower():
+                    item["text"] =  "GBP"
+                #elif item["text"].lower() == "WESTCOAST MK LTD".lower():
+                #    item["text"] = "WESTCOAST MK LTD EMERALD GATE FOX MILNE TONGWELL STREET MILTON KEYNES MK15 0SF"
+
+        return ocrData
+    except Exception as ex:
+        raise Exception(str({'code': 500, 'message': 'findCurrency error',
                              'error': str(ex).replace("'", "").replace('"', '')}))
 
 def requestML(ocrData):
