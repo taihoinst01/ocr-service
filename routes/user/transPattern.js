@@ -69,17 +69,21 @@ function convertedEntry(reqArr, done) {
             var data = reqArr.data;
    
             for(var i = 0; i < data.length; i ++) {
-                var colLbl = data[i].colLbl;
+                var entryLbl = data[i].entryLbl;
                 var originText = data[i].originText;
                 var convertText;
-                
+
                 if(docName == 'Migros') {
 
                 } else if(docName == 'Exertise') {
     
                 } else if(docName == 'Westcoast') {
-                    if(colLbl == 222){
-
+                    // PODATE
+                    if(entryLbl == 223){
+                        convertText = originText.replace(/ /gi, "");
+                        data.text = convertText;
+                        console.log("data.text: " + data.text);
+                        console.log("reqArr.text: " + reqArr.text);
                     }
                 } else if(docName == 'Midwich') {
 
