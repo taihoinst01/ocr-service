@@ -2182,7 +2182,8 @@ function uiLearnTraining(filepath, callback) {
                 var decode = new Buffer(testStr, 'base64').toString('utf-8');
 
                 var resPyArr = JSON.parse(decode);
-                //resPyArr = sync.await(transPantternVar.trans(resPyArr, sync.defer()));
+                
+                resPyArr = sync.await(transPantternVar.trans(resPyArr, sync.defer()));
                 console.log(resPyArr);
 
                 var retData = {};
@@ -3529,7 +3530,7 @@ function batchLearnTraining(filepath, callback) {
                 var decode = new Buffer(testStr, 'base64').toString('utf-8');
 
                 var resPyArr = JSON.parse(decode);
-                //resPyArr = sync.await(transPantternVar.trans(resPyArr, sync.defer()));
+                resPyArr = sync.await(transPantternVar.trans(resPyArr, sync.defer()));
                 console.log(resPyArr);
 
                 

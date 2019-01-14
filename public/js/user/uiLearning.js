@@ -224,10 +224,14 @@ function uploadFileEvent() {
             $('#uploadFileForm').submit();
         }
     });
+    $('#uploadFile').click(function(e){
+        e.stopPropagation();
+    });
 
-    $('#uploadFileBtn').click(function () {
+    $('#uploadForm').click(function () {
         $('#uploadFile').click();
     });
+
 
     $('#uploadFileForm').ajaxForm({
         beforeSubmit: function (data, frm, opt) {

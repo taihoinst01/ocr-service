@@ -181,7 +181,7 @@ body.bg_login { background-image: url(../img/bg_login.png); width: 100%;height: 
 /*
     uiLearning.html css (�����н�)
 */
-#uploadForm { border: 2px dashed #D4635B; background-color: #E1E1E1; border-radius: 10px; margin: 20px 0 0 0;}
+#uploadForm { border: 2px dashed #D4635B; background-color: #E1E1E1; border-radius: 10px; margin: 20px 0 0 0; cursor: pointer;}
 .ui_uploadText { font: 300 20px 'NanumGothicR'; width: 350px !important; color: #D4635B; text-align: center; }
 .content_sub_title { font: bold 20px 'NanumGothicR'; color: #4C5059; margin: 5px 0 20px 5px; }
 .box_content_R { float: right; display: table; position: relative; width: 48%; width: calc(50% - 16px); width: -webkit-calc(40% - 16px); height: 740px; padding: 0px; margin: 0; }

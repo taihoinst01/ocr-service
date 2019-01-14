@@ -6,10 +6,11 @@ var exceljs = require('exceljs');
 var appRoot = require('app-root-path').path;
 var router = express.Router();
 
+var ocrUtil = require('../util/ocr.js');
 var oracledb = require('oracledb');
 var dbConfig = require('../../config/dbConfig.js');
 var exec = require('child_process').exec;
-var execSync = require('child_process').execSync;
+var execSync = require('sync-exec');
 var logger = require('../util/logger');
 var aimain = require('../util/aiMain');
 var commonDB = require(appRoot + '/public/js/common.db.js');
@@ -21,6 +22,7 @@ var pythonConfig = require(appRoot + '/config/pythonConfig');
 var PythonShell = require('python-shell');
 var transPantternVar = require('./transPattern');
 var propertiesConfig = require(appRoot + '/config/propertiesConfig.js');
+var Step = require('step');
 
 var insertTextClassification = queryConfig.uiLearningConfig.insertTextClassification;
 var insertLabelMapping = queryConfig.uiLearningConfig.insertLabelMapping;
@@ -149,492 +151,240 @@ var fnSearchDocumentImageList = function (req, res) {
  * FILE UPLOAD
  ****************************************************************************************/
 router.post('/uploadFile', upload.any(), function (req, res) {
-    console.log("dd");
     sync.fiber(function () {
         var files = req.files;
-        var endCount = 0;
-        var fileInfo = [];
-        var fileDtlInfo = [];
-        var returnObj = [];
-        var convertType = '';
-        var userId = req.session.userId;
-        var convertedImagePath = propertiesConfig.filepath.uploadsPath;
-        console.log(convertedImagePath);
-
-        for (var i = 0; i < files.length; i++) {
-            console.time("file upload & convert");
-            var fileInfo2 = [];
-            var fileDtlInfoTemp = [];
-            var imgId = 'ICR';
-            var date = new Date();
-            var yyyymmdd = String(date.getFullYear()) + String(date.getMonth() + 1) + String(date.getDate());
-            var maxDocNum = sync.await(oracle.selectMaxDocNum(sync.defer()));
-            if (maxDocNum == 0) {
-                imgId += yyyymmdd + '0000001';
-            } else {
-                var Maxyyyymmdd = maxDocNum.substring(3, 11);
-                if (Number(Maxyyyymmdd) < Number(yyyymmdd)) {
-                    imgId += yyyymmdd + '0000001';
-                } else {
-                    imgId += Number(maxDocNum.substring(3, 18)) + 1;
-                }
-            }
-            //console.log(imgId);
-            var ifile = "";
-            var ofile = "";
-
-            if (files[i].originalname.split('.')[1] === 'TIF' || files[i].originalname.split('.')[1] === 'tif' ||
-                files[i].originalname.split('.')[1] === 'TIFF' || files[i].originalname.split('.')[1] === 'tiff' ||
-                files[i].originalname.split('.')[1] === 'JPG' || files[i].originalname.split('.')[1] === 'jpg') {
-                ifile = appRoot + '\\' + files[i].path;
-                ofile = appRoot + '\\' + files[i].path.split('.')[0] + '.jpg';
-
-                //execSync('java -jar C:/Main.jar' + ifile);
-
-                // 파일 정보 추출
-                var fileObj = files[i];                             // 파일
-                var filePath = fileObj.path;                        // 파일 경로
-                var oriFileName = fileObj.originalname;             // 파일 원본명
-                var _lastDot = oriFileName.lastIndexOf('.');
-                var fileExt = oriFileName.substring(_lastDot + 1, oriFileName.length).toLowerCase();        // 파일 확장자
-                var fileSize = fileObj.size;                        // 파일 크기
-                var contentType = fileObj.mimetype;                 // 컨텐트타입
-                var svrFileName = Math.random().toString(26).slice(2);  // 서버에 저장될 랜덤 파일명
-
-                var fileParam = {
-                    imgId: imgId,
-                    filePath: filePath,
-                    oriFileName: oriFileName,
-                    convertFileName: '',
-                    svrFileName: svrFileName,
-                    fileExt: fileExt,
-                    fileSize: fileSize,
-                    contentType: contentType,
-                    regId: userId,
-                    row: i
-                };
-                fileInfo2.push(fileParam);  
-                fileInfo.push(fileParam);       // 변환 전 TIF 파일 정보
-
-                execSync('module\\imageMagick\\convert.exe -quiet -density 800x800 "' + ifile + '" "' + ofile + '"');
-            } else if (files[i].originalname.split('.')[1] === 'PNG' || files[i].originalname.split('.')[1] === 'png'){
-                ifile = appRoot + '\\' + files[i].path;
-                ofile = appRoot + '\\' + files[i].path.split('.')[0] + '.png';
-
-                //execSync('java -jar C:/Main.jar' + ifile);
-
-                // 파일 정보 추출
-                var fileObj = files[i];                             // 파일
-                var filePath = fileObj.path;                        // 파일 경로
-                var oriFileName = fileObj.originalname;             // 파일 원본명
-                var _lastDot = oriFileName.lastIndexOf('.');
-                var fileExt = oriFileName.substring(_lastDot + 1, oriFileName.length).toLowerCase();        // 파일 확장자
-                var fileSize = fileObj.size;                        // 파일 크기
-                var contentType = fileObj.mimetype;                 // 컨텐트타입
-                var svrFileName = Math.random().toString(26).slice(2);  // 서버에 저장될 랜덤 파일명
-
-                var fileParam = {
-                    imgId: imgId,
-                    filePath: filePath,
-                    oriFileName: oriFileName,
-                    convertFileName: '',
-                    svrFileName: svrFileName,
-                    fileExt: fileExt,
-                    fileSize: fileSize,
-                    contentType: contentType,
-                    regId: userId,
-                    row: i
-                };
-                fileInfo2.push(fileParam);
-                fileInfo.push(fileParam);       // 변환 전 TIF 파일 정보
-            } else if (files[i].originalname.split('.')[1] === 'xlsx' || files[i].originalname.split('.')[1] === 'xls' ||
-                files[i].originalname.split('.')[1] === 'XLSX' || files[i].originalname.split('.')[1] === 'XLS' ||
-                files[i].originalname.split('.')[1] === 'docx' || files[i].originalname.split('.')[1] === 'doc' ||
-                files[i].originalname.split('.')[1] === 'DOCX' || files[i].originalname.split('.')[1] === 'DOC' ||
-                files[i].originalname.split('.')[1] === 'pptx' || files[i].originalname.split('.')[1] === 'ppt' ||
-                files[i].originalname.split('.')[1] === 'PPTX' || files[i].originalname.split('.')[1] === 'PPT' ||
-                files[i].originalname.split('.')[1] === 'PDF' || files[i].originalname.split('.')[1] === 'pdf') {
-
-                ifile = appRoot + '\\' + files[i].path;
-                ofile = appRoot + '\\' + files[i].path.split('.')[0] + '.pdf';
-
-                //file decription 운영
-                //execSync('java -jar C:/ICR/app/source/module/DrmDec.jar "' + ifile + '"');
-
-                //file convert to MsOffice to Pdf
-                if ( !(files[i].originalname.split('.')[1] === 'PDF' || files[i].originalname.split('.')[1] === 'pdf') ) {
-                    //execSync('"C:/Program Files/LibreOffice/program/python.exe" C:/ICR/app/source/module/unoconv/unoconv.py -f pdf -o "' + ofile + '" "' + ifile + '"');   //운영
-                    execSync('"C:/Program Files (x86)/LibreOffice/program/python.exe" C:/projectWork/koreanre/module/unoconv/unoconv.py -f pdf -o "' + ofile + '" "' + ifile + '"');
-                }
-                
-                ifile = appRoot + '\\' + files[i].path.split('.')[0] + '.pdf';
-                ofile = appRoot + '\\' + files[i].path.split('.')[0] + '.png';
-
-                // 파일 정보 추출
-                var fileObj = files[i];                             // 파일
-                var filePath = fileObj.path;                        // 파일 경로
-                var oriFileName = fileObj.originalname;             // 파일 원본명
-                var _lastDot = oriFileName.lastIndexOf('.');
-                var fileExt = oriFileName.substring(_lastDot + 1, oriFileName.length).toLowerCase();        // 파일 확장자
-                var fileSize = fileObj.size;                        // 파일 크기
-                var contentType = fileObj.mimetype;                 // 컨텐트타입
-                var svrFileName = Math.random().toString(26).slice(2);  // 서버에 저장될 랜덤 파일명
-
-                var fileParam = {
-                    imgId: imgId,
-                    filePath: filePath,
-                    oriFileName: oriFileName,
-                    convertFileName: '',
-                    svrFileName: svrFileName,
-                    fileExt: fileExt,
-                    fileSize: fileSize,
-                    contentType: contentType,
-                    regId: userId,
-                    row: i
-                };
-
-                fileInfo2.push(fileParam); 
-                fileInfo.push(fileParam);       // 변환 전 TIF 파일 정보
-
-                //file convert Pdf to Png
-                var convertResult = execSync('module\\imageMagick\\convert.exe -quiet -density 300 -colorspace Gray -alpha remove -alpha off "' + ifile + '" "' + ofile +'"');
-				/*
-                if (convertResult.status != 0) {
-                    throw new Error(convertResult.stderr);
-                }
-				*/
-
-            }
-            
-            var isStop = false;
-            var j = 0;
-            while (!isStop) {
-                try { // 하나의 파일 안의 여러 페이지면
-                    if (files[i].originalname.split('.')[1].toLowerCase() === 'docx' || files[i].originalname.split('.')[1].toLowerCase() === 'doc' ||
-                        files[i].originalname.split('.')[1].toLowerCase() === 'xlsx' || files[i].originalname.split('.')[1].toLowerCase() === 'xls' ||
-                        files[i].originalname.split('.')[1].toLowerCase() === 'pptx' || files[i].originalname.split('.')[1].toLowerCase() === 'ppt' ||
-                        files[i].originalname.split('.')[1].toLowerCase() === 'pdf' || files[i].originalname.split('.')[1].toLowerCase() === 'png') {
-                        var convertFileFullPath = appRoot + '\\' + files[i].path.split('.')[0] + '-' + j + '.png';
-                        var convertFile = files[i].path.split('.')[0] + '-' + j + '.png';
-                    } else {
-                        var convertFileFullPath = appRoot + '\\' + files[i].path.split('.')[0] + '-' + j + '.jpg';
-                        var convertFile = files[i].path.split('.')[0] + '-' + j + '.jpg';
-                    }
-                    var convertedFilePath = convertedImagePath.replace(/\\/gi, '/');
-                    var convertFileName = convertFile.split('\\')[1];
-                    var _lastDotDtl = convertFileName.lastIndexOf('.');
-                    var stat = fs.statSync(convertFileFullPath);
-                    if (stat) {
-                        var fileDtlParam = {
-                            imgId: imgId,
-                            filePath: convertFileFullPath,
-                            oriFileName: convertFileName,
-                            convertFileName: convertFileName,
-                            svrFileName: Math.random().toString(26).slice(2),
-                            fileExt: convertFileName.substring(_lastDot + 1, convertFileName.length).toLowerCase(),
-                            fileSize: stat.size,
-                            contentType: 'image/jpeg',
-                            regId: userId,
-                            convertedFilePath: convertedFilePath
-                        };
-
-                        if (files[i].originalname.split('.')[1].toLowerCase() === 'docx' || files[i].originalname.split('.')[1].toLowerCase() === 'doc' ||
-                            files[i].originalname.split('.')[1].toLowerCase() === 'xlsx' || files[i].originalname.split('.')[1].toLowerCase() === 'xls' ||
-                            files[i].originalname.split('.')[1].toLowerCase() === 'pptx' || files[i].originalname.split('.')[1].toLowerCase() === 'ppt' ||
-                            files[i].originalname.split('.')[1].toLowerCase() === 'pdf' || files[i].originalname.split('.')[1].toLowerCase() === 'png') {
-                            returnObj.push(files[i].originalname.split('.')[0] + '-' + j + '.png');
-                        } else {
-                            returnObj.push(files[i].originalname.split('.')[0] + '-' + j + '.jpg');
-                        }
-                        
-                        fileDtlInfo.push(fileDtlParam);          // 변환 후 JPG 파일 정보
-						fileDtlInfoTemp.push(fileDtlParam);
-                    } else {
-                        isStop = true;
-                        break;
-                    }
-                } catch (err) { // 하나의 파일 안의 한 페이지면
-                    try {
-                        if (files[i].originalname.split('.')[1].toLowerCase() === 'docx' || files[i].originalname.split('.')[1].toLowerCase() === 'doc' ||
-                            files[i].originalname.split('.')[1].toLowerCase() === 'xlsx' || files[i].originalname.split('.')[1].toLowerCase() === 'xls' ||
-                            files[i].originalname.split('.')[1].toLowerCase() === 'pptx' || files[i].originalname.split('.')[1].toLowerCase() === 'ppt' ||
-                            files[i].originalname.split('.')[1].toLowerCase() === 'pdf' || files[i].originalname.split('.')[1].toLowerCase() === 'png') {
-                            var convertFileFullPath = appRoot + '\\' + files[i].path.split('.')[0] + '.png';
-                            var convertFile = files[i].path.split('.')[0] + '.png';
-                        } else {
-                            var convertFileFullPath = appRoot + '\\' + files[i].path.split('.')[0] + '.jpg';
-                            var convertFile = files[i].path.split('.')[0] + '.jpg';
-                        }
-                        var convertedFilePath = convertedImagePath.replace(/\\/gi, '/');
-                        var convertFileName = convertFile.split('\\')[1];
-                        var _lastDotDtl = convertFileName.lastIndexOf('.');
-                        var stat2 = fs.statSync(convertFileFullPath);
-                        if (stat2) {
-                            var fileDtlParam = {
-                                imgId: imgId,
-                                filePath: convertFileFullPath,
-                                oriFileName: convertFileName,
-                                convertFileName: convertFileName,
-                                svrFileName: Math.random().toString(26).slice(2),
-                                fileExt: convertFileName.substring(_lastDot + 1, convertFileName.length).toLowerCase(),
-                                fileSize: stat2.size,
-                                contentType: 'image/jpeg',
-                                regId: userId,
-                                convertedFilePath: convertedFilePath
-                            };
-                            if (files[i].originalname.split('.')[1].toLowerCase() === 'docx' || files[i].originalname.split('.')[1].toLowerCase() === 'doc' ||
-                                files[i].originalname.split('.')[1].toLowerCase() === 'xlsx' || files[i].originalname.split('.')[1].toLowerCase() === 'xls' ||
-                                files[i].originalname.split('.')[1].toLowerCase() === 'pptx' || files[i].originalname.split('.')[1].toLowerCase() === 'ppt' ||
-                                files[i].originalname.split('.')[1].toLowerCase() === 'pdf' || files[i].originalname.split('.')[1].toLowerCase() === 'png') {
-                                returnObj.push(files[i].originalname.split('.')[0] + '.png');
-                            } else {
-                                returnObj.push(files[i].originalname.split('.')[0] + '.jpg');
-                            }
-                            fileDtlInfo.push(fileDtlParam);         // 변환 후 JPG 파일 정보
-							fileDtlInfoTemp.push(fileDtlParam);
-                            break;
-                        }
-                    } catch (e) {
-                        break;
-                    }
-                }
-                j++;
-            }
-            endCount++;
-            sync.await(oracle.insertDocument([fileInfo2, fileDtlInfoTemp.length], sync.defer()));
-            fileInfo[i].pageCount = fileDtlInfoTemp.length;
-            console.timeEnd("file upload & convert");
-        }
-
-        // TBL_DOCUMENT insert
-        //sync.await(oracle.insertDocument([fileInfo], sync.defer()));
-        sync.await(oracle.insertOcrFileDtl(fileDtlInfo, sync.defer()));
-
-        res.send({ code: 200, message: returnObj, fileInfo: fileInfo, fileDtlInfo: fileDtlInfo });
-    });
-
-    
-});
-
-//전달/결재상신(ICR담당자 -> 중간결재자)
-router.post('/sendApprovalDocument', function (req, res) {
-    var userChoiceId = req.body.userChoiceId;
-    var docInfo = req.body.docInfo;
-    var userId = req.body.userId;
-    var mlData = req.body.mlData;
-
-    var returnObj = {};
-    var approvalDtlData = [];
-    var sendCount = 0;
-    sync.fiber(function () {
-        try {
-            for (var i = 0; i < docInfo.length; i++) {               
-                var draftDate = sync.await(oracle.sendApprovalDocument([req.body.userId, userChoiceId[0], userChoiceId[0], docInfo[i]], sync.defer()));
-                approvalDtlData.push({
-                    'docNum': docInfo[i],
-                    'status': '02',
-                    'approvalNum': userId,
-                    'approvalDate': draftDate,
-                    'approvalComment': null,
-                    'nextApprovalNum': userChoiceId[0]
-                });
-                sendCount += 1;
-            }
-            sync.await(oracle.insertDocumentDtl(mlData, sync.defer()));
-            sync.await(oracle.approvalDtlProcess(approvalDtlData, req.user.token, sync.defer()));
-            returnObj = { code: 200, docData: sendCount };
         
-        } catch (e) {
-            returnObj = { code: 200, error: e };
-        } finally {
-            res.send(returnObj);
-        }
+        var fileInfoList;
+        var returnObj = [];
+
+        Step(          
+            function uploadConvertOcrStep() {
+                var self = this;
+                console.log(1);
+                files.forEach(function (element) {
+                    fileInfoList = uploadConvert(element, self.parallel()).fileInfo;
+                    console.log(2);
+                });
+                console.log(2.5);
+                var test = batchLearnTraining(fileInfoList, self.parallel());
+                console.log(test);
+                
+            },
+
+            
+            function finalize(err) {
+                if (err) console.log(err);
+                console.log('upload suceess');
+                res.send({ code: 200, message: returnObj, fileInfo: fileInfo, type: 'image' });
+            }         
+        );
+            
+       
+
     });
-
 });
-
-//문서전달
-router.post('/sendDocument', function (req, res) {
-    var returnObj = {};
-    var sendCount = 0;
-    try {
-        for (var i = 0; i < req.body.docNum.length; i++) {
-            sync.fiber(function () {
-                sync.await(oracle.sendDocument([ req.body.userId[0], req.body.userId[0], req.body.docNum[i]], sync.defer()));
-            });
-            sendCount += 1;
-        }
-        returnObj = { code: 200, docData: sendCount };
-    } catch (e) {
-        returnObj = { code: 200, error: e };
-    } finally {
-        res.send(returnObj);
-    }
-
-});
-//문서삭제
-router.post('/deleteDocument', function (req, res) {
-    var returnObj = {};
-    var deleteCount = 0;
-    try {
-        for (var i = 0; i < req.body.docNum.length; i++) {
-            sync.fiber(function () {
-                    sync.await(oracle.deleteDocument(req.body.docNum[i], sync.defer()));
-            });
-            deleteCount += 1;
-        }
-        returnObj = { code: 200, docData: deleteCount }; 
-    } catch (e) {
-        returnObj = { code: 200, error: e };
-    } finally {
-        res.send(returnObj);
-    }
-
-});
-
-
-
-router.post('/selectDocument', function (req, res) {
-    var returnObj = {};
-    var inputDocNum = "";
-    for (var i = 0; i < req.body.fileInfo.length; i++) {
-        inputDocNum += "'" + req.body.fileInfo[i].imgId + "'" + ", ";
-    }
-    var inputDocNum2 = inputDocNum.substring(0, inputDocNum.length - 2);
-    //console.log("SELECT문에 삽입될 IMGID 값 : " + inputDocNum2);
+function batchLearnTraining(fileInfoList, callback) {
     sync.fiber(function () {
         try {
-            var result = sync.await(oracle.selectDocument(inputDocNum2, sync.defer()));
-            returnObj = { code: 200, docData: result };
+            //var imgid = sync.await(oracle.selectImgid(filepath, sync.defer()));
+            //imgid = imgid.rows[0].IMGID;
+
+            var fullFilePathList = [];
+            for(var i = 0; i< fileInfoList.length; i++) {
+                fullFilePathList.push(fileInfoList[i].convertedFilePath + fileInfoList[i].convertFileName);
+            }
+
+            var retData = {};
+            for (var i = 0; i < fullFilePathList.length; i++) {
+                var selOcr = sync.await(oracle.selectOcrData(fullFilePathList[i], sync.defer()));
+                if (selOcr.length == 0) {
+                    var ocrResult = sync.await(ocrUtil.localOcr(fullFilePathList[i], sync.defer()));
+
+                    if ((ocrResult.textAngle != "undefined" && ocrResult.textAngle > 0.01 || ocrResult.textAngle < -0.01) || ocrResult.orientation != "Up") {
+                        var angle = 0;
+
+                        if (ocrResult.orientation == "Left") {
+                            angle += 90;
+                        } else if (ocrResult.orientation == "Right") {
+                            angle += -90;
+                        } else if (ocrResult.orientation == "Down") {
+                            angle += 180;
+                        }
+
+                        angle += Math.floor(ocrResult.textAngle * 100);
+
+                        if (angle < 0) {
+                            angle += 2;
+                        } else {
+                            angle -= 1;
+                        }
+
+                        execSync('module\\imageMagick\\convert.exe -rotate "' + angle + '" ' + fullFilePathList[i] + ' ' + fullFilePathList[i]);
+
+                        ocrResult = sync.await(ocrUtil.localOcr(fullFilePathList[i], sync.defer()));
+                    }
+
+                    sync.await(oracle.insertOcrData(fullFilePathList[i], JSON.stringify(ocrResult), sync.defer()));
+                    selOcr = sync.await(oracle.selectOcrData(fullFilePathList[i], sync.defer()));
+                }
+
+                var seqNum = selOcr.SEQNUM;
+                pythonConfig.columnMappingOptions.args = [];
+                pythonConfig.columnMappingOptions.args.push(seqNum);
+                //var resPyStr = sync.await(PythonShell.run('batchClassifyTest.py', pythonConfig.columnMappingOptions, sync.defer()));
+                var resPyStr = sync.await(PythonShell.run('samClassifyTest.py', pythonConfig.columnMappingOptions, sync.defer()));
+                var testStr = resPyStr[0].replace('b', '');
+                testStr = testStr.replace(/'/g, '');
+                var decode = new Buffer(testStr, 'base64').toString('utf-8');
+
+                var resPyArr = JSON.parse(decode);
+                //resPyArr = sync.await(transPantternVar.trans(resPyArr, sync.defer()));
+                console.log(resPyArr);
+
+                
+                retData = resPyArr;
+
+            }
+            callback(null, retData);
+
         } catch (e) {
-            returnObj = { code: 200, error: e };
-        } finally {
-            res.send(returnObj);
+            console.log(e);
+            callback();
         }
+
+
     });
-});
+}
 
-router.post('/selectOcrFileDtl', function (req, res) {
-    var returnObj = {};
-    var docNum = req.body.docNum;
-    sync.fiber(function () {
-        try {
-            var result = sync.await(oracle.selectOcrFileDtl(docNum, sync.defer()));
-            //var result = sync.await(oracle.selectApprovalMasterFromDocNum(docNum, sync.defer()));
-            returnObj = { code: 200, docData: result, fileRootPath: appRoot + '\\uploads\\'  };
-        } catch (e) {
-            returnObj = { code: 200, error: e };
-        } finally {
-            res.send(returnObj);
+function uploadConvert(files, callback) {
+    var returnResult = {
+        fileInfo: [],
+        returnObj: []
+    };
+    var imagePath = propertiesConfig.filepath.imagePath;
+    //var convertedImagePath = appRoot + '\\uploads\\';
+    var convertedImagePath = propertiesConfig.filepath.uploadsPath;
+    console.time("file upload & convert");
+    var fileObj = files;
+    var fileExt = fileObj.originalname.split('.')[1];
+
+    if (fileExt.toLowerCase() === 'tif' || fileExt.toLowerCase() === 'jpg') {
+        var fileItem = {
+            imgId: new Date().isoNum(8) + "" + Math.floor(Math.random() * 9999999) + 1000000,
+            filePath: fileObj.path.replace(/\\/gi, '/'),
+            oriFileName: fileObj.originalname,
+            convertedFilePath: convertedImagePath.replace(/\\/gi, '/'),
+            convertFileName: fileObj.originalname.split('.')[0] + '.jpg',
+            fileExt: fileExt,
+            fileSize: fileObj.size,
+            contentType: fileObj.mimetype
+        };
+        returnResult.fileInfo = fileItem;
+
+        var fileNames = [];
+        returnResult.returnObj = fileItem.convertFileName;
+
+        var ifile = convertedImagePath + fileObj.originalname;
+        var ofile = convertedImagePath + fileObj.originalname.split('.')[0] + '.jpg';
+        
+        var result = execSync('module\\imageMagick\\convert.exe -colorspace Gray -density 800x800 ' + ifile + ' ' + ofile);
+        if (result.status != 0) {
+            throw new Error(result.stderr);
         }
-    });
-});
+    } else if (fileExt.toLowerCase() === 'png') {
+        var fileItem = {
+            imgId: new Date().isoNum(8) + "" + Math.floor(Math.random() * 9999999) + 1000000,
+            filePath: fileObj.path.replace(/\\/gi, '/'),
+            oriFileName: fileObj.originalname,
+            convertedFilePath: convertedImagePath.replace(/\\/gi, '/'),
+            convertFileName: fileObj.originalname.split('.')[0] + '.png',
+            fileExt: fileExt,
+            fileSize: fileObj.size,
+            contentType: fileObj.mimetype
+        };
+        returnResult.fileInfo = fileItem;
 
-router.post('/uploadFile_Old', upload.any(), function (req, res) {
-    var files = req.files;
-    var endCount = 0;
-    var fileInfo = [];
-    var fileDtlInfo = [];
-    var returnObj = [];
-    var convertType = '';
-    var userId = req.session.userId;
-    var convertedImagePath = appRoot + '\\uploads\\';
+        var fileNames = [];
+        returnResult.returnObj = fileItem.convertFileName;
 
-    for (var i = 0; i < files.length; i++) {
-        var imgId = Math.random().toString(36).slice(2); // TODO : 임시로 imgId 생성 - 규칙 생기면 변경 필요
-        var ifile = "";
-        var ofile = "";
+        var ifile = convertedImagePath + fileObj.originalname;
+        var ofile = convertedImagePath + fileObj.originalname.split('.')[0] + '.png';
 
-        if (files[i].originalname.split('.')[1] === 'TIF' || files[i].originalname.split('.')[1] === 'tif' ||
-            files[i].originalname.split('.')[1] === 'TIFF' || files[i].originalname.split('.')[1] === 'tiff') {
-            ifile = appRoot + '\\' + files[i].path;
-            ofile = appRoot + '\\' + files[i].path.split('.')[0] + '.jpg';
-
-            // 파일 정보 추출
-            var fileObj = files[i];                             // 파일
-            var filePath = fileObj.path;                        // 파일 경로
-            var oriFileName = fileObj.originalname;             // 파일 원본명
-            var _lastDot = oriFileName.lastIndexOf('.');
-            var fileExt = oriFileName.substring(_lastDot + 1, oriFileName.length).toLowerCase();        // 파일 확장자
-            var fileSize = fileObj.size;                        // 파일 크기
-            var contentType = fileObj.mimetype;                 // 컨텐트타입
-            var svrFileName = Math.random().toString(26).slice(2);  // 서버에 저장될 랜덤 파일명
-
-            var fileParam = {
-                imgId: imgId,
-                filePath: filePath,
-                oriFileName: oriFileName,
-                convertFileName: '',
-                svrFileName: svrFileName,
-                fileExt: fileExt,
-                fileSize: fileSize,
-                contentType: contentType,
-                regId: userId,
-                row: i
-            };
-
-            fileInfo.push(fileParam);       // 변환 전 TIF 파일 정보
-        } else if (files[i].originalname.split('.')[1] === 'docx' || files[i].originalname.split('.')[1] === 'doc' ||
-            files[i].originalname.split('.')[1] === 'DOCX' || files[i].originalname.split('.')[1] === 'DOC') {
-            ifile = appRoot + '\\' + files[i].path;
-            ofile = appRoot + '\\' + files[i].path.split('.')[0] + '.pdf';
+    } else if (fileExt.toLowerCase() === 'docx' || fileExt.toLowerCase() === 'doc'
+        || fileExt.toLowerCase() === 'xlsx' || fileExt.toLowerCase() === 'xls'
+        || fileExt.toLowerCase() === 'pptx' || fileExt.toLowerCase() === 'ppt'
+        || fileExt.toLowerCase() === 'pdf') {
 
 
+        var ifile = convertedImagePath + fileObj.originalname;
+        var ofile = convertedImagePath + fileObj.originalname.split('.')[0] + '.pdf';
+
+        var convertPdf = '';
+
+        //file decription 운영 경로
+        //execSync('java -jar C:/ICR/app/source/module/DrmDec.jar "' + ifile + '"');
+
+        //file convert MsOffice to Pdf
+        if (!(fileExt.toLowerCase() === 'pdf')) {
+            //convertPdf = execSync('"C:/Program Files/LibreOffice/program/python.exe" C:/ICR/app/source/module/unoconv/unoconv.py -f pdf -o "' + ofile + '" "' + ifile + '"');  //운영
+            convertPdf = execSync('"C:/Program Files/LibreOffice/program/python.exe" C:/projectWork/ocrService/module/unoconv/unoconv.py -f pdf -o "' + ofile + '" "' + ifile + '"');
         }
 
-            execSync('module\\imageMagick\\convert.exe -quiet -density 800x800 ' + ifile + ' ' + ofile);
+        ifile = convertedImagePath + fileObj.originalname.split('.')[0] + '.pdf';
+        ofile = convertedImagePath + fileObj.originalname.split('.')[0] + '.png';
+
+        //file convert Pdf to Png
+        if (convertPdf || fileExt.toLowerCase() === 'pdf') {
+            var result = execSync('module\\imageMagick\\convert.exe -density 300 -colorspace Gray -alpha remove -alpha off "' + ifile + '" "' + ofile + '"');
+
+            if (result.status != 0) {
+                throw new Error(result.stderr);
+            }
+
             var isStop = false;
             var j = 0;
+
             while (!isStop) {
                 try { // 하나의 파일 안의 여러 페이지면
-                    var convertFileFullPath = appRoot + '\\' + files[i].path.split('.')[0] + '-' + j + '.jpg';
-                    var convertedFilePath = convertedImagePath.replace(/\\/gi, '/');
-                    var convertFile = files[i].path.split('.')[0] + '-' + j + '.jpg';
-                    var convertFileName = convertFile.split('\\')[1];
-                    var _lastDotDtl = convertFileName.lastIndexOf('.');
+                    var convertFileFullPath = files.path.split('.')[0] + '-' + j + '.png';
                     var stat = fs.statSync(convertFileFullPath);
                     if (stat) {
-                        var fileDtlParam = {
-                            imgId: imgId,
-                            filePath: convertFileFullPath,
-                            oriFileName: convertFileName,
-                            convertFileName: convertFileName,
-                            svrFileName: Math.random().toString(26).slice(2),
-                            fileExt: convertFileName.substring(_lastDot + 1, convertFileName.length).toLowerCase(),
-                            fileSize: stat.size,
-                            contentType: 'image/jpeg',
-                            regId: userId,
-                            convertedFilePath: convertedFilePath
+                        var fileItem = {
+                            imgId: new Date().isoNum(8) + "" + Math.floor(Math.random() * 9999999) + 1000000,
+                            filePath: fileObj.path.replace(/\\/gi, '/'),
+                            oriFileName: fileObj.originalname,
+                            convertedFilePath: convertedImagePath.replace(/\\/gi, '/'),
+                            convertFileName: fileObj.originalname.split('.')[0] + '-' + j + '.png',
+                            fileExt: fileExt,
+                            fileSize: fileObj.size,
+                            contentType: fileObj.mimetype,
+                            imgCount : (j + 1)
                         };
-                        returnObj.push(files[i].originalname.split('.')[0] + '-' + j + '.jpg');
-                        fileDtlArr.push(fileDtlParam);          // 변환 후 JPG 파일 정보
+ 
+                        returnResult.fileInfo.push(fileItem);
+                        returnResult.returnObj.push(fileItem.convertFileName);
                     } else {
                         isStop = true;
                         break;
                     }
                 } catch (err) { // 하나의 파일 안의 한 페이지면
                     try {
-                        var convertFileFullPath = appRoot + '\\' + files[i].path.split('.')[0] + '.jpg';
-                        var convertedFilePath = convertedImagePath.replace(/\\/gi, '/');
-                        var convertFile = files[i].path.split('.')[0] + '.jpg';
-                        var convertFileName = convertFile.split('\\')[1];
-                        var _lastDotDtl = convertFileName.lastIndexOf('.');
+                        var convertFileFullPath = files.path.split('.')[0] + '.png';
                         var stat2 = fs.statSync(convertFileFullPath);
                         if (stat2) {
-                            var fileDtlParam = {
-                                imgId: imgId,
-                                filePath: convertFileFullPath,
-                                oriFileName: convertFileName,
-                                convertFileName: convertFileName,
-                                svrFileName: Math.random().toString(26).slice(2),
-                                fileExt: convertFileName.substring(_lastDot + 1, convertFileName.length).toLowerCase(),
-                                fileSize: stat2.size,
-                                contentType: 'image/jpeg',
-                                regId: userId,
-                                convertedFilePath: convertedFilePath
+                            var fileItem = {
+                                imgId: new Date().isoNum(8) + "" + Math.floor(Math.random() * 9999999) + 1000000,
+                                filePath: fileObj.path.replace(/\\/gi, '/'),
+                                oriFileName: fileObj.originalname,
+                                convertedFilePath: convertedImagePath.replace(/\\/gi, '/'),
+                                convertFileName: fileObj.originalname.split('.')[0] + '.png',
+                                fileExt: fileExt,
+                                fileSize: fileObj.size,
+                                contentType: fileObj.mimetype,
+                                imgCount : (j + 1)
                             };
-                            returnObj.push(files[i].originalname.split('.')[0] + '.jpg');
-                            fileDtlInfo.push(fileDtlParam);         // 변환 후 JPG 파일 정보
+                            returnResult.fileInfo = fileItem;
+                            returnResult.returnObj = fileItem.convertFileName;
                             break;
                         }
                     } catch (e) {
@@ -643,13 +393,40 @@ router.post('/uploadFile_Old', upload.any(), function (req, res) {
                 }
                 j++;
             }
-            endCount++;
+
+        } else {
+            throw new Error("pdf convert fail");
+        }
     }
+    console.timeEnd("file upload & convert");
+    
+    callback();
+    return returnResult;
+}
 
-    commonDB.insertFileInfo(fileInfo, "ocr_file"); // 파일 정보 DB INSERT
-    commonDB.insertFileInfo(fileDtlInfo, "ocr_file_dtl"); // 세부 파일 정보 DB INSERT
+router.post('/batchLearnTraining', function (req, res) {
 
-    res.send({ code: 200, message: returnObj, fileInfo: fileInfo, fileDtlInfo: fileDtlInfo });
+    var filepath = req.body.imgIdArray;
+    var flag = req.body.flag;
+    var retData = [];
+    var uiTraining = '';
+
+    Step(
+        function executeML() {
+            var self = this;
+            filepath.forEach(function (element) {
+                batchLearnTraining(element, self.parallel());
+            });
+        },
+        function finalize(err) {
+            if (err) console.log(err);
+            console.log('done');
+            res.send({ data: retData });
+        }
+    );
+    //var batchData = sync.await(batchLearnTraining(filepath, flag, sync.defer()));
+
+
 });
 
 /****************************************************************************************

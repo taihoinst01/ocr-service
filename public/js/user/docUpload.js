@@ -153,7 +153,11 @@ var fn_uploadFileEvent = function () {
         }
     });
 
-    $("#uploadFileBtn").click(function () {
+    $("#uploadFile").click(function(e){
+        e.stopPropagation();
+    });
+    
+    $("#uploadForm").click(function () {
         thumbImgs = [];
         $("#uploadFile").val('');
         $("#uploadFile").click();
