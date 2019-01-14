@@ -65,6 +65,17 @@ function convertedEntry(reqArr, done) {
     sync.fiber(function () {
         try {
             console.log(reqArr)
+            var docName = reqArr.docCategory.DOCNAME;
+            
+            if(docName == 'Migros') {
+
+            } else if(docName == 'Exertise') {
+
+            } else if(docName == 'Westcoast') {
+
+            } else if(docName == 'Midwich') {
+
+            }
         } catch (e) {
             console.log(e);
         } finally {
