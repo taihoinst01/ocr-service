@@ -66,16 +66,20 @@ function convertedEntry(reqArr, done) {
         try {
             console.log(reqArr)
             var docName = reqArr.docCategory.DOCNAME;
-            
-            if(docName == 'Migros') {
+            var data = reqArr.data;
+   
+            for(var i = 0; i < data.length; i ++) {
+                if(docName == 'Migros') {
 
-            } else if(docName == 'Exertise') {
+                } else if(docName == 'Exertise') {
+    
+                } else if(docName == 'Westcoast') {
+                    console.log(1);
+                } else if(docName == 'Midwich') {
 
-            } else if(docName == 'Westcoast') {
-
-            } else if(docName == 'Midwich') {
-
+                }
             }
+            
         } catch (e) {
             console.log(e);
         } finally {
