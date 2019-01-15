@@ -66,16 +66,47 @@ function convertedEntry(reqArr, done) {
         try {
             console.log(reqArr)
             var docName = reqArr.docCategory.DOCNAME;
-            
-            if(docName == 'Migros') {
+            var data = reqArr.data;
+   
+            for(var i = 0; i < data.length; i ++) {
+                var entryLbl = data[i].entryLbl;
+                var originText = data[i].originText;
+                var convertText;
 
-            } else if(docName == 'Exertise') {
+                if(docName == 'Migros') {
 
-            } else if(docName == 'Westcoast') {
+                } else if(docName == 'Exertise') {
 
-            } else if(docName == 'Midwich') {
+					var convertPOdate;
+					var convertPOdataArray;
+					// PODATE
+					if (entryLbl == 223) {
+						convertPOdataArray = originText.split(/ /gi);
+						convertPOdate = convertPOdataArray[0] + "-" + convertPOdataArray[1] + "-" + convertPOdataArray[2].substring(2, 4);
+						data[i].text = convertPOdate;
+						//console.log("data.text: " + data.text);
+						//console.log("reqArr.text: " + typeof (reqArr));
+					}
 
+                } else if(docName == 'Westcoast') {
+                    // PODATE
+                    if(entryLbl == 223){
+                        // 공백제거
+                        convertText = originText.replace(/ /gi, "");
+                        data[i].text = convertText;
+                    }
+
+                    // Currency
+                    if(entryLbl == 227) {
+                        // Value GBP - > GBP 로 변경
+                        convertText = originText.substring(originText.search("GBP"));
+                        data[i].text = convertText;
+                    }
+                } else if(docName == 'Midwich') {
+
+                }
             }
+            
         } catch (e) {
             console.log(e);
         } finally {
