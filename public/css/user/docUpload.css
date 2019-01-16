@@ -2,3 +2,17 @@
     display: none !important; 
 }
 
+.docUpload_mainImage {
+    height: 980px;
+}
+
+#redZoomNemo {
+    top: 107px !important;
+}
+.box_imgtmb {
+    height: 102px !important;
+}
+.touchSliderDiv {
+    height: 100% !important;
+    width: 100% !important;
+}

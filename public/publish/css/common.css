@@ -39,11 +39,16 @@ body{ font-family:NanumGothicR,sans-serif,�������; }
 }
 
 .ipt_pink {
-    border-radius: 15px; border: solid 1px #EA7169;
+    border-radius: 15px !important; 
+    border: solid 1px #EA7169 !important;
 }
 
 .ipt_gray {
     border-radius: 15px; border: solid 1px darkgray;
+}
+.touchSliderDiv {
+    overflow-x: hidden;
+    overflow-y: scroll;
 }
 /*
     header.html (��ܹ�)
@@ -2010,7 +2015,7 @@ select:disabled + ul.idealSelect:before {
 
 .box_imgtmb {
     position: relative;
-    width: 99%;
+    width: 100%;
     max-height: 130px;
     padding: 10px 0;
     background: #605f5d;
@@ -2028,7 +2033,6 @@ select:disabled + ul.idealSelect:before {
 
 .box_imgtmb #touchSlider {
     display: block;
-    overflow: hidden;
     width: 660px;
     height: 130px;
     /*margin: 0 auto*/
@@ -2036,8 +2040,8 @@ select:disabled + ul.idealSelect:before {
 
 .box_imgtmb ul li {
     float: left;
-    width: 110px;
-    padding: 10px 1px;
+    width: 120px;
+    margin: 2px 0;
 }
 
 .box_imgtmb .box_img {
@@ -5342,7 +5346,7 @@ thead .ez-checked {
     border: 2px solid #EA7169;
     position: absolute;
     top: 191px;
-    width: 100%;
+    width: 99.5%;
 }
 
 button[disabled] {
@@ -5691,10 +5695,6 @@ label[disabled] {
     height: 290px !important;
 }
 
-.box_content_bg_K01 .box_imgtmb {
-    max-height: 100px !important;
-}
-
 .box_content_bg_K01 .button_control1, .box_content_bg_K01 .button_control2 {
     top: 20px !important;
 }
@@ -5737,10 +5737,6 @@ label[disabled] {
     margin: 3px auto 0 !important;
 }
 
-.box_content_bg_K01 #touchSlider {
-    height: 110px !important;
-}
-
 .btnK01 {
     width: 150px !important;
 }
@@ -5754,7 +5750,7 @@ label[disabled] {
 }
 
 .invoiceR_thumbImg li .box_img img {
-    height: 66px !important;
+    height: 62px !important;
 }
 
 .table_K01 .mCustomScrollbar.mCS_no_scrollbar {
@@ -6579,6 +6575,7 @@ input:disabled {
 #div_invoice_view_image {
     height: 290px !important;
     overflow-y: scroll;
+    overflow-x: hidden;
     width: 1620px;
     background: #FFF;
     border: 1px solid #FFF;

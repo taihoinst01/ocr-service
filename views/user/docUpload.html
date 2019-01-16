@@ -92,13 +92,13 @@
                                     <col style="width:30%" />
                                     <col style="width:70%" />
                                 </colgroup>
-                                <tbody>
+                                <tbody id="singleTblTbody">
                                     <tr style="height:20px">
                                         <td style="padding:5px 0">
                                             <input type="text" style="height: 30px; color: white; border-radius: 15px; border: solid 1px #EA7169; background-color: #EA7169;" disabled value="Buyer">
                                         </td>
                                         <td style="padding:5px 0 5px 10px">
-                                            <input type="text" style="height: 30px; width: 100%; border-radius: 15px; border: solid 1px darkgray; " value="">
+                                            <input type="text" id="singleBuyer" class="singleRecordIpt" style="height: 30px; width: 100%; border-radius: 15px; border: solid 1px darkgray; " value="">
                                         </td>
                                     </tr>
                                     <tr style="height:20px">
@@ -106,7 +106,7 @@
                                             <input type="text" style="height: 30px; color: white; border-radius: 15px; border: solid 1px #EA7169; background-color: #EA7169;" disabled value="Po Number">
                                         </td>
                                         <td style="padding:5px 0 5px 10px">
-                                            <input type="text" style="height: 30px; width: 100%; border-radius: 15px; border: solid 1px #EA7169;" value="">
+                                            <input type="text" id="singlePoNumber" class="singleRecordIpt" style="height: 30px; width: 100%; border-radius: 15px; border: solid 1px darkgray;" value="">
                                         </td>
                                     </tr>
                                     <tr style="height:20px">
@@ -114,7 +114,7 @@
                                             <input type="text" style="height: 30px; color: white; border-radius: 15px; border: solid 1px #EA7169; background-color: #EA7169;" disabled value="PO Date">
                                         </td>
                                         <td style="padding:5px 0 5px 10px">
-                                            <input type="text" style="height: 30px; width: 100%; border-radius: 15px; border: solid 1px #EA7169; " value="">
+                                            <input type="text" id="singlePoDate" class="singleRecordIpt" style="height: 30px; width: 100%; border-radius: 15px; border: solid 1px darkgray; " value="">
                                         </td>
                                     </tr>
                                     <tr style="height:20px">
@@ -122,7 +122,7 @@
                                             <input type="text" style="height: 30px; color: white; border-radius: 15px; border: solid 1px #EA7169; background-color: #EA7169;" disabled value="Delivery Address">
                                         </td>
                                         <td style="padding:5px 0 5px 10px">
-                                            <input type="text" style="height: 30px; width: 100%; border-radius: 15px; border: solid 1px #EA7169;" value="">
+                                            <input type="text" id="singleDeliveryAddress" class="singleRecordIpt" style="height: 30px; width: 100%; border-radius: 15px; border: solid 1px darkgray;" value="">
                                         </td>
                                     </tr>
                                     <tr style="height:20px">
@@ -130,7 +130,7 @@
                                             <input type="text" style="height: 30px; color: white; border-radius: 15px; border: solid 1px #EA7169; background-color: #EA7169;" disabled value="Total Price">
                                         </td>
                                         <td style="padding:5px 0 5px 10px">
-                                            <input type="text" style="height: 30px; width: 100%; border-radius: 15px; border: solid 1px #EA7169; " value="">
+                                            <input type="text" id="singleTotalPrice" class="singleRecordIpt" style="height: 30px; width: 100%; border-radius: 15px; border: solid 1px darkgray; " value="">
                                         </td>
                                     </tr>
                                     <tr style="height:20px">
@@ -138,7 +138,7 @@
                                             <input type="text" style="height: 30px; color: white; border-radius: 15px; border: solid 1px #EA7169; background-color: #EA7169;" disabled value="Currency">
                                         </td>
                                         <td style="padding:5px 0 5px 10px">
-                                            <input type="text" style="height: 30px; width: 100%; border-radius: 15px; border: solid 1px #EA7169;" value="">
+                                            <input type="text" id="singleCurrency" class="singleRecordIpt" style="height: 30px; width: 100%; border-radius: 15px; border: solid 1px darkgray;" value="">
                                         </td>
                                     </tr>
                                     <tr style="height:20px">
@@ -146,7 +146,7 @@
                                             <input type="text" style="height: 30px; color: white; border-radius: 15px; border: solid 1px #EA7169; background-color: #EA7169;" disabled value="Requested Delivery Date">
                                         </td>
                                         <td style="padding:5px 0 5px 10px">
-                                            <input type="text" style="height: 30px; width: 100%; border-radius: 15px; border: solid 1px #EA7169;" value="">
+                                            <input type="text" id="singleRequestedDeliveryDate" class="singleRecordIpt" style="height: 30px; width: 100%; border-radius: 15px; border: solid 1px darkgray;" value="">
                                         </td>
                                     </tr>              
                                 </tbody>
@@ -159,11 +159,10 @@
                 <div id="div_image" class="box_content box_content_bg st_stsh st_last box_content_bg_K01">
                     <h3 class="tits"><span>양식이미지</span></h3>
                     <div id="div_invoice_view_image" class="imgtmb_b mCustomScrollbar" data-mcs-axis="yx" data-mcs-theme="dark-3" style="width:auto">
-                        <!--<img src="publish/image/sample01.jpg" alt="샘플이미지" />-->
-                        <img id="main_image" src="" />
+
                     </div>
                     <div class="box_imgtmb">
-                        <div id="touchSlider">
+                        <div id="touchSlider" class="touchSliderDiv">
                             <ul id="ul_image" class="invoiceR_thumbImg">
                                 <!--
                         <li class="on">
@@ -201,7 +200,8 @@
                                         <table class="invoiceR_tblBody2" border="0">
                                             <colgroup>
                                             </colgroup>
-                                            <tbody id="tbody_dtlList">
+                                            <tbody id="multiRecordTblTbody">
+                                                <!--
                                                 <tr>
                                                     <td>
                                                         <input type="text" class="ipt_pink">
@@ -222,6 +222,7 @@
                                                         <input type="text" class="ipt_pink">
                                                     </td>
                                                 </tr>
+                                                -->
                                             </tbody>
                                         </table>
                                     </div>
