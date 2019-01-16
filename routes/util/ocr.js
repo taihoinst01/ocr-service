@@ -152,10 +152,13 @@ function ocrParsing(body) {
                 if ((body.regions[i].lines[j].words[0] != undefined && body.regions[i].lines[j].words[0].text == 'TOTAL') && (body.regions[i].lines[j].words[1] != undefined && body.regions[i].lines[j].words[1].text == 'GBP')) {
                     data.push({ 'location': body.regions[i].lines[j].words[0].boundingBox, 'text': body.regions[i].lines[j].words[0].text.trim() });
                     data.push({ 'location': body.regions[i].lines[j].words[1].boundingBox, 'text': body.regions[i].lines[j].words[1].text.trim() });
+                    if (body.regions[i].lines[j + 1] != undefined && body.regions[i].lines[j + 1].words[0] != undefined) {
+                        data.push({ 'location': body.regions[i].lines[j+1].words[0].boundingBox, 'text': body.regions[i].lines[j+1].words[0].text.trim() });
+                    }
                     break;
                 }
 
-                if ((body.regions[i].lines[j].words[0] != undefined && body.regions[i].lines[j].words[0].text == 'Delivery') && (body.regions[i].lines[j].words[1] != undefined && body.regions[i].lines[j].words[1].text == 'Unit Cost')) {
+                if ((body.regions[i].lines[j].words[0] != undefined && body.regions[i].lines[j].words[0].text == 'Delivery') && (body.regions[i].lines[j].words[1] != undefined && body.regions[i].lines[j].words[1].text == 'Unit')) {
                     data.push({ 'location': body.regions[i].lines[j].words[0].boundingBox, 'text': body.regions[i].lines[j].words[0].text.trim() });
                     data.push({ 'location': body.regions[i].lines[j].words[1].boundingBox, 'text': body.regions[i].lines[j].words[1].text.trim() });
                     break;

@@ -377,6 +377,20 @@ def checkVertical(entLoc, lblLoc):
         raise Exception(str({'code': 500, 'message': 'checkVerticalEntry fail',
                          'error': str(e).replace("'", "").replace('"', '')}))
 
+def checkVerticalMid(entLoc, lblLoc):
+    try:
+        lblwidthLoc = (int(lblLoc[3]) + int(lblLoc[1])) / 2
+        entwidthLoc = (int(entLoc[3]) + int(entLoc[1])) / 2
+        # entryLabel이 오른쪽에서 가까울 경우 제외
+        if -300 < entwidthLoc - lblwidthLoc < 160:
+            return True
+        else:
+            return False
+
+    except Exception as e:
+        raise Exception(str({'code': 500, 'message': 'checkVerticalEntry fail',
+                         'error': str(e).replace("'", "").replace('"', '')}))
+
 def selectLabelBehaviorDrug(label, entryLabel):
     try:
         colLabel = label["colLbl"]
@@ -572,7 +586,7 @@ def findEntry(ocrData, docTopType, docType):
                 ocrData.append(data)
         elif docType == 5:
             for item in ocrData:
-                if item["text"].lower() == "date":
+                if item["text"].lower() == "date" or item["text"].lower() == "dat":
                     mappingSid = item["mappingSid"].split(",")
                     for entry in ocrData:
                         entrySid = entry["mappingSid"].split(",")
@@ -587,7 +601,7 @@ def findEntry(ocrData, docTopType, docType):
 
         elif docType == 4:
             mValid = re.compile("77[0-9]* [a-zA-Z]{1,7}")
-            eValid = re.compile("[0-9a-zA-Z.,;()/+-]* 88[0-9]*")
+            eValid = re.compile("[0-9a-zA-Z.,;()/+-]* 88[0-9]*|^[0-9a-zA-Z.,;()/+-]+88[0-9]*")
             for item in ocrData:
                 if mValid.match(item["text"]):
                     text = item["text"].split(" ")
@@ -606,18 +620,44 @@ def findEntry(ocrData, docTopType, docType):
 
                 elif eValid.match(item["text"]):
                     text = item["text"].split(" ")
-                    location = item["location"].split(",")
 
-                    item["text"] = text[0]
-                    item["location"] = location[0] + "," + location[1] + "," + str(int(int(location[2]) / 2)) + "," + location[3]
+                    if len(text) == 1:
+                        t = re.compile('^[0-9| |.|,]*$')
+                        m = t.match(item["text"])
+                        if m is None:
+                            tempText = item["text"]
+                            location = item["location"].split(",")
 
-                    toData = {"location":str(int(location[0]) + (int(int(location[2]) / 2))) + "," + location[1] + "," + str(int(int(location[2]) / 2)) + "," + location[3],
-                              "text":text[1],
-                              "originText":item["originText"],
-                              "sid":item["sid"],
-                              "mappingSid":item["mappingSid"]}
+                            match = re.search("88[0-9]*", tempText)
+                            startIndex = match.start()
+                            endIndex = match.end()
+                            charText = tempText[0:startIndex]
 
-                    ocrData.append(toData)
+                            item["text"] = charText
+                            item["location"] = location[0] + "," + location[1] + "," + str(int(int(location[2]) / 2)) + "," + location[3]
+
+                            numText = tempText[startIndex:endIndex]
+
+                            toData = {"location": str(int(location[0]) + (int(int(location[2]) / 2))) + "," + location[1] + "," + str(int(int(location[2]) / 2)) + "," + location[3],
+                                      "text": numText,
+                                      "originText": item["originText"],
+                                      "sid": item["sid"],
+                                      "mappingSid": item["mappingSid"]}
+
+                            ocrData.append(toData)
+                    else :
+                        location = item["location"].split(",")
+
+                        item["text"] = text[0]
+                        item["location"] = location[0] + "," + location[1] + "," + str(int(int(location[2]) / 2)) + "," + location[3]
+
+                        toData = {"location":str(int(location[0]) + (int(int(location[2]) / 2))) + "," + location[1] + "," + str(int(int(location[2]) / 2)) + "," + location[3],
+                                  "text":text[1],
+                                  "originText":item["originText"],
+                                  "sid":item["sid"],
+                                  "mappingSid":item["mappingSid"]}
+
+                        ocrData.append(toData)
 
             ocrData = getSid(ocrData)
             ocrData = getMappingSid(ocrData, docTopType)
@@ -651,6 +691,12 @@ def findEntry(ocrData, docTopType, docType):
         trainSql = "SELECT * FROM TBL_BATCH_COLUMN_MAPPING_TRAIN WHERE data LIKE '" + str(docTopType) + "%'"
         curs.execute(trainSql)
         trainRows = curs.fetchall()
+
+        # 숫자 치환
+        for item in ocrData:
+            p = re.compile("^[0-9oo., ]*$")
+            if p.match(item["text"]):
+                item["text"] = item["text"].replace("oo","00")
 
         # label Mapping
         for item in ocrData:
@@ -722,9 +768,24 @@ def findEntry(ocrData, docTopType, docType):
                     entrySid = entry["mappingSid"].split(",")
                     p = re.compile(valid)
 
-                    if p.match(entry["text"]) and checkVertical(entrySid, mappingSid) and int(mappingSid[2]) -15 < int(entrySid[2]) and "colLbl" not in entry and item["text"] != entry["text"]:
+                    if docType == 7 and int(item["colLbl"]) == 228 and p.match(entry["text"]) and checkVerticalMid(entrySid, mappingSid) and int(mappingSid[2]) -15 < int(entrySid[2]) and "colLbl" not in entry and item["text"] != entry["text"]:
 
-                        if not (int(entrySid[2]) - preVerticalLoc > 500) and "entryLbl" not in entry:
+                        if not (int(entrySid[2]) - preVerticalLoc > 400) and "entryLbl" not in entry:
+                            if materialCheck == 1:
+                                if not re.search(" ", entry["text"]):
+                                    entry["entryLbl"] = item["colLbl"]
+                                    materialCheck += 1
+                                else:
+                                    break
+                            elif materialCheck == 2:
+                                if re.search(" ", entry["text"]):
+                                    materialCheck -= 1
+
+                            preVerticalLoc = int(entrySid[2])
+
+                    elif p.match(entry["text"]) and checkVertical(entrySid, mappingSid) and int(mappingSid[2]) -15 < int(entrySid[2]) and "colLbl" not in entry and item["text"] != entry["text"]:
+
+                        if not (int(entrySid[2]) - preVerticalLoc > 400) and "entryLbl" not in entry:
 
                             if docType == 7 and int(item["colLbl"]) == 228:
                                 if materialCheck == 1:
@@ -794,6 +855,50 @@ def findEntry(ocrData, docTopType, docType):
         for item in ocrData:
             if "colLbl" not in item and "entryLbl" not in item:
                 item["colLbl"] = -1
+
+        if docType == 6:
+            for item in ocrData:
+                if "entryLbl" in item and item["entryLbl"] == "221":
+                    del item["entryLbl"]
+                
+            for item in ocrData:
+                text = text = re.sub(regExp, '', item["text"])
+
+                if text.lower() == "westcoast":
+                    item["entryLbl"] = "221"
+                    item["text"] = "WESTCOAST"
+                elif text.lower() == "gbp":
+                    item["entryLbl"] = "227"
+                elif text.lower() == "value gbp":
+                    item["entryLbl"] = "227"
+                elif text.lower() == "westc t":
+                    item["entryLbl"] = "221"
+                    item["text"] = "WESTCOAST"
+        elif docType == 5:
+            for item in ocrData:
+                if "entryLbl" in item and item["entryLbl"] == "221":
+                    del item["entryLbl"]
+
+            for item in ocrData:
+                text = text = re.sub(regExp, '', item["text"])
+
+                if text.lower() == "exers uk ltd":
+                    item["entryLbl"] = "221"
+                    item["text"] = "Exertis (UK) Ltd"
+                elif text.lower() == "gbp":
+                    item["entryLbl"] = "227"
+                elif text.lower() == "gap":
+                    item["entryLbl"] = "227"
+                    item["text"] = "GBP"
+                elif text.lower() == "exertis uk ltd":
+                    item["entryLbl"] = "221"
+                    item["text"] = "Exertis (UK) Ltd"
+                elif text.lower() == "exerts uk ltd":
+                    item["entryLbl"] = "221"
+                    item["text"] = "Exertis (UK) Ltd"
+                elif text.lower() == "exerfis uk ltd":
+                    item["entryLbl"] = "221"
+                    item["text"] = "Exertis (UK) Ltd"
 
         return ocrData
     except Exception as e:

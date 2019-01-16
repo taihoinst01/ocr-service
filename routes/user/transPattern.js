@@ -76,7 +76,18 @@ function convertedEntry(reqArr, done) {
                 if(docName == 'Migros') {
 
                 } else if(docName == 'Exertise') {
-    
+
+					var convertPOdate;
+					var convertPOdataArray;
+					// PODATE
+					if (entryLbl == 223) {
+						convertPOdataArray = originText.split(/ /gi);
+						convertPOdate = convertPOdataArray[0] + "-" + convertPOdataArray[1] + "-" + convertPOdataArray[2].substring(2, 4);
+						data[i].text = convertPOdate;
+						//console.log("data.text: " + data.text);
+						//console.log("reqArr.text: " + typeof (reqArr));
+					}
+
                 } else if(docName == 'Westcoast') {
                     // PODATE
                     if(entryLbl == 223){

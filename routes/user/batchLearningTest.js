@@ -3492,30 +3492,69 @@ function batchLearnTraining(filepath, callback) {
                 if (selOcr.length == 0) {
                     var ocrResult = sync.await(ocrUtil.localOcr(fullFilePathList[i], sync.defer()));
 
-                    if ((ocrResult.textAngle != "undefined" && ocrResult.textAngle > 0.01 || ocrResult.textAngle < -0.01) || ocrResult.orientation != "Up") {
-                        var angle = 0;
+                    for (var j = 0; j < 10; j++) {
+                        if ((ocrResult.textAngle != undefined && ocrResult.textAngle > 0.01 || ocrResult.textAngle < -0.01) || (ocrResult.orientation != undefined && ocrResult.orientation != "Up")) {
+                            var angle = 0;
 
-                        if (ocrResult.orientation == "Left") {
-                            angle += 90;
-                        } else if (ocrResult.orientation == "Right") {
-                            angle += -90;
-                        } else if (ocrResult.orientation == "Down") {
-                            angle += 180;
-                        }
+                            if (ocrResult.orientation == "Left") {
+                                angle += 90;
+                            } else if (ocrResult.orientation == "Right") {
+                                angle += -90;
+                            } else if (ocrResult.orientation == "Down") {
+                                angle += 180;
+                            }
 
-                        angle += Math.floor(ocrResult.textAngle * 100);
+                            angle += Math.floor(ocrResult.textAngle * 100);
 
-                        if (angle < 0) {
-                            angle += 2;
+                            if (angle < 0) {
+                                angle += 2;
+                            } else {
+                                angle -= 1;
+                            }
+
+                            execSync('module\\imageMagick\\convert.exe -rotate "' + angle + '" ' + fullFilePathList[i] + ' ' + fullFilePathList[i]);
+
+                            ocrResult = sync.await(ocrUtil.localOcr(fullFilePathList[i], sync.defer()));
                         } else {
-                            angle -= 1;
+                            break;
                         }
-
-                        execSync('module\\imageMagick\\convert.exe -rotate "' + angle + '" ' + fullFilePathList[i] + ' ' + fullFilePathList[i]);
-
-                        ocrResult = sync.await(ocrUtil.localOcr(fullFilePathList[i], sync.defer()));
                     }
 
+                    sync.await(oracle.insertOcrData(fullFilePathList[i], JSON.stringify(ocrResult), sync.defer()));
+                    selOcr = sync.await(oracle.selectOcrData(fullFilePathList[i], sync.defer()));
+                } else if (JSON.parse(selOcr.OCRDATA).textAngle > 0.01 || JSON.parse(selOcr.OCRDATA).textAngle < -0.01 || JSON.parse(selOcr.OCRDATA).orientation != "Up") {
+                    var ocrResult = sync.await(ocrUtil.localOcr(fullFilePathList[i], sync.defer()));
+
+                    for (var j = 0; j < 10; j++) {
+                        if ((ocrResult.textAngle != undefined && ocrResult.textAngle > 0.01 || ocrResult.textAngle < -0.01) || (ocrResult.orientation != undefined && ocrResult.orientation != "Up")) {
+                            var angle = 0;
+
+                            if (ocrResult.orientation == "Left") {
+                                angle += 90;
+                            } else if (ocrResult.orientation == "Right") {
+                                angle += -90;
+                            } else if (ocrResult.orientation == "Down") {
+                                angle += 180;
+                            }
+
+                            angle += Math.floor(ocrResult.textAngle * 100);
+
+                            if (angle < 0) {
+                                angle += 2;
+                            } else {
+                                angle -= 1;
+                            }
+
+                            execSync('module\\imageMagick\\convert.exe -rotate "' + angle + '" ' + fullFilePathList[i] + ' ' + fullFilePathList[i]);
+
+                            ocrResult = sync.await(ocrUtil.localOcr(fullFilePathList[i], sync.defer()));
+                        } else {
+                            break;
+                        }
+                    }
+
+                    
+                    sync.await(oracle.deleteOcrData(selOcr.SEQNUM, sync.defer()));
                     sync.await(oracle.insertOcrData(fullFilePathList[i], JSON.stringify(ocrResult), sync.defer()));
                     selOcr = sync.await(oracle.selectOcrData(fullFilePathList[i], sync.defer()));
                 }

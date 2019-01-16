@@ -886,6 +886,30 @@ exports.insertOcrData = function (filepath, ocrData, done) {
     });
 };
 
+exports.deleteOcrData = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            let resfile = await conn.execute(`DELETE FROM TBL_BATCH_OCR_DATA WHERE SEQNUM = :seqnum`, [req]);
+
+            return done(null, null);
+        } catch (err) { // catches errors in getConnection and the query
+            return done(null, "error");
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
 function ocrJson(regions) {
     var data = [];
     for (var i = 0; i < regions.length; i++) {
@@ -1221,11 +1245,11 @@ exports.insertSamMLData = function (filepath, imgid, done) {
                         for (var j = 0; j < mlList.length; j++) {
                             var cData = mlList[j][0].LOCATION.split(",");
 
-                            if (mappingSid[1] - cData[1] < 25 && mappingSid[1] - cData[1] > -25) {
+                            if (data.FILEPATH == mlList[j][0].FILEPATH && (mappingSid[1] - cData[1] < 50 && mappingSid[1] - cData[1] > -50)) {
                                 mlList[j].push(data);
                             }
 
-                            if (data.ENTRYLABEL == "229" && (mappingSid[1] - cData[1] < 80 && mappingSid[1] - cData[1] > -80)) {
+                            if (data.ENTRYLABEL == "229" && data.FILEPATH == mlList[j][0].FILEPATH && (mappingSid[1] - cData[1] < 80 && mappingSid[1] - cData[1] > -80)) {
                                 mlList[j].push(data);
                             }
                         }
