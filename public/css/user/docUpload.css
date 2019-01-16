@@ -16,3 +16,12 @@
     height: 100% !important;
     width: 100% !important;
 }
+
+
+.gradationIpt {
+    background: linear-gradient(45deg,
+    gray 25%, white 0, white 50%,
+    gray 0, gray 75%, white 0);
+    -webkit-background-size:30px 30px;
+    background-size:30px 30px;
+}

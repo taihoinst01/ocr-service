@@ -41,13 +41,13 @@ router.post('/selectDocTopType', function (req, res) {
     });
 });
 
-router.post('/selectDocList', function (req, res) {
+router.post('/selectDocLabelDefList', function (req, res) {
     sync.fiber(function () {
         let returnObj = {};
         let docToptype = req.body.docToptype;
         let param = [docToptype];
         
-        let docToptypeList = sync.await(oracle.selectDocList(param, sync.defer()));
+        let docToptypeList = sync.await(oracle.selectDocLabelDefList(param, sync.defer()));
 
         returnObj = {'docToptypeList': docToptypeList};
         res.send(returnObj);

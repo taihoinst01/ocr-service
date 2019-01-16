@@ -138,6 +138,10 @@ var fn_buttonEvent = function () {
     $("#uiTrainBtn").on("click", function () {
         fn_uiTrain();
     });
+
+    $('#saveBtn').on('click', function(){
+        fn_alert('alert', '처리가 완료되었습니다.');
+    });
 };
 
 /****************************************************************************************
@@ -298,6 +302,7 @@ var imgOcr = function(fileInfoList) {
 		success: function (data) {
             console.log(data);          
             var trainResultList = data.trainResultList;
+            var docLabelDefList = data.docLabelDefList;
             var appendMultiRecordHtml = "";
             var appendThumbnailHtml = "";
 
@@ -316,48 +321,52 @@ var imgOcr = function(fileInfoList) {
                     // Single Record 추출
                     if(trainResult[j].entryLbl == 221) {
                         $('#singleBuyer').val(trainResult[j].text).addClass('ipt_pink');
-                        console.log('trainResult[j].text: ' + trainResult[j].text);
-                        console.log('trainResult[j].location: ' + trainResult[j].location);
                         $('#singleBuyer').attr('data-location', trainResult[j].location).attr('data-filename', trainResultList[i].fileName);
                     } else if(trainResult[j].entryLbl == 222) {
                         $('#singlePoNumber').val(trainResult[j].text).addClass('ipt_pink');
-                        $('#singlePoNumber').attr('data-location', trainResult[j].location).attr('data-filename', trainResultList[i].fileName);
+                        $('#singlePoNumber').attr('data-location', trainResult[j].location).attr('data-filename', trainResultList[i].fileName); 
                     } else if(trainResult[j].entryLbl == 223) {
                         $('#singlePoDate').val(trainResult[j].text).addClass('ipt_pink');
-                        $('#singlePoDate').attr('data-location', trainResult[j].location).attr('data-filename', trainResultList[i].fileName);
+                        $('#singlePoDate').attr('data-location', trainResult[j].location).attr('data-filename', trainResultList[i].fileName).attr('data-entryLbl', trainResult[j].entryLbl);;
                     } else if(trainResult[j].entryLbl == 224) {
                         $('#singleDeliveryAddress').val(trainResult[j].text).addClass('ipt_pink');
-                        $('#singleDeliveryAddress').attr('data-location', trainResult[j].location).attr('data-filename', trainResultList[i].fileName);
+                        $('#singleDeliveryAddress').attr('data-location', trainResult[j].location).attr('data-filename', trainResultList[i].fileName).attr('data-entryLbl', trainResult[j].entryLbl);;
                     } else if(trainResult[j].entryLbl == 226) {
                         $('#singleTotalPrice').val(trainResult[j].text).addClass('ipt_pink');
-                        $('#singleTotalPrice').attr('data-location', trainResult[j].location).attr('data-filename', trainResultList[i].fileName);
+                        $('#singleTotalPrice').attr('data-location', trainResult[j].location).attr('data-filename', trainResultList[i].fileName).attr('data-entryLbl', trainResult[j].entryLbl);;
                     } else if(trainResult[j].entryLbl == 227) {
                         $('#singleCurrency').val(trainResult[j].text).addClass('ipt_pink');
-                        $('#singleCurrency').attr('data-location', trainResult[j].location).attr('data-filename', trainResultList[i].fileName);
+                        $('#singleCurrency').attr('data-location', trainResult[j].location).attr('data-filename', trainResultList[i].fileName).attr('data-entryLbl', trainResult[j].entryLbl);;
                     } else if(trainResult[j].entryLbl == 230) {
                         $('#singleRequestedDeliveryDate').val(trainResult[j].text).addClass('ipt_pink');
-                        $('#singleRequestedDeliveryDate').attr('data-location', trainResult[j].location).attr('data-filename', trainResultList[i].fileName);
+                        $('#singleRequestedDeliveryDate').attr('data-location', trainResult[j].location).attr('data-filename', trainResultList[i].fileName).attr('data-entryLbl', trainResult[j].entryLbl);;
                     }
 
                     // Multi Record 추출
                     if(trainResult[j].entryLbl == 228) {
                         multiRecordObj.material.text = trainResult[j].text;
                         multiRecordObj.material.location = trainResult[j].location;
+                        multiRecordObj.material.entryLbl = trainResult[j].entryLbl;
                     } else if(trainResult[j].entryLbl == 229) {
                         multiRecordObj.ean.text = trainResult[j].text;
                         multiRecordObj.ean.location = trainResult[j].location;
+                        multiRecordObj.ean.entryLbl = trainResult[j].entryLbl;
                     } else if(trainResult[j].entryLbl == 231) {
                         multiRecordObj.quantity.text = trainResult[j].text;
                         multiRecordObj.quantity.location = trainResult[j].location;
+                        multiRecordObj.quantity.entryLbl = trainResult[j].entryLbl;
                     }  else if(trainResult[j].entryLbl == 232) {
                         multiRecordObj.unitPrice.text = trainResult[j].text;
                         multiRecordObj.unitPrice.location = trainResult[j].location;
+                        multiRecordObj.unitPrice.entryLbl = trainResult[j].entryLbl;
                     }  else if(trainResult[j].entryLbl == 233) {
                         multiRecordObj.itemTotal.text = trainResult[j].text;
                         multiRecordObj.itemTotal.location = trainResult[j].location;
+                        multiRecordObj.itemTotal.entryLbl = trainResult[j].entryLbl;
                     }  else if(trainResult[j].entryLbl == 234) {
                         multiRecordObj.serialNumber.text = trainResult[j].text;
                         multiRecordObj.serialNumber.location = trainResult[j].location;
+                        multiRecordObj.serialNumber.entryLbl = trainResult[j].entryLbl;
                     }
 
                 }
@@ -367,7 +376,7 @@ var imgOcr = function(fileInfoList) {
                         $.isEmptyObject(multiRecordObj.unitPrice) == false || $.isEmptyObject(multiRecordObj.itemTotal) == false || $.isEmptyObject(multiRecordObj.serialNumber) == false) {
                     appendMultiRecordHtml += '<tr>' +
                             '<td><input type="text" class="multiRecordIpt ' + (nvl(multiRecordObj.material.text) == "" ? 'ipt_gray"' : 'ipt_pink"') + '" value="' + nvl(multiRecordObj.material.text) + '" ' +
-                            'data-filename="' + trainResultList[i].fileName +'" data-location="' + multiRecordObj.material.location + '"></td>' +
+                            'data-filename="' + trainResultList[i].fileName +'" data-location="' + multiRecordObj.material.location + '" data-entryLbl="221"></td>' +
                             '<td><input type="text" class="multiRecordIpt ' + (nvl(multiRecordObj.ean.text) == "" ? 'ipt_gray' : 'ipt_pink') + '" value="' + nvl(multiRecordObj.ean.text) + '" ' +
                             'data-filename="' + trainResultList[i].fileName +'" data-location="' + multiRecordObj.ean.location + '"></td>' +
                             '<td><input type="text" class="multiRecordIpt ' + (nvl(multiRecordObj.quantity.text) == "" ? 'ipt_gray' : 'ipt_pink') + '" value="' + nvl(multiRecordObj.quantity.text) + '" ' +
@@ -407,11 +416,26 @@ var imgOcr = function(fileInfoList) {
             $('#mainImage').css('background-image', 'url("/img/' + fileInfoList[0].convertFileName + '")');
             $("#ul_image").empty().append(appendThumbnailHtml);
             $('#multiRecordTblTbody').append(appendMultiRecordHtml);
+            checkDocLabelDef(docLabelDefList);
             changeTabindex();
             thumbImgEvent();
 			endProgressBar(progressId);
 		}
 	})
+}
+
+// doctotpe으로 TBL_ICR_LABEL_DEF 조회한 결과로 ESSENTIALVAL 체크
+function checkDocLabelDef(docLabelDefList) {
+    $('.singleRecordIpt, .multiRecordIpt').each(function(){
+        for(var i = 0; i < docLabelDefList.length; i++) {
+            if($(this).attr('data-entryLbl') == docLabelDefList[i].SEQNUM && docLabelDefList[i].ESSENTIALVAL == 1) {
+                if($(this).val() == "") {
+                    $(this).addClass('gradationIpt');
+                }
+            }
+        }
+        
+    })
 }
 
 function changeTabindex() {
@@ -1111,6 +1135,7 @@ var fn_initUpload = function () {
     $('#div_invoice_view_image').empty();
     $('.singleRecordIpt').attr('data-location', '');
     $('.singleRecordIpt').attr('data-filename', '');
+    $('.singleRecordIpt').removeClass('gradationIpt');
 }
 
 // UI학습 팝업 초기화

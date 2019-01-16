@@ -305,6 +305,7 @@ router.post('/imgOcr', function (req, res) {
         var trainResultList = [];
         var status;
         var fileInfoList = req.body.fileInfoList;
+        var docLabelDefList;
         try {
             //var imgid = sync.await(oracle.selectImgid(filepath, sync.defer()));
             //imgid = imgid.rows[0].IMGID;
@@ -360,9 +361,13 @@ router.post('/imgOcr', function (req, res) {
                 resPyArr = sync.await(transPantternVar.trans(resPyArr, sync.defer()));
                 resPyArr.fileName = fullFilePathList[i].substring(fullFilePathList[i].lastIndexOf('/') + 1);
                 console.log(resPyArr);
-
-                
                 trainResultList.push(resPyArr);
+                
+                // tbl_icr_label_def 조회
+                var docToptype = resPyArr.docCategory.DOCTOPTYPE;
+                docLabelDefList = sync.await(oracle.selectDocLabelDefList(([docToptype]), sync.defer()));
+                console.log(docLabelDefList);
+                
                 status = 200;
             }
 
@@ -370,12 +375,13 @@ router.post('/imgOcr', function (req, res) {
             status = 500;
             console.log(e);
         } finally {
-            res.send({'status': status, 'trainResultList': trainResultList});
+            res.send({'status': status, 'trainResultList': trainResultList, 'docLabelDefList': docLabelDefList});
         }
 
 
     });
 });
+
 
 function batchLearnTraining(fileInfoList) {
     sync.fiber(function () {

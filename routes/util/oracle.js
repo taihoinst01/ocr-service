@@ -3908,7 +3908,7 @@ exports.selectDocTopType = function (req, done) {
 };
 
 // tbl_icr_label_def 검색
-exports.selectDocList = function (req, done) {
+exports.selectDocLabelDefList = function (req, done) {
 	return new Promise(async function (resolve, reject) {
 		let conn;
 		let result;
