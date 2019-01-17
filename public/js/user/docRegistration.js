@@ -19,7 +19,7 @@ $(document).on('change', '#docToptype', function () {
 	} else {
 		$('.newDocEdit').hide();
 	}
-	fn_selectDocList(docToptype);
+	fn_selectDocLabelDefList(docToptype);
 })
 
 function fn_selectDocTopType(docToptype) {
@@ -55,18 +55,18 @@ function fn_selectDocTopType(docToptype) {
 				}
 
 				$('#docToptype').append(appendOptionHtml);
-				fn_selectDocList($('#docToptype').val());
+				fn_selectDocLabelDefList($('#docToptype').val());
 			}
 		}
 	})
 }
 
-function fn_selectDocList(docToptype) {
+function fn_selectDocLabelDefList(docToptype) {
 	if (docToptype != 0) {
 		var param = { 'docToptype': docToptype };
 
 		$.ajax({
-			url: '/docRegistration/selectDocList',
+			url: '/docRegistration/selectDocLabelDefList',
 			type: 'post',
 			datatype: "json",
 			contentType: 'application/json; charset=UTF-8',

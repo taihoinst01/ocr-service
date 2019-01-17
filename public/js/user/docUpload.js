@@ -1,5 +1,6 @@
 ﻿//import { identifier } from "babel-types";
 "use strict";
+
 /****************************************************************************************
  * GLOBAL VARIABLE
  ****************************************************************************************/
@@ -137,6 +138,10 @@ var fn_buttonEvent = function () {
     $("#uiTrainBtn").on("click", function () {
         fn_uiTrain();
     });
+
+    $('#saveBtn').on('click', function(){
+        fn_alert('alert', '처리가 완료되었습니다.');
+    });
 };
 
 /****************************************************************************************
@@ -165,36 +170,26 @@ var fn_uploadFileEvent = function () {
 
     $('#uploadFileForm').ajaxForm({
         beforeSubmit: function (data, frm, opt) {
+            fn_initUpload();
             $("#progressMsgTitle").html('파일 업로드 중..');
-            startProgressBar(); // start progressbar
-            addProgressBar(1, 10); // proceed progressbar
+            progressId = showProgressBar();
             return true;
         },
-        success: function (responseText, statusText) {
+        success: function (data) {
             $("#progressMsgTitle").html('파일 업로드 완료..');
-            addProgressBar(11, 20);
-
-            //console.log('base 사이즈 :' + responseText.fileInfo.length);
-            //console.log('dtl 사이즈 :' + responseText.fileDtlInfo.length);
-            //console.log('base 내용 :' + JSON.stringify(responseText.fileInfo));
-            //console.log('dtl 내용 :' + JSON.stringify(responseText.fileDtlInfo));
-
-            //totCount = responseText.fileInfo.length; 
-            totCount = responseText.fileDtlInfo.length;
-            // 문서 기본 정보 처리
-            fn_processBaseImage(responseText.fileInfo);
-
-            /*
-            // 인식 결과 및 ML 처리
-            for (var i = 0, x = responseText.fileInfo[0].pageCount; i < x; i++) {
-                fn_processDtlImage(responseText.fileDtlInfo[i]);
+            if(data.status == 200) {
+                imgOcr(data.fileInfoList);
+            } else {
+                console.log('error');
             }
-            */
 
-            //endProgressBar();
+            // 문서 기본 정보 처리
+            // fn_processBaseImage(responseText.fileInfo);
+
+
         },
         error: function (e) {
-            endProgressBar();
+            endProgressBar(progressId);
             //console.log(e);
         }
     });
@@ -293,6 +288,201 @@ var fn_uploadFileEvent = function () {
 /****************************************************************************************
  * Function
  ****************************************************************************************/
+var imgOcr = function(fileInfoList) {
+    var param = {'fileInfoList': fileInfoList};
+    $.ajax({
+		url: '/docUpload/imgOcr',
+		type: 'post',
+		datatype: "json",
+		contentType: 'application/json; charset=UTF-8',
+		data: JSON.stringify(param),
+		beforeSend: function () {
+			$("#progressMsgTitle").html("Ocr ...");
+		},
+		success: function (data) {
+            console.log(data);          
+            var trainResultList = data.trainResultList;
+            var docLabelDefList = data.docLabelDefList;
+            var appendMultiRecordHtml = "";
+            var appendThumbnailHtml = "";
+
+            for(var i = 0; i < trainResultList.length; i++) {
+                var trainResult = trainResultList[i].data;
+                var multiRecordObj = {
+                    'material': {},
+                    'ean': {},
+                    'quantity': {},
+                    'unitPrice': {},
+                    'itemTotal': {},
+                    'serialNumber': {}
+                };
+                for(var j = 0; j < trainResult.length; j++) {
+
+                    // Single Record 추출
+                    if(trainResult[j].entryLbl == 221) {
+                        $('#singleBuyer').val(trainResult[j].text).addClass('ipt_pink');
+                        $('#singleBuyer').attr('data-location', trainResult[j].location).attr('data-filename', trainResultList[i].fileName);
+                    } else if(trainResult[j].entryLbl == 222) {
+                        $('#singlePoNumber').val(trainResult[j].text).addClass('ipt_pink');
+                        $('#singlePoNumber').attr('data-location', trainResult[j].location).attr('data-filename', trainResultList[i].fileName); 
+                    } else if(trainResult[j].entryLbl == 223) {
+                        $('#singlePoDate').val(trainResult[j].text).addClass('ipt_pink');
+                        $('#singlePoDate').attr('data-location', trainResult[j].location).attr('data-filename', trainResultList[i].fileName).attr('data-entryLbl', trainResult[j].entryLbl);;
+                    } else if(trainResult[j].entryLbl == 224) {
+                        $('#singleDeliveryAddress').val(trainResult[j].text).addClass('ipt_pink');
+                        $('#singleDeliveryAddress').attr('data-location', trainResult[j].location).attr('data-filename', trainResultList[i].fileName).attr('data-entryLbl', trainResult[j].entryLbl);;
+                    } else if(trainResult[j].entryLbl == 226) {
+                        $('#singleTotalPrice').val(trainResult[j].text).addClass('ipt_pink');
+                        $('#singleTotalPrice').attr('data-location', trainResult[j].location).attr('data-filename', trainResultList[i].fileName).attr('data-entryLbl', trainResult[j].entryLbl);;
+                    } else if(trainResult[j].entryLbl == 227) {
+                        $('#singleCurrency').val(trainResult[j].text).addClass('ipt_pink');
+                        $('#singleCurrency').attr('data-location', trainResult[j].location).attr('data-filename', trainResultList[i].fileName).attr('data-entryLbl', trainResult[j].entryLbl);;
+                    } else if(trainResult[j].entryLbl == 230) {
+                        $('#singleRequestedDeliveryDate').val(trainResult[j].text).addClass('ipt_pink');
+                        $('#singleRequestedDeliveryDate').attr('data-location', trainResult[j].location).attr('data-filename', trainResultList[i].fileName).attr('data-entryLbl', trainResult[j].entryLbl);;
+                    }
+
+                    // Multi Record 추출
+                    if(trainResult[j].entryLbl == 228) {
+                        multiRecordObj.material.text = trainResult[j].text;
+                        multiRecordObj.material.location = trainResult[j].location;
+                        multiRecordObj.material.entryLbl = trainResult[j].entryLbl;
+                    } else if(trainResult[j].entryLbl == 229) {
+                        multiRecordObj.ean.text = trainResult[j].text;
+                        multiRecordObj.ean.location = trainResult[j].location;
+                        multiRecordObj.ean.entryLbl = trainResult[j].entryLbl;
+                    } else if(trainResult[j].entryLbl == 231) {
+                        multiRecordObj.quantity.text = trainResult[j].text;
+                        multiRecordObj.quantity.location = trainResult[j].location;
+                        multiRecordObj.quantity.entryLbl = trainResult[j].entryLbl;
+                    }  else if(trainResult[j].entryLbl == 232) {
+                        multiRecordObj.unitPrice.text = trainResult[j].text;
+                        multiRecordObj.unitPrice.location = trainResult[j].location;
+                        multiRecordObj.unitPrice.entryLbl = trainResult[j].entryLbl;
+                    }  else if(trainResult[j].entryLbl == 233) {
+                        multiRecordObj.itemTotal.text = trainResult[j].text;
+                        multiRecordObj.itemTotal.location = trainResult[j].location;
+                        multiRecordObj.itemTotal.entryLbl = trainResult[j].entryLbl;
+                    }  else if(trainResult[j].entryLbl == 234) {
+                        multiRecordObj.serialNumber.text = trainResult[j].text;
+                        multiRecordObj.serialNumber.location = trainResult[j].location;
+                        multiRecordObj.serialNumber.entryLbl = trainResult[j].entryLbl;
+                    }
+
+                }
+                
+                // Multi Record 추가
+                if($.isEmptyObject(multiRecordObj.material) == false || $.isEmptyObject(multiRecordObj.ean) == false || $.isEmptyObject(multiRecordObj.quantity) == false ||
+                        $.isEmptyObject(multiRecordObj.unitPrice) == false || $.isEmptyObject(multiRecordObj.itemTotal) == false || $.isEmptyObject(multiRecordObj.serialNumber) == false) {
+                    appendMultiRecordHtml += '<tr>' +
+                            '<td><input type="text" class="multiRecordIpt ' + (nvl(multiRecordObj.material.text) == "" ? 'ipt_gray"' : 'ipt_pink"') + '" value="' + nvl(multiRecordObj.material.text) + '" ' +
+                            'data-filename="' + trainResultList[i].fileName +'" data-location="' + multiRecordObj.material.location + '" data-entryLbl="221"></td>' +
+                            '<td><input type="text" class="multiRecordIpt ' + (nvl(multiRecordObj.ean.text) == "" ? 'ipt_gray' : 'ipt_pink') + '" value="' + nvl(multiRecordObj.ean.text) + '" ' +
+                            'data-filename="' + trainResultList[i].fileName +'" data-location="' + multiRecordObj.ean.location + '"></td>' +
+                            '<td><input type="text" class="multiRecordIpt ' + (nvl(multiRecordObj.quantity.text) == "" ? 'ipt_gray' : 'ipt_pink') + '" value="' + nvl(multiRecordObj.quantity.text) + '" ' +
+                            'data-filename="' + trainResultList[i].fileName +'" data-location="' + multiRecordObj.quantity.location + '"></td>' +
+                            '<td><input type="text" class="multiRecordIpt ' + (nvl(multiRecordObj.unitPrice.text) == "" ? 'ipt_gray' : 'ipt_pink') + '" value="' + nvl(multiRecordObj.unitPrice.text) + '" ' +
+                            'data-filename="' + trainResultList[i].fileName +'" data-location="' + multiRecordObj.unitPrice.location + '"></td>' +
+                            '<td><input type="text" class="multiRecordIpt ' + (nvl(multiRecordObj.itemTotal.text) == "" ? 'ipt_gray' : 'ipt_pink') + '" value="' + nvl(multiRecordObj.itemTotal.text) + '" ' +
+                            'data-filename="' + trainResultList[i].fileName +'" data-location="' + multiRecordObj.itemTotal.location + '"></td>' +
+                            '<td><input type="text" class="multiRecordIpt ' + (nvl(multiRecordObj.serialNumber.text) == "" ? 'ipt_gray' : 'ipt_pink') + '" value="' + nvl(multiRecordObj.serialNumber.text) + '" ' +
+                            'data-filename="' + trainResultList[i].fileName +'" data-location="' + multiRecordObj.serialNumber.location + '"></td>' +
+                            '</tr>';
+                }
+            }
+
+            // imgThumbnail
+            for(var i = 0; i < fileInfoList.length; i++) {
+                if(i == 0) {
+                    appendThumbnailHtml += '<li class="on">';
+                } else {
+                    appendThumbnailHtml += '<li>';
+                }
+                appendThumbnailHtml += '<div class="box_img"><i><img src="/img/' + nvl(fileInfoList[i].convertFileName) + '" ' +
+                        'class="thumb-img" title="' + nvl(fileInfoList[i].convertFileName) + '"></i>' +
+                        '</div>' +
+                        '<span>' + nvl(fileInfoList[i].convertFileName) + '</span>' +
+                        '</li> ';
+            }
+
+            var mainImgHtml = '';
+                    mainImgHtml += '<div id="mainImage" class="docUpload_mainImage">';
+                    mainImgHtml += '</div>';
+                    mainImgHtml += '<div id="imageZoom" ondblclick="viewOriginImg()">';
+                    mainImgHtml += '<div id="redZoomNemo">';
+                    mainImgHtml += '</div>';
+                    mainImgHtml += '</div>';
+            $('#div_invoice_view_image').html(mainImgHtml);
+            $('#mainImage').css('background-image', 'url("/img/' + fileInfoList[0].convertFileName + '")');
+            $("#ul_image").empty().append(appendThumbnailHtml);
+            $('#multiRecordTblTbody').append(appendMultiRecordHtml);
+            checkDocLabelDef(docLabelDefList);
+            changeTabindex();
+            thumbImgEvent();
+			endProgressBar(progressId);
+		}
+	})
+}
+
+// doctotpe으로 TBL_ICR_LABEL_DEF 조회한 결과로 ESSENTIALVAL 체크
+function checkDocLabelDef(docLabelDefList) {
+    $('.singleRecordIpt, .multiRecordIpt').each(function(){
+        for(var i = 0; i < docLabelDefList.length; i++) {
+            if($(this).attr('data-entryLbl') == docLabelDefList[i].SEQNUM && docLabelDefList[i].ESSENTIALVAL == 1) {
+                if($(this).val() == "") {
+                    $(this).addClass('gradationIpt');
+                }
+            }
+        }
+        
+    })
+}
+
+function changeTabindex() {
+    var isFocus = false;
+    $('.singleRecordIpt, .multiRecordIpt').each(function(){
+        if($(this).val() == "") {
+            $(this).attr('tabindex', '-1');
+        } else {
+            if(isFocus == false) {
+                isFocus = true;
+                $(this).focus();
+            }
+        }
+    }) 
+}
+
+// singleRecordIpt, multiRecordIpt 클릭시 이미지 변경 및 이미지 줌
+// $(document).on('click', '.singleRecordIpt, .multiRecordIpt', function() {
+//     //console.log($(this).data());
+//     if($(this).val() != "") {
+//         zoomImg_new($(this));
+//     }
+// })
+
+// singleRecordIpt, multiRecordIpt 클릭시 이미지 변경 및 이미지 줌
+$(document).on('focusin', '.singleRecordIpt, .multiRecordIpt', function() {
+    //console.log($(this).data());
+    if($(this).val() != "") {
+        zoomImg_new($(this));
+    } else {
+        var filename = $(this).attr('data-filename');
+        if(filename) {
+
+            $('#mainImage').css('background-image', 'url("/img/' + filename + '")');
+            $('#mainImage').show();
+            $('#imageZoom').hide();
+            $('#ul_image li').removeClass('on');
+            $('#ul_image img').each(function(){
+                if($(this).attr('title') == filename) {
+                    $(this).closest('li').addClass('on');
+                    $('#touchSlider').scrollTop($(this)[0].offsetTop - 12);
+                }
+            })
+        }
+    }
+})
+
 var fn_reTrain = function () {
     var fileName = $('#ul_image .on img').attr('src');
     $("input[name=popupDocNum]").val($("input[name='dtl_chk']").val());
@@ -627,7 +817,6 @@ function selectClassificationSt(filepath) {
                 }
                 $('#ui_layer1_result').empty().append(resultOcrData);
                 $('input[type=checkbox]').ezMark();
-
             }
 
         },
@@ -938,6 +1127,15 @@ function modifyTextData() {
                 }
             });
         }
+}
+var fn_initUpload = function () {
+    //todo
+    $('.singleRecordIpt').val('').removeClass('ipt_pink');
+    $('#multiRecordTblTbody').empty();
+    $('#div_invoice_view_image').empty();
+    $('.singleRecordIpt').attr('data-location', '');
+    $('.singleRecordIpt').attr('data-filename', '');
+    $('.singleRecordIpt').removeClass('gradationIpt');
 }
 
 // UI학습 팝업 초기화
@@ -2279,9 +2477,12 @@ var thumbImgPaging = function (pageCount) {
 // 썸네일 이미지 클릭 이벤트
 var thumbImgEvent = function () {
     $('.thumb-img').click(function () {
+        $('#div_invoice_view_image').scrollTop(0);
         $('#ul_image > li').removeClass('on');
-        $(this).parent().addClass('on');
-        $('#mainImage').css('background-image', 'url("' + $(this).children().attr("src") + '")');
+        $(this).closest('li').addClass('on');
+        $('#mainImage').css('background-image', 'url("/img/' + $(this).attr("title") + '")');
+        $('#mainImage').show();
+        $('#imageZoom').hide();
         //$('#mainImage').css('background-image', $(this).children().prop('src'));
         //detailTable($(this).css('background-image').split('/')[4].split('")')[0]);
         //detailTable($(this).children().prop('src').split('/')[4].split('")')[0]);
@@ -2473,6 +2674,67 @@ function zoomImgTarget(e) {
 
     $('#redZoomNemo').css('height', (textHeight + 5) + 'px');
     $('#redZoomNemo').show();
+}
+
+function zoomImg_new(obj) {
+    $('#div_invoice_view_image').scrollTop(0);
+    var filename = $(obj).attr('data-filename');
+    var location = $(obj).attr('data-location');
+    var mainImage = $("#mainImage").css('background-image');
+    mainImage = mainImage.replace('url(', '').replace(')', '').replace(/\"/gi, "");
+    mainImage = mainImage.substring(mainImage.lastIndexOf("/") + 1);
+    
+    if (mainImage != filename) {
+        $('#mainImage').css('background-image', 'url("/img/' + filename + '")');
+    }
+    
+    $('#ul_image li').removeClass('on');
+    $('#ul_image img').each(function(){
+        if($(this).attr('title') == filename) {
+            $(this).closest('li').addClass('on');
+            $('#touchSlider').scrollTop($(this)[0].offsetTop - 12);
+        }
+    })
+
+    //실제 이미지 사이즈와 메인이미지div 축소율 판단
+    var reImg = new Image();
+    reImg.src = '/img/' + filename;
+    reImg.onload = function() {
+        var width = reImg.width;
+        var height = reImg.height;
+        
+        //imageZoom 고정크기
+        //var fixWidth = 744;
+        //var fixHeight = 1052;
+    
+        var fixWidth = 800;
+        var fixHeight = 1300;
+    
+        var widthPercent = fixWidth / width;
+        var heightPercent = fixHeight / height;
+
+        $('#mainImage').hide();
+        $('#imageZoom').css('height', '1600px').css('background-image', $('#mainImage').css('background-image')).css('background-size', fixWidth + 'px ' + fixHeight + 'px').show();
+    
+        // 사각형 좌표값
+        var locationList = location.split(',');
+        x = parseInt(locationList[0]);
+        y = parseInt(locationList[1]);
+        textWidth = parseInt(locationList[2]);
+        textHeight = parseInt(locationList[3]);
+    
+        //var xPosition = ((- (x * widthPercent)) + 400) + 'px ';
+        //var yPosition = ((- (y * heightPercent)) + 260) + 'px';
+        var xPosition = '0px ';
+        var yPosition = ((- (y * heightPercent)) + 120) + 'px';
+
+        $('#imageZoom').css('background-position', xPosition + yPosition);
+    
+        $('#redZoomNemo').css('height', (textHeight + 5) + 'px');
+        $('#redZoomNemo').show();
+    }
+    
+
 }
 
 function zoomImg(e) {
