@@ -27,6 +27,7 @@ var docPopImages; // 문서조회팝업 이미지 리스트
 var docPopImagesCurrentCount = 1; // 문서조회팝업 이미지 현재 카운트
 var labelDataList; // ui트레이닝 팝업 labeldata
 var mlDataList; // ui트레이닝 팝업 mldata
+var layer4Data; // 문서양식 조회 및 저장 팝청 mldata
 
 $(function () {
     _init();
@@ -2295,11 +2296,27 @@ function uiLayerHtml(data) {
     mlDataList = mlData;
     var labelData = data.data[0].labelData;
     labelDataList = labelData;
-    var docToptype = data.data[0].docCategory.DOCTOPTYPE;
+	var docToptype = data.data[0].docCategory.DOCTOPTYPE;
+	console.log(modifyData);
     //var fileName = filePath.substring(filePath.lastIndexOf('/') + 1, filePath.length);
     fn_initUiTraining();
     fn_uiDocTopType(data.data[0].docCategory);
-    $('#docName').html(data.data[0].docCategory.DOCNAME);
+	$('#docName').html(data.data[0].docCategory.DOCNAME);
+	$('#docPredictionScore').html(data.data[0].docCategory.DOCSCORE * 100);
+	$('#docPredictionScore').append('%');
+
+	if ($('#docPredictionScore').val() >= 90) {
+		$('#docName').css('color', 'dodgerblue');
+		$('#docPredictionScore').css('color', 'dodgerblue');
+	} else {
+		$('#docName').css('color', 'darkred');
+		$('#docPredictionScore').css('color', 'darkred');
+	}
+
+
+	$('#docName').click(function () { fn_viewDoctypePop(data) });
+	$('#docPredictionScore').click(function () { fn_viewDoctypePop(data) });
+	$('#docCompareBtn').click(function () { fn_viewDoctypePop(data) });
     layer_open('layer2');
 
 
@@ -3001,7 +3018,8 @@ function docComparePopup(imgIndex, obj) {
 
 //문서 비교 popup 버튼 클릭 이벤트
 function docComparePopup2() {
-    var imgId = $('#docName').html();
+	var imgId = $('#docName').html();
+	console.log("docComparePopup2 : " + modifyData);
     if (modifyData.docCategory) {
         $('#originImg').attr('src', '../../' + modifyData.docCategory[0].SAMPLEIMAGEPATH);
     } else {
@@ -3025,7 +3043,8 @@ function changeDocPopupImage() {
             $('#countCurrent').html(docPopImagesCurrentCount);
             $('#orgDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
             $('#searchResultDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
-            $('#searchResultImg').attr('src', '/jpg' + docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH);
+			$('#searchResultImg').attr('src', '/sample/' + docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH.split('/')[2]);
+			//var searchResultImg = '<img id="searchResultImg" src="/sample/' + docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH.split('/')[2] + '" style="width: 100%;height: auto;">';
             if (docPopImagesCurrentCount == 1) {
                 $('#docSearchResultImg_thumbPrev').attr('disabled', true);
             } else {
@@ -3044,7 +3063,8 @@ function changeDocPopupImage() {
             $('#countCurrent').html(docPopImagesCurrentCount);
             $('#orgDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
             $('#searchResultDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
-            $('#searchResultImg').attr('src', '/jpg' + docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH);
+			//$('#searchResultImg').attr('src', '/jpg' + docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH);
+			$('#searchResultImg').attr('src', '/sample/' + docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH.split('/')[2]);
             if (docPopImagesCurrentCount == totalCount) {
                 $('#docSearchResultImg_thumbNext').attr('disabled', true);
             } else {
@@ -3092,8 +3112,8 @@ function popUpSearchDocCategory() {
                          결과에 따른 이미지폼 만들기
                          */
                         docPopImages = data;
-
-                        var searchResultImg = '<img id="searchResultImg" src="/jpg' + docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH + '" style="width: 100%;height: 480px;">';
+						console.log(docPopImages);
+                        var searchResultImg = '<img id="searchResultImg" src="/sample/' + docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH.split('/')[2] + '" style="width: 100%;height: auto;">';
 
                         $('#docSearchResult').empty().append(searchResultImg);
 
@@ -3116,27 +3136,33 @@ function popUpSearchDocCategory() {
         }
     });
 }
-
+//pks
 // 팝업 확인 및 취소 이벤트
 function popUpRunEvent() {
 
-    $('#btn_pop_doc_run').click(function (e) {
+	$('#btn_pop_doc_run').click(function (e) {
+
+		var data = layer4Data;
+		var docSentenceList = [];
+		var docSentence = "";
+		//data = $('#mlData').val();
+
         // chkValue 1: 기존문서 양식조회, 2: 신규문서 양식등록, 3: 계산서 아님
         var chkValue = $('input:radio[name=radio_batch]:checked').val();
-
+		//console.log(data);
         if ((chkValue == '1' && $('#orgDocName').val() == '') || (chkValue == '2' && $('#newDocName').val() == '')) {
             fn_alert('alert', 'The document name is missing');
             return false;
         }
 
         // text & check
-        var textList = [];
-        $('.batch_layer4_result_tr').each(function () {
-            var chk = $(this).children().find('input[type="checkbox"]').is(':checked') == true ? 1 : 0;
-            var text = $(this).children()[1].innerHTML;
+        //var textList = [];
+        //$('.batch_layer4_result_tr').each(function () {
+        //    var chk = $(this).children().find('input[type="checkbox"]').is(':checked') == true ? 1 : 0;
+        //    var text = $(this).children()[1].innerHTML;
 
-            textList.push({"text": text, "check": chk})
-        })
+        //    textList.push({"text": text, "check": chk})
+        //})
 
         // docName
         var docName = '';
@@ -3146,16 +3172,34 @@ function popUpRunEvent() {
             docName = $('#newDocName').val();
         } else if(chkValue == '3') {
             docName = 'NotInvoice';
-        }
+		}
+
+
+		for (var i = 0; i < 20; i++) {
+
+			//console.log(layer4Data.data[i].originText);
+			docSentenceList.push({ "text": layer4Data.data[i].originText })
+			docSentence = docSentence + layer4Data.data[i].originText;
+		}
+
+		console.log(docSentenceList);
+		console.log(docSentence);
+
+
 
         var param = {
             imgId: $('#docPopImgId').val(),
             filepath: $('#docPopImgPath').val(),
             docName: docName,
             radioType: chkValue,
-            textList: textList,
-            docToptype: $('#docToptype').val()
-        }
+            //textList: textList,
+			docTopType: $('#docToptype').val(),
+			docSentenceList: docSentenceList 
+		}
+		console.log("param : " + param.imgId + " @@ " + param.filepath + " @@ " + param.docName + " @@ " + param.radioType + " @@ " + param.docTopType);
+		console.log(layer4Data);
+
+		
 
         $.ajax({
             url: '/batchLearningTest/insertDoctypeMapping',
@@ -3174,7 +3218,7 @@ function popUpRunEvent() {
                 var rowNum = $('#batchListRowNum').val();
                 $('#leftRowNum_' + rowNum).find('td:eq(2) a').html(data.docName);
                 $('#leftRowNum_' + rowNum).find('td:eq(2) input[name=docType]').val(data.docType);
-                fn_alert('alert', '계산서 양식 저장이 완료 되었습니다.');
+                fn_alert('alert', '문서 양식 저장이 완료 되었습니다.');
                 $('#layer4 .cbtn').click();
             },
             error: function (err) {
@@ -3755,34 +3799,100 @@ function viewOriginImg() {
 
 function fn_viewDoctypePop(obj) {
     //20180910 filepath로 ocr 데이터 조회 후 text값만 가져올 것
-    var data = $(obj).closest('tr').find('.fileNamePath');
-    var filepath = data.attr('data-filepath');
-    var imgId = data.attr('data-imgId');
-    var rowIdx = $(obj).closest('tr').attr('id').split('_')[1];
-    var fileName = nvl(filepath.substring(filepath.lastIndexOf('/') + 1));
-    $('#batchListRowNum').val(rowIdx);
+	console.log(modifyData);
+	var data = obj.data[0];
+	layer4Data = obj.data[0];
+	var filepath = data.fileinfo.filepath;
+	var imgId = data.fileinfo.imgId;
+    //var rowIdx = $(obj).closest('tr').attr('id').split('_')[1];
+	var fileName = nvl(filepath.substring(filepath.lastIndexOf('/') + 1));
+	var mlDocName = data.docCategory.DOCNAME;
+	var mlPercent = data.docCategory.DOCSCORE;
+
+	console.log("filepath : " + filepath);
+	console.log("imgId : " + imgId);
+	console.log("fileName : " + fileName);
+	console.log("mlDocName : " + mlDocName);
+	console.log("mlPercent : " + mlPercent);
+
+    //$('#batchListRowNum').val(rowIdx);
     $('#docPopImgId').val(imgId);
-    $('#docPopImgPath').val(filepath);
+	$('#docPopImgPath').val(filepath);
+	
     initLayer4();
     selectClassificationSt(filepath); // 분류제외문장 렌더링
     //$('#mlPredictionDocName').val('UNKNOWN');
+	//var filename = filename.split('.')[0];
+    var appendPngHtml = '';
+    //if(imgCount == 1) {
+		//var pngName = fileName + '.png';
+		appendPngHtml += '<img src="/img/' + fileName +'" style="width: 100%; height: auto">';
+    //} else {
 
-    loadImage('/tif/' + fileName, function (tifResult) {
+    //    for(var i = 0; i < imgCount; i++) {
+    //        var pngName = filename + '-' + i + '.png';
+    //        appendPngHtml += '<img src="/img/' + pngName +'" style="width: 100%; height: auto; margin-bottom: 20px;">';
+    //    }
+	//}
+	//$('#div_view_image').empty().append(appendPngHtml);
+	$('#originImgDiv').empty().append(appendPngHtml);
+	$('#mlPredictionDocName').val(mlDocName);
+	$('#mlPredictionPercent').val(mlPercent);
+	//$('#mlData').val(data);
+	$('#imgNumIpt').val(1);
+	$('#imgTotalCnt').html(1);
+	
+	layer_open('layer4');
+	$('#div_view_image').scrollTop(0);
+	
+    //loadImage('/tif/' + fileName, function (tifResult) {
  
-        if (tifResult) {
-            $(tifResult).css({
-                "width": "100%",
-                "height": "100%",
-                "display": "block"
-            }).addClass("preview");
-            $('#originImgDiv').empty().append(tifResult);
-        }
-        $('#docPopImgPath').val(filepath);
+    //    if (tifResult) {
+    //        $(tifResult).css({
+    //            "width": "100%",
+    //            "height": "100%",
+    //            "display": "block"
+    //        }).addClass("preview");
+    //        $('#originImgDiv').empty().append(tifResult);
+    //    }
+    //    $('#docPopImgPath').val(filepath);
 
-        layer_open('layer4');
-    });
+    //    layer_open('layer4');
+    //});
 
 }
+
+//function fn_viewDoctypePop(obj) {
+//	//20180910 filepath로 ocr 데이터 조회 후 text값만 가져올 것
+//	console.log("obj : " + obj);
+//	var data = $(obj).closest('tr').find('.fileNamePath');
+//	var filepath = data.attr('data-filepath');
+//	var imgId = data.attr('data-imgId');
+//	var rowIdx = $(obj).closest('tr').attr('id').split('_')[1];
+//	var fileName = nvl(filepath.substring(filepath.lastIndexOf('/') + 1));
+//	$('#batchListRowNum').val(rowIdx);
+//	$('#docPopImgId').val(imgId);
+//	$('#docPopImgPath').val(filepath);
+//	initLayer4();
+//	selectClassificationSt(filepath); // 분류제외문장 렌더링
+//	//$('#mlPredictionDocName').val('UNKNOWN');
+
+//	loadImage('/tif/' + fileName, function (tifResult) {
+
+//		if (tifResult) {
+//			$(tifResult).css({
+//				"width": "100%",
+//				"height": "100%", 
+//				"display": "block"
+//			}).addClass("preview");
+//			$('#originImgDiv').empty().append(tifResult);
+//		}
+//		$('#docPopImgPath').val(filepath);
+
+//		layer_open('layer4');
+//	});
+
+//}
 
 function makeindex(location) {
     let temparr = location.split(",");

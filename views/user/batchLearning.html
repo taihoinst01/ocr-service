@@ -739,21 +739,23 @@
                         <!-- 양식분석상세 -->
                         <div class="box_content_R st_last">
                             <div class="box_content_bg">
-                                <div class="title">
-                                    <h3 class="tits">
-                                        <span class="mr10">문서 양식 예측</span>
-                                        <b id="docName" class="mr5"></b>   <b id="docPredictionScore"></b>
-                                    </h3>
-                                    <!--<button type="button" id="docCompareBtn" class="tits11_btn01" onclick="docComparePopup2();"></button>-->
-                                    <div class="fr">
-                                        <button type="button" id="uiTrainBtn" class="button_st1"><i class="train_icon_03"></i><p>Add Training</p></button>
-                                    </div>
-                                    <div id="uiDocTopTypeDiv" class="fr um_select">
-                                        <select id="uiDocTopType">
-                                            <option>Test</option>
-                                        </select>
-                                    </div>
-                                </div>
+								<div class="title">
+									<h3 class="tits">
+										<span class="mr10">문서 양식 예측 : </span>
+										<b id="docName" class="mr5"></b>   <b id="docPredictionScore"></b>
+									</h3>
+									<!--<button type="button" id="docCompareBtn" class="tits11_btn01" onclick="docComparePopup2();"></button>-->
+									<button type="button" id="docCompareBtn" class="tits11_btn01" ></button>
+									<!--<button type="button" id="docCompareBtn" class="tits11_btn01" onclick="fn_viewDoctypePop(modifyData);"></button>-->
+									<div class="fr">
+										<button type="button" id="uiTrainBtn" class="button_st1"><i class="train_icon_03"></i><p>Add Training</p></button>
+									</div>
+									<div id="uiDocTopTypeDiv" class="fr um_select">
+										<select id="uiDocTopType">
+											<option>Test</option>
+										</select>
+									</div>
+								</div>
                                 <div class="mCustomScrollbar box_scroll_st99" data-mcs-theme="dark-3">
                                     <input type="hidden" id="resultJson" />
                                     <div class="table_style02">
@@ -840,7 +842,7 @@
                         <button type="button" id="btn_pop_doc_run" class="ui_doc_pop_btn1 ml5">저장</button>
                     </div>
                     <div class="pop_content">
-                        <div class="ui_doc_pop_div fl">
+                        <!--div class="ui_doc_pop_div fl">
                             <div class="table_style03">
                                 <table class="batch_layer4_tblHead" border="0">
                                     <colgroup>
@@ -861,7 +863,7 @@
                                             <col style="width: 90%;" />
                                         </colgroup>
                                         <tbody id="batch_layer4_result">
-                                            <!--
+                                            
                                         <tr>
                                             <td><input type="checkbox" /></td>
                                             <td>TEST</td>
@@ -870,12 +872,12 @@
                                             <td><input type="checkbox" /></td>
                                             <td>TEST</td>
                                         </tr>
-                                    -->
+                                    
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
-                        </div>
+                        </div-->
                         <div class="ui_doc_pop_div fl center">
                             <div class="ui_doc_pop_div00">
                                 <div class="ui_doc_pop_div01">
