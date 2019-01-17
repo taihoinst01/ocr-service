@@ -407,6 +407,8 @@ if __name__ == '__main__':
         ocrData = json.loads(ocrData)
         ocrData = typo(ocrData)
 
+        ocrData = sortArrLocation(ocrData)
+
         # 언어 감지
         langDetect = bUtil.langDetect(ocrData)
 

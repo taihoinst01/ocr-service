@@ -4422,18 +4422,20 @@ router.post('/selectClassificationSt', function (req, res) {
 // 문서양식매핑
 router.post('/insertDoctypeMapping', function (req, res) {
     var returnObj;
-
+	var filepath = req.body.filepath.split('/')[2];
     var data = {
         imgId: req.body.imgId,
-        filepath: req.body.filepath,
+		filepath: filepath,
         docName: req.body.docName,
         radioType: req.body.radioType,
-        textList: req.body.textList
+		//textList: req.body.textList,
+		docTopType: req.body.docTopType,
+		docSentenceList: req.body.docSentenceList
     }
 
     sync.fiber(function () {
         try {
-            let data = req.body;
+            //let data = req.body;
             returnObj = sync.await(batch.insertDoctypeMapping(data, sync.defer()));
            
         } catch (e) {
