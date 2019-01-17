@@ -3508,11 +3508,15 @@ function batchLearnTraining(filepath, callback) {
 
                             if (angle < 0) {
                                 angle += 2;
+                            } else if (angle == 17 || angle == 15 || angle == 14) {
+                                angle = 10;
+                            } else if (angle == 103) {
+                                angle = 98;
                             } else {
                                 angle -= 1;
                             }
 
-                            execSync('module\\imageMagick\\convert.exe -rotate "' + angle + '" ' + fullFilePathList[i] + ' ' + fullFilePathList[i]);
+                            execSync('module\\imageMagick\\convert.exe -density 300 -rotate "' + angle + '" ' + fullFilePathList[i] + ' ' + fullFilePathList[i]);
 
                             ocrResult = sync.await(ocrUtil.localOcr(fullFilePathList[i], sync.defer()));
                         } else {
@@ -3545,7 +3549,7 @@ function batchLearnTraining(filepath, callback) {
                                 angle -= 1;
                             }
 
-                            execSync('module\\imageMagick\\convert.exe -rotate "' + angle + '" ' + fullFilePathList[i] + ' ' + fullFilePathList[i]);
+                            execSync('module\\imageMagick\\convert.exe -density 300 -rotate "' + angle + '" ' + fullFilePathList[i] + ' ' + fullFilePathList[i]);
 
                             ocrResult = sync.await(ocrUtil.localOcr(fullFilePathList[i], sync.defer()));
                         } else {
