@@ -1245,7 +1245,7 @@ exports.insertSamMLData = function (filepath, imgid, done) {
                         for (var j = 0; j < mlList.length; j++) {
                             var cData = mlList[j][0].LOCATION.split(",");
 
-                            if (data.FILEPATH == mlList[j][0].FILEPATH && (mappingSid[1] - cData[1] < 50 && mappingSid[1] - cData[1] > -50)) {
+                            if (data.FILEPATH == mlList[j][0].FILEPATH && (mappingSid[1] - cData[1] < 40 && mappingSid[1] - cData[1] > -40)) {
                                 mlList[j].push(data);
                             }
 

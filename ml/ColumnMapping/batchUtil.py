@@ -555,6 +555,8 @@ def findEntry(ocrData, docTopType, docType):
             quantityCheck = True
             unitPriceCheck = True
             reqDateCheck = True
+            descriptionChek = True
+            desLoc = ""
 
             for item in ocrData:
 
@@ -568,22 +570,53 @@ def findEntry(ocrData, docTopType, docType):
                     unitPriceCheck = False
                 if item["text"].lower() == 'Delivery Date'.lower():
                     reqDateCheck = False
+                if item["text"].lower() == 'description'.lower():
+                    descriptionChek = False
+                    desLoc = item["location"].split(",")
 
-            if serialCheck:
-                data = {'location': '341,1274,107,24', 'text': 'Item No', 'originText': 'tem No', 'sid': '99798,97435,0,0,0', 'mappingSid': '37,341,1274,448,99798,97435,0,0,0'}
-                ocrData.append(data)
-            if materialCheck:
-                data = {'location': '517,1274,152,24', 'text': 'Item Code', 'originText': 'Item Code', 'sid': '99798,99596,0,0,0', 'mappingSid': '37,517,1274,669,99798,99596,0,0,0'}
-                ocrData.append(data)
-            if quantityCheck:
-                data = {'location': '1554,1272,127,30', 'text': 'Quantity', 'originText': 'Quantity', 'sid': '99588,0,0,0,0','mappingSid': '37,1554,1272,1681,99588,0,0,0,0'}
-                ocrData.append(data)
-            if unitPriceCheck:
-                data = {'location': '1807,1272,146,23', 'text': 'Unit Price', 'originText': 'Unit Price', 'sid': '99587,99507,0,0,0', 'mappingSid': '37,1807,1272,1953,99587,99507,0,0,0'}
-                ocrData.append(data)
-            if reqDateCheck:
-                data = {'location': '2051,1271,200,30', 'text': 'Delivery Date', 'originText': 'Delivery Date', 'sid': '99552,97436,0,0,0', 'mappingSid': '37,2051,1271,2251,99552,97436,0,0,0'}
-                ocrData.append(data)
+
+            if descriptionChek:
+                if serialCheck:
+                    data = {'location': '341,1274,107,24', 'text': 'Item No', 'originText': 'Item No', 'sid': '99798,97435,0,0,0', 'mappingSid': '37,341,1274,448,99798,97435,0,0,0'}
+                    ocrData.append(data)
+                if materialCheck:
+                    data = {'location': '517,1274,152,24', 'text': 'Item Code', 'originText': 'Item Code', 'sid': '99798,99596,0,0,0', 'mappingSid': '37,517,1274,669,99798,99596,0,0,0'}
+                    ocrData.append(data)
+                if quantityCheck:
+                    data = {'location': '1554,1272,127,30', 'text': 'Quantity', 'originText': 'Quantity', 'sid': '99588,0,0,0,0','mappingSid': '37,1554,1272,1681,99588,0,0,0,0'}
+                    ocrData.append(data)
+                if unitPriceCheck:
+                    data = {'location': '1807,1272,146,23', 'text': 'Unit Price', 'originText': 'Unit Price', 'sid': '99587,99507,0,0,0', 'mappingSid': '37,1807,1272,1953,99587,99507,0,0,0'}
+                    ocrData.append(data)
+                if reqDateCheck:
+                    data = {'location': '2051,1271,200,30', 'text': 'Delivery Date', 'originText': 'Delivery Date', 'sid': '99552,97436,0,0,0', 'mappingSid': '37,2051,1271,2251,99552,97436,0,0,0'}
+                    ocrData.append(data)
+            else:
+                if serialCheck:
+                    location = str(int(desLoc[0]) - 709) + "," + desLoc[1] + ",107,24"
+                    mapping = "37," + str(int(desLoc[0]) - 709) + "," + desLoc[1] + "," + str(int(desLoc[0]) - 709 + 197) + ",99798,97435,0,0,0"
+                    data = {'location': location, 'text': 'Item No', 'originText': 'Item No', 'sid': '99798,97435,0,0,0', 'mappingSid': mapping}
+                    ocrData.append(data)
+                if materialCheck:
+                    location = str(int(desLoc[0]) - 532) + "," + desLoc[1] + ",152,24"
+                    mapping = "37," + str(int(desLoc[0]) - 532) + "," + desLoc[1] + "," + str(int(desLoc[0]) - 532 + 152) + ",99798,99596,0,0,0"
+                    data = {'location': location, 'text': 'Item Code', 'originText': 'Item Code', 'sid': '99798,99596,0,0,0', 'mappingSid': mapping}
+                    ocrData.append(data)
+                if quantityCheck:
+                    location = str(int(desLoc[0]) + 512) + "," + desLoc[1] + ",127,30"
+                    mapping = "37," + str(int(desLoc[0]) + 512) + "," + desLoc[1] + "," + str(int(desLoc[0]) + 512 + 127) + ",99588,0,0,0,0"
+                    data = {'location': location, 'text': 'Quantity', 'originText': 'Quantity', 'sid': '99588,0,0,0,0','mappingSid': mapping}
+                    ocrData.append(data)
+                if unitPriceCheck:
+                    location = str(int(desLoc[0]) + 766) + "," + desLoc[1] + ",146,23"
+                    mapping = "37," + str(int(desLoc[0]) + 766) + "," + desLoc[1] + "," + str(int(desLoc[0]) + 766 + 146) + ",99587,99507,0,0,0"
+                    data = {'location': location, 'text': 'Unit Price', 'originText': 'Unit Price', 'sid': '99587,99507,0,0,0', 'mappingSid': mapping}
+                    ocrData.append(data)
+                if reqDateCheck:
+                    location = str(int(desLoc[0]) + 1012) + "," + desLoc[1] + ",200,30"
+                    mapping = "37," + str(int(desLoc[0]) + 1012) + "," + desLoc[1] + "," + str(int(desLoc[0]) + 1012 + 200) + ",99552,97436,0,0,0"
+                    data = {'location': location, 'text': 'Delivery Date', 'originText': 'Delivery Date', 'sid': '99552,97436,0,0,0', 'mappingSid': mapping}
+                    ocrData.append(data)
         elif docType == 5:
             for item in ocrData:
                 if item["text"].lower() == "date" or item["text"].lower() == "dat":
@@ -597,7 +630,8 @@ def findEntry(ocrData, docTopType, docType):
                             ocrData = getSid(ocrData)
                             ocrData = getMappingSid(ocrData,docTopType)
                             break
-                    break
+                elif item["text"].lower() == "L ne".lower() or item["text"].lower() == "L!ne I".lower():
+                    item["text"] = "Line"
 
         elif docType == 4:
             mValid = re.compile("77[0-9]* [a-zA-Z]{1,7}")
@@ -702,6 +736,9 @@ def findEntry(ocrData, docTopType, docType):
         for item in ocrData:
             mappingSid = item["mappingSid"].split(",")
 
+            if docType == 6 and item["text"].lower() == "description":
+                item["colLbl"] = "228"
+
             for trainRow in trainRows:
                 trainData = trainRow[1].split(",")
 
@@ -787,23 +824,25 @@ def findEntry(ocrData, docTopType, docType):
 
                         if not (int(entrySid[2]) - preVerticalLoc > 400) and "entryLbl" not in entry:
 
-                            if docType == 7 and int(item["colLbl"]) == 228:
-                                if materialCheck == 1:
-                                    if not re.search(" ", entry["text"]):
-                                        entry["entryLbl"] = item["colLbl"]
-                                        materialCheck += 1
-                                    else:
-                                        break
-                                elif materialCheck == 2:
-                                    if re.search(" ", entry["text"]):
-                                        materialCheck -= 1
-                            elif docType == 4 and int(item["colLbl"]) == 228:
+                            if docType == 4 and int(item["colLbl"]) == 228:
                                 t = re.compile("^[0-9| |.|,]*$")
                                 if t.match(entry["text"]):
+                                    entry["entryLbl"] = item["colLbl"]
+                            elif docType == 6 and int(item["colLbl"]) == 228:
+                                text = entry["text"].split(" ")
+
+                                if len(text) == 1:
+                                    entry["entryLbl"] = item["colLbl"]
+                                elif len(text) == 2:
+                                    entry["text"] = text[0]
                                     entry["entryLbl"] = item["colLbl"]
                             else :
                                 entry["entryLbl"] = item["colLbl"]
 
+                            preVerticalLoc = int(entrySid[2])
+
+                        elif docType == 6 and item["text"].lower() == "item code" and int(item["colLbl"]) == 228 and not (int(entrySid[2]) - preVerticalLoc > 700):
+                            entry["entryLbl"] = item["colLbl"]
                             preVerticalLoc = int(entrySid[2])
 
         # single entry 추출
@@ -874,6 +913,16 @@ def findEntry(ocrData, docTopType, docType):
                 elif text.lower() == "westc t":
                     item["entryLbl"] = "221"
                     item["text"] = "WESTCOAST"
+            buyerCheck = True
+            for item in ocrData:
+                if "entryLbl" in item and item["entryLbl"] == "221":
+                    buyerCheck = False
+            if buyerCheck:
+                for item in ocrData:
+                    if item["text"] == "Invoice to: Westcoast":
+                        item["entryLbl"] = "221"
+                        item["text"] = "WESTCOAST"
+
         elif docType == 5:
             for item in ocrData:
                 if "entryLbl" in item and item["entryLbl"] == "221":
@@ -1027,6 +1076,8 @@ def findDelivery(ocrData):
                     item["text"] = "TSYS CARD TECH SERVICES LTD 4 Verginas Street Annex 4 Building Nicosia Strovolos, 2030 Cyprus"
                 elif item["text"].lower() == "SUB TV".lower():
                     item["text"] = "SUB TV A15 BIG YELLOW STORAGE 1A RUGBY ROAD TWICKENHAM TW1 1DG"
+                elif item["text"].lower() == "x".lower():
+                    item["text"] = "X X M50 Bus Park, Ballymount Road Upper Dublin, D12 Ireland"
 
         return ocrData
     except Exception as ex:
