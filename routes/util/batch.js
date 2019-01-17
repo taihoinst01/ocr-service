@@ -33,20 +33,32 @@ function insertDoctypeMapping(req, done) {
             var convertedFilepath;
             var bannedWord;
 
-            for (var i in data.textList) {
+			console.log(data.docSentenceList);
+			console.log(data.docSentenceList[1]);
+
+			if (data.docSentenceList.length > 0) {
+
+				for (var i in data.docSentenceList) {
+					similarSentences.push(data.docSentenceList[i]);
+				}
+			}
+			/*
+			for (var i in data.textList) {
                 if (data.textList[i].check == 1) {
-                    similarSentences.push(data.textList[i]);
+					similarSentences.push(data.docSentence[i]);
                 }
 
                 if (topSentenses.length < 5) {
                     data.textList[i] = insertSymspell(data.textList[i]);
                     topSentenses.push(data.textList[i]);
                 }
-            }
+			}
+			*/
 
             //20180911 가져온 문장의 sid EXPORT_SENTENCE_SID함수를 통해 추출
-            data = getSentenceSid(data);
-            docSid = getDocSid(topSentenses);
+			//20190119 sentence 부분 없어져서 필요없슴
+			//data = getSentenceSid(data);
+            //docSid = getDocSid(topSentenses);
 
             //20180911 신규문서일 경우
             if (data.radioType == '2') {
@@ -154,7 +166,7 @@ function selectDocCategoryFromDocName(data) {
 }
 
 function copyFile(src, docType) {
-    var convertedFilepath = propertiesConfig.filepath.docFilePath;
+	var convertedFilepath = propertiesConfig.filepath.docFilePath;
     try {
         if (!fs.existsSync(src)) {
             throw new Error('file not exist');
