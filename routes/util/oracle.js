@@ -2001,6 +2001,35 @@ exports.selectPoMlExport = function (filename, done) {
     });
 };
 
+exports.selectAnswerData = function (arg, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+            var docToptype = arg.docToptype;
+
+            var query = "select docid, answerdata, filename from tbl_batch_po_answer_data where docid = :doctoptype";
+                        
+            result = await conn.execute(query, [docToptype]);
+
+
+            return done(null, result.rows);
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
 exports.selectBatchLearnAnswerData = function (arg, done) {
     return new Promise(async function (resolve, reject) {
         let conn;

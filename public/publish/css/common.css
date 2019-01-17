@@ -46,6 +46,11 @@ body{ font-family:NanumGothicR,sans-serif,�������; }
 .ipt_gray {
     border-radius: 15px; border: solid 1px darkgray;
 }
+
+.ipt_bgColor_01{
+    /*background-color: mistyrose;*/
+    background-color: lightgoldenrodyellow;
+}
 .touchSliderDiv {
     overflow-x: hidden;
     overflow-y: scroll;
@@ -763,7 +768,7 @@ h3.tits:before,
 
 .tits11_btn01:before {
     display: inline-block;
-    background: url('../image/bg_img_sample.png') no-repeat; 
+    background: url('../image/bg_img.png') no-repeat; 
 }
 .content_title_icon { width:30px; height: 30px; float:left; background-position: -5px -475px; }
 .content_title_icon_ui { width:40px; height: 30px; float:left; background-position: -70px -472px; }
