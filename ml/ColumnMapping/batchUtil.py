@@ -1023,7 +1023,7 @@ def findDocTopType(ocrData):
             #print(re.sub("[-|:|.|/|*| ]", "", rows[0]))
             ratio = similar(strText.lower(), rows[0])
 
-            print(ratio)
+            #print(ratio)
             if ratio > maxNum:
                 maxNum = ratio
                 doctype = rows[1]
