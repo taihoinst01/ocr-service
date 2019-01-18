@@ -434,6 +434,14 @@ if __name__ == '__main__':
         obj = {}
         if docTopType == 0:
             docTopType, docType = bUtil.refindDocTopType(ocrData)
+
+            if docTopType != 0:
+                # 가변영역추출
+                ocrData = bUtil.findEntry(ocrData, docTopType, docType)
+
+                # 주소부분추출
+                ocrData = bUtil.findDelivery(ocrData)
+
             obj["docCategory"] = selectDocCategory(docType)
             obj["data"] = ocrData
         else :
