@@ -1004,34 +1004,87 @@ def findDocTopType(ocrData):
         docTopType = 0
         docType = 0
 
-        sql = "SELECT * FROM TBL_DOCUMENT_SENTENCE"
+        sql = "SELECT DATA, DOCTYPE, DOCTOPTYPE, SENTENCELENGTH FROM TBL_DOCUMENT_SENTENCE"
         curs.execute(sql)
         sentenceRows = curs.fetchall()
-
-
+        maxNum = 0
+        text = [];
+        strText = ''
         for sentenceRow in sentenceRows:
             data = sentenceRow[1]
 
-            for item in ocrData:
-                text = re.sub(" |-|\(|\)", "", item["text"])
+        for item in ocrData:
+            text.append(re.sub(regExp, "", item["text"]))
+            strText = ",".join(str(x) for x in text)
 
-                if data.lower() == text.lower():
-                    docType = int(sentenceRow[2])
-                    break
+        #strText = re.sub("[-|:|,|.|/|*]", "", strText.lower());
+        for rows in sentenceRows:
+            #print(re.sub("[-|:|.|/|*]", "", strText.lower()))
+            #print(re.sub("[-|:|.|/|*| ]", "", rows[0]))
+            ratio = similar(strText.lower(), rows[0])
 
-            if docType > 0:
-                break
+            #print(ratio)
+            if ratio > maxNum:
+                maxNum = ratio
+                doctype = rows[1]
+                doctoptype = rows[2]
+            #print(maxNum)
+        if maxNum > 0.2:
+            return doctype,doctoptype
+        else:
+            return 'unknown','unknown'
 
-        if docType > 0:
-            docTopTypeSql = "SELECT * FROM TBL_DOCUMENT_CATEGORY WHERE DOCTYPE = :doctype"
-            curs.execute(docTopTypeSql,{"doctype":docType})
-            docTopTypeRows = curs.fetchall()
-            docTopType = docTopTypeRows[0][4]
+                #if data.lower() == text.lower():
+                #   docType = int(sentenceRow[2])
+                #    break
+
+            #if docType > 0:
+            #    break
+
+        #if docType > 0:
+        #    docTopTypeSql = "SELECT * FROM TBL_DOCUMENT_CATEGORY WHERE DOCTYPE = :doctype"
+        #    curs.execute(docTopTypeSql,{"doctype":docType})
+        #    docTopTypeRows = curs.fetchall()
+        #    docTopType = docTopTypeRows[0][4]
 
         return docTopType, docType
     except Exception as ex:
         raise Exception(str({'code': 500, 'message': 'findDocType error',
                              'error': str(ex).replace("'", "").replace('"', '')}))
+
+#def findDocTopType(ocrData):
+#    try:
+#        docTopType = 0
+#        docType = 0
+
+#        sql = "SELECT DATA, DOCTYPE, DOCTOPTYPE, SENTENCELENGTH FROM TBL_DOCUMENT_SENTENCE"
+#        curs.execute(sql)
+#        sentenceRows = curs.fetchall()
+
+
+#        for sentenceRow in sentenceRows:
+#            data = sentenceRow[1]
+
+#            for item in ocrData:
+#                text = re.sub(" |-|\(|\)", "", item["text"])
+
+#                if data.lower() == text.lower():
+#                    docType = int(sentenceRow[2])
+#                    break
+
+#            if docType > 0:
+#                break
+
+#        if docType > 0:
+#            docTopTypeSql = "SELECT * FROM TBL_DOCUMENT_CATEGORY WHERE DOCTYPE = :doctype"
+#            curs.execute(docTopTypeSql,{"doctype":docType})
+#            docTopTypeRows = curs.fetchall()
+#            docTopType = docTopTypeRows[0][4]
+
+#        return docTopType, docType
+#    except Exception as ex:
+#        raise Exception(str({'code': 500, 'message': 'findDocType error',
+#                             'error': str(ex).replace("'", "").replace('"', '')}))
 
 
 def findDelivery(ocrData):

@@ -303,6 +303,7 @@ var imgOcr = function(fileInfoList) {
             console.log(data);          
             var trainResultList = data.trainResultList;
             var docLabelDefList = data.docLabelDefList;
+            var docAnswerDataList = data.docAnswerDataList;
             var appendMultiRecordHtml = "";
             var appendThumbnailHtml = "";
 
@@ -376,17 +377,17 @@ var imgOcr = function(fileInfoList) {
                         $.isEmptyObject(multiRecordObj.unitPrice) == false || $.isEmptyObject(multiRecordObj.itemTotal) == false || $.isEmptyObject(multiRecordObj.serialNumber) == false) {
                     appendMultiRecordHtml += '<tr>' +
                             '<td><input type="text" class="multiRecordIpt ' + (nvl(multiRecordObj.material.text) == "" ? 'ipt_gray"' : 'ipt_pink"') + '" value="' + nvl(multiRecordObj.material.text) + '" ' +
-                            'data-filename="' + trainResultList[i].fileName +'" data-location="' + multiRecordObj.material.location + '" data-entryLbl="221"></td>' +
+                            'data-filename="' + trainResultList[i].fileName +'" data-location="' + multiRecordObj.material.location + '" data-entryLbl="' + multiRecordObj.material.entryLbl + '"></td>' +
                             '<td><input type="text" class="multiRecordIpt ' + (nvl(multiRecordObj.ean.text) == "" ? 'ipt_gray' : 'ipt_pink') + '" value="' + nvl(multiRecordObj.ean.text) + '" ' +
-                            'data-filename="' + trainResultList[i].fileName +'" data-location="' + multiRecordObj.ean.location + '"></td>' +
+                            'data-filename="' + trainResultList[i].fileName +'" data-location="' + multiRecordObj.ean.location + '" data-entryLbl="' + multiRecordObj.ean.entryLbl + '"></td>' +
                             '<td><input type="text" class="multiRecordIpt ' + (nvl(multiRecordObj.quantity.text) == "" ? 'ipt_gray' : 'ipt_pink') + '" value="' + nvl(multiRecordObj.quantity.text) + '" ' +
-                            'data-filename="' + trainResultList[i].fileName +'" data-location="' + multiRecordObj.quantity.location + '"></td>' +
+                            'data-filename="' + trainResultList[i].fileName +'" data-location="' + multiRecordObj.quantity.location + '" data-entryLbl="' + multiRecordObj.quantity.entryLbl + '"></td>' +
                             '<td><input type="text" class="multiRecordIpt ' + (nvl(multiRecordObj.unitPrice.text) == "" ? 'ipt_gray' : 'ipt_pink') + '" value="' + nvl(multiRecordObj.unitPrice.text) + '" ' +
-                            'data-filename="' + trainResultList[i].fileName +'" data-location="' + multiRecordObj.unitPrice.location + '"></td>' +
+                            'data-filename="' + trainResultList[i].fileName +'" data-location="' + multiRecordObj.unitPrice.location + '" data-entryLbl="' + multiRecordObj.unitPrice.entryLbl + '"></td>' +
                             '<td><input type="text" class="multiRecordIpt ' + (nvl(multiRecordObj.itemTotal.text) == "" ? 'ipt_gray' : 'ipt_pink') + '" value="' + nvl(multiRecordObj.itemTotal.text) + '" ' +
-                            'data-filename="' + trainResultList[i].fileName +'" data-location="' + multiRecordObj.itemTotal.location + '"></td>' +
+                            'data-filename="' + trainResultList[i].fileName +'" data-location="' + multiRecordObj.itemTotal.location + '" data-entryLbl="' + multiRecordObj.itemTotal.entryLbl + '"></td>' +
                             '<td><input type="text" class="multiRecordIpt ' + (nvl(multiRecordObj.serialNumber.text) == "" ? 'ipt_gray' : 'ipt_pink') + '" value="' + nvl(multiRecordObj.serialNumber.text) + '" ' +
-                            'data-filename="' + trainResultList[i].fileName +'" data-location="' + multiRecordObj.serialNumber.location + '"></td>' +
+                            'data-filename="' + trainResultList[i].fileName +'" data-location="' + multiRecordObj.serialNumber.location + '" data-entryLbl="' + multiRecordObj.serialNumber.entryLbl + '"></td>' +
                             '</tr>';
                 }
             }
@@ -417,11 +418,37 @@ var imgOcr = function(fileInfoList) {
             $("#ul_image").empty().append(appendThumbnailHtml);
             $('#multiRecordTblTbody').append(appendMultiRecordHtml);
             checkDocLabelDef(docLabelDefList);
+            checkDocMlData(docAnswerDataList);
             changeTabindex();
             thumbImgEvent();
 			endProgressBar(progressId);
 		}
 	})
+}
+
+// tbl_batch_po_answer_data 조회한 결과와 ml결과 비교
+function checkDocMlData(docAnswerDataList) {
+    $('.multiRecordIpt').each(function(){
+        var hasSameData = false;
+        var entryLbl = $(this).attr('data-entryLbl');
+        
+        // Unit Price
+        if(entryLbl == 232) {
+            var mlData = $(this).val();
+            for(var i = 0; i < docAnswerDataList.length; i++) {
+                var answerData = JSON.parse(docAnswerDataList[i].ANSWERDATA);
+                if(mlData == answerData[10]) {
+                    hasSameData = true;
+                    break;
+                }
+            }
+            if(hasSameData == false) {
+                $(this).addClass('ipt_bgColor_01');
+            }
+        }
+
+    })
+
 }
 
 // doctotpe으로 TBL_ICR_LABEL_DEF 조회한 결과로 ESSENTIALVAL 체크

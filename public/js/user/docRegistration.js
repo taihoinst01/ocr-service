@@ -307,11 +307,11 @@ $(document).on('focusout', '#tbody_docList .originalTr input[type=text]', functi
 // 문서등록 테이블 checkbox 수정시 tr 색깔 변경
 $(document).on('change', '#tbody_docList .originalTr input[type=checkbox]', function () {
 	var originalValue = $(this).attr('data-originalValue');
-	console.log("originalValue : " + originalValue + "current value : " + $(this).is(":checked"));
+	//console.log("originalValue : " + originalValue + "current value : " + $(this).is(":checked"));
 
 	var changeValue = "";
 	if ($(this).is(":checked")) { changeValue = "1"; }
-	else { changeValue = "2"; }
+	else { changeValue = "0"; }
 	//console.log(originalValue);
 	//console.log(changeValue);
 

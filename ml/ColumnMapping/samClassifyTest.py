@@ -398,8 +398,8 @@ def colLblDefaultValue(data):
 
 if __name__ == '__main__':
     try:
-        seqnum = sys.argv[1]
-        # seqnum = 428
+        #seqnum = sys.argv[1]
+        seqnum = 1393
 
         ocrData = bUtil.selectOcrData(seqnum)
 
@@ -432,7 +432,7 @@ if __name__ == '__main__':
         ocrData = bUtil.getMappingSid(ocrData, docTopType)
 
         obj = {}
-        if docTopType == 0:
+        if docTopType == "unknown":
             obj["docCategory"] = selectDocCategory(0)
             obj["data"] = ocrData
         else :

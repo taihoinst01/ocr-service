@@ -243,9 +243,10 @@ var buttonEvent = function () {
     })
 
     $("#docToptype").on('change', function () {
-        var docType = $("#docToptype").val();
-        $('#docTopTypeValue').val(docType);
+        var docToptype = $("#docToptype").val();
+        $('#docTopTypeValue').val(docToptype);
         //console.log(docType);
+        fnDocTypeColumn(docToptype)
         searchBatchLearnDataList (addCond);
 
     });
