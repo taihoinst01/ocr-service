@@ -399,7 +399,7 @@ def colLblDefaultValue(data):
 if __name__ == '__main__':
     try:
         seqnum = sys.argv[1]
-        # seqnum = 1393
+        #seqnum = 1591
 
         ocrData = bUtil.selectOcrData(seqnum)
 
@@ -432,8 +432,9 @@ if __name__ == '__main__':
         ocrData = bUtil.getMappingSid(ocrData, docTopType)
 
         obj = {}
-        if docTopType == "unknown":
-            obj["docCategory"] = selectDocCategory(0)
+        if docTopType == 0:
+            docTopType, docType = bUtil.refindDocTopType(ocrData)
+            obj["docCategory"] = selectDocCategory(docType)
             obj["data"] = ocrData
         else :
             # 가변영역추출

@@ -999,7 +999,7 @@ def findDocType(ocrData):
         raise Exception(str({'code': 500, 'message': 'findDocType error',
                              'error': str(ex).replace("'", "").replace('"', '')}))
 
-def findDocTopType(ocrData):
+def refindDocTopType(ocrData):
     try:
         docTopType = 0
         docType = 0
@@ -1052,39 +1052,39 @@ def findDocTopType(ocrData):
         raise Exception(str({'code': 500, 'message': 'findDocType error',
                              'error': str(ex).replace("'", "").replace('"', '')}))
 
-#def findDocTopType(ocrData):
-#    try:
-#        docTopType = 0
-#        docType = 0
+def findDocTopType(ocrData):
+    try:
+        docTopType = 0
+        docType = 0
 
-#        sql = "SELECT DATA, DOCTYPE, DOCTOPTYPE, SENTENCELENGTH FROM TBL_DOCUMENT_SENTENCE"
-#        curs.execute(sql)
-#        sentenceRows = curs.fetchall()
+        sql = "SELECT * FROM TBL_DOCUMENT_SENTENCE"
+        curs.execute(sql)
+        sentenceRows = curs.fetchall()
 
 
-#        for sentenceRow in sentenceRows:
-#            data = sentenceRow[1]
+        for sentenceRow in sentenceRows:
+            data = sentenceRow[1]
 
-#            for item in ocrData:
-#                text = re.sub(" |-|\(|\)", "", item["text"])
+            for item in ocrData:
+                text = re.sub(" |-|\(|\)", "", item["text"])
 
-#                if data.lower() == text.lower():
-#                    docType = int(sentenceRow[2])
-#                    break
+                if data.lower() == text.lower():
+                    docType = int(sentenceRow[2])
+                    break
 
-#            if docType > 0:
-#                break
+            if docType > 0:
+                break
 
-#        if docType > 0:
-#            docTopTypeSql = "SELECT * FROM TBL_DOCUMENT_CATEGORY WHERE DOCTYPE = :doctype"
-#            curs.execute(docTopTypeSql,{"doctype":docType})
-#            docTopTypeRows = curs.fetchall()
-#            docTopType = docTopTypeRows[0][4]
+        if docType > 0:
+            docTopTypeSql = "SELECT * FROM TBL_DOCUMENT_CATEGORY WHERE DOCTYPE = :doctype"
+            curs.execute(docTopTypeSql,{"doctype":docType})
+            docTopTypeRows = curs.fetchall()
+            docTopType = docTopTypeRows[0][4]
 
-#        return docTopType, docType
-#    except Exception as ex:
-#        raise Exception(str({'code': 500, 'message': 'findDocType error',
-#                             'error': str(ex).replace("'", "").replace('"', '')}))
+        return docTopType, docType
+    except Exception as ex:
+        raise Exception(str({'code': 500, 'message': 'findDocType error',
+                             'error': str(ex).replace("'", "").replace('"', '')}))
 
 
 def findDelivery(ocrData):
