@@ -216,7 +216,8 @@ function uploadConvert(files, callback) {
             convertFileName: fileObj.originalname.split('.')[0] + '.jpg',
             fileExt: fileExt,
             fileSize: fileObj.size,
-            contentType: fileObj.mimetype
+            contentType: fileObj.mimetype,
+            imgCount: 1
         };
         returnResult.fileInfo = fileItem;
 
@@ -239,7 +240,8 @@ function uploadConvert(files, callback) {
             convertFileName: fileObj.originalname.split('.')[0] + '.png',
             fileExt: fileExt,
             fileSize: fileObj.size,
-            contentType: fileObj.mimetype
+            contentType: fileObj.mimetype,
+            imgCount: 1
         };
         returnResult.fileInfo = fileItem;
 

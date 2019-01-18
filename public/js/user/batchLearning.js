@@ -1715,16 +1715,27 @@ function fn_viewImageData(filename, rowNum, imgId, obj) {
         data = $("#batch_right_contents_after .rowNum" + rowNum);
     }
 
-    var filename = filename.substring(0, filename.lastIndexOf("."));
+    var imgFileName = filename.substring(0, filename.lastIndexOf("."));
+    var fileExt = filename.substring(filename.lastIndexOf(".") + 1, filename.length);
     var appendPngHtml = '';
-    if(imgCount == 1) {
-        var pngName = filename + '.png';
-        appendPngHtml += '<img src="/img/' + pngName +'" style="width: 100%; height: auto">';
+    var imgName = "";
+
+    if (imgCount == 1) {
+        if (fileExt.toLowerCase() == "jpg") {
+            imgName = imgFileName + ".jpg";
+        } else if (fileExt.toLowerCase() == "png" || fileExt.toLowerCase() == "pdf") {
+            imgName = imgFileName + ".png";
+        }
+        appendPngHtml += '<img src="/img/' + imgName +'" style="width: 100%; height: auto">';
     } else {
 
-        for(var i = 0; i < imgCount; i++) {
-            var pngName = filename + '-' + i + '.png';
-            appendPngHtml += '<img src="/img/' + pngName +'" style="width: 100%; height: auto; margin-bottom: 20px;">';
+        for (var i = 0; i < imgCount; i++) {
+            if (fileExt.toLowerCase() == "jpg") {
+                imgName = imgFileName + '-' + i + ".jpg";
+            } else if (fileExt.toLowerCase() == "png" || fileExt.toLowerCase() == "pdf") {
+                imgName = imgFileName + '-' + i + ".png";
+            }
+            appendPngHtml += '<img src="/img/' + imgName +'" style="width: 100%; height: auto; margin-bottom: 20px;">';
         }
     }
 
@@ -2348,7 +2359,13 @@ function uiLayerHtml(data) {
     var imgNameHtml = "";
     for (var l in mlDataArray) {
         var imgName = nvl(data.data[l].fileinfo.filepath.substring(data.data[l].fileinfo.filepath.lastIndexOf('/') + 1));
-        imgName = imgName.substring(0, imgName.lastIndexOf('.')) + '.png';
+        var fileExt = data.data[l].fileinfo.filepath.substring(data.data[l].fileinfo.filepath.lastIndexOf(".") + 1, data.data[l].fileinfo.filepath.length);
+
+        if (fileExt.toLowerCase() == "png" || fileExt.toLowerCase() == "pdf") {
+            imgName = imgName.substring(0, imgName.lastIndexOf('.')) + '.png';
+        } else if (fileExt.toLowerCase() == "jpg") {
+            imgName = imgName.substring(0, imgName.lastIndexOf('.')) + '.jpg';
+        }
 
         imgNameHtml += '<img src="/img/' + imgName + '" style="width: 100%; height: auto; margin-bottom: 20px;">';
     }
