@@ -1047,7 +1047,7 @@ def refindDocTopType(ocrData):
         #    docTopTypeRows = curs.fetchall()
         #    docTopType = docTopTypeRows[0][4]
 
-        return docTopType, docType
+        #return docTopType, docType
     except Exception as ex:
         raise Exception(str({'code': 500, 'message': 'findDocType error',
                              'error': str(ex).replace("'", "").replace('"', '')}))
