@@ -204,7 +204,8 @@ function uploadConvert(files, callback) {
     var convertedImagePath = propertiesConfig.filepath.uploadsPath;
     console.time("file upload & convert");
     var fileObj = files;
-    var fileExt = fileObj.originalname.split('.')[1];
+    //var fileExt = fileObj.originalname.split('.')[1];
+    var fileExt = fileObj.originalname.substring(fileObj.originalname.lastIndexOf(".") + 1, fileObj.originalname.length);
 
     if (fileExt.toLowerCase() === 'tif' || fileExt.toLowerCase() === 'jpg') {
         var fileItem = {
@@ -223,7 +224,7 @@ function uploadConvert(files, callback) {
         returnResult.returnObj = fileItem.convertFileName;
 
         var ifile = convertedImagePath + fileObj.originalname;
-        var ofile = convertedImagePath + fileObj.originalname.split('.')[0] + '.jpg';
+        var ofile = convertedImagePath + fileObj.originalname.substring(0, fileObj.originalname.lastIndexOf(".")) + '.jpg';
         
         var result = execSync('module\\imageMagick\\convert.exe -colorspace Gray -density 800x800 ' + ifile + ' ' + ofile);
         if (result.status != 0) {
@@ -255,7 +256,7 @@ function uploadConvert(files, callback) {
 
 
         var ifile = convertedImagePath + fileObj.originalname;
-        var ofile = convertedImagePath + fileObj.originalname.split('.')[0] + '.pdf';
+        var ofile = convertedImagePath + fileObj.originalname.substring(0, fileObj.originalname.lastIndexOf(".")) + '.pdf';
 
         var convertPdf = '';
 
@@ -268,8 +269,8 @@ function uploadConvert(files, callback) {
             convertPdf = execSync('"C:/Program Files/LibreOffice/program/python.exe" C:/projectWork/ocrService/module/unoconv/unoconv.py -f pdf -o "' + ofile + '" "' + ifile + '"');
         }
 
-        ifile = convertedImagePath + fileObj.originalname.split('.')[0] + '.pdf';
-        ofile = convertedImagePath + fileObj.originalname.split('.')[0] + '.png';
+        ifile = convertedImagePath + fileObj.originalname.substring(0, fileObj.originalname.lastIndexOf(".")) + '.pdf';
+        ofile = convertedImagePath + fileObj.originalname.substring(0, fileObj.originalname.lastIndexOf(".")) + '.png';
 
         //file convert Pdf to Png
         if (convertPdf || fileExt.toLowerCase() === 'pdf') {
@@ -284,7 +285,7 @@ function uploadConvert(files, callback) {
 
             while (!isStop) {
                 try { // 하나의 파일 안의 여러 페이지면
-                    var convertFileFullPath = files.path.split('.')[0] + '-' + j + '.png';
+                    var convertFileFullPath = files.path.substring(0, files.path.lastIndexOf(".")) + '-' + j + '.png';
                     var stat = fs.statSync(convertFileFullPath);
                     if (stat) {
                         var fileItem = {
@@ -307,7 +308,7 @@ function uploadConvert(files, callback) {
                     }
                 } catch (err) { // 하나의 파일 안의 한 페이지면
                     try {
-                        var convertFileFullPath = files.path.split('.')[0] + '.png';
+                        var convertFileFullPath = files.path.substring(0, files.path.lastIndexOf(".")) + '.png';
                         var stat2 = fs.statSync(convertFileFullPath);
                         if (stat2) {
                             var fileItem = {
