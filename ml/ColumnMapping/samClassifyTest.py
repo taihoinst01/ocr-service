@@ -432,7 +432,7 @@ if __name__ == '__main__':
         ocrData = bUtil.getMappingSid(ocrData, docTopType)
 
         obj = {}
-        if docTopType == 0:
+        if docTopType == "unkonown":
             obj["docCategory"] = selectDocCategory(0)
             obj["data"] = ocrData
         else :

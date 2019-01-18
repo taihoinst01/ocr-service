@@ -2998,14 +2998,15 @@ exports.insertDocumentSentence = function (req, done) {
     return new Promise(async function (resolve, reject) {
         let conn;
         let result;
-        try {
+		try {
+			console.log(req);
             conn = await oracledb.getConnection(dbConfig);
-            result = await conn.execute(`SELECT SEQNUM FROM TBL_DOCUMENT_SENTENCE WHERE DATA = LOWER(:data) AND DOCTYPE = :doctype AND SENTENCELENGTH = :length`, req);
+			result = await conn.execute(`SELECT SEQNUM FROM TBL_DOCUMENT_SENTENCE WHERE DATA = LOWER(:data) AND DOCTYPE = :doctype AND SENTENCELENGTH = :length AND DOCTOPTYPE = :doctoptype`, req);
             if (result.rows.length == 0) {
                 await conn.execute(`INSERT INTO
                                         TBL_DOCUMENT_SENTENCE
                                     VALUES
-                                        (seq_document_sentence.nextval, LOWER(:data), :doctype, sysdate, :length) `,
+                                        (seq_document_sentence.nextval, LOWER(:data), :doctype, sysdate, :length, :doctoptype ) `,
                     req);
             }
 
