@@ -419,7 +419,7 @@ if __name__ == '__main__':
         ocrData = getSid(ocrData)
 
         # 고정영역 추출
-        ocrData = bUtil.findFixLabel(ocrData)
+        #ocrData = bUtil.findFixLabel(ocrData)
 
         # ml studio 호출
         bUtil.requestML(ocrData)
@@ -429,7 +429,7 @@ if __name__ == '__main__':
         docTopType, docType = bUtil.findDocTopType(ocrData)
 
         # mappingSid 추출
-        ocrData = bUtil.getMappingSid(ocrData, docTopType)
+        ocrData = bUtil.getMappingSid(ocrData, docType)
 
         obj = {}
         if docTopType == 0:
