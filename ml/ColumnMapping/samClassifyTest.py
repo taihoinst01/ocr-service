@@ -398,8 +398,8 @@ def colLblDefaultValue(data):
 
 if __name__ == '__main__':
     try:
-        #seqnum = sys.argv[1]
-        seqnum = 1393
+        seqnum = sys.argv[1]
+        # seqnum = 1393
 
         ocrData = bUtil.selectOcrData(seqnum)
 
