@@ -1715,7 +1715,7 @@ function fn_viewImageData(filename, rowNum, imgId, obj) {
         data = $("#batch_right_contents_after .rowNum" + rowNum);
     }
 
-    var filename = filename.split('.')[0];
+    var filename = filename.substring(0, filename.lastIndexOf("."));
     var appendPngHtml = '';
     if(imgCount == 1) {
         var pngName = filename + '.png';
@@ -2348,7 +2348,7 @@ function uiLayerHtml(data) {
     var imgNameHtml = "";
     for (var l in mlDataArray) {
         var imgName = nvl(data.data[l].fileinfo.filepath.substring(data.data[l].fileinfo.filepath.lastIndexOf('/') + 1));
-        imgName = imgName.substring(0, imgName.indexOf('.')) + '.png';
+        imgName = imgName.substring(0, imgName.lastIndexOf('.')) + '.png';
 
         imgNameHtml += '<img src="/img/' + imgName + '" style="width: 100%; height: auto; margin-bottom: 20px;">';
     }
@@ -2498,6 +2498,24 @@ function appendSelEntryOptionHtml(targetColumn, columns, docToptype) {
     selectHTML += '</select>';
 
     return selectHTML;
+}
+
+function getLabelData(docTopType) {
+
+    $.ajax({
+        url: '/batchLearning/getLabelData',
+        type: 'post',
+        datatype: 'json',
+        data: JSON.stringify({ 'docTopType': docTopType }),
+        contentType: 'application/json; charset=UTF-8',
+        success: function (data) {
+
+            return data;
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
 }
 
 function fn_uiDocTopType(docCategory) {

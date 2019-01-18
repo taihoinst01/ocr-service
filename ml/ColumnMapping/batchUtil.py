@@ -1030,9 +1030,9 @@ def refindDocTopType(ocrData):
                 doctoptype = rows[2]
             #print(maxNum)
         if maxNum > 0.2:
-            return doctype,doctoptype
+            return doctoptype,doctype
         else:
-            return 'unknown','unknown'
+            return docTopType,doctype
 
                 #if data.lower() == text.lower():
                 #   docType = int(sentenceRow[2])
