@@ -404,6 +404,48 @@ def checkVerticalHarman(entLoc, lblLoc):
         raise Exception(str({'code': 500, 'message': 'checkVerticalEntry fail',
                          'error': str(e).replace("'", "").replace('"', '')}))
 
+def checkVerticalFictive(entLoc, lblLoc):
+    try:
+        lblwidthLoc = (int(lblLoc[3]) + int(lblLoc[1])) / 2
+        entwidthLoc = (int(entLoc[3]) + int(entLoc[1])) / 2
+        # entryLabel이 오른쪽에서 가까울 경우 제외
+        if -70 < entwidthLoc - lblwidthLoc < 400:
+            return True
+        else:
+            return False
+
+    except Exception as e:
+        raise Exception(str({'code': 500, 'message': 'checkVerticalEntry fail',
+                         'error': str(e).replace("'", "").replace('"', '')}))
+
+def checkVerticalInvoice01(entLoc, lblLoc):
+    try:
+        lblwidthLoc = (int(lblLoc[3]) + int(lblLoc[1])) / 2
+        entwidthLoc = (int(entLoc[3]) + int(entLoc[1])) / 2
+        # entryLabel이 오른쪽에서 가까울 경우 제외
+        if -200 < entwidthLoc - lblwidthLoc < 100:
+            return True
+        else:
+            return False
+
+    except Exception as e:
+        raise Exception(str({'code': 500, 'message': 'checkVerticalEntry fail',
+                         'error': str(e).replace("'", "").replace('"', '')}))
+
+def checkVerticalSpringer(entLoc, lblLoc, minus, plus):
+    try:
+        lblwidthLoc = (int(lblLoc[3]) + int(lblLoc[1])) / 2
+        entwidthLoc = (int(entLoc[3]) + int(entLoc[1])) / 2
+        # entryLabel이 오른쪽에서 가까울 경우 제외
+        if minus < entwidthLoc - lblwidthLoc < plus:
+            return True
+        else:
+            return False
+
+    except Exception as e:
+        raise Exception(str({'code': 500, 'message': 'checkVerticalEntry fail',
+                         'error': str(e).replace("'", "").replace('"', '')}))
+
 def selectLabelBehaviorDrug(label, entryLabel):
     try:
         colLabel = label["colLbl"]
@@ -838,6 +880,25 @@ def findEntry(ocrData, docTopType, docType):
                                     materialCheck -= 1
 
                             preVerticalLoc = int(entrySid[2])
+                    elif docType == 21:
+                        if p.match(entry["text"]) and int(mappingSid[2]) < int(entrySid[2]) and "colLbl" not in entry and item["text"] != entry["text"]:
+                            if int(entrySid[2]) < 2000:
+                                # description
+                                if item["colLbl"] == "283" and checkVerticalSpringer(entrySid, mappingSid, -50, 300):
+                                    if "springer journals" in entry["text"].lower():
+                                        entry["entryLbl"] = item["colLbl"]
+                                # list price
+                                elif item["colLbl"] == "284" and checkVerticalSpringer(entrySid, mappingSid, -90, 50):
+                                    entry["entryLbl"] = item["colLbl"]
+                                elif checkVerticalSpringer(entrySid, mappingSid, -60, 60):
+                                    entry["entryLbl"] = item["colLbl"]
+                    elif docType == 19:
+                        if p.match(entry["text"]) and checkVerticalInvoice01(entrySid, mappingSid) and int(mappingSid[2]) < int(entrySid[2]) and "colLbl" not in entry and item["text"] != entry["text"]:
+                            entry["entryLbl"] = item["colLbl"]
+                    elif docType == 17:
+                        if p.match(entry["text"]) and checkVerticalFictive(entrySid, mappingSid) and int(mappingSid[2]) < int(entrySid[2]) and "colLbl" not in entry and item["text"] != entry["text"]:
+                            if int(entrySid[2]) < 1350:
+                                entry["entryLbl"] = item["colLbl"]
                     elif docType == 14:
                         if p.match(entry["text"]) and checkVerticalHarman(entrySid, mappingSid) and int(mappingSid[2]) < int(entrySid[2]) and "colLbl" not in entry and item["text"] != entry["text"]:
                             if int(entrySid[2]) < 1550:
@@ -1063,7 +1124,7 @@ def refindDocTopType(ocrData):
                 doctoptype = rows[2]
             #print(maxNum)
         if maxNum > 0.2:
-            return doctoptype,doctype
+            return int(doctoptype),int(doctype)
         else:
             return docTopType,doctype
 
