@@ -465,7 +465,7 @@ exports.insertBatchColumnMapping = function (req, docTopType, before, done) {
         let conn;
         try {
             conn = await oracledb.getConnection(dbConfig);
-            let selectSqlText = `SELECT SEQNUM FROM TBL_BATCH_COLUMN_MAPPING_TRAIN WHERE DATA = :data AND CLASS = :class`;
+            let selectSqlText = `SELECT SEQNUM FROM TBL_BATCH_COLUMN_MAPPING_TRAIN WHERE DATA = :data`;
             let insertSqlText = `INSERT INTO TBL_BATCH_COLUMN_MAPPING_TRAIN (SEQNUM, DATA, CLASS, REGDATE) VALUES (SEQ_BATCH_COLUMN_MAPPING_TRAIN.NEXTVAL,:data,:class,SYSDATE)`;
             let selectLearnListSqlText = `SELECT DOCTYPE FROM TBL_BATCH_LEARN_LIST WHERE FILEPATH = :filepath`;
             let updateBatchColumnMapping = 'UPDATE TBL_BATCH_COLUMN_MAPPING_TRAIN SET CLASS = :class WHERE DATA = :data';
@@ -480,7 +480,7 @@ exports.insertBatchColumnMapping = function (req, docTopType, before, done) {
 
             var sid = docTopType + "," + req.sid;
 
-            var result = await conn.execute(selectSqlText, [sid, before.colLbl]);
+            var result = await conn.execute(selectSqlText, [sid]);
 
             if (result.rows.length == 0) {
                 if ((req.colLbl != 0 && textSid != "0,0,0,0,0") && !(req.colLbl == -1 && textSid == "1,1,1,1,1")) {

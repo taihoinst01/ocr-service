@@ -692,6 +692,12 @@ def findEntry(ocrData, docTopType, docType):
                                   "mappingSid":item["mappingSid"]}
 
                         ocrData.append(toData)
+                elif item["text"] == "I ,445.32":
+                    item["text"] = "1,445.32"
+                elif item["text"] == "IO":
+                    item["text"] = "10"
+                elif item["text"] == "Cl-IF":
+                    item["text"] = "CHF"
 
             ocrData = getSid(ocrData)
             ocrData = getMappingSid(ocrData, docType)
@@ -1106,6 +1112,10 @@ def findDelivery(ocrData):
                 elif item["text"].lower() == "MVN - Betrieb Neuendorf".lower():
                     item["text"] = "MVN Betrieb Neuendorf 4623 Neuendorf"
                 elif item["text"].lower() == "Exert is Warehouse (Altham)".lower():
+                    item["text"] = "Exertis Warehouse (Altham) Shorten Brook Way Altham Business Park Altham Accrington, Lancashire, BB5 5YJ United Kingdom"
+                elif item["text"].lower() == "Exert is Warehouse (Al tham)".lower():
+                    item["text"] = "Exertis Warehouse (Altham) Shorten Brook Way Altham Business Park Altham Accrington, Lancashire, BB5 5YJ United Kingdom"
+                elif item["text"].lower() == "Exerti s Warehouse (Altham)".lower():
                     item["text"] = "Exertis Warehouse (Altham) Shorten Brook Way Altham Business Park Altham Accrington, Lancashire, BB5 5YJ United Kingdom"
                 elif item["text"].lower() == "Vohkus Ltd".lower():
                     item["text"] = "Vohkus Ltd Centurion House Unit 12 Barnes Wallis Road SEGENSWORTH Hampshire PO15 5TT"

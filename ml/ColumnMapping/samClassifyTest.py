@@ -436,6 +436,9 @@ if __name__ == '__main__':
             docTopType, docType = bUtil.refindDocTopType(ocrData)
 
             if docTopType != 0:
+                # mappingSid 추출
+                ocrData = bUtil.getMappingSid(ocrData, docType)
+
                 # 가변영역추출
                 ocrData = bUtil.findEntry(ocrData, docTopType, docType)
 
