@@ -881,9 +881,6 @@ def findEntry(ocrData, docTopType, docType):
                         if docType == 4:
                             if "colLbl" not in entry and (boundaryCheck(mappingSid[2], entrySid[2]) or checkVertical(entrySid,mappingSid)):
                                 distance = entryDistance
-                        elif docType == 14:
-                            if "colLbl" not in entry and abs(int(mappingSid[2]) - int(entrySid[2])) < 20:
-                                distance = entryDistance
                         else:
                             if "colLbl" not in entry:
                                 distance = entryDistance
