@@ -390,6 +390,19 @@ def checkVerticalMid(entLoc, lblLoc):
     except Exception as e:
         raise Exception(str({'code': 500, 'message': 'checkVerticalEntry fail',
                          'error': str(e).replace("'", "").replace('"', '')}))
+def checkVerticalHarman(entLoc, lblLoc):
+    try:
+        lblwidthLoc = (int(lblLoc[3]) + int(lblLoc[1])) / 2
+        entwidthLoc = (int(entLoc[3]) + int(entLoc[1])) / 2
+        # entryLabel이 오른쪽에서 가까울 경우 제외
+        if -70 < entwidthLoc - lblwidthLoc < 40:
+            return True
+        else:
+            return False
+
+    except Exception as e:
+        raise Exception(str({'code': 500, 'message': 'checkVerticalEntry fail',
+                         'error': str(e).replace("'", "").replace('"', '')}))
 
 def selectLabelBehaviorDrug(label, entryLabel):
     try:
@@ -825,6 +838,10 @@ def findEntry(ocrData, docTopType, docType):
                                     materialCheck -= 1
 
                             preVerticalLoc = int(entrySid[2])
+                    elif docType == 14:
+                        if p.match(entry["text"]) and checkVerticalHarman(entrySid, mappingSid) and int(mappingSid[2]) < int(entrySid[2]) and "colLbl" not in entry and item["text"] != entry["text"]:
+                            if int(entrySid[2]) < 1550:
+                                entry["entryLbl"] = item["colLbl"]
 
                     elif p.match(entry["text"]) and checkVertical(entrySid, mappingSid) and int(mappingSid[2]) -15 < int(entrySid[2]) and "colLbl" not in entry and item["text"] != entry["text"]:
 
@@ -960,6 +977,10 @@ def findEntry(ocrData, docTopType, docType):
                 elif text.lower() == "exerfis uk ltd":
                     item["entryLbl"] = "221"
                     item["text"] = "Exertis (UK) Ltd"
+        elif docType == 14:
+            for item in ocrData:
+                if 'entryLbl' in item and item["text"].lower() == "delivery" and item["entryLbl"] == "286":
+                    del item["entryLbl"]
 
         return ocrData
     except Exception as e:
