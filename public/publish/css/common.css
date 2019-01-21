@@ -5446,7 +5446,7 @@ label[disabled] {
 .ui_doc_pop_ipt, .ui_doc_pop_ipt3 {
 	width: 430px !important;
 	margin-right: 15px !important;
-	margin-left: 15px !important;
+	margin-left: 70px !important;
 	display: inline-table;
 }
 
@@ -5457,7 +5457,8 @@ label[disabled] {
 }
 
 .inputst_role2 {
-    display: inline-flex;
+	display: inline-flex;
+	margin-left: 50px !important;
 }
 
 .ui_doc_pop_div {
