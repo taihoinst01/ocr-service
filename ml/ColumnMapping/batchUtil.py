@@ -842,6 +842,9 @@ def findEntry(ocrData, docTopType, docType):
                                 elif len(text) == 2:
                                     entry["text"] = text[0]
                                     entry["entryLbl"] = item["colLbl"]
+                            elif docType == 9:
+                                if int(entrySid[2]) < 1350:
+                                    entry["entryLbl"] = item["colLbl"]
                             else :
                                 entry["entryLbl"] = item["colLbl"]
 
@@ -850,6 +853,9 @@ def findEntry(ocrData, docTopType, docType):
                         elif docType == 6 and item["text"].lower() == "item code" and int(item["colLbl"]) == 228 and not (int(entrySid[2]) - preVerticalLoc > 700):
                             entry["entryLbl"] = item["colLbl"]
                             preVerticalLoc = int(entrySid[2])
+                        elif docType == 9:
+                            if int(entrySid[2]) < 1358:
+                                entry["entryLbl"] = item["colLbl"]
 
         # single entry 추출
         for item in ocrData:
