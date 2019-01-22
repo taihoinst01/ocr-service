@@ -1349,6 +1349,7 @@ var searchBatchLearnDataList = function (addCond, page) {
             //addProgressBar(1, 1); // proceed progressbar
         },
         success: function (data) {
+            initChkBox();
             console.log(data);
             var list = data.data;
             var answerDataList = data.answerDataList;
@@ -1421,8 +1422,9 @@ var searchBatchLearnDataList = function (addCond, page) {
                
                 }
             } else {
+                var colspanVal = $('.theadTr:eq(0) th').length;
                 appendLeftContentsHtml += '<tr style="height: 30px"><td colspan="2"></td></tr>'
-                appendRightContentsHtml += '<tr><td colspan="13">조회할 데이터가 없습니다.</td></tr>';
+                appendRightContentsHtml += '<tr><td colspan="' + colspanVal + '">조회할 데이터가 없습니다.</td></tr>';
             }
             //$(appendHtml).appendTo($("#tbody_batchList")).slideDown('slow');
             if (addCond == "LEARN_N") {
@@ -1552,6 +1554,8 @@ function fnDocTypeColumn(docTopType) {
                 }
             }
             $(".docTableList > colgroup").html(htmlText);
+
+            searchBatchLearnDataList(addCond);   // 배치 학습 데이터 조회
         },
         error: function (err) {
             console.log(err);
@@ -3328,12 +3332,18 @@ function fn_selectDocTopType(docToptype) {
                 $('#docTopTypeValue').val(docToptype);
                 $('#docToptype').stbDropdown();
                 fnDocTypeColumn(docToptype);
-                searchBatchLearnDataList(addCond);   // 배치 학습 데이터 조회
+                
             } 
         }
     })       
 }
 
+function initChkBox() {
+    $("#listCheckAll_after").prop("checked", false);
+    $("#listCheckAll_after").closest('.ez-checkbox').removeClass('ez-checked');
+    $("#listCheckAll_before").prop("checked", false);
+    $("#listCheckAll_before").closest('.ez-checkbox').removeClass('ez-checked');
+}
 
 // init
 function _init() {
