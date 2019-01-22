@@ -3275,6 +3275,91 @@ router.post('/exportExcel', function (req, res) {
 
             }
 
+        } else if(docTopType == "40") {
+            worksheet.columns = [
+                { header: 'File', key: 'file' },
+                { header: 'companyName', key: 'companyName' },
+                { header: 'TotalAmount', key: 'TotalAmount' },
+                { header: 'Nation', key: 'Nation' },
+                { header: 'Taxes', key: 'Taxes' },
+                { header: 'GST', key: 'GST' },
+                { header: 'BilledTo', key: 'BilledTo' },
+                { header: 'ToAccountPayable', key: 'ToAccountPayable' },
+                { header: 'AccountName', key: 'AccountName' },
+                { header: 'Bankname', key: 'Bankname' },
+                { header: 'BankAccount', key: 'BankAccount' },
+                { header: 'AccountNo', key: 'AccountNo' },
+                { header: 'IBANCODE', key: 'IBANCODE' },
+                { header: 'Swift', key: 'Swift' },
+                { header: 'Bankaddress', key: 'Bankaddress' },
+                { header: 'BankCurrency', key: 'BankCurrency' },
+                { header: 'DueDate', key: 'DueDate' },
+                { header: 'paymentTerms', key: 'paymentTerms' },
+                { header: 'payableNet', key: 'payableNet' },
+                { header: 'quantity', key: 'quantity' },
+                { header: 'reference', key: 'reference' },
+                { header: 'description', key: 'description' },
+                { header: 'listPrice', key: 'listPrice' },
+                { header: 'UnitPrice', key: 'UnitPrice' },
+                { header: 'Amount', key: 'Amount' },
+                { header: 'VAT', key: 'VAT' },
+                { header: 'InvoiceNo', key: 'InvoiceNo' },
+                { header: 'DocDate', key: 'DocDate' },
+                { header: 'Currency', key: 'Currency' },
+
+            ];
+
+            for (var i = 0; i < imgId.length; i++) {
+                var filename = imgId[i].substring(imgId[i].lastIndexOf("/") + 1, imgId[i].length);
+
+                var result = sync.await(oracle.selectPoMlExport(filename, sync.defer()));
+
+                for (var j = 0; j < result.rows.length; j++) {
+                    var data = result.rows[j].EXPORTDATA;
+                    data = JSON.parse(data);
+                    var excelObj = {};
+                    excelObj.filename = filename;
+                    excelObj.companyName = (data[0] != "null" ? data[0]:"");
+                    excelObj.TotalAmount = (data[1] != "null" ? data[1] : "");
+                    excelObj.Nation = (data[2] != "null" ? data[2] : "");
+                    excelObj.Taxes = (data[3] != "null" ? data[3] : "");
+                    excelObj.GST = (data[4] != "null" ? data[4] : "");
+                    excelObj.BilledTo = (data[5] != "null" ? data[5] : "");
+                    excelObj.ToAccountPayable = (data[6] != "null" ? data[6] : "");
+                    excelObj.AccountName = (data[7] != "null" ? data[7] : "");
+                    excelObj.Bankname = (data[8] != "null" ? data[8] : "");
+                    excelObj.BankAccount = (data[9] != "null" ? data[9] : "");
+                    excelObj.AccountNo = (data[10] != "null" ? data[10] : "");
+                    excelObj.IBANCODE = (data[11] != "null" ? data[11] : "");
+                    excelObj.Swift = (data[12] != "null" ? data[12] : "");
+                    excelObj.Bankaddress = (data[13] != "null" ? data[13] : "");
+                    excelObj.BankCurrency = (data[14] != "null" ? data[14] : "");
+                    excelObj.DueDate = (data[15] != "null" ? data[15] : "");
+                    excelObj.paymentTerms = (data[16] != "null" ? data[16] : "");
+                    excelObj.payableNet = (data[17] != "null" ? data[17] : "");
+                    excelObj.quantity = (data[18] != "null" ? data[18] : "");
+                    excelObj.reference = (data[19] != "null" ? data[19] : "");
+                    excelObj.description = (data[20] != "null" ? data[20] : "");
+                    excelObj.listPrice = (data[21] != "null" ? data[21] : "");
+                    excelObj.UnitPrice = (data[22] != "null" ? data[22] : "");
+                    excelObj.Amount = (data[23] != "null" ? data[23] : "");
+                    excelObj.VAT = (data[24] != "null" ? data[24] : "");
+                    excelObj.InvoiceNo = (data[25] != "null" ? data[25] : "");
+                    excelObj.DocDate = (data[26] != "null" ? data[26] : "");
+                    excelObj.Currency = (data[27] != "null" ? data[27] : "");
+                    
+                    worksheet.addRow({
+                        file: excelObj.filename, companyName: excelObj.companyName, TotalAmount: excelObj.TotalAmount, Nation: excelObj.Nation,
+                        Taxes: excelObj.Taxes, GST: excelObj.GST, BilledTo: excelObj.BilledTo, ToAccountPayable: excelObj.ToAccountPayable,
+                        AccountName: excelObj.AccountName, Bankname: excelObj.Bankname, BankAccount: excelObj.BankAccount, AccountNo: excelObj.AccountNo,
+                        IBANCODE: excelObj.IBANCODE, Swift: excelObj.Swift, Bankaddress : excelObj.Bankaddress, BankCurrency: excelObj.BankCurrency,
+                        DueDate: excelObj.DueDate, paymentTerms: excelObj.paymentTerms, payableNet: excelObj.payableNet, quantity: excelObj.quantity,
+                        reference: excelObj.reference, description: excelObj.description, listPrice: excelObj.listPrice, UnitPrice: excelObj.UnitPrice,
+                        Amount: excelObj.Amount, VAT: excelObj.VAT, InvoiceNo: excelObj.InvoiceNo, DocDate: excelObj.DocDate, Currency: excelObj.Currency
+                    });
+                }
+            
+            }
         } else {
             worksheet.columns = [
                 { header: '파일명', key: 'fileName' },
