@@ -399,7 +399,7 @@ def colLblDefaultValue(data):
 if __name__ == '__main__':
     try:
         seqnum = sys.argv[1]
-        # seqnum = 428
+        #seqnum = 1591
 
         ocrData = bUtil.selectOcrData(seqnum)
 
@@ -419,7 +419,7 @@ if __name__ == '__main__':
         ocrData = getSid(ocrData)
 
         # 고정영역 추출
-        ocrData = bUtil.findFixLabel(ocrData)
+        #ocrData = bUtil.findFixLabel(ocrData)
 
         # ml studio 호출
         bUtil.requestML(ocrData)
@@ -429,11 +429,23 @@ if __name__ == '__main__':
         docTopType, docType = bUtil.findDocTopType(ocrData)
 
         # mappingSid 추출
-        ocrData = bUtil.getMappingSid(ocrData, docTopType)
+        ocrData = bUtil.getMappingSid(ocrData, docType)
 
         obj = {}
         if docTopType == 0:
-            obj["docCategory"] = selectDocCategory(0)
+            docTopType, docType = bUtil.refindDocTopType(ocrData)
+
+            if docTopType != 0:
+                # mappingSid 추출
+                ocrData = bUtil.getMappingSid(ocrData, docType)
+
+                # 가변영역추출
+                ocrData = bUtil.findEntry(ocrData, docTopType, docType)
+
+                # 주소부분추출
+                ocrData = bUtil.findDelivery(ocrData)
+
+            obj["docCategory"] = selectDocCategory(docType)
             obj["data"] = ocrData
         else :
             # 가변영역추출

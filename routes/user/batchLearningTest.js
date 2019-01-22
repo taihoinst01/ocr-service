@@ -2132,10 +2132,12 @@ function uiLearnTraining(filepath, callback) {
                     }
                 }
 
-            } else if (fileExt == "png") {
+            } else if (fileExt.toLowerCase() == "png") {
                 fullFilePath = filename + ".png";
+                fullFilePathList.push(fullFilePath);
             } else {
                 fullFilePath = filename + ".jpg";
+                fullFilePathList.push(fullFilePath);
             }
 
             var retDataList = [];
@@ -3551,7 +3553,7 @@ function batchLearnTraining(filepath, callback) {
 
             var fullFilePath = "";
             var fullFilePathList = [];
-            if (fileExt == "pdf") {
+            if (fileExt.toLowerCase() == "pdf") {
                 var fileCount = 0;
                 while(true){
                     if (exists(filename + "-" + fileCount + ".png")) {
@@ -3564,11 +3566,13 @@ function batchLearnTraining(filepath, callback) {
                         break;
                     }
                 }
-                
-            } else if (fileExt == "png") {
+
+            } else if (fileExt.toLowerCase() == "png") {
                 fullFilePath = filename + ".png";
+                fullFilePathList.push(fullFilePath);
             } else {
                 fullFilePath = filename + ".jpg";
+                fullFilePathList.push(fullFilePath);
             }
 
             var retData = {};

@@ -206,7 +206,7 @@ body.bg_login { background-image: url(../img/bg_login.png); width: 100%;height: 
 .content_sub_document_title_name { float: left; font: 600 15px 'NanumGothicR'; padding: 20px 0 0 0; }
 .float_right { float: right; }
 .ui_image_div { height: 535px !important; }
-#uiTrainBtn { padding-left: 0; min-width: 150px; }
+#uiTrainBtn { padding-left: 0; min-width: 100px; }
 #uiTrainBtn p { margin-top: 5px; }
 #imageBox span { text-align: center; }
 .page_ui { padding-top: 10px; }
@@ -5446,7 +5446,7 @@ label[disabled] {
 .ui_doc_pop_ipt, .ui_doc_pop_ipt3 {
 	width: 430px !important;
 	margin-right: 15px !important;
-	margin-left: 15px !important;
+	margin-left: 70px !important;
 	display: inline-table;
 }
 
@@ -5457,7 +5457,8 @@ label[disabled] {
 }
 
 .inputst_role2 {
-    display: inline-flex;
+	display: inline-flex;
+	margin-left: 50px !important;
 }
 
 .ui_doc_pop_div {

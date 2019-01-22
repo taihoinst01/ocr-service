@@ -204,7 +204,8 @@ function uploadConvert(files, callback) {
     var convertedImagePath = propertiesConfig.filepath.uploadsPath;
     console.time("file upload & convert");
     var fileObj = files;
-    var fileExt = fileObj.originalname.split('.')[1];
+    //var fileExt = fileObj.originalname.split('.')[1];
+    var fileExt = fileObj.originalname.substring(fileObj.originalname.lastIndexOf(".") + 1, fileObj.originalname.length);
 
     if (fileExt.toLowerCase() === 'tif' || fileExt.toLowerCase() === 'jpg') {
         var fileItem = {
@@ -215,7 +216,8 @@ function uploadConvert(files, callback) {
             convertFileName: fileObj.originalname.split('.')[0] + '.jpg',
             fileExt: fileExt,
             fileSize: fileObj.size,
-            contentType: fileObj.mimetype
+            contentType: fileObj.mimetype,
+            imgCount: 1
         };
         returnResult.fileInfo = fileItem;
 
@@ -223,7 +225,7 @@ function uploadConvert(files, callback) {
         returnResult.returnObj = fileItem.convertFileName;
 
         var ifile = convertedImagePath + fileObj.originalname;
-        var ofile = convertedImagePath + fileObj.originalname.split('.')[0] + '.jpg';
+        var ofile = convertedImagePath + fileObj.originalname.substring(0, fileObj.originalname.lastIndexOf(".")) + '.jpg';
         
         var result = execSync('module\\imageMagick\\convert.exe -colorspace Gray -density 800x800 ' + ifile + ' ' + ofile);
         if (result.status != 0) {
@@ -238,7 +240,8 @@ function uploadConvert(files, callback) {
             convertFileName: fileObj.originalname.split('.')[0] + '.png',
             fileExt: fileExt,
             fileSize: fileObj.size,
-            contentType: fileObj.mimetype
+            contentType: fileObj.mimetype,
+            imgCount: 1
         };
         returnResult.fileInfo = fileItem;
 
@@ -255,7 +258,7 @@ function uploadConvert(files, callback) {
 
 
         var ifile = convertedImagePath + fileObj.originalname;
-        var ofile = convertedImagePath + fileObj.originalname.split('.')[0] + '.pdf';
+        var ofile = convertedImagePath + fileObj.originalname.substring(0, fileObj.originalname.lastIndexOf(".")) + '.pdf';
 
         var convertPdf = '';
 
@@ -268,8 +271,8 @@ function uploadConvert(files, callback) {
             convertPdf = execSync('"C:/Program Files/LibreOffice/program/python.exe" C:/projectWork/ocrService/module/unoconv/unoconv.py -f pdf -o "' + ofile + '" "' + ifile + '"');
         }
 
-        ifile = convertedImagePath + fileObj.originalname.split('.')[0] + '.pdf';
-        ofile = convertedImagePath + fileObj.originalname.split('.')[0] + '.png';
+        ifile = convertedImagePath + fileObj.originalname.substring(0, fileObj.originalname.lastIndexOf(".")) + '.pdf';
+        ofile = convertedImagePath + fileObj.originalname.substring(0, fileObj.originalname.lastIndexOf(".")) + '.png';
 
         //file convert Pdf to Png
         if (convertPdf || fileExt.toLowerCase() === 'pdf') {
@@ -284,7 +287,7 @@ function uploadConvert(files, callback) {
 
             while (!isStop) {
                 try { // 하나의 파일 안의 여러 페이지면
-                    var convertFileFullPath = files.path.split('.')[0] + '-' + j + '.png';
+                    var convertFileFullPath = files.path.substring(0, files.path.lastIndexOf(".")) + '-' + j + '.png';
                     var stat = fs.statSync(convertFileFullPath);
                     if (stat) {
                         var fileItem = {
@@ -307,7 +310,7 @@ function uploadConvert(files, callback) {
                     }
                 } catch (err) { // 하나의 파일 안의 한 페이지면
                     try {
-                        var convertFileFullPath = files.path.split('.')[0] + '.png';
+                        var convertFileFullPath = files.path.substring(0, files.path.lastIndexOf(".")) + '.png';
                         var stat2 = fs.statSync(convertFileFullPath);
                         if (stat2) {
                             var fileItem = {
@@ -450,6 +453,7 @@ router.post('/modifyBatchUiTextData', function (req, res) {
     var afterData = req.body.afterData;
     //var filepath = req.body.beforeData.fileinfo.filepath;
     var docTopType = beforeData.docCategory.DOCTOPTYPE;
+    var docType = beforeData.docCategory.DOCTYPE;
     var returnObj;
     sync.fiber(function () {
         try {
@@ -469,7 +473,7 @@ router.post('/modifyBatchUiTextData', function (req, res) {
                         afterData.data[i].sid = sync.await(oracle.selectSid(beforeData.data[j], sync.defer()));
                         //라벨이 변경된 경우만 트레이닝 insert
                         if ((afterData.data[i].colLbl != beforeData.data[j].colLbl && beforeData.data[j].colLbl >= -1) || (beforeData.data[j].entryLbl != afterData.data[i].colLbl && beforeData.data[j].entryLbl > 0)) {
-                            sync.await(oracle.insertBatchColumnMapping(afterData.data[i], docTopType, beforeData.data[j], sync.defer()));
+                            sync.await(oracle.insertBatchColumnMapping(afterData.data[i], docType, beforeData.data[j], sync.defer()));
                         }
                     }
                 }

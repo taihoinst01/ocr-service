@@ -29,7 +29,8 @@ function insertDoctypeMapping(req, done) {
             var data = req
             let topSentenses = []; // 문서판별을 위한 문장
             var similarSentences = [];
-            var docType;
+			var docType;
+			var docTopType;
             var convertedFilepath;
             var bannedWord;
 
@@ -70,8 +71,10 @@ function insertDoctypeMapping(req, done) {
                 convertedFilepath = copyFile(data.filepath, docType);
 
                 //20180911 TBL_FORM_MAPPING 에 5개문장의 sid 와 doctype값 insert
-                //insertFormMapping(topSentenses, docType);
-                insertDocumentSentence(similarSentences, docType, similarSentences.length);
+				//insertFormMapping(topSentenses, docType);
+				console.log(data.docTopType);
+				docTopType = data.docTopType;
+				insertDocumentSentence(similarSentences, docType, similarSentences.length, docTopType);
             } else if (data.radioType == '3') {
                 docType = selectDocCategoryFromDocName(data);
                 //insertNotInvoce(topSentenses, docType);
@@ -235,14 +238,15 @@ function insertNotInvoce(topSentenses, docType) {
     }
 }
 
-function insertDocumentSentence(topSentenses, docType, length) {
+function insertDocumentSentence(topSentenses, docType, length, docTopType) {
     try {
         var regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi;
         var text = "";
         for (var i in topSentenses) {
             text += topSentenses[i].text.replace(regExp, '') + ",";
-        }
-        sync.await(oracle.insertDocumentSentence([text.slice(0, -1), docType, length], sync.defer()));
+		}
+		console.log(docTopType);
+		sync.await(oracle.insertDocumentSentence([text.slice(0, -1), docType, length, docTopType], sync.defer()));
     } catch (e) {
         throw e;
     }

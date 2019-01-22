@@ -390,6 +390,61 @@ def checkVerticalMid(entLoc, lblLoc):
     except Exception as e:
         raise Exception(str({'code': 500, 'message': 'checkVerticalEntry fail',
                          'error': str(e).replace("'", "").replace('"', '')}))
+def checkVerticalHarman(entLoc, lblLoc):
+    try:
+        lblwidthLoc = (int(lblLoc[3]) + int(lblLoc[1])) / 2
+        entwidthLoc = (int(entLoc[3]) + int(entLoc[1])) / 2
+        # entryLabel이 오른쪽에서 가까울 경우 제외
+        if -70 < entwidthLoc - lblwidthLoc < 40:
+            return True
+        else:
+            return False
+
+    except Exception as e:
+        raise Exception(str({'code': 500, 'message': 'checkVerticalEntry fail',
+                         'error': str(e).replace("'", "").replace('"', '')}))
+
+def checkVerticalFictive(entLoc, lblLoc):
+    try:
+        lblwidthLoc = (int(lblLoc[3]) + int(lblLoc[1])) / 2
+        entwidthLoc = (int(entLoc[3]) + int(entLoc[1])) / 2
+        # entryLabel이 오른쪽에서 가까울 경우 제외
+        if -70 < entwidthLoc - lblwidthLoc < 400:
+            return True
+        else:
+            return False
+
+    except Exception as e:
+        raise Exception(str({'code': 500, 'message': 'checkVerticalEntry fail',
+                         'error': str(e).replace("'", "").replace('"', '')}))
+
+def checkVerticalInvoice01(entLoc, lblLoc):
+    try:
+        lblwidthLoc = (int(lblLoc[3]) + int(lblLoc[1])) / 2
+        entwidthLoc = (int(entLoc[3]) + int(entLoc[1])) / 2
+        # entryLabel이 오른쪽에서 가까울 경우 제외
+        if -200 < entwidthLoc - lblwidthLoc < 100:
+            return True
+        else:
+            return False
+
+    except Exception as e:
+        raise Exception(str({'code': 500, 'message': 'checkVerticalEntry fail',
+                         'error': str(e).replace("'", "").replace('"', '')}))
+
+def checkVerticalSpringer(entLoc, lblLoc, minus, plus):
+    try:
+        lblwidthLoc = (int(lblLoc[3]) + int(lblLoc[1])) / 2
+        entwidthLoc = (int(entLoc[3]) + int(entLoc[1])) / 2
+        # entryLabel이 오른쪽에서 가까울 경우 제외
+        if minus < entwidthLoc - lblwidthLoc < plus:
+            return True
+        else:
+            return False
+
+    except Exception as e:
+        raise Exception(str({'code': 500, 'message': 'checkVerticalEntry fail',
+                         'error': str(e).replace("'", "").replace('"', '')}))
 
 def selectLabelBehaviorDrug(label, entryLabel):
     try:
@@ -541,12 +596,12 @@ def findEntry(ocrData, docTopType, docType):
         if docType == 7:
             lineCheck = True
             for item in ocrData:
-                if item["text"].lower == "line":
+                if item["text"].lower() == "line":
                     lineCheck = False
                     break
 
             if lineCheck:
-                data = {'location':'182,1223,90,26','text':'LINE','originText':'LINE','sid':'99624,0,0,0,0','mappingSid':'37,182,1223,272,99624,0,0,0,0'}
+                data = {'location':'182,1223,90,26','text':'LINE','originText':'LINE','sid':'99624,0,0,0,0','mappingSid':'7,182,1223,272,99624,0,0,0,0'}
                 ocrData.append(data)
 
         elif docType == 6:
@@ -577,44 +632,44 @@ def findEntry(ocrData, docTopType, docType):
 
             if descriptionChek:
                 if serialCheck:
-                    data = {'location': '341,1274,107,24', 'text': 'Item No', 'originText': 'Item No', 'sid': '99798,97435,0,0,0', 'mappingSid': '37,341,1274,448,99798,97435,0,0,0'}
+                    data = {'location': '341,1274,107,24', 'text': 'Item No', 'originText': 'Item No', 'sid': '99798,97435,0,0,0', 'mappingSid': '6,341,1274,448,99798,97435,0,0,0'}
                     ocrData.append(data)
                 if materialCheck:
-                    data = {'location': '517,1274,152,24', 'text': 'Item Code', 'originText': 'Item Code', 'sid': '99798,99596,0,0,0', 'mappingSid': '37,517,1274,669,99798,99596,0,0,0'}
+                    data = {'location': '517,1274,152,24', 'text': 'Item Code', 'originText': 'Item Code', 'sid': '99798,99596,0,0,0', 'mappingSid': '6,517,1274,669,99798,99596,0,0,0'}
                     ocrData.append(data)
                 if quantityCheck:
-                    data = {'location': '1554,1272,127,30', 'text': 'Quantity', 'originText': 'Quantity', 'sid': '99588,0,0,0,0','mappingSid': '37,1554,1272,1681,99588,0,0,0,0'}
+                    data = {'location': '1554,1272,127,30', 'text': 'Quantity', 'originText': 'Quantity', 'sid': '99588,0,0,0,0','mappingSid': '6,1554,1272,1681,99588,0,0,0,0'}
                     ocrData.append(data)
                 if unitPriceCheck:
-                    data = {'location': '1807,1272,146,23', 'text': 'Unit Price', 'originText': 'Unit Price', 'sid': '99587,99507,0,0,0', 'mappingSid': '37,1807,1272,1953,99587,99507,0,0,0'}
+                    data = {'location': '1807,1272,146,23', 'text': 'Unit Price', 'originText': 'Unit Price', 'sid': '99587,99507,0,0,0', 'mappingSid': '6,1807,1272,1953,99587,99507,0,0,0'}
                     ocrData.append(data)
                 if reqDateCheck:
-                    data = {'location': '2051,1271,200,30', 'text': 'Delivery Date', 'originText': 'Delivery Date', 'sid': '99552,97436,0,0,0', 'mappingSid': '37,2051,1271,2251,99552,97436,0,0,0'}
+                    data = {'location': '2051,1271,200,30', 'text': 'Delivery Date', 'originText': 'Delivery Date', 'sid': '99552,97436,0,0,0', 'mappingSid': '6,2051,1271,2251,99552,97436,0,0,0'}
                     ocrData.append(data)
             else:
                 if serialCheck:
                     location = str(int(desLoc[0]) - 709) + "," + desLoc[1] + ",107,24"
-                    mapping = "37," + str(int(desLoc[0]) - 709) + "," + desLoc[1] + "," + str(int(desLoc[0]) - 709 + 197) + ",99798,97435,0,0,0"
+                    mapping = "6," + str(int(desLoc[0]) - 709) + "," + desLoc[1] + "," + str(int(desLoc[0]) - 709 + 197) + ",99798,97435,0,0,0"
                     data = {'location': location, 'text': 'Item No', 'originText': 'Item No', 'sid': '99798,97435,0,0,0', 'mappingSid': mapping}
                     ocrData.append(data)
                 if materialCheck:
                     location = str(int(desLoc[0]) - 532) + "," + desLoc[1] + ",152,24"
-                    mapping = "37," + str(int(desLoc[0]) - 532) + "," + desLoc[1] + "," + str(int(desLoc[0]) - 532 + 152) + ",99798,99596,0,0,0"
+                    mapping = "6," + str(int(desLoc[0]) - 532) + "," + desLoc[1] + "," + str(int(desLoc[0]) - 532 + 152) + ",99798,99596,0,0,0"
                     data = {'location': location, 'text': 'Item Code', 'originText': 'Item Code', 'sid': '99798,99596,0,0,0', 'mappingSid': mapping}
                     ocrData.append(data)
                 if quantityCheck:
                     location = str(int(desLoc[0]) + 512) + "," + desLoc[1] + ",127,30"
-                    mapping = "37," + str(int(desLoc[0]) + 512) + "," + desLoc[1] + "," + str(int(desLoc[0]) + 512 + 127) + ",99588,0,0,0,0"
+                    mapping = "6," + str(int(desLoc[0]) + 512) + "," + desLoc[1] + "," + str(int(desLoc[0]) + 512 + 127) + ",99588,0,0,0,0"
                     data = {'location': location, 'text': 'Quantity', 'originText': 'Quantity', 'sid': '99588,0,0,0,0','mappingSid': mapping}
                     ocrData.append(data)
                 if unitPriceCheck:
                     location = str(int(desLoc[0]) + 766) + "," + desLoc[1] + ",146,23"
-                    mapping = "37," + str(int(desLoc[0]) + 766) + "," + desLoc[1] + "," + str(int(desLoc[0]) + 766 + 146) + ",99587,99507,0,0,0"
+                    mapping = "6," + str(int(desLoc[0]) + 766) + "," + desLoc[1] + "," + str(int(desLoc[0]) + 766 + 146) + ",99587,99507,0,0,0"
                     data = {'location': location, 'text': 'Unit Price', 'originText': 'Unit Price', 'sid': '99587,99507,0,0,0', 'mappingSid': mapping}
                     ocrData.append(data)
                 if reqDateCheck:
                     location = str(int(desLoc[0]) + 1012) + "," + desLoc[1] + ",200,30"
-                    mapping = "37," + str(int(desLoc[0]) + 1012) + "," + desLoc[1] + "," + str(int(desLoc[0]) + 1012 + 200) + ",99552,97436,0,0,0"
+                    mapping = "6," + str(int(desLoc[0]) + 1012) + "," + desLoc[1] + "," + str(int(desLoc[0]) + 1012 + 200) + ",99552,97436,0,0,0"
                     data = {'location': location, 'text': 'Delivery Date', 'originText': 'Delivery Date', 'sid': '99552,97436,0,0,0', 'mappingSid': mapping}
                     ocrData.append(data)
         elif docType == 5:
@@ -628,7 +683,7 @@ def findEntry(ocrData, docTopType, docType):
                             item["text"] = "Delivery Date"
                             item["colLbl"] = "230"
                             ocrData = getSid(ocrData)
-                            ocrData = getMappingSid(ocrData,docTopType)
+                            ocrData = getMappingSid(ocrData,docType)
                             break
                 elif item["text"].lower() == "L ne".lower() or item["text"].lower() == "L!ne I".lower():
                     item["text"] = "Line"
@@ -692,9 +747,15 @@ def findEntry(ocrData, docTopType, docType):
                                   "mappingSid":item["mappingSid"]}
 
                         ocrData.append(toData)
+                elif item["text"] == "I ,445.32":
+                    item["text"] = "1,445.32"
+                elif item["text"] == "IO":
+                    item["text"] = "10"
+                elif item["text"] == "Cl-IF":
+                    item["text"] = "CHF"
 
             ocrData = getSid(ocrData)
-            ocrData = getMappingSid(ocrData, docTopType)
+            ocrData = getMappingSid(ocrData, docType)
 
         labelSql = "SELECT * FROM TBL_ICR_LABEL_DEF WHERE DOCID = :docid"
         curs.execute(labelSql, {"docid":str(docTopType)})
@@ -722,7 +783,7 @@ def findEntry(ocrData, docTopType, docType):
             if labelRow[4] == 'P':
                 variLabel.append(labelRow[0])
 
-        trainSql = "SELECT * FROM TBL_BATCH_COLUMN_MAPPING_TRAIN WHERE data LIKE '" + str(docTopType) + "%'"
+        trainSql = "SELECT * FROM TBL_BATCH_COLUMN_MAPPING_TRAIN WHERE data LIKE '" + str(docType) + ",%'"
         curs.execute(trainSql)
         trainRows = curs.fetchall()
 
@@ -743,7 +804,7 @@ def findEntry(ocrData, docTopType, docType):
                 trainData = trainRow[1].split(",")
 
                 # fix Label mapping
-                if mappingSid[4:] == trainData[4:] and int(trainRow[2]) in fixLabel:
+                if (mappingSid[0] == trainData[0]) and mappingSid[4:] == trainData[4:] and int(trainRow[2]) in fixLabel:
                     item["colLbl"] = trainRow[2]
                 # variable Label mapping
                 # 문서종류 and (Y좌표 뭉 (X좌표 or 넓이))
@@ -819,6 +880,29 @@ def findEntry(ocrData, docTopType, docType):
                                     materialCheck -= 1
 
                             preVerticalLoc = int(entrySid[2])
+                    elif docType == 21:
+                        if p.match(entry["text"]) and int(mappingSid[2]) < int(entrySid[2]) and "colLbl" not in entry and item["text"] != entry["text"]:
+                            if int(entrySid[2]) < 2000:
+                                # description
+                                if item["colLbl"] == "283" and checkVerticalSpringer(entrySid, mappingSid, -50, 300):
+                                    if "springer journals" in entry["text"].lower():
+                                        entry["entryLbl"] = item["colLbl"]
+                                # list price
+                                elif item["colLbl"] == "284" and checkVerticalSpringer(entrySid, mappingSid, -90, 50):
+                                    entry["entryLbl"] = item["colLbl"]
+                                elif checkVerticalSpringer(entrySid, mappingSid, -60, 60):
+                                    entry["entryLbl"] = item["colLbl"]
+                    elif docType == 19:
+                        if p.match(entry["text"]) and checkVerticalInvoice01(entrySid, mappingSid) and int(mappingSid[2]) < int(entrySid[2]) and "colLbl" not in entry and item["text"] != entry["text"]:
+                            entry["entryLbl"] = item["colLbl"]
+                    elif docType == 17:
+                        if p.match(entry["text"]) and checkVerticalFictive(entrySid, mappingSid) and int(mappingSid[2]) < int(entrySid[2]) and "colLbl" not in entry and item["text"] != entry["text"]:
+                            if int(entrySid[2]) < 1350:
+                                entry["entryLbl"] = item["colLbl"]
+                    elif docType == 14:
+                        if p.match(entry["text"]) and checkVerticalHarman(entrySid, mappingSid) and int(mappingSid[2]) < int(entrySid[2]) and "colLbl" not in entry and item["text"] != entry["text"]:
+                            if int(entrySid[2]) < 1550:
+                                entry["entryLbl"] = item["colLbl"]
 
                     elif p.match(entry["text"]) and checkVertical(entrySid, mappingSid) and int(mappingSid[2]) -15 < int(entrySid[2]) and "colLbl" not in entry and item["text"] != entry["text"]:
 
@@ -836,6 +920,9 @@ def findEntry(ocrData, docTopType, docType):
                                 elif len(text) == 2:
                                     entry["text"] = text[0]
                                     entry["entryLbl"] = item["colLbl"]
+                            elif docType == 9:
+                                if int(entrySid[2]) < 1350:
+                                    entry["entryLbl"] = item["colLbl"]
                             else :
                                 entry["entryLbl"] = item["colLbl"]
 
@@ -844,6 +931,9 @@ def findEntry(ocrData, docTopType, docType):
                         elif docType == 6 and item["text"].lower() == "item code" and int(item["colLbl"]) == 228 and not (int(entrySid[2]) - preVerticalLoc > 700):
                             entry["entryLbl"] = item["colLbl"]
                             preVerticalLoc = int(entrySid[2])
+                        elif docType == 9:
+                            if int(entrySid[2]) < 1358:
+                                entry["entryLbl"] = item["colLbl"]
 
         # single entry 추출
         for item in ocrData:
@@ -948,6 +1038,10 @@ def findEntry(ocrData, docTopType, docType):
                 elif text.lower() == "exerfis uk ltd":
                     item["entryLbl"] = "221"
                     item["text"] = "Exertis (UK) Ltd"
+        elif docType == 14:
+            for item in ocrData:
+                if 'entryLbl' in item and item["text"].lower() == "delivery" and item["entryLbl"] == "286":
+                    del item["entryLbl"]
 
         return ocrData
     except Exception as e:
@@ -995,6 +1089,59 @@ def findDocType(ocrData):
         else:
             return ''
 
+    except Exception as ex:
+        raise Exception(str({'code': 500, 'message': 'findDocType error',
+                             'error': str(ex).replace("'", "").replace('"', '')}))
+
+def refindDocTopType(ocrData):
+    try:
+        docTopType = 0
+        docType = 0
+
+        sql = "SELECT DATA, DOCTYPE, DOCTOPTYPE, SENTENCELENGTH FROM TBL_DOCUMENT_SENTENCE"
+        curs.execute(sql)
+        sentenceRows = curs.fetchall()
+        maxNum = 0
+        text = [];
+        strText = ''
+        for sentenceRow in sentenceRows:
+            data = sentenceRow[1]
+
+        for item in ocrData:
+            text.append(re.sub(regExp, "", item["text"]))
+            strText = ",".join(str(x) for x in text)
+
+        #strText = re.sub("[-|:|,|.|/|*]", "", strText.lower());
+        for rows in sentenceRows:
+            #print(re.sub("[-|:|.|/|*]", "", strText.lower()))
+            #print(re.sub("[-|:|.|/|*| ]", "", rows[0]))
+            ratio = similar(strText.lower(), rows[0])
+
+            #print(ratio)
+            if ratio > maxNum:
+                maxNum = ratio
+                doctype = rows[1]
+                doctoptype = rows[2]
+            #print(maxNum)
+        if maxNum > 0.2:
+            return int(doctoptype),int(doctype)
+        else:
+            return docTopType,doctype
+
+                #if data.lower() == text.lower():
+                #   docType = int(sentenceRow[2])
+                #    break
+
+            #if docType > 0:
+            #    break
+
+        #if docType > 0:
+        #    docTopTypeSql = "SELECT * FROM TBL_DOCUMENT_CATEGORY WHERE DOCTYPE = :doctype"
+        #    curs.execute(docTopTypeSql,{"doctype":docType})
+        #    docTopTypeRows = curs.fetchall()
+        #    docTopType = docTopTypeRows[0][4]
+
+        #return docTopType, docType
     except Exception as ex:
         raise Exception(str({'code': 500, 'message': 'findDocType error',
                              'error': str(ex).replace("'", "").replace('"', '')}))
@@ -1053,6 +1200,10 @@ def findDelivery(ocrData):
                 elif item["text"].lower() == "MVN - Betrieb Neuendorf".lower():
                     item["text"] = "MVN Betrieb Neuendorf 4623 Neuendorf"
                 elif item["text"].lower() == "Exert is Warehouse (Altham)".lower():
+                    item["text"] = "Exertis Warehouse (Altham) Shorten Brook Way Altham Business Park Altham Accrington, Lancashire, BB5 5YJ United Kingdom"
+                elif item["text"].lower() == "Exert is Warehouse (Al tham)".lower():
+                    item["text"] = "Exertis Warehouse (Altham) Shorten Brook Way Altham Business Park Altham Accrington, Lancashire, BB5 5YJ United Kingdom"
+                elif item["text"].lower() == "Exerti s Warehouse (Altham)".lower():
                     item["text"] = "Exertis Warehouse (Altham) Shorten Brook Way Altham Business Park Altham Accrington, Lancashire, BB5 5YJ United Kingdom"
                 elif item["text"].lower() == "Vohkus Ltd".lower():
                     item["text"] = "Vohkus Ltd Centurion House Unit 12 Barnes Wallis Road SEGENSWORTH Hampshire PO15 5TT"
