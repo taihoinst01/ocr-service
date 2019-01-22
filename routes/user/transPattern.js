@@ -67,44 +67,93 @@ function convertedEntry(reqArr, done) {
             console.log(reqArr)
             var docName = reqArr.docCategory.DOCNAME;
             var data = reqArr.data;
-   
+            var docToptype = reqArr.docCategory.DOCTOPTYPE;
+
             for(var i = 0; i < data.length; i ++) {
                 var entryLbl = data[i].entryLbl;
                 var originText = data[i].originText;
                 var convertText;
 
-                if(docName == 'Migros') {
+                // PO
+                if(docToptype == 37) {
+                    
+                    if(docName == 'Migros') {
+    
+                    } else if(docName == 'Exertise') {
+    
+                        var convertPOdate;
+                        var convertPOdataArray;
+                        // PODATE
+                        if (entryLbl == 223) {
+                            convertPOdataArray = originText.split(/ /gi);
+                            convertPOdate = convertPOdataArray[0] + "-" + convertPOdataArray[1] + "-" + convertPOdataArray[2].substring(2, 4);
+                            data[i].text = convertPOdate;
+                            //console.log("data.text: " + data.text);
+                            //console.log("reqArr.text: " + typeof (reqArr));
+                        }
+    
+                    } else if(docName == 'Westcoast') {
+                        
+                        // PODATE
+                        if(entryLbl == 223){
+                            // 공백제거
+                            convertText = originText.replace(/ /gi, "");
+                            data[i].text = convertText;
+                        }
+    
+                        // Currency
+                        if(entryLbl == 227) {
+                            // Value GBP - > GBP 로 변경
+                            convertText = originText.substring(originText.search("GBP"));
+                            data[i].text = convertText;
+                        }
+                    } else if(docName == 'Midwich') {
+    
+                    } 
+                }
+                
+                // AP
+                if(docToptype == 40) {
 
-                } else if(docName == 'Exertise') {
-
-					var convertPOdate;
-					var convertPOdataArray;
-					// PODATE
-					if (entryLbl == 223) {
-						convertPOdataArray = originText.split(/ /gi);
-						convertPOdate = convertPOdataArray[0] + "-" + convertPOdataArray[1] + "-" + convertPOdataArray[2].substring(2, 4);
-						data[i].text = convertPOdate;
-						//console.log("data.text: " + data.text);
-						//console.log("reqArr.text: " + typeof (reqArr));
-					}
-
-                } else if(docName == 'Westcoast') {
-                    // PODATE
-                    if(entryLbl == 223){
-                        // 공백제거
-                        convertText = originText.replace(/ /gi, "");
+                    // AP 공통
+                    // TotalAmount
+                    if(entryLbl == 264) {
+                        var pattern = /[^0-9\.,]+/g;
+                        convertText = originText.replace(pattern, '');
                         data[i].text = convertText;
                     }
 
-                    // Currency
-                    if(entryLbl == 227) {
-                        // Value GBP - > GBP 로 변경
-                        convertText = originText.substring(originText.search("GBP"));
-                        data[i].text = convertText;
+                    //개별
+                    if(docName == 'FictiveKin') {
+
+                        // Nation
+                        if(entryLbl == 265) {
+                            if(originText.split(':')[1] != undefined) {
+                                convertText = originText.split(':')[1].trim();
+                                data[i].text = convertText;
+                            }
+                        }
+                    } else if(docName == 'CheilPengTai') {
+                        
+                        // AccountNo
+                        if(entryLbl == 273) {
+                            var pattern = /[^0-9\-]+/g;
+                            convertText = originText.replace(pattern, '');
+                            data[i].text = convertText;
+                        }
+                    } else if(docName == 'SamsungInvoice01') {
+                        
+                        // IBANCODE
+                        if(entryLbl == 274) {
+                            if(originText.split(':')[1] != undefined) {
+                                convertText = originText.split(':')[1].trim();
+                                data[i].text = convertText;
+                            }
+                        }
                     }
-                } else if(docName == 'Midwich') {
 
                 }
+                
             }
             
         } catch (e) {

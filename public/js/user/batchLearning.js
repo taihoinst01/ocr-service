@@ -1408,10 +1408,10 @@ var searchBatchLearnDataList = function (addCond, page) {
                                 }  
                             } 
                             if(hasAnswerData == false) {
-                                appendAnswerDataHtml += '<tr class="answerTr"><td colspan="' + colspanLength + '"></td></tr>';
+                                appendAnswerDataHtml += '<tr class="answerTr" data-rowNum="' + i + '"><td colspan="' + colspanLength + '"></td></tr>';
                             }
                         } else {
-                            appendAnswerDataHtml += '<tr class="answerTr"><td colspan="' + colspanLength + '"></td></tr>';
+                            appendAnswerDataHtml += '<tr class="answerTr" data-rowNum="' + i + '"><td colspan="' + colspanLength + '"></td></tr>';
                         }
                         appendRightContentsHtml += appendAnswerDataHtml;
                     }
@@ -1439,7 +1439,7 @@ var searchBatchLearnDataList = function (addCond, page) {
 
                 $('#batch_left_contents_after tr').each(function(index){
                     var length = $('#batch_right_contents_after tr[data-rowNum=' + index + ']').length;
-                    $(this).css('height', length == 0 ? '30px' : ((length * 30) + 30) + 'px' );
+                    $(this).css('height', length == 0 ? '30px' : ((length * 30)) + 'px' );
                     
                 })                            
             }
