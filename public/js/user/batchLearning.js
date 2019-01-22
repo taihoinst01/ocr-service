@@ -1356,7 +1356,6 @@ var searchBatchLearnDataList = function (addCond, page) {
             
             if (list.length != 0) {
                 for (var i = 0; i < list.length; i++) {
-                    //var rows = list[i].rows;
                     
                     var fileName = nvl(list[i].FILEPATH.substring((list[i].FILEPATH.lastIndexOf('/') + 1) ));
                     if (addCond == "LEARN_N") checkboxHtml = '<td scope="row"><div class="checkbox-options mauto"><input type="checkbox" value="' + nvl(list[i].FILEPATH) + '" class="sta00" name="listCheck_before" /></td>';
@@ -1368,10 +1367,7 @@ var searchBatchLearnDataList = function (addCond, page) {
                                             'href = "javascript:void(0);" >' + fileName + '</a ></td >' +                                                
                                             '<td></td>' +
                                             '</tr>';
-
-                    //appendRightContentsHtml += '<tr class="rowNum' + i + '" style="height:' + (trHeight + 12) + 'px;"><td colspan="36"></td></tr>'
-                    
-                    
+                                    
                     //mldata tr만들기
                     var mlDataList = data.mlDataList;
                     var appendMlExprotDataHtml = '';
@@ -1433,33 +1429,19 @@ var searchBatchLearnDataList = function (addCond, page) {
                 
                 $('#batch_left_contents_before tr').each(function(index){
                     var length = $('#batch_right_contents_before tr[data-rowNum=' + index + ']').length;
-
                     $(this).css('height', length == 0 ? '30px' : (length * 30) + 'px' );
 
                 })
-                //$("#tbody_batchList_before").empty().append(appendHtml);
-                //compareMLAndAnswer(data);
+
             } else {
                 $('#batch_left_contents_after').empty().append(appendLeftContentsHtml);
                 $('#batch_right_contents_after').empty().append(appendRightContentsHtml);
 
                 $('#batch_left_contents_after tr').each(function(index){
-                    //console.log('index: ' + index);
                     var length = $('#batch_right_contents_after tr[data-rowNum=' + index + ']').length;
-                    //console.log("row: " + $('#batch_right_contents_after tr[data-rowNum=' + index + ']').length);
-                    // var leftFilename = $(this).find('td:eq(1) a').text();
-                    // var length = 0;
-                    // $('#batch_right_contents_after .answerTr').each(function(){
-                    //     var rightFilename = $(this).attr('data-filename');
-                    //     if(rightFilename == leftFilename) {
-                    //         length++;
-                    //     }
-                    // })
-
-                    $(this).css('height', length == 0 ? '30px' : (length * 30) + 'px' );
+                    $(this).css('height', length == 0 ? '30px' : ((length * 30) + 30) + 'px' );
                     
-                })               
-                //$("#tbody_batchList_after").empty().append(appendHtml);               
+                })                            
             }
             $('.batch_tbl_right_divBodyScroll').scrollTop(0).scrollLeft(0);
             checkboxEvent(); // refresh checkbox event
