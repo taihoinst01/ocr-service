@@ -1166,152 +1166,384 @@ exports.insertSamMLData = function (filepath, imgid, done) {
             let selMlExportRes = await conn.execute(selMlExportSql);
             let selRes = await conn.execute(selSql, [imgid]);
 
-            var itemList = new Array(0,0,0,0,0,0);
+            if (selRes.rows[0].DOCTOPTYPE == "40") {
+                var itemList = new Array(0, 0, 0, 0, 0, 0, 0);
 
-            var mlObj = {};
-            var poMlList = [];
-            for (var i = 0; i < selMlExportRes.rows.length; i++) {
-                console.log(selMlExportRes.rows[i]);
-                var data = selMlExportRes.rows[i];
-                if (data.ENTRYLABEL == "234") {
-                    itemList[0]++;
-                } else if (data.ENTRYLABEL == "228") {
-                    itemList[1]++;
-                } else if (data.ENTRYLABEL == "229") {
-                    itemList[2]++;
-                } else if (data.ENTRYLABEL == "231") {
-                    itemList[3]++;
-                } else if (data.ENTRYLABEL == "232") {
-                    itemList[4]++;
-                } else if (data.ENTRYLABEL == "233") {
-                    itemList[5]++;
-                } else if (data.ENTRYLABEL == "221") {
-                    mlObj.buyer = data.COLVALUE;
-                } else if (data.ENTRYLABEL == "222") {
-                    mlObj.poNumber = data.COLVALUE;
-                } else if (data.ENTRYLABEL == "223") {
-                    mlObj.poDate = data.COLVALUE;
-                } else if (data.ENTRYLABEL == "224") {
-                    mlObj.deliveryAddress = data.COLVALUE;
-                } else if (data.ENTRYLABEL == "226") {
-                    mlObj.totalPrice = data.COLVALUE;
-                } else if (data.ENTRYLABEL == "227") {
-                    mlObj.currency = data.COLVALUE;
-                } else if (data.ENTRYLABEL == "230") {
-                    mlObj.requestDeliveryDate = data.COLVALUE;
-                }
-            }
-
-            var itemMax = Math.max.apply(null, itemList);
-            var entryLbl = 0;
-
-            for (var i = 0; i < itemList.length; i++) {
-                if (itemList[i] == itemMax) {
-                    if (i == 0) {
-                        entryLbl = "234";
-                    } else if (i == 1) {
-                        entryLbl = "228";
-                    } else if (i == 2) {
-                        entryLbl = "229";
-                    } else if (i == 3) {
-                        entryLbl = "231";
-                    } else if (i == 4) {
-                        entryLbl = "232";
-                    } else if (i == 5) {
-                        entryLbl = "233";
-                    }
-                    break;
-                }
-            }
-
-            var mlList = [];
-
-            if (entryLbl != 0) {
-                for (var i = 0; i < selMlExportRes.rows.length; i++) {
-                    var data = selMlExportRes.rows[i];
-
-                    if (data.ENTRYLABEL == entryLbl) {
-                        var list = [];
-                        list.push(data);
-                        mlList.push(list);
-                    }
-                }
+                var mlObj = {};
+                var poMlList = [];
 
                 for (var i = 0; i < selMlExportRes.rows.length; i++) {
                     var data = selMlExportRes.rows[i];
-                    if (data.ENTRYLABEL != entryLbl && data.ENTRYLABEL != "230") {
-                        var mappingSid = data.LOCATION.split(",");
+                    if (data.ENTRYLABEL == "281") {
+                        itemList[0]++;
+                    } else if (data.ENTRYLABEL == "282") {
+                        itemList[1]++;
+                    } else if (data.ENTRYLABEL == "283") {
+                        itemList[2]++;
+                    } else if (data.ENTRYLABEL == "284") {
+                        itemList[3]++;
+                    } else if (data.ENTRYLABEL == "285") {
+                        itemList[4]++;
+                    } else if (data.ENTRYLABEL == "286") {
+                        itemList[5]++;
+                    } else if (data.ENTRYLABEL == "287") {
+                        itemList[6]++;
+                    } else if (data.ENTRYLABEL == "263") {
+                        mlObj.companyName = data.COLVALUE;
+                    } else if (data.ENTRYLABEL == "264") {
+                        mlObj.TotalAmount = data.COLVALUE;
+                    } else if (data.ENTRYLABEL == "265") {
+                        mlObj.Nation = data.COLVALUE;
+                    } else if (data.ENTRYLABEL == "266") {
+                        mlObj.Taxes = data.COLVALUE;
+                    } else if (data.ENTRYLABEL == "267") {
+                        mlObj.GST = data.COLVALUE;
+                    } else if (data.ENTRYLABEL == "268") {
+                        mlObj.BilledTo = data.COLVALUE;
+                    } else if (data.ENTRYLABEL == "269") {
+                        mlObj.ToAccountPayable = data.COLVALUE;
+                    } else if (data.ENTRYLABEL == "270") {
+                        mlObj.AccountName = data.COLVALUE;
+                    } else if (data.ENTRYLABEL == "271") {
+                        mlObj.Bankname = data.COLVALUE;
+                    } else if (data.ENTRYLABEL == "272") {
+                        mlObj.BankAccount = data.COLVALUE;
+                    } else if (data.ENTRYLABEL == "273") {
+                        mlObj.AccountNo = data.COLVALUE;
+                    } else if (data.ENTRYLABEL == "274") {
+                        mlObj.IBANCODE = data.COLVALUE;
+                    } else if (data.ENTRYLABEL == "275") {
+                        mlObj.Swift = data.COLVALUE;
+                    } else if (data.ENTRYLABEL == "276") {
+                        mlObj.Bankaddress = data.COLVALUE;
+                    } else if (data.ENTRYLABEL == "277") {
+                        mlObj.BankCurrency = data.COLVALUE;
+                    } else if (data.ENTRYLABEL == "278") {
+                        mlObj.DueDate = data.COLVALUE;
+                    } else if (data.ENTRYLABEL == "279") {
+                        mlObj.paymentTerms = data.COLVALUE;
+                    } else if (data.ENTRYLABEL == "280") {
+                        mlObj.payableNet = data.COLVALUE;
+                    } else if (data.ENTRYLABEL == "300") {
+                        mlObj.InvoiceNo = data.COLVALUE;
+                    } else if (data.ENTRYLABEL == "301") {
+                        mlObj.DocDate = data.COLVALUE;
+                    } else if (data.ENTRYLABEL == "302") {
+                        mlObj.Currency = data.COLVALUE;
+                    }
+                }
 
-                        for (var j = 0; j < mlList.length; j++) {
-                            var cData = mlList[j][0].LOCATION.split(",");
+                var itemMax = Math.max.apply(null, itemList);
+                var entryLbl = 0;
 
-                            if (data.FILEPATH == mlList[j][0].FILEPATH && (mappingSid[1] - cData[1] < 40 && mappingSid[1] - cData[1] > -40)) {
-                                mlList[j].push(data);
-                            }
+                for (var i = 0; i < itemList.length; i++) {
+                    if (itemList[i] == itemMax) {
+                        if (i == 0) {
+                            entryLbl = "281";
+                        } else if (i == 1) {
+                            entryLbl = "282";
+                        } else if (i == 2) {
+                            entryLbl = "283";
+                        } else if (i == 3) {
+                            entryLbl = "284";
+                        } else if (i == 4) {
+                            entryLbl = "285";
+                        } else if (i == 5) {
+                            entryLbl = "286";
+                        } else if (i == 6) {
+                            entryLbl = "287";
+                        }
+                        break;
+                    }
+                }
 
-                            if (data.ENTRYLABEL == "229" && data.FILEPATH == mlList[j][0].FILEPATH && (mappingSid[1] - cData[1] < 80 && mappingSid[1] - cData[1] > -80)) {
-                                mlList[j].push(data);
+                var mlList = [];
+
+                if (entryLbl != 0 && itemMax != 0) {
+                    for (var i = 0; i < selMlExportRes.rows.length; i++) {
+                        var data = selMlExportRes.rows[i];
+
+                        if (data.ENTRYLABEL == entryLbl) {
+                            var list = [];
+                            list.push(data);
+                            mlList.push(list);
+                        }
+                    }
+
+                    for (var i = 0; i < selMlExportRes.rows.length; i++) {
+                        var data = selMlExportRes.rows[i];
+                        if (data.ENTRYLABEL != entryLbl) {
+                            var mappingSid = data.LOCATION.split(",");
+
+                            for (var j = 0; j < mlList.length; j++) {
+                                var cData = mlList[j][0].LOCATION.split(",");
+
+                                if (data.FILEPATH == mlList[j][0].FILEPATH && (mappingSid[1] - cData[1] < 40 && mappingSid[1] - cData[1] > -40)) {
+                                    mlList[j].push(data);
+                                }
+
                             }
                         }
                     }
-                }
-                
-                for (var i = 0; i < mlList.length; i++) {
-                    var data = mlList[i];
 
+                    for (var i = 0; i < mlList.length; i++) {
+                        var data = mlList[i];
+
+                        var obj = {};
+                        obj.companyName = mlObj.companyName;
+                        obj.TotalAmount = mlObj.TotalAmount;
+                        obj.Nation = mlObj.Nation;
+                        obj.Taxes = mlObj.Taxes;
+                        obj.GST = mlObj.GST;
+                        obj.BilledTo = mlObj.BilledTo;
+                        obj.ToAccountPayable = mlObj.ToAccountPayable;
+                        obj.Bankname = mlObj.Bankname;
+                        obj.BankAccount = mlObj.BankAccount;
+                        obj.AccountNo = mlObj.AccountNo;
+                        obj.IBANCODE = mlObj.IBANCODE;
+                        obj.Swift = mlObj.Swift;
+                        obj.Bankaddress = mlObj.Bankaddress;
+                        obj.BankCurrency = mlObj.BankCurrency;
+                        obj.DueDate = mlObj.DueDate;
+                        obj.paymentTerms = mlObj.paymentTerms;
+                        obj.InvoiceNo = mlObj.InvoiceNo;
+                        obj.DocDate = mlObj.DocDate;
+                        obj.Currency = mlObj.Currency;
+
+                        for (var j = 0; j < data.length; j++) {
+
+                            if (data[j].ENTRYLABEL == "281") {
+                                obj.quantity = data[j].COLVALUE;
+                            } else if (data[j].ENTRYLABEL == "282") {
+                                obj.reference = data[j].COLVALUE;
+                            } else if (data[j].ENTRYLABEL == "283") {
+                                obj.description = data[j].COLVALUE;
+                            } else if (data[j].ENTRYLABEL == "284") {
+                                obj.listPrice = data[j].COLVALUE;
+                            } else if (data[j].ENTRYLABEL == "285") {
+                                obj.UnitPrice = data[j].COLVALUE;
+                            } else if (data[j].ENTRYLABEL == "286") {
+                                obj.Amount = data[j].COLVALUE;
+                            } else if (data[j].ENTRYLABEL == "287") {
+                                obj.VAT = data[j].COLVALUE;
+                            }
+                        }
+                        poMlList.push(obj);
+                    }
+
+                } else {
                     var obj = {};
-                    obj.buyer = mlObj.buyer;
-                    obj.poNumber = mlObj.poNumber;
-                    obj.poDate = mlObj.poDate;
-                    obj.deliveryAddress = mlObj.deliveryAddress;
-                    obj.totalPrice = mlObj.totalPrice;
-                    obj.currency = mlObj.currency;
-                    obj.requestDeliveryDate = mlObj.requestDeliveryDate;
+                    obj.companyName = mlObj.companyName;
+                    obj.TotalAmount = mlObj.TotalAmount;
+                    obj.Nation = mlObj.Nation;
+                    obj.Taxes = mlObj.Taxes;
+                    obj.GST = mlObj.GST;
+                    obj.BilledTo = mlObj.BilledTo;
+                    obj.ToAccountPayable = mlObj.ToAccountPayable;
+                    obj.Bankname = mlObj.Bankname;
+                    obj.BankAccount = mlObj.BankAccount;
+                    obj.AccountNo = mlObj.AccountNo;
+                    obj.IBANCODE = mlObj.IBANCODE;
+                    obj.Swift = mlObj.Swift;
+                    obj.Bankaddress = mlObj.Bankaddress;
+                    obj.BankCurrency = mlObj.BankCurrency;
+                    obj.DueDate = mlObj.DueDate;
+                    obj.paymentTerms = mlObj.paymentTerms;
+                    obj.InvoiceNo = mlObj.InvoiceNo;
+                    obj.DocDate = mlObj.DocDate;
+                    obj.Currency = mlObj.Currency;
 
-                    for (var j = 0; j < data.length; j++) {
-                        
-                        if (data[j].ENTRYLABEL == "228") {
-                            obj.material = data[j].COLVALUE;
-                        } else if (data[j].ENTRYLABEL == "229") {
-                            obj.ean = data[j].COLVALUE;
-                        } else if (data[j].ENTRYLABEL == "231") {
-                            obj.quantity = data[j].COLVALUE;
-                        } else if (data[j].ENTRYLABEL == "232") {
-                            obj.unitPrice = data[j].COLVALUE;
-                        } else if (data[j].ENTRYLABEL == "233") {
-                            obj.itemTotal = data[j].COLVALUE;
-                        } else if (data[j].ENTRYLABEL == "234") {
-                            obj.serialNumber = data[j].COLVALUE;
-                        }
-                    }
                     poMlList.push(obj);
                 }
 
+                for (var i = 0; i < poMlList.length; i++) {
+                    var cond = [];
+                    cond.push(selRes.rows[0].DOCTOPTYPE);
+                    cond.push(filepath);
+                    var exportData = [];
+                    exportData.push(poMlList[i].companyName != undefined ? poMlList[i].companyName : "null");
+                    exportData.push(poMlList[i].TotalAmount != undefined ? poMlList[i].TotalAmount : "null");
+                    exportData.push(poMlList[i].Nation != undefined ? poMlList[i].Nation : "null");
+                    exportData.push(poMlList[i].Taxes != undefined ? poMlList[i].Taxes : "null");
+                    exportData.push(poMlList[i].GST != undefined ? poMlList[i].GST : "null");
+                    exportData.push(poMlList[i].BilledTo != undefined ? poMlList[i].BilledTo : "null");
+                    exportData.push(poMlList[i].ToAccountPayable != undefined ? poMlList[i].ToAccountPayable : "null");
+                    exportData.push(poMlList[i].AccountName != undefined ? poMlList[i].AccountName : "null");
+                    exportData.push(poMlList[i].Bankname != undefined ? poMlList[i].Bankname : "null");
+                    exportData.push(poMlList[i].BankAccount != undefined ? poMlList[i].BankAccount : "null");
+                    exportData.push(poMlList[i].AccountNo != undefined ? poMlList[i].AccountNo : "null");
+                    exportData.push(poMlList[i].IBANCODE != undefined ? poMlList[i].IBANCODE : "null");
+                    exportData.push(poMlList[i].Swift != undefined ? poMlList[i].Swift : "null");
+                    exportData.push(poMlList[i].Bankaddress != undefined ? poMlList[i].Bankaddress : "null");
+                    exportData.push(poMlList[i].BankCurrency != undefined ? poMlList[i].BankCurrency : "null");
+                    exportData.push(poMlList[i].DueDate != undefined ? poMlList[i].DueDate : "null");
+                    exportData.push(poMlList[i].paymentTerms != undefined ? poMlList[i].paymentTerms : "null");
+                    exportData.push(poMlList[i].payableNet != undefined ? poMlList[i].payableNet : "null");
+                    exportData.push(poMlList[i].quantity != undefined ? poMlList[i].quantity : "null");
+                    exportData.push(poMlList[i].reference != undefined ? poMlList[i].reference : "null");
+                    exportData.push(poMlList[i].description != undefined ? poMlList[i].description : "null");
+                    exportData.push(poMlList[i].listPrice != undefined ? poMlList[i].listPrice : "null");
+                    exportData.push(poMlList[i].UnitPrice != undefined ? poMlList[i].UnitPrice : "null");
+                    exportData.push(poMlList[i].Amount != undefined ? poMlList[i].Amount : "null");
+                    exportData.push(poMlList[i].VAT != undefined ? poMlList[i].VAT : "null");
+                    exportData.push(poMlList[i].InvoiceNo != undefined ? poMlList[i].InvoiceNo : "null");
+                    exportData.push(poMlList[i].DocDate != undefined ? poMlList[i].DocDate : "null");
+                    exportData.push(poMlList[i].Currency != undefined ? poMlList[i].Currency : "null");
+
+                    cond.push(JSON.stringify(exportData));
+
+                    await conn.execute(insSql, cond, { autoCommit: true });
+                }
+
+            } else {
+                var itemList = new Array(0, 0, 0, 0, 0, 0);
+
+                var mlObj = {};
+                var poMlList = [];
+                for (var i = 0; i < selMlExportRes.rows.length; i++) {
+                    console.log(selMlExportRes.rows[i]);
+                    var data = selMlExportRes.rows[i];
+                    if (data.ENTRYLABEL == "234") {
+                        itemList[0]++;
+                    } else if (data.ENTRYLABEL == "228") {
+                        itemList[1]++;
+                    } else if (data.ENTRYLABEL == "229") {
+                        itemList[2]++;
+                    } else if (data.ENTRYLABEL == "231") {
+                        itemList[3]++;
+                    } else if (data.ENTRYLABEL == "232") {
+                        itemList[4]++;
+                    } else if (data.ENTRYLABEL == "233") {
+                        itemList[5]++;
+                    } else if (data.ENTRYLABEL == "221") {
+                        mlObj.buyer = data.COLVALUE;
+                    } else if (data.ENTRYLABEL == "222") {
+                        mlObj.poNumber = data.COLVALUE;
+                    } else if (data.ENTRYLABEL == "223") {
+                        mlObj.poDate = data.COLVALUE;
+                    } else if (data.ENTRYLABEL == "224") {
+                        mlObj.deliveryAddress = data.COLVALUE;
+                    } else if (data.ENTRYLABEL == "226") {
+                        mlObj.totalPrice = data.COLVALUE;
+                    } else if (data.ENTRYLABEL == "227") {
+                        mlObj.currency = data.COLVALUE;
+                    } else if (data.ENTRYLABEL == "230") {
+                        mlObj.requestDeliveryDate = data.COLVALUE;
+                    }
+                }
+
+                var itemMax = Math.max.apply(null, itemList);
+                var entryLbl = 0;
+
+                for (var i = 0; i < itemList.length; i++) {
+                    if (itemList[i] == itemMax) {
+                        if (i == 0) {
+                            entryLbl = "234";
+                        } else if (i == 1) {
+                            entryLbl = "228";
+                        } else if (i == 2) {
+                            entryLbl = "229";
+                        } else if (i == 3) {
+                            entryLbl = "231";
+                        } else if (i == 4) {
+                            entryLbl = "232";
+                        } else if (i == 5) {
+                            entryLbl = "233";
+                        }
+                        break;
+                    }
+                }
+
+                var mlList = [];
+
+                if (entryLbl != 0) {
+                    for (var i = 0; i < selMlExportRes.rows.length; i++) {
+                        var data = selMlExportRes.rows[i];
+
+                        if (data.ENTRYLABEL == entryLbl) {
+                            var list = [];
+                            list.push(data);
+                            mlList.push(list);
+                        }
+                    }
+
+                    for (var i = 0; i < selMlExportRes.rows.length; i++) {
+                        var data = selMlExportRes.rows[i];
+                        if (data.ENTRYLABEL != entryLbl && data.ENTRYLABEL != "230") {
+                            var mappingSid = data.LOCATION.split(",");
+
+                            for (var j = 0; j < mlList.length; j++) {
+                                var cData = mlList[j][0].LOCATION.split(",");
+
+                                if (data.FILEPATH == mlList[j][0].FILEPATH && (mappingSid[1] - cData[1] < 40 && mappingSid[1] - cData[1] > -40)) {
+                                    mlList[j].push(data);
+                                }
+
+                                if (data.ENTRYLABEL == "229" && data.FILEPATH == mlList[j][0].FILEPATH && (mappingSid[1] - cData[1] < 80 && mappingSid[1] - cData[1] > -80)) {
+                                    mlList[j].push(data);
+                                }
+                            }
+                        }
+                    }
+
+                    for (var i = 0; i < mlList.length; i++) {
+                        var data = mlList[i];
+
+                        var obj = {};
+                        obj.buyer = mlObj.buyer;
+                        obj.poNumber = mlObj.poNumber;
+                        obj.poDate = mlObj.poDate;
+                        obj.deliveryAddress = mlObj.deliveryAddress;
+                        obj.totalPrice = mlObj.totalPrice;
+                        obj.currency = mlObj.currency;
+                        obj.requestDeliveryDate = mlObj.requestDeliveryDate;
+
+                        for (var j = 0; j < data.length; j++) {
+
+                            if (data[j].ENTRYLABEL == "228") {
+                                obj.material = data[j].COLVALUE;
+                            } else if (data[j].ENTRYLABEL == "229") {
+                                obj.ean = data[j].COLVALUE;
+                            } else if (data[j].ENTRYLABEL == "231") {
+                                obj.quantity = data[j].COLVALUE;
+                            } else if (data[j].ENTRYLABEL == "232") {
+                                obj.unitPrice = data[j].COLVALUE;
+                            } else if (data[j].ENTRYLABEL == "233") {
+                                obj.itemTotal = data[j].COLVALUE;
+                            } else if (data[j].ENTRYLABEL == "234") {
+                                obj.serialNumber = data[j].COLVALUE;
+                            }
+                        }
+                        poMlList.push(obj);
+                    }
+
+                }
+
+                for (var i = 0; i < poMlList.length; i++) {
+                    var cond = [];
+                    cond.push(selRes.rows[0].DOCTOPTYPE);
+                    cond.push(filepath);
+                    var exportData = [];
+                    exportData.push(poMlList[i].buyer != undefined ? poMlList[i].buyer : "null");
+                    exportData.push(poMlList[i].poNumber != undefined ? poMlList[i].poNumber : "null");
+                    exportData.push(poMlList[i].poDate != undefined ? poMlList[i].poDate : "null");
+                    exportData.push(poMlList[i].deliveryAddress != undefined ? poMlList[i].deliveryAddress : "null");
+                    exportData.push(poMlList[i].totalPrice != undefined ? poMlList[i].totalPrice : "null");
+                    exportData.push(poMlList[i].currency != undefined ? poMlList[i].currency : "null");
+                    exportData.push(poMlList[i].material != undefined ? poMlList[i].material : "null");
+                    exportData.push(poMlList[i].ean != undefined ? poMlList[i].ean : "null");
+                    exportData.push(poMlList[i].requestDeliveryDate != undefined ? poMlList[i].requestDeliveryDate : "null");
+                    exportData.push(poMlList[i].quantity != undefined ? poMlList[i].quantity : "null");
+                    exportData.push(poMlList[i].unitPrice != undefined ? poMlList[i].unitPrice : "null");
+                    exportData.push(poMlList[i].itemTotal != undefined ? poMlList[i].itemTotal : "null");
+                    exportData.push(poMlList[i].serialNumber != undefined ? poMlList[i].serialNumber : "null");
+
+                    cond.push(JSON.stringify(exportData));
+
+                    await conn.execute(insSql, cond, { autoCommit: true });
+                }
             }
-
-            for (var i = 0; i < poMlList.length; i++) {
-                var cond = [];
-                cond.push(selRes.rows[0].DOCTOPTYPE);
-                cond.push(filepath);
-                var exportData = [];
-                exportData.push(poMlList[i].buyer != undefined ? poMlList[i].buyer : "null");
-                exportData.push(poMlList[i].poNumber != undefined ? poMlList[i].poNumber : "null");
-                exportData.push(poMlList[i].poDate != undefined ? poMlList[i].poDate : "null");
-                exportData.push(poMlList[i].deliveryAddress != undefined ? poMlList[i].deliveryAddress : "null");
-                exportData.push(poMlList[i].totalPrice != undefined ? poMlList[i].totalPrice : "null");
-                exportData.push(poMlList[i].currency != undefined ? poMlList[i].currency : "null");
-                exportData.push(poMlList[i].material != undefined ? poMlList[i].material : "null");
-                exportData.push(poMlList[i].ean != undefined ? poMlList[i].ean : "null");
-                exportData.push(poMlList[i].requestDeliveryDate != undefined ? poMlList[i].requestDeliveryDate : "null");
-                exportData.push(poMlList[i].quantity != undefined ? poMlList[i].quantity : "null");
-                exportData.push(poMlList[i].unitPrice != undefined ? poMlList[i].unitPrice : "null");
-                exportData.push(poMlList[i].itemTotal != undefined ? poMlList[i].itemTotal : "null");
-                exportData.push(poMlList[i].serialNumber != undefined ? poMlList[i].serialNumber : "null");
-
-                cond.push(JSON.stringify(exportData));
-
-                await conn.execute(insSql, cond, { autoCommit: true });
-            }
+            
             return done(null, "mlExport");
         } catch (err) { // catches errors in getConnection and the query
             console.log(err);
