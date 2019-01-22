@@ -1042,6 +1042,19 @@ def findEntry(ocrData, docTopType, docType):
             for item in ocrData:
                 if 'entryLbl' in item and item["text"].lower() == "delivery" and item["entryLbl"] == "286":
                     del item["entryLbl"]
+        elif docType == 12:
+            for item in ocrData:
+                if 'entryLbl' in item and  item["entryLbl"] == "283": 
+                    if item["text"].lower() == "sound recording studio" or item["text"].lower() == "video post production" or item["text"].lower() == "music library" or item["text"].lower() == "stock usage" or item["text"].lower() == "casting" or item["text"].lower() == "production company" or item["text"].lower() == "production insurance" or item["text"].lower() == "at - talent" or item["text"].lower() == "qr code" or item["text"].lower() == "talent session (talent)" or item["text"].lower() == "theatrical/lndustrial use (talent)" or item["text"].lower() == "per diem" or item["text"].lower() == "advance billing":
+                        del item['entryLbl']
+                    if item["text"].lower() == "productions llc" or item["text"].lower() == "strategy llc" or item["text"].lower() == "productions inc" or item["text"].lower() == "zander inc" or item["text"].lower() == "brokerage inc" or item["text"].lower() == "productions sl" or item["text"].lower() == "identification" or item["text"].lower() == "talent inc":
+                        del item['entryLbl']
+        # VAT
+        #elif item["colLbl"] == "287" :
+        #    if "Purchase Order No." in entry["text"].lower() or "16677 SUWON-SI" in entry["text"].lower() or "Republic of Korea" in entry["text"].lower():
+        #        entry["entryLbl"] = item["colLbl"]
+        #elif checkVerticalSpringer(entrySid, mappingSid, -60, 60):
+        #    entry["entryLbl"] = item["colLbl"]
 
         return ocrData
     except Exception as e:

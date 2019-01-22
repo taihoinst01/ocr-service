@@ -1155,7 +1155,7 @@ exports.insertSamMLData = function (filepath, imgid, done) {
             conn = await oracledb.getConnection(dbConfig);
             var insSql = `INSERT INTO TBL_BATCH_PO_ML_EXPORT VALUES(SEQ_BATCH_PO_ML_EXPORT.NEXTVAL, :docid, :filename, :exportData)`;
             var delSql = `DELETE FROM TBL_BATCH_PO_ML_EXPORT WHERE FILENAME = :filename`;
-            var selSql = `SELECT DOCTOPTYPE FROM TBL_BATCH_LEARN_LIST WHERE IMGID =:imgid`
+            var selSql = `SELECT DOCTOPTYPE,DOCTYPE FROM TBL_BATCH_LEARN_LIST WHERE IMGID =:imgid`
 
             filepath = filepath.substring(filepath.lastIndexOf("/") + 1, filepath.length);
             var fileName = filepath.substring(0, filepath.lastIndexOf("."));
@@ -1282,6 +1282,9 @@ exports.insertSamMLData = function (filepath, imgid, done) {
                                     mlList[j].push(data);
                                 }
 
+                                if (selRes.rows[0].DOCTYPE == "21" && data.FILEPATH == mlList[j][0].FILEPATH && (mappingSid[1] - cData[1] < 100 && mappingSid[1] - cData[1] > -100)) {
+                                    mlList[j].push(data);
+                                }
                             }
                         }
                     }
@@ -3986,9 +3989,9 @@ exports.updateBatchLearnListDocType = function (req, done) {
         try {
             conn = await oracledb.getConnection(dbConfig);
 
-            var updateSql = "UPDATE TBL_BATCH_LEARN_LIST SET DOCTYPE=:doctype WHERE FILEPATH=:filepath";
+            var updateSql = "UPDATE TBL_BATCH_LEARN_LIST SET DOCTYPE=:doctype WHERE IMGID=:imgid";
 
-            result = await conn.execute(updateSql, [req.docCategory.DOCTYPE, req.fileinfo.filepath]);
+            result = await conn.execute(updateSql, [req.docCategory.DOCTYPE, req.fileinfo.imgId]);
 
             return done(null, result);
         } catch (err) { // catches errors in getConnection and the query
