@@ -64,8 +64,8 @@ app.set('view engine', 'html');
 app.use(logger('dev'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cookieParser());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 // Custom Middlewares
 app.use(function (req, res, next) {
     res.locals.isAuthenticated = req.isAuthenticated();
