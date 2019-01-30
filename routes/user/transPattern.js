@@ -133,6 +133,22 @@ function convertedEntry(reqArr, done) {
                                 data[i].text = convertText;
                             }
                         }
+
+                        // AccountNo
+                        if(entryLbl == 273) {
+                            var pattern = /[^0-9\-]+/g;
+                            convertText = originText.replace(pattern, '');
+                            data[i].text = convertText;
+                        }
+                        
+                        // Bankname
+                        if(entryLbl == 271) {
+                            if(originText.split(':')[1] != undefined) {
+                                convertText = originText.split(':')[1].trim();
+                                data[i].text = convertText;
+                            }
+                        }
+                                       
                     } else if(docName == 'CheilPengTai') {
                         
                         // AccountNo
@@ -145,6 +161,15 @@ function convertedEntry(reqArr, done) {
                         
                         // IBANCODE
                         if(entryLbl == 274) {
+                            if(originText.split(':')[1] != undefined) {
+                                convertText = originText.split(':')[1].trim();
+                                data[i].text = convertText;
+                            }
+                        }
+                    } else if(docName == 'accenture') {
+
+                        // Bankname
+                        if(entryLbl == 271) {
                             if(originText.split(':')[1] != undefined) {
                                 convertText = originText.split(':')[1].trim();
                                 data[i].text = convertText;

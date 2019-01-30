@@ -659,7 +659,7 @@ exports.selectBatchLearnList = function (req, done) {
             var query = `select bll.* from 
                         (select ROW_NUMBER() OVER(ORDER BY REGDATE DESC, FILEPATH) AS NUM, 
                         COUNT('1') OVER(PARTITION BY '1') AS TOTCNT, 
-                        CEIL((ROW_NUMBER() OVER(ORDER BY REGDATE DESC, FILEPATH))/ 40) PAGEIDX, 
+                        CEIL((ROW_NUMBER() OVER(ORDER BY REGDATE DESC, FILEPATH))/ 30) PAGEIDX, 
                         IMGID, STATUS, FILEPATH, DOCTYPE, REGDATE, IMGCOUNT
                         from (
                             SELECT IMGID, STATUS, FILEPATH, A.DOCTYPE, REGDATE, IMGCOUNT
