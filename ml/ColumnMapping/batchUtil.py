@@ -690,6 +690,7 @@ def findEntry(ocrData, docTopType, docType):
 
         elif docType == 4:
             mValid = re.compile("77[0-9]* [a-zA-Z]{1,7}")
+            mValid2 = re.compile("78[0-9]* [a-zA-Z]{1,7}")
             eValid = re.compile("[0-9a-zA-Z.,;()/+-]* 88[0-9]*|^[0-9a-zA-Z.,;()/+-]+88[0-9]*")
             for item in ocrData:
                 if mValid.match(item["text"]):
@@ -706,7 +707,20 @@ def findEntry(ocrData, docTopType, docType):
                               "mappingSid":item["mappingSid"]}
 
                     ocrData.append(toData)
+                elif mValid2.match(item["text"]):
+                    text = item["text"].split(" ")
+                    location = item["location"].split(",")
 
+                    item["text"] = text[0]
+                    item["location"] = location[0] + "," + location[1] + "," + str(int(int(location[2]) / 3)) + "," + location[3]
+
+                    toData = {"location":str(int(location[0]) + (int(int(location[2]) / 2))) + "," + location[1] + "," + str(int(int(location[2]) / 2)) + "," + location[3],
+                              "text": " ".join(text[1:]),
+                              "originText":item["originText"],
+                              "sid":item["sid"],
+                              "mappingSid":item["mappingSid"]}
+
+                    ocrData.append(toData)
                 elif eValid.match(item["text"]):
                     text = item["text"].split(" ")
 
@@ -797,7 +811,7 @@ def findEntry(ocrData, docTopType, docType):
         for item in ocrData:
             mappingSid = item["mappingSid"].split(",")
 
-            if docType == 6 and item["text"].lower() == "description":
+            if docType == 6 and item["text"].lower() == "description" or item["text"].lower() == "desc tion":
                 item["colLbl"] = "228"
 
             for trainRow in trainRows:

@@ -45,7 +45,7 @@ exports.localOcr = function (req, done) {
             //pharsedOcrJson = ocrJson(resJson.regions);
 
             var jsonRes = JSON.parse(res.getBody('utf8'));
-            if (jsonRes.textAngle > 0.01 || jsonRes.textAngle < -0.01 || jsonRes.orientation != "Up") {
+            if (jsonRes.textAngle > 0.03 || jsonRes.textAngle < -0.03 || jsonRes.orientation != "Up") {
                 return done(null, jsonRes);
             }
             var resJson = ocrParsing(res.getBody('utf8'));

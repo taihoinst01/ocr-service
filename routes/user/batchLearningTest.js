@@ -3619,7 +3619,7 @@ function batchLearnTraining(filepath, callback) {
                     var ocrResult = sync.await(ocrUtil.localOcr(fullFilePathList[i], sync.defer()));
 
                     for (var j = 0; j < 10; j++) {
-                        if ((ocrResult.textAngle != undefined && ocrResult.textAngle > 0.01 || ocrResult.textAngle < -0.01) || (ocrResult.orientation != undefined && ocrResult.orientation != "Up")) {
+                        if ((ocrResult.textAngle != undefined && ocrResult.textAngle > 0.03 || ocrResult.textAngle < -0.03) || (ocrResult.orientation != undefined && ocrResult.orientation != "Up")) {
                             var angle = 0;
 
                             if (ocrResult.orientation == "Left") {
