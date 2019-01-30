@@ -1392,7 +1392,7 @@ var searchBatchLearnDataList = function (addCond, page) {
                     if(answerDataList) {
                         var hasAnswerData = false;
                         var appendAnswerDataHtml = '';
-                        var colspanLength = $('.theadTr:eq(0) th').length;
+                        var colspanLength = $('.theadTr:eq(0) th').length - 1;
                         if(answerDataList.length != 0) {
                             for(var j = 0; j < answerDataList.length; j++) {
                                 if(answerDataList[j].FILENAME == fileName) {
@@ -1418,7 +1418,7 @@ var searchBatchLearnDataList = function (addCond, page) {
                
                 }
             } else {
-                var colspanVal = $('.theadTr:eq(0) th').length;
+                var colspanVal = ($('.theadTr:eq(0) th').length) - 1;
                 appendLeftContentsHtml += '<tr style="height: 30px"><td colspan="2"></td></tr>'
                 appendRightContentsHtml += '<tr><td colspan="' + colspanVal + '">조회할 데이터가 없습니다.</td></tr>';
             }
