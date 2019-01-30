@@ -2136,8 +2136,18 @@ function uiLearnTraining(filepath, callback) {
                 fullFilePath = filename + ".png";
                 fullFilePathList.push(fullFilePath);
             } else {
-                fullFilePath = filename + ".jpg";
-                fullFilePathList.push(fullFilePath);
+                var fileCount = 0;
+                while (true) {
+                    if (exists(filename + "-" + fileCount + ".jpg")) {
+                        fullFilePathList.push(filename + "-" + fileCount + ".jpg");
+                        fileCount++;
+                    } else {
+                        if (fileCount == 0) {
+                            fullFilePathList.push(filename + ".jpg");
+                        }
+                        break;
+                    }
+                }
             }
 
             var retDataList = [];
@@ -3571,8 +3581,18 @@ function batchLearnTraining(filepath, callback) {
                 fullFilePath = filename + ".png";
                 fullFilePathList.push(fullFilePath);
             } else {
-                fullFilePath = filename + ".jpg";
-                fullFilePathList.push(fullFilePath);
+                var fileCount = 0;
+                while (true) {
+                    if (exists(filename + "-" + fileCount + ".jpg")) {
+                        fullFilePathList.push(filename + "-" + fileCount + ".jpg");
+                        fileCount++;
+                    } else {
+                        if (fileCount == 0) {
+                            fullFilePathList.push(filename + ".jpg");
+                        }
+                        break;
+                    }
+                }
             }
 
             var retData = {};
