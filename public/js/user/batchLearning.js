@@ -3197,15 +3197,26 @@ function popUpRunEvent() {
 		}
 
 
-		for (var i = 0; i < 20; i++) {
+		if (layer4Data.data.length > 20) {
 
-			//console.log(layer4Data.data[i].originText);
-			docSentenceList.push({ "text": layer4Data.data[i].originText })
-			docSentence = docSentence + layer4Data.data[i].originText;
+			for (var i = 0; i < 20; i++) {
+
+				//console.log(layer4Data.data[i].originText);
+				docSentenceList.push({ "text": layer4Data.data[i].originText })
+				docSentence = docSentence + layer4Data.data[i].originText;
+			}
+		}
+		else {
+			for (var i = 0; i < layer4Data.data.length; i++) {
+
+				//console.log(layer4Data.data[i].originText);
+				docSentenceList.push({ "text": layer4Data.data[i].originText })
+				docSentence = docSentence + layer4Data.data[i].originText;
+			}
 		}
 
-		console.log(docSentenceList);
-		console.log(docSentence);
+		//console.log(docSentenceList);
+		//console.log(docSentence);
 
 
 
@@ -3218,8 +3229,8 @@ function popUpRunEvent() {
 			docTopType: $('#docToptype').val(),
 			docSentenceList: docSentenceList 
 		}
-		console.log("param : " + param.imgId + " @@ " + param.filepath + " @@ " + param.docName + " @@ " + param.radioType + " @@ " + param.docTopType);
-		console.log(layer4Data);
+		//console.log("param : " + param.imgId + " @@ " + param.filepath + " @@ " + param.docName + " @@ " + param.radioType + " @@ " + param.docTopType);
+		//console.log(layer4Data);
 
 		
 

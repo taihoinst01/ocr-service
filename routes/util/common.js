@@ -35,6 +35,13 @@ const upload = multer({
             }
         },
         filename: function (req, file, cb) {
+            var fileName = file.originalname.substring(0, file.originalname.lastIndexOf("."));
+            var fileExt = file.originalname.substring(file.originalname.lastIndexOf(".") + 1, file.originalname.length);
+
+            var tempName = new Date().isoNum(14) + "" + Math.floor(Math.random() * 99);
+
+            file.originalname = fileName + "_" + tempName + "." + fileExt;
+
             cb(null, file.originalname);
         }
     }),
