@@ -343,53 +343,206 @@ var imgOcr = function(fileInfoList) {
                         $('#singleRequestedDeliveryDate').attr('data-location', trainResult[j].location).attr('data-filename', trainResultList[i].fileName).attr('data-entryLbl', trainResult[j].entryLbl);;
                     }
 
-                    // Multi Record 추출
-                    if(trainResult[j].entryLbl == 228) {
-                        multiRecordObj.material.text = trainResult[j].text;
-                        multiRecordObj.material.location = trainResult[j].location;
-                        multiRecordObj.material.entryLbl = trainResult[j].entryLbl;
-                    } else if(trainResult[j].entryLbl == 229) {
-                        multiRecordObj.ean.text = trainResult[j].text;
-                        multiRecordObj.ean.location = trainResult[j].location;
-                        multiRecordObj.ean.entryLbl = trainResult[j].entryLbl;
-                    } else if(trainResult[j].entryLbl == 231) {
-                        multiRecordObj.quantity.text = trainResult[j].text;
-                        multiRecordObj.quantity.location = trainResult[j].location;
-                        multiRecordObj.quantity.entryLbl = trainResult[j].entryLbl;
-                    }  else if(trainResult[j].entryLbl == 232) {
-                        multiRecordObj.unitPrice.text = trainResult[j].text;
-                        multiRecordObj.unitPrice.location = trainResult[j].location;
-                        multiRecordObj.unitPrice.entryLbl = trainResult[j].entryLbl;
-                    }  else if(trainResult[j].entryLbl == 233) {
-                        multiRecordObj.itemTotal.text = trainResult[j].text;
-                        multiRecordObj.itemTotal.location = trainResult[j].location;
-                        multiRecordObj.itemTotal.entryLbl = trainResult[j].entryLbl;
-                    }  else if(trainResult[j].entryLbl == 234) {
-                        multiRecordObj.serialNumber.text = trainResult[j].text;
-                        multiRecordObj.serialNumber.location = trainResult[j].location;
-                        multiRecordObj.serialNumber.entryLbl = trainResult[j].entryLbl;
-                    }
-
+                    // // Multi Record 추출
+                    // if(trainResult[j].entryLbl == 228) {
+                    //     multiRecordObj.material.text = trainResult[j].text;
+                    //     multiRecordObj.material.location = trainResult[j].location;
+                    //     multiRecordObj.material.entryLbl = trainResult[j].entryLbl;
+                    //     //trainResult[j].entryLbl = -999;
+                    // } else if(trainResult[j].entryLbl == 229) {
+                    //     multiRecordObj.ean.text = trainResult[j].text;
+                    //     multiRecordObj.ean.location = trainResult[j].location;
+                    //     multiRecordObj.ean.entryLbl = trainResult[j].entryLbl;
+                    //     trainResult[j].entryLbl = -999;
+                    // } else if(trainResult[j].entryLbl == 231) {
+                    //     multiRecordObj.quantity.text = trainResult[j].text;
+                    //     multiRecordObj.quantity.location = trainResult[j].location;
+                    //     multiRecordObj.quantity.entryLbl = trainResult[j].entryLbl;
+                    //     //trainResult[j].entryLbl = -999;
+                    // }  else if(trainResult[j].entryLbl == 232) {
+                    //     multiRecordObj.unitPrice.text = trainResult[j].text;
+                    //     multiRecordObj.unitPrice.location = trainResult[j].location;
+                    //     multiRecordObj.unitPrice.entryLbl = trainResult[j].entryLbl;
+                    //     //trainResult[j].entryLbl = -999;
+                    // }  else if(trainResult[j].entryLbl == 233) {
+                    //     multiRecordObj.itemTotal.text = trainResult[j].text;
+                    //     multiRecordObj.itemTotal.location = trainResult[j].location;
+                    //     multiRecordObj.itemTotal.entryLbl = trainResult[j].entryLbl;
+                    //     //trainResult[j].entryLbl = -999;
+                    // }  else if(trainResult[j].entryLbl == 234) {
+                    //     multiRecordObj.serialNumber.text = trainResult[j].text;
+                    //     multiRecordObj.serialNumber.location = trainResult[j].location;
+                    //     multiRecordObj.serialNumber.entryLbl = trainResult[j].entryLbl;
+                    //     //trainResult[j].entryLbl = -999;
+                    // }
                 }
                 
                 // Multi Record 추가
-                if($.isEmptyObject(multiRecordObj.material) == false || $.isEmptyObject(multiRecordObj.ean) == false || $.isEmptyObject(multiRecordObj.quantity) == false ||
-                        $.isEmptyObject(multiRecordObj.unitPrice) == false || $.isEmptyObject(multiRecordObj.itemTotal) == false || $.isEmptyObject(multiRecordObj.serialNumber) == false) {
-                    appendMultiRecordHtml += '<tr>' +
-                            '<td><input type="text" class="multiRecordIpt ' + (nvl(multiRecordObj.material.text) == "" ? 'ipt_gray"' : 'ipt_pink"') + '" value="' + nvl(multiRecordObj.material.text) + '" ' +
-                            'data-filename="' + trainResultList[i].fileName +'" data-location="' + multiRecordObj.material.location + '" data-entryLbl="' + multiRecordObj.material.entryLbl + '"></td>' +
-                            '<td><input type="text" class="multiRecordIpt ' + (nvl(multiRecordObj.ean.text) == "" ? 'ipt_gray' : 'ipt_pink') + '" value="' + nvl(multiRecordObj.ean.text) + '" ' +
-                            'data-filename="' + trainResultList[i].fileName +'" data-location="' + multiRecordObj.ean.location + '" data-entryLbl="' + multiRecordObj.ean.entryLbl + '"></td>' +
-                            '<td><input type="text" class="multiRecordIpt ' + (nvl(multiRecordObj.quantity.text) == "" ? 'ipt_gray' : 'ipt_pink') + '" value="' + nvl(multiRecordObj.quantity.text) + '" ' +
-                            'data-filename="' + trainResultList[i].fileName +'" data-location="' + multiRecordObj.quantity.location + '" data-entryLbl="' + multiRecordObj.quantity.entryLbl + '"></td>' +
-                            '<td><input type="text" class="multiRecordIpt ' + (nvl(multiRecordObj.unitPrice.text) == "" ? 'ipt_gray' : 'ipt_pink') + '" value="' + nvl(multiRecordObj.unitPrice.text) + '" ' +
-                            'data-filename="' + trainResultList[i].fileName +'" data-location="' + multiRecordObj.unitPrice.location + '" data-entryLbl="' + multiRecordObj.unitPrice.entryLbl + '"></td>' +
-                            '<td><input type="text" class="multiRecordIpt ' + (nvl(multiRecordObj.itemTotal.text) == "" ? 'ipt_gray' : 'ipt_pink') + '" value="' + nvl(multiRecordObj.itemTotal.text) + '" ' +
-                            'data-filename="' + trainResultList[i].fileName +'" data-location="' + multiRecordObj.itemTotal.location + '" data-entryLbl="' + multiRecordObj.itemTotal.entryLbl + '"></td>' +
-                            '<td><input type="text" class="multiRecordIpt ' + (nvl(multiRecordObj.serialNumber.text) == "" ? 'ipt_gray' : 'ipt_pink') + '" value="' + nvl(multiRecordObj.serialNumber.text) + '" ' +
-                            'data-filename="' + trainResultList[i].fileName +'" data-location="' + multiRecordObj.serialNumber.location + '" data-entryLbl="' + multiRecordObj.serialNumber.entryLbl + '"></td>' +
-                            '</tr>';
-                }
+                    // if($.isEmptyObject(multiRecordObj.material) == false || $.isEmptyObject(multiRecordObj.ean) == false || $.isEmptyObject(multiRecordObj.quantity) == false ||
+                    //         $.isEmptyObject(multiRecordObj.unitPrice) == false || $.isEmptyObject(multiRecordObj.itemTotal) == false || $.isEmptyObject(multiRecordObj.serialNumber) == false) {
+                    //     appendMultiRecordHtml += '<tr>' +
+                    //             '<td><input type="text" class="multiRecordIpt ' + (nvl(multiRecordObj.material.text) == "" ? 'ipt_gray"' : 'ipt_pink"') + '" value="' + nvl(multiRecordObj.material.text) + '" ' +
+                    //             'data-filename="' + trainResultList[i].fileName +'" data-location="' + multiRecordObj.material.location + '" data-entryLbl="' + multiRecordObj.material.entryLbl + '"></td>' +
+                    //             '<td><input type="text" class="multiRecordIpt ' + (nvl(multiRecordObj.ean.text) == "" ? 'ipt_gray' : 'ipt_pink') + '" value="' + nvl(multiRecordObj.ean.text) + '" ' +
+                    //             'data-filename="' + trainResultList[i].fileName +'" data-location="' + multiRecordObj.ean.location + '" data-entryLbl="' + multiRecordObj.ean.entryLbl + '"></td>' +
+                    //             '<td><input type="text" class="multiRecordIpt ' + (nvl(multiRecordObj.quantity.text) == "" ? 'ipt_gray' : 'ipt_pink') + '" value="' + nvl(multiRecordObj.quantity.text) + '" ' +
+                    //             'data-filename="' + trainResultList[i].fileName +'" data-location="' + multiRecordObj.quantity.location + '" data-entryLbl="' + multiRecordObj.quantity.entryLbl + '"></td>' +
+                    //             '<td><input type="text" class="multiRecordIpt ' + (nvl(multiRecordObj.unitPrice.text) == "" ? 'ipt_gray' : 'ipt_pink') + '" value="' + nvl(multiRecordObj.unitPrice.text) + '" ' +
+                    //             'data-filename="' + trainResultList[i].fileName +'" data-location="' + multiRecordObj.unitPrice.location + '" data-entryLbl="' + multiRecordObj.unitPrice.entryLbl + '"></td>' +
+                    //             '<td><input type="text" class="multiRecordIpt ' + (nvl(multiRecordObj.itemTotal.text) == "" ? 'ipt_gray' : 'ipt_pink') + '" value="' + nvl(multiRecordObj.itemTotal.text) + '" ' +
+                    //             'data-filename="' + trainResultList[i].fileName +'" data-location="' + multiRecordObj.itemTotal.location + '" data-entryLbl="' + multiRecordObj.itemTotal.entryLbl + '"></td>' +
+                    //             '<td><input type="text" class="multiRecordIpt ' + (nvl(multiRecordObj.serialNumber.text) == "" ? 'ipt_gray' : 'ipt_pink') + '" value="' + nvl(multiRecordObj.serialNumber.text) + '" ' +
+                    //             'data-filename="' + trainResultList[i].fileName +'" data-location="' + multiRecordObj.serialNumber.location + '" data-entryLbl="' + multiRecordObj.serialNumber.entryLbl + '"></td>' +
+                    //             '</tr>';
+                    // }
+
+                if(trainResultList[0].docCategory.DOCTOPTYPE == "37") {
+                    var itemList = new Array(0, 0, 0, 0, 0, 0);
+    
+                    var mlObj = {};
+                    var poMlList = [];
+                    for (var q = 0; q < trainResult.length; q++) {
+                        //console.log(trainResult[i]);
+                        var data = trainResult[q];
+                        if (data.entryLbl == "234") {
+                            itemList[0]++;
+                        } else if (data.entryLbl == "228") {
+                            itemList[1]++;
+                        } else if (data.entryLbl == "229") {
+                            itemList[2]++;
+                        } else if (data.entryLbl == "231") {
+                            itemList[3]++;
+                        } else if (data.entryLbl == "232") {
+                            itemList[4]++;
+                        } else if (data.entryLbl == "233") {
+                            itemList[5]++;
+                        } else if (data.entryLbl == "221") {
+                            mlObj.buyer = data.text;
+                        } else if (data.entryLbl == "222") {
+                            mlObj.poNumber = data.text;
+                        } else if (data.entryLbl == "223") {
+                            mlObj.poDate = data.text;
+                        } else if (data.entryLbl == "224") {
+                            mlObj.deliveryAddress = data.text;
+                        } else if (data.entryLbl == "226") {
+                            mlObj.totalPrice = data.text;
+                        } else if (data.entryLbl == "227") {
+                            mlObj.currency = data.text;
+                        } else if (data.entryLbl == "230") {
+                            mlObj.requestDeliveryDate = data.text;
+                        }
+                    }
+    
+                    var itemMax = Math.max.apply(null, itemList);
+                    var entryLbl = 0;
+    
+                    for (var q = 0; q < itemList.length; q++) {
+                        if (itemList[q] == itemMax) {
+                            if (q == 0) {
+                                entryLbl = "234";
+                            } else if (q == 1) {
+                                entryLbl = "228";
+                            } else if (q == 2) {
+                                entryLbl = "229";
+                            } else if (q == 3) {
+                                entryLbl = "231";
+                            } else if (q == 4) {
+                                entryLbl = "232";
+                            } else if (q == 5) {
+                                entryLbl = "233";
+                            }
+                            break;
+                        }
+                    }
+    
+                    var mlList = [];
+    
+                    if (entryLbl != 0) {
+                        for (var q = 0; q < trainResult.length; q++) {
+                            var data = trainResult[q];
+    
+                            if (data.entryLbl == entryLbl) {
+                                var list = [];
+                                list.push(data);
+                                mlList.push(list);
+                            }
+                        }
+    
+                        for (var q = 0; q < trainResult.length; q++) {
+                            var data = trainResult[q];
+                            if (data.entryLbl != entryLbl && data.entryLbl != "230") {
+                                var mappingSid = data.location.split(",");
+    
+                                for (var w = 0; w < mlList.length; w++) {
+                                    var cData = mlList[w][0].location.split(",");
+    
+                                    if ((mappingSid[1] - cData[1] < 40 && mappingSid[1] - cData[1] > -40)) {
+                                        mlList[w].push(data);
+                                    }
+    
+                                    if ((mappingSid[1] - cData[1] < 80 && mappingSid[1] - cData[1] > -80)) {
+                                        mlList[w].push(data);
+                                    }
+                                }
+                            }
+                        }
+    
+                        for (var q = 0; q < mlList.length; q++) {
+                            var data = mlList[q];
+
+                            var multiRecordObj = {
+                                'material': {},
+                                'ean': {},
+                                'quantity': {},
+                                'unitPrice': {},
+                                'itemTotal': {},
+                                'serialNumber': {}
+                            };
+                            for (var w = 0; w < data.length; w++) {
+    
+                                if (data[w].entryLbl == "228") {
+                                    multiRecordObj.material.text = data[w].text;
+                                    multiRecordObj.material.location = data[w].location;
+                                } else if (data[w].entryLbl == "229") {
+                                    multiRecordObj.ean.text = data[w].text;
+                                    multiRecordObj.ean.location = data[w].location;
+                                } else if (data[w].entryLbl == "231") {
+                                    multiRecordObj.quantity.text = data[w].text;
+                                    multiRecordObj.quantity.location = data[w].location;
+                                } else if (data[w].entryLbl == "232") {
+                                    multiRecordObj.unitPrice.text = data[w].text;
+                                    multiRecordObj.unitPrice.location = data[w].location;
+                                } else if (data[w].entryLbl == "233") {
+                                    multiRecordObj.itemTotal.text = data[w].text;
+                                    multiRecordObj.itemTotal.location = data[w].location;
+                                } else if (data[w].entryLbl == "234") {
+                                    multiRecordObj.serialNumber.text = data[w].text;
+                                    multiRecordObj.serialNumber.location = data[w].location;
+                                }
+                            }
+                            poMlList.push(multiRecordObj);
+                        }
+    
+                    }
+    
+                    for (var a = 0; a < poMlList.length; a++) {
+                        appendMultiRecordHtml += '<tr>' +
+                                '<td><input type="text" class="multiRecordIpt ' + (nvl(poMlList[a].material.text) == "" ? 'ipt_gray"' : 'ipt_pink"') + '" value="' + nvl(poMlList[a].material.text) + '" ' +
+                                'data-filename="' + trainResultList[i].fileName +'" data-location="' + poMlList[a].material.location + '" data-entryLbl="' + poMlList[a].material.entryLbl + '"></td>' +
+                                '<td><input type="text" class="multiRecordIpt ' + (nvl(poMlList[a].ean.text) == "" ? 'ipt_gray' : 'ipt_pink') + '" value="' + nvl(poMlList[a].ean.text) + '" ' +
+                                'data-filename="' + trainResultList[i].fileName +'" data-location="' + poMlList[a].ean.location + '" data-entryLbl="' + poMlList[a].ean.entryLbl + '"></td>' +
+                                '<td><input type="text" class="multiRecordIpt ' + (nvl(poMlList[a].quantity.text) == "" ? 'ipt_gray' : 'ipt_pink') + '" value="' + nvl(poMlList[a].quantity.text) + '" ' +
+                                'data-filename="' + trainResultList[i].fileName +'" data-location="' + poMlList[a].quantity.location + '" data-entryLbl="' + poMlList[a].quantity.entryLbl + '"></td>' +
+                                '<td><input type="text" class="multiRecordIpt ' + (nvl(poMlList[a].unitPrice.text) == "" ? 'ipt_gray' : 'ipt_pink') + '" value="' + nvl(poMlList[a].unitPrice.text) + '" ' +
+                                'data-filename="' + trainResultList[i].fileName +'" data-location="' + poMlList[a].unitPrice.location + '" data-entryLbl="' + poMlList[a].unitPrice.entryLbl + '"></td>' +
+                                '<td><input type="text" class="multiRecordIpt ' + (nvl(poMlList[a].itemTotal.text) == "" ? 'ipt_gray' : 'ipt_pink') + '" value="' + nvl(poMlList[a].itemTotal.text) + '" ' +
+                                'data-filename="' + trainResultList[i].fileName +'" data-location="' + poMlList[a].itemTotal.location + '" data-entryLbl="' + poMlList[a].itemTotal.entryLbl + '"></td>' +
+                                '<td><input type="text" class="multiRecordIpt ' + (nvl(poMlList[a].serialNumber.text) == "" ? 'ipt_gray' : 'ipt_pink') + '" value="' + nvl(poMlList[a].serialNumber.text) + '" ' +
+                                'data-filename="' + trainResultList[i].fileName +'" data-location="' + poMlList[a].serialNumber.location + '" data-entryLbl="' + poMlList[a].serialNumber.entryLbl + '"></td>' +
+                                '</tr>';
+  
+                    }
+                }             
             }
 
             // imgThumbnail
