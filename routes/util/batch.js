@@ -80,9 +80,10 @@ function insertDoctypeMapping(req, done) {
                 //insertNotInvoce(topSentenses, docType);
                 insertDocumentSentence(similarSentences, docType, similarSentences.length);
             } else {
-                docType = selectDocCategoryFromDocName(data);
-                //insertFormMapping(topSentenses, docType);
-                insertDocumentSentence(similarSentences, docType, similarSentences.length);
+				docType = selectDocCategoryFromDocName(data);
+				docTopType = data.docTopType;
+				//insertFormMapping(topSentenses, docType);
+				insertDocumentSentence(similarSentences, docType, similarSentences.length, docTopType);
                 //updateDocumentType();
             }
             data.docType = docType;
