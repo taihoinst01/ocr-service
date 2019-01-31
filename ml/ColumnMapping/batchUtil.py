@@ -1305,3 +1305,20 @@ def requestML(ocrData):
         # Print the headers - they include the requert ID and the timestamp, which are useful for debugging the failure
         print(error.info())
         print(json.loads(error.read()))
+
+def selectDocTopType(type):
+    try:
+        docTopType = 0
+        docType = type
+
+        sql = 'SELECT * FROM TBL_DOCUMENT_CATEGORY WHERE DOCTYPE=:docType'
+        curs.execute(sql, {"docType": docType})
+        rows = curs.fetchall()
+
+        docTopType = rows[0][4]
+
+        return int(docTopType), int(docType)
+
+    except Exception as e:
+        raise Exception(str({'code': 500, 'message': 'TBL_BATCH_OCR_DATA table select fail',
+                             'error': str(e).replace("'", "").replace('"', '')}))

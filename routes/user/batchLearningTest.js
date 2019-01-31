@@ -2151,6 +2151,7 @@ function uiLearnTraining(filepath, callback) {
             }
 
             var retDataList = [];
+            var docType = 0;
             for (var i = 0; i < fullFilePathList.length; i++) {
                 var selOcr = sync.await(oracle.selectOcrData(fullFilePathList[i], sync.defer()));
                 if (selOcr.length == 0) {
@@ -2187,6 +2188,11 @@ function uiLearnTraining(filepath, callback) {
                 var seqNum = selOcr.SEQNUM;
                 pythonConfig.columnMappingOptions.args = [];
                 pythonConfig.columnMappingOptions.args.push(seqNum);
+
+                if (i != 0) {
+                    pythonConfig.columnMappingOptions.args.push(docType);
+                }
+
                 //var resPyStr = sync.await(PythonShell.run('batchClassifyTest.py', pythonConfig.columnMappingOptions, sync.defer()));
                 var resPyStr = sync.await(PythonShell.run('samClassifyTest.py', pythonConfig.columnMappingOptions, sync.defer()));
                 var testStr = resPyStr[0].replace('b', '');
@@ -2202,7 +2208,11 @@ function uiLearnTraining(filepath, callback) {
                 retData = resPyArr;
                 retData.fileinfo = { filepath: fullFilePathList[i], imgId: imgid };
                 sync.await(oracle.insertMLData(retData, sync.defer()));
-                sync.await(oracle.updateBatchLearnListDocType(retData, sync.defer()));
+
+                if (i == 0) {
+                    docType = retData.docCategory.DOCTYPE;
+                    sync.await(oracle.updateBatchLearnListDocType(retData, sync.defer()));
+                }
 
                 var labelData = sync.await(oracle.selectIcrLabelDef(retData.docCategory.DOCTOPTYPE, sync.defer()));
 
@@ -3596,6 +3606,7 @@ function batchLearnTraining(filepath, callback) {
             }
 
             var retData = {};
+            var docType = 0;
             for (var i = 0; i < fullFilePathList.length; i++) {
                 var selOcr = sync.await(oracle.selectOcrData(fullFilePathList[i], sync.defer()));
                 if (selOcr.length == 0) {
@@ -3675,6 +3686,11 @@ function batchLearnTraining(filepath, callback) {
                 var seqNum = selOcr.SEQNUM;
                 pythonConfig.columnMappingOptions.args = [];
                 pythonConfig.columnMappingOptions.args.push(seqNum);
+
+                if (i != 0) {
+                    pythonConfig.columnMappingOptions.args.push(docType);
+                }
+
                 //var resPyStr = sync.await(PythonShell.run('batchClassifyTest.py', pythonConfig.columnMappingOptions, sync.defer()));
                 var resPyStr = sync.await(PythonShell.run('samClassifyTest.py', pythonConfig.columnMappingOptions, sync.defer()));
                 var testStr = resPyStr[0].replace('b', '');
@@ -3689,7 +3705,11 @@ function batchLearnTraining(filepath, callback) {
                 retData = resPyArr;
                 retData.fileinfo = { filepath: fullFilePathList[i], imgId: imgid };
                 sync.await(oracle.insertMLData(retData, sync.defer()));
-                sync.await(oracle.updateBatchLearnListDocType(retData, sync.defer()));
+
+                if (i == 0) {
+                    docType = retData.docCategory.DOCTYPE;
+                    sync.await(oracle.updateBatchLearnListDocType(retData, sync.defer()));
+                }
 
                 var colMappingList = sync.await(oracle.selectColumn(null, sync.defer()));
                 var entryMappingList = sync.await(oracle.selectEntryMappingCls(null, sync.defer()));

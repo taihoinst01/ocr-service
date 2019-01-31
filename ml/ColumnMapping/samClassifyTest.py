@@ -399,6 +399,10 @@ def colLblDefaultValue(data):
 if __name__ == '__main__':
     try:
         seqnum = sys.argv[1]
+
+        if len(sys.argv) > 2:
+            type = sys.argv[2]
+
         #seqnum = 1591
 
         ocrData = bUtil.selectOcrData(seqnum)
@@ -426,7 +430,10 @@ if __name__ == '__main__':
 
         # 문서양식 추출
         # docType =  bUtil.findDocType(ocrData)
-        docTopType, docType = bUtil.findDocTopType(ocrData)
+        if len(sys.argv) > 2:
+            docTopType, docType = bUtil.selectDocTopType(type)
+        else :
+            docTopType, docType = bUtil.findDocTopType(ocrData)
 
         # mappingSid 추출
         ocrData = bUtil.getMappingSid(ocrData, docType)
