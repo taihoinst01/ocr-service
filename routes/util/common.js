@@ -283,7 +283,7 @@ function uploadConvert(files, callback) {
 
         //file convert Pdf to Png
         if (convertPdf || fileExt.toLowerCase() === 'pdf') {
-            var result = execSync('module\\imageMagick\\convert.exe -density 300 -colorspace Gray -alpha remove -alpha off "' + ifile + '" "' + ofile + '"');
+            var result = execSync('module\\imageMagick\\convert.exe -colors 8 -density 300 -colorspace Gray -alpha remove -alpha off "' + ifile + '" "' + ofile + '"');
 
             if (result.status != 0) {
                 throw new Error(result.stderr);

@@ -3612,31 +3612,36 @@ function batchLearnTraining(filepath, callback) {
                 if (selOcr.length == 0) {
                     var ocrResult = sync.await(ocrUtil.localOcr(fullFilePathList[i], sync.defer()));
 
+                    if (ocrResult.orientation != undefined && ocrResult.orientation != "Up") {
+                        var angle = 0;
+
+                        if (ocrResult.orientation == "Left") {
+                            angle += 90;
+                        } else if (ocrResult.orientation == "Right") {
+                            angle += -90;
+                        } else if (ocrResult.orientation == "Down") {
+                            angle += 180;
+                        }
+
+                        execSync('module\\imageMagick\\convert.exe -colors 8 -density 300 -rotate "' + angle + '" ' + fullFilePathList[i] + ' ' + fullFilePathList[i]);
+                        ocrResult = sync.await(ocrUtil.localOcr(fullFilePathList[i], sync.defer()));
+                    }
+
                     for (var j = 0; j < 10; j++) {
-                        if ((ocrResult.textAngle != undefined && ocrResult.textAngle > 0.01 || ocrResult.textAngle < -0.01) || (ocrResult.orientation != undefined && ocrResult.orientation != "Up")) {
+                        if ((ocrResult.textAngle != undefined && ocrResult.textAngle > 0.03 || ocrResult.textAngle < -0.03)) {
                             var angle = 0;
 
-                            if (ocrResult.orientation == "Left") {
-                                angle += 90;
-                            } else if (ocrResult.orientation == "Right") {
-                                angle += -90;
-                            } else if (ocrResult.orientation == "Down") {
-                                angle += 180;
-                            }
-
-                            angle += Math.floor(ocrResult.textAngle * 100);
-
-                            if (angle < 0) {
-                                angle += 2;
-                            } else if (angle == 17 || angle == 15 || angle == 14) {
+                            var textAngle = Math.floor(ocrResult.textAngle * 100);
+                            
+                            if (textAngle < 0) {
+                                angle += 3;
+                            } else if (textAngle == 17 || textAngle == 15 || textAngle == 14) {
                                 angle = 10;
-                            } else if (angle == 103) {
+                            } else if (textAngle == 103) {
                                 angle = 98;
-                            } else {
-                                angle -= 1;
                             }
 
-                            execSync('module\\imageMagick\\convert.exe -density 300 -rotate "' + angle + '" ' + fullFilePathList[i] + ' ' + fullFilePathList[i]);
+                            execSync('module\\imageMagick\\convert.exe -colors 8 -density 300 -rotate "' + (textAngle + angle) + '" ' + fullFilePathList[i] + ' ' + fullFilePathList[i]);
 
                             ocrResult = sync.await(ocrUtil.localOcr(fullFilePathList[i], sync.defer()));
                         } else {
@@ -3646,30 +3651,38 @@ function batchLearnTraining(filepath, callback) {
 
                     sync.await(oracle.insertOcrData(fullFilePathList[i], JSON.stringify(ocrResult), sync.defer()));
                     selOcr = sync.await(oracle.selectOcrData(fullFilePathList[i], sync.defer()));
-                } else if (JSON.parse(selOcr.OCRDATA).textAngle > 0.01 || JSON.parse(selOcr.OCRDATA).textAngle < -0.01 || JSON.parse(selOcr.OCRDATA).orientation != "Up") {
+                } else if (JSON.parse(selOcr.OCRDATA).textAngle > 0.03 || JSON.parse(selOcr.OCRDATA).textAngle < -0.03 || JSON.parse(selOcr.OCRDATA).orientation != "Up") {
                     var ocrResult = sync.await(ocrUtil.localOcr(fullFilePathList[i], sync.defer()));
 
+                    if (ocrResult.orientation != undefined && ocrResult.orientation != "Up") {
+                        var angle = 0;
+
+                        if (ocrResult.orientation == "Left") {
+                            angle += 90;
+                        } else if (ocrResult.orientation == "Right") {
+                            angle += -90;
+                        } else if (ocrResult.orientation == "Down") {
+                            angle += 180;
+                        }
+
+                        execSync('module\\imageMagick\\convert.exe -colors 8 -density 300 -rotate "' + angle + '" ' + fullFilePathList[i] + ' ' + fullFilePathList[i]);
+
+                        ocrResult = sync.await(ocrUtil.localOcr(fullFilePathList[i], sync.defer()));
+                    }
+
                     for (var j = 0; j < 10; j++) {
-                        if ((ocrResult.textAngle != undefined && ocrResult.textAngle > 0.03 || ocrResult.textAngle < -0.03) || (ocrResult.orientation != undefined && ocrResult.orientation != "Up")) {
+                        if (ocrResult.textAngle != undefined && (ocrResult.textAngle > 0.03 || ocrResult.textAngle < -0.03)) {
                             var angle = 0;
 
-                            if (ocrResult.orientation == "Left") {
-                                angle += 90;
-                            } else if (ocrResult.orientation == "Right") {
-                                angle += -90;
-                            } else if (ocrResult.orientation == "Down") {
-                                angle += 180;
-                            }
+                            var textAngle = Math.floor(ocrResult.textAngle * 100);
 
-                            angle += Math.floor(ocrResult.textAngle * 100);
-
-                            if (angle < 0) {
+                            if (textAngle < 0) {
                                 angle += 2;
                             } else {
                                 angle -= 1;
                             }
 
-                            execSync('module\\imageMagick\\convert.exe -density 300 -rotate "' + angle + '" ' + fullFilePathList[i] + ' ' + fullFilePathList[i]);
+                            execSync('module\\imageMagick\\convert.exe -colors 8 -density 300 -rotate "' + angle + '" ' + fullFilePathList[i] + ' ' + fullFilePathList[i]);
 
                             ocrResult = sync.await(ocrUtil.localOcr(fullFilePathList[i], sync.defer()));
                         } else {
