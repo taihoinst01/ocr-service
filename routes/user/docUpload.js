@@ -362,6 +362,7 @@ router.post('/imgOcr', function (req, res) {
                 resPyArr = sync.await(transPantternVar.trans(resPyArr, sync.defer()));
                 resPyArr.fileName = fullFilePathList[i].substring(fullFilePathList[i].lastIndexOf('/') + 1);
                 console.log(resPyArr);
+
                 trainResultList.push(resPyArr);
                 
                 // tbl_icr_label_def 조회
