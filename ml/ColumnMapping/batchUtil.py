@@ -24,7 +24,7 @@ rootFilePath = 'C:/ICR/image/MIG/MIG'
 regExp = "[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]"
 
 def boundaryCheck(str1, str2):
-    return abs(int(str1) - int(str2)) < 18
+    return abs(int(str1) - int(str2)) < 10
 
 def getColumnMappingCls():
     try:
@@ -822,7 +822,7 @@ def findEntry(ocrData, docTopType, docType):
                     item["colLbl"] = trainRow[2]
                 # variable Label mapping
                 # 문서종류 and (Y좌표 뭉 (X좌표 or 넓이))
-                if (mappingSid[0] == trainData[0]) and int(trainRow[2]) in variLabel and (boundaryCheck(mappingSid[2], trainData[2]) and (boundaryCheck(mappingSid[1], trainData[1]) or boundaryCheck(mappingSid[3], trainData[3]))):
+                if (mappingSid[0] == trainData[0]) and int(trainRow[2]) in variLabel and (boundaryCheck(mappingSid[2], trainData[2]) and (boundaryCheck(mappingSid[1], trainData[1]) and boundaryCheck(mappingSid[3], trainData[3]))):
                     valid = ""
                     for labelRow in labelRows:
                         if int(labelRow[0]) == int(trainRow[2]):
@@ -1134,9 +1134,13 @@ def refindDocTopType(ocrData):
         for sentenceRow in sentenceRows:
             data = sentenceRow[1]
 
-        for item in ocrData:
+        for i, item in enumerate(ocrData):
             text.append(re.sub(regExp, "", item["text"]))
             strText = ",".join(str(x) for x in text)
+            if i == 20:
+                break
+
+        strText = strText.lower()
 
         #strText = re.sub("[-|:|,|.|/|*]", "", strText.lower());
         for rows in sentenceRows:
