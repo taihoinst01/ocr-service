@@ -917,7 +917,10 @@ def findEntry(ocrData, docTopType, docType):
                         if p.match(entry["text"]) and checkVerticalHarman(entrySid, mappingSid) and int(mappingSid[2]) < int(entrySid[2]) and "colLbl" not in entry and item["text"] != entry["text"]:
                             if int(entrySid[2]) < 1550:
                                 entry["entryLbl"] = item["colLbl"]
-
+                    elif docType == 29:
+                        if p.match(entry["text"]) and checkVertical(entrySid, mappingSid) and int(mappingSid[2]) -15 < int(entrySid[2]) and "colLbl" not in entry and item["text"] != entry["text"]:
+                            if int(entrySid[2]) < 630:
+                                entry["entryLbl"] = item["colLbl"]
                     elif p.match(entry["text"]) and checkVertical(entrySid, mappingSid) and int(mappingSid[2]) -15 < int(entrySid[2]) and "colLbl" not in entry and item["text"] != entry["text"]:
 
                         if not (int(entrySid[2]) - preVerticalLoc > 400) and "entryLbl" not in entry:
