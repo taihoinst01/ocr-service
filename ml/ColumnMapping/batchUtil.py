@@ -835,6 +835,16 @@ def findEntry(ocrData, docTopType, docType):
             if labelRow[4] == 'P':
                 variLabel.append(labelRow[0])
 
+        # PowerTech 위치 label 추가
+        if docType == 30:
+            fixLabel.remove(327)
+            fixLabel.remove(331)
+            fixLabel.remove(332)
+
+            variLabel.append(327)
+            variLabel.append(331)
+            variLabel.append(332)
+
         trainSql = "SELECT * FROM TBL_BATCH_COLUMN_MAPPING_TRAIN WHERE data LIKE '" + str(docType) + ",%'"
         curs.execute(trainSql)
         trainRows = curs.fetchall()
