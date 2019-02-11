@@ -844,6 +844,10 @@ def findEntry(ocrData, docTopType, docType):
             variLabel.append(327)
             variLabel.append(331)
             variLabel.append(332)
+        elif docType == 33:
+            fixLabel.remove(331)
+
+            variLabel.append(331)
 
         trainSql = "SELECT * FROM TBL_BATCH_COLUMN_MAPPING_TRAIN WHERE data LIKE '" + str(docType) + ",%'"
         curs.execute(trainSql)
@@ -970,11 +974,16 @@ def findEntry(ocrData, docTopType, docType):
                             if int(entrySid[2]) < 630:
                                 entry["entryLbl"] = item["colLbl"]
                     elif docType == 30:
-                        if int(item["colLbl"]) == 328:
-                            if p.match(entry["text"]) and checkVerticalSpringer(entrySid, mappingSid, -150, 50) and int(mappingSid[2]) - 15 < int(entrySid[2]) and "colLbl" not in entry and item["text"] != entry["text"]:
+                        if int(entrySid[2]) < 520:
+                            if int(item["colLbl"]) == 328:
+                                if p.match(entry["text"]) and checkVerticalSpringer(entrySid, mappingSid, -150, 50) and int(mappingSid[2]) - 15 < int(entrySid[2]) and "colLbl" not in entry and item["text"] != entry["text"]:
+                                    entry["entryLbl"] = item["colLbl"]
+                            elif p.match(entry["text"]) and checkVerticalSpringer(entrySid, mappingSid, -50, 50) and int(mappingSid[2]) - 15 < int(entrySid[2]) and "colLbl" not in entry and item["text"] != entry["text"]:
                                 entry["entryLbl"] = item["colLbl"]
-                        elif p.match(entry["text"]) and checkVerticalSpringer(entrySid, mappingSid, -50, 50) and int(mappingSid[2]) - 15 < int(entrySid[2]) and "colLbl" not in entry and item["text"] != entry["text"]:
-                            entry["entryLbl"] = item["colLbl"]
+                    elif docType == 31:
+                        if int(entrySid[2]) < 510:
+                            if p.match(entry["text"]) and checkVerticalSpringer(entrySid, mappingSid, -50, 50) and int(mappingSid[2]) - 15 < int(entrySid[2]) and "colLbl" not in entry and item["text"] != entry["text"]:
+                                entry["entryLbl"] = item["colLbl"]
                     elif p.match(entry["text"]) and checkVertical(entrySid, mappingSid) and int(mappingSid[2]) -15 < int(entrySid[2]) and "colLbl" not in entry and item["text"] != entry["text"]:
 
                         if not (int(entrySid[2]) - preVerticalLoc > 400) and "entryLbl" not in entry:
@@ -1035,6 +1044,9 @@ def findEntry(ocrData, docTopType, docType):
 
                         if docType == 4:
                             if "colLbl" not in entry and (boundaryCheck(mappingSid[2], entrySid[2]) or checkVertical(entrySid,mappingSid)):
+                                distance = entryDistance
+                        elif docType == 31:
+                            if "colLbl" not in entry and boundaryCheck(mappingSid[2], entrySid[2]):
                                 distance = entryDistance
                         else:
                             if "colLbl" not in entry:
