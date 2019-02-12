@@ -100,7 +100,7 @@ var fnInsert = function (req, res) {
     if (commonUtil.isNull(req.body.userId) || commonUtil.isNull(req.body.userPw)) {
         res.send({ CODE: 300, RESULT: "비정상적인 요청입니다." });
     } else {
-        var data = [req.body.userId, req.body.userPw, req.body.email, req.body.note, req.body.scanApproval, req.body.middleApproval, req.body.lastApproval, req.body.highApprovalId];
+        var data = [req.body.userId, req.body.userPw, req.body.email, req.body.note, req.body.scanApproval, req.body.icrApproval, req.body.middleApproval, req.body.lastApproval, req.body.admin];
         if (req.isAuthenticated()) commonDB.reqQueryParam(insertQuery, data, callbackInsert, req, res);
     }
 };
@@ -119,9 +119,11 @@ var fnUpdate = function (req, res) {
     var email = commonUtil.nvl(req.body.email);
     var note = commonUtil.nvl(req.body.note);
     var scanApproval = commonUtil.nvl(req.body.scanApproval);
+    var icrApproval = commonUtil.nvl(req.body.icrApproval);
     var middleApproval = commonUtil.nvl(req.body.middleApproval);
     var lastApproval = commonUtil.nvl(req.body.lastApproval);
     var highApprovalId = commonUtil.nvl(req.body.highApprovalId);
+    var admin = commonUtil.nvl(req.body.admin);
 
     if (!commonUtil.isNull(seqNum)) condQuery = ` WHERE SEQNUM = ${seqNum} `;
     else status = "ERR";
@@ -136,7 +138,12 @@ var fnUpdate = function (req, res) {
     else valueQuery += ` MIDDLEAPPROVAL = 'N', `;
     if (!commonUtil.isNull(lastApproval)) valueQuery += ` LASTAPPROVAL = '${lastApproval}', `;
     else valueQuery += ` LASTAPPROVAL = 'N', `;
-    valueQuery += ` HIGHAPPROVALID = '${highApprovalId}' `;
+    
+    if (!commonUtil.isNull(icrApproval)) valueQuery += ` icrapproval = '${icrApproval}', `;
+    else valueQuery += ` icrapproval = 'N', `;
+    if (!commonUtil.isNull(admin)) valueQuery += ` admin = '${admin}' `;
+    else valueQuery += ` admin = 'N' `;
+    //valueQuery += ` HIGHAPPROVALID = '${highApprovalId}' `;
   
     if (status == "ERR") {
         res.send({ CODE: 300, RESULT: "비정상적인 요청입니다." });

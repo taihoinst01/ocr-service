@@ -48,9 +48,9 @@ var userMngConfig = {
             tbl_ocr_comm_user `,
     insertUser:
         `INSERT INTO
-            tbl_ocr_comm_user (seqNum, userId, userPw, auth, email, note, scanApproval, icrapproval, middleApproval, lastApproval, joinDate, ocrUseCount)
+            tbl_ocr_comm_user (seqNum, userId, userPw, auth, email, note, scanApproval, icrapproval, middleApproval, lastApproval, admin, joinDate, ocrUseCount)
          VALUES
-            (seq_ocr_comm_user.nextval, :userId, :userPw, 'USER', :email, :note, :scanApproval, :icrapproval, :middleApproval, :lastApproval, sysdate, 0) `,
+            (seq_ocr_comm_user.nextval, :userId, :userPw, 'USER', :email, :note, :scanApproval, :icrapproval, :middleApproval, :lastApproval, :admin, sysdate, 0) `,
     updateUser:
         `UPDATE
             tbl_ocr_comm_user
