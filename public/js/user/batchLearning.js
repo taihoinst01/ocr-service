@@ -1688,11 +1688,10 @@ function compareMLAndAnswer(mlData) {
     }
 }
 
+// 일괄학습 파일명 클릭 이벤트
 function fn_viewImageData(filename, rowNum, imgId, obj) {
-
-    var appendHtml = '';
-    var imgCount = $(obj).attr('data-imgCount');
-    //console.log("imgCount: " + imgCount);
+    //var appendHtml = '';      
+    /*
     $('#tbody_batchList_answer').empty();
     var data;
     if (addCond == "LEARN_N") {
@@ -1700,21 +1699,23 @@ function fn_viewImageData(filename, rowNum, imgId, obj) {
     } else if (addCond == "LEARN_Y") {
         data = $("#batch_right_contents_after .rowNum" + rowNum);
     }
+    */
 
-    var imgFileName = filename.substring(0, filename.lastIndexOf("."));
-    var fileExt = filename.substring(filename.lastIndexOf(".") + 1, filename.length);
+    var imgCount = $(obj).attr('data-imgCount'); // 파일안의 문서 개수
+    //console.log("imgCount: " + imgCount);
+    var imgFileName = filename.substring(0, filename.lastIndexOf(".")); // 파일명
+    var fileExt = filename.substring(filename.lastIndexOf(".") + 1, filename.length); // 확장자
     var appendPngHtml = '';
     var imgName = "";
 
-    if (imgCount == 1) {
+    if (imgCount == 1) { // 단일 문서
         if (fileExt.toLowerCase() == "jpg") {
             imgName = imgFileName + ".jpg";
         } else if (fileExt.toLowerCase() == "png" || fileExt.toLowerCase() == "pdf") {
             imgName = imgFileName + ".png";
         }
         appendPngHtml += '<img src="/img/' + imgName +'" style="width: 100%; height: auto">';
-    } else {
-
+    } else { // 다중 문서
         for (var i = 0; i < imgCount; i++) {
             if (fileExt.toLowerCase() == "jpg") {
                 imgName = imgFileName + '-' + i + ".jpg";
