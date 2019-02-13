@@ -306,6 +306,18 @@ var imgOcr = function(fileInfoList) {
             var docAnswerDataList = data.docAnswerDataList;
             var appendMultiRecordHtml = "";
             var appendThumbnailHtml = "";
+            var arrayList = [];
+            var headHtml = "";
+            headHtml += "<thread><tr>";
+            for (var i = 0; i < docLabelDefList.length; i++) {
+                if (docLabelDefList[i].AMOUNT == "multi") {
+                    headHtml += "<th>";
+                    headHtml += docLabelDefList[i].ENGNM;
+                    headHtml += "</th>";
+                }
+            }
+            headHtml += "</tr></thread>";
+            $("#labelHead").html(headHtml);
 
             //singleRecord Label
             var appendSingleRecordLabelHtml = '';
@@ -419,6 +431,49 @@ var imgOcr = function(fileInfoList) {
                     //             '</tr>';
                     // }
 
+                //multi entry
+                for (var j = 0; j < trainResult.length; j++) {
+                    var data = trainResult[j];
+                    var dataLocation = data.location.split(",");
+
+                    for (var k = 0; k < docLabelDefList.length; k++) {
+                        if (docLabelDefList[k].AMOUNT == "multi" && data.entryLbl == docLabelDefList[k].SEQNUM) {
+                            var bool = false;
+
+                            if (arrayList.length == 0) {
+                                var array = [];
+                                array.push(data);
+                                arrayList.push(array);
+                                console.log("0 : " + arrayList);
+                            } else {
+
+                                var aLength = arrayList.length;
+                                for (var l = 0; l < aLength; l++) {
+                                    var mlLocation = arrayList[l][0].location.split(",");
+                                    if (dataLocation[1] - mlLocation[1] < 20 && dataLocation[1] - mlLocation[1] > -20) {
+                                        arrayList[l].push(data);
+                                        break;
+                                    }
+
+                                    if (l == aLength - 1) {
+                                        bool = true;
+                                    }
+                                }
+
+                                if (bool) {
+                                    var array = [];
+                                    array.push(data);
+                                    arrayList.push(array);
+                                    bool = false;
+                                }
+
+                            }
+
+                        }
+                    }
+                }
+
+                /*
                 if(trainResultList[0].docCategory.DOCTOPTYPE == "37") {
                     var itemList = new Array(0, 0, 0, 0, 0, 0);
     
@@ -565,7 +620,34 @@ var imgOcr = function(fileInfoList) {
                                 '</tr>';
   
                     }
-                }             
+                }
+                */
+            }
+
+            for (var j = 0; j < arrayList.length; j++) {
+                appendMultiRecordHtml += "<tr>";
+
+                for (var k = 0; k < docLabelDefList.length; k++) {
+                    if (docLabelDefList[k].AMOUNT == "multi") {
+                        var text = "";
+                        var location = "";
+                        var entryLbl = "";
+
+                        for (var l = 0; l < arrayList[j].length; l++) {
+                            if (docLabelDefList[k].SEQNUM == arrayList[j][l].entryLbl) {
+                                text = arrayList[j][l].text;
+                                location = arrayList[j][l].location;
+                                entryLbl = arrayList[j][l].entryLbl;
+                            }
+                        }
+
+                        appendMultiRecordHtml += '<td><input type="text" class="multiRecordIpt ' + (nvl(text) == "" ? 'ipt_gray"' : 'ipt_pink"') + '" value="' + nvl(text) + '" ';
+                        appendMultiRecordHtml += 'data-filename="' + "" + '" data-location="' + location + '" data-entryLbl="' + entryLbl + '"></td>';
+
+                    }
+                }
+
+                appendMultiRecordHtml += "</tr>";
             }
 
             // imgThumbnail
