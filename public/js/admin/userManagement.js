@@ -83,10 +83,10 @@ function fn_searchUser() {
             addProgressBar(2, 99); // 프로그레스바 진행
             console.log("data.. : " + JSON.stringify(data));
             if (data.length > 0) {
-                $.each(data, function (index, entry) {
+                $.each(data, function (index, entry) {//SEQNUM
                     appendHtml += 
                     '<tr class="tr_userInfo empNo_' + nvl(entry.USERID) + '">' + 
-                        '<td>' + nvl(entry.USERID) + '<input type="hidden" value="' + entry.USERPW + '"></td>' + 
+                        '<td>' + nvl(entry.USERID) + '<input type="hidden" name="hiddenPw" value="' + entry.USERPW + '"><input type="hidden" name="hiddenSeq" value="' + entry.SEQNUM + '"></td>' + 
                         '<td>' + nvl(entry.NOTE) + '</td>' + 
                         '<td>' + nvl(entry.SCANAPPROVAL) + '</td>' + 
                         '<td>' + nvl(entry.ICRAPPROVAL) + '</td>' + 
@@ -115,6 +115,7 @@ function fn_searchUser() {
 $(document).on('click', '.tr_userInfo', function () {
     var empNo = "";
     var empPw = "";
+    var empSeq = "";
 
     // 체크박스 초기화
     $('.chk_reset').prop('checked', false);
@@ -151,9 +152,11 @@ $(document).on('click', '.tr_userInfo', function () {
         if ($(this).find('td:eq(7)').text() == 'Y') { // 외부사용자
             $('#mExternalUsers').click();
         }
-
+        
         empNo = $(this).find('td:eq(0)').text();
-        empPw = $(this).find('input[type=hidden]').val();
+        empPw = $(this).find('input[name=hiddenPw]').val();
+        empSeq = $(this).find('input[name=hiddenSeq]').val();
+        //empPw = $(this).find('input[type=hidden]').val();
 
         $(this).find('td:last button').show();
         $('#btn_update').show();
@@ -165,6 +168,7 @@ $(document).on('click', '.tr_userInfo', function () {
     // 사번, PASSWORD 입력
     $('#empNo').val(empNo);
     $('#empPw').val(nvl(empPw));
+    $('#seqNum').val(nvl(empSeq));
 
 })
 
@@ -266,25 +270,25 @@ var fn_selectHighApproval = function (seqNum, userId) {
  */
 var fn_validate = function (flag) {
     //예외 처리
-    if (isNull($("#userId").val())) {
+    if (isNull($("#empNo").val())) {
         fn_alert('alert', "사용자 ID는 필수입니다.");
-        $("#userId").focus();
+        $("#empNo").focus();
         return false;
     }
-    if (flag == "INSERT" && isNull($("#userPw").val())) {
+    if (flag == "INSERT" && isNull($("#empPw").val())) {
         fn_alert('alert', "사용자 비밀번호는 필수입니다.");
-        $("#userPw").focus();
+        $("#empPw").focus();
         return false;
     }
     var chkDupl = false;
     $(".a_userIdList").each(function (index) {
-        if ($("#userId").val() == $(this).html()) {
+        if ($("#empNo").val() == $(this).html()) {
             chkDupl = true;
         }
     });
     if (chkDupl) {
-        fn_alert('alert', `이미 ${$("#userId").val()} 사번이 존재합니다.`);
-        $("#userId").focus();
+        fn_alert('alert', `이미 ${$("#empNo").val()} 사번이 존재합니다.`);
+        $("#empNo").focus();
         return false;
     }
     return true;
@@ -292,13 +296,16 @@ var fn_validate = function (flag) {
 var fn_getParam = function () {
     var param = {
         seqNum: $("#seqNum").val(),
-        userId: nvl($("#userId").val()),
-        userPw: nvl($("#userPw").val()),
+        userId: nvl($("#empNo").val()),
+        userPw: nvl($("#empPw").val()),
         email: nvl($("#email").val()),
         note: nvl($("#note").val()),
-        scanApproval: $("#approval1").is(":checked") ? "Y" : "N",
-        middleApproval: $("#approval3").is(":checked") ? "Y" : "N",
-        lastApproval: $("#approval4").is(":checked") ? "Y" : "N",
+        scanApproval: $("#mApproval1").is(":checked") ? "Y" : "N",
+        icrApproval: $("#mApproval2").is(":checked") ? "Y" : "N",
+        middleApproval: $("#mApproval3").is(":checked") ? "Y" : "N",
+        lastApproval: $("#mApproval4").is(":checked") ? "Y" : "N",
+        admin: $("#mAdmin").is(":checked") ? "Y" : "N",
+        external: $("#mExternalUsers").is(":checked") ? "Y" : "N",
         highApprovalId: nvl($("#highApprovalId").val())
     };
     return param;

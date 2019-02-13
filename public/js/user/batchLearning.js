@@ -1688,11 +1688,10 @@ function compareMLAndAnswer(mlData) {
     }
 }
 
+// 일괄학습 파일명 클릭 이벤트
 function fn_viewImageData(filename, rowNum, imgId, obj) {
-
-    var appendHtml = '';
-    var imgCount = $(obj).attr('data-imgCount');
-    //console.log("imgCount: " + imgCount);
+    //var appendHtml = '';      
+    /*
     $('#tbody_batchList_answer').empty();
     var data;
     if (addCond == "LEARN_N") {
@@ -1700,21 +1699,23 @@ function fn_viewImageData(filename, rowNum, imgId, obj) {
     } else if (addCond == "LEARN_Y") {
         data = $("#batch_right_contents_after .rowNum" + rowNum);
     }
+    */
 
-    var imgFileName = filename.substring(0, filename.lastIndexOf("."));
-    var fileExt = filename.substring(filename.lastIndexOf(".") + 1, filename.length);
+    var imgCount = $(obj).attr('data-imgCount'); // 파일안의 문서 개수
+    //console.log("imgCount: " + imgCount);
+    var imgFileName = filename.substring(0, filename.lastIndexOf(".")); // 파일명
+    var fileExt = filename.substring(filename.lastIndexOf(".") + 1, filename.length); // 확장자
     var appendPngHtml = '';
     var imgName = "";
 
-    if (imgCount == 1) {
+    if (imgCount == 1) { // 단일 문서
         if (fileExt.toLowerCase() == "jpg") {
             imgName = imgFileName + ".jpg";
         } else if (fileExt.toLowerCase() == "png" || fileExt.toLowerCase() == "pdf") {
             imgName = imgFileName + ".png";
         }
         appendPngHtml += '<img src="/img/' + imgName +'" style="width: 100%; height: auto">';
-    } else {
-
+    } else { // 다중 문서
         for (var i = 0; i < imgCount; i++) {
             if (fileExt.toLowerCase() == "jpg") {
                 imgName = imgFileName + '-' + i + ".jpg";
@@ -2202,12 +2203,12 @@ var addBatchTraining = function (filePathArray, docTypeArray, imgIdArray) {
 
 
 
-// UI 학습 (학습결과 수정)
+// UI Training 버튼 클릭 이벤트
 var fn_uiTraining = function () {
-    var imgIdArray = [];
-    let imgId = "";
-    let chkCnt = 0;
-    let chkBefore = $("#tab_before").closest("li").hasClass("on");
+    var imgIdArray = []; // 이미지 파일 경로 배열
+    let imgId = ""; // 이미지 파일 경로
+    let chkCnt = 0; // 체크된 파일 개수
+    //let chkBefore = $("#tab_before").closest("li").hasClass("on");
 
     $(".batchListLeftTbody .ez-checkbox").each(function (index, entry) {
         if ($(this).hasClass("ez-checked")) {
@@ -2246,18 +2247,18 @@ var uiLearnTraining = function (imgIdArray) {
     $.ajax({
         url: '/batchLearningTest/uiLearnTraining',
         type: 'post',
-        datatype: "json",
+        datatype: 'json',
         data: JSON.stringify({ imgIdArray: imgIdArray }),
         contentType: 'application/json; charset=UTF-8',
         beforeSend: function () {
             $('#btn_pop_batch_close').click();
-            $("#progressMsgTitle").html("processing UI learn data...");
+            $('#progressMsgTitle').html("processing UI learn data...");
             progressId = showProgressBar();
         },
         success: function (data) {
             console.log(data);
             //modifyData = data.data;
-            $("#progressMsgTitle").html("success UI learn data...");
+            $('#progressMsgTitle').html("success UI learn data...");
             //selectTypoData(data);
             modifyData = $.extend([], data.data);
             uiLayerHtml(data);
@@ -2289,6 +2290,7 @@ function selectTypoData(data) {
 
 }
 
+// UI 레이어 화면 구성 함수
 function uiLayerHtml(data) {
     var mlData = data.data[0].data;
     mlDataList = mlData;
@@ -2297,8 +2299,8 @@ function uiLayerHtml(data) {
 	var docToptype = data.data[0].docCategory.DOCTOPTYPE;
 	console.log(modifyData);
     //var fileName = filePath.substring(filePath.lastIndexOf('/') + 1, filePath.length);
-    fn_initUiTraining();
-    fn_uiDocTopType(data.data[0].docCategory);
+    fn_initUiTraining(); // 레이어 초기화
+    fn_uiDocTopType(data.data[0].docCategory); // Top Type select box 생성
 	$('#docName').html(data.data[0].docCategory.DOCNAME);
 	$('#docPredictionScore').html(data.data[0].docCategory.DOCSCORE * 100);
 	$('#docPredictionScore').append('%');
@@ -2310,7 +2312,6 @@ function uiLayerHtml(data) {
 		$('#docName').css('color', 'darkred');
 		$('#docPredictionScore').css('color', 'darkred');
 	}
-
 
 	$('#docName').click(function () { fn_viewDoctypePop(data) });
 	$('#docPredictionScore').click(function () { fn_viewDoctypePop(data) });
@@ -2342,6 +2343,7 @@ function uiLayerHtml(data) {
 
     var mlDataArray = data.data;
 
+    // UI 레이어 화면 좌측 이미지 html 생성 (다중 이미지이면 아래로 붙어서 나옴)
     var imgNameHtml = "";
     for (var l in mlDataArray) {
         var imgName = nvl(data.data[l].fileinfo.filepath.substring(data.data[l].fileinfo.filepath.lastIndexOf('/') + 1));
@@ -2360,6 +2362,7 @@ function uiLayerHtml(data) {
     $("#mainImage").css("height", height + "px !important");
     $('#mainImage').append(imgNameHtml);
 
+    // UI 레이어 화면 우측 추출 텍스트 및 컬럼 html 생성
     for (var l in mlDataArray) {
 
         mlData = mlDataArray[l].data;
@@ -2521,6 +2524,7 @@ function getLabelData(docTopType) {
     });
 }
 
+// UI 팝업 화면 Document Top Type select box 생성 함수
 function fn_uiDocTopType(docCategory) {
     var docToptype = docCategory.DOCTOPTYPE;
 
