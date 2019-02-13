@@ -984,6 +984,16 @@ def findEntry(ocrData, docTopType, docType):
                         if int(entrySid[2]) < 510:
                             if p.match(entry["text"]) and checkVerticalSpringer(entrySid, mappingSid, -50, 50) and int(mappingSid[2]) - 15 < int(entrySid[2]) and "colLbl" not in entry and item["text"] != entry["text"]:
                                 entry["entryLbl"] = item["colLbl"]
+                    elif docType == 49:
+                        if int(item["colLbl"]) == 336 or int(item["colLbl"]) == 338 or int(item["colLbl"]) == 343:
+                            if p.match(entry["text"]) and checkVerticalSpringer(entrySid, mappingSid, -100, 100) and int(mappingSid[2]) - 15 < int(entrySid[2]) and "colLbl" not in entry and item["text"] != entry["text"]:
+                                entry["entryLbl"] = item["colLbl"]
+                        elif int(item["colLbl"]) == 339:
+                            if p.match(entry["text"]) and checkVerticalSpringer(entrySid, mappingSid, -230, 230) and int(mappingSid[2]) - 15 < int(entrySid[2]) and "colLbl" not in entry and item["text"] != entry["text"]:
+                                entry["entryLbl"] = item["colLbl"]
+                        elif int(item["colLbl"]) == 340:
+                            if p.match(entry["text"]) and checkVerticalSpringer(entrySid, mappingSid, -490, 490) and int(mappingSid[2]) - 15 < int(entrySid[2]) and "colLbl" not in entry and item["text"] != entry["text"]:
+                                entry["entryLbl"] = item["colLbl"]
                     elif p.match(entry["text"]) and checkVertical(entrySid, mappingSid) and int(mappingSid[2]) -15 < int(entrySid[2]) and "colLbl" not in entry and item["text"] != entry["text"]:
 
                         if not (int(entrySid[2]) - preVerticalLoc > 400) and "entryLbl" not in entry:
