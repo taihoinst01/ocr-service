@@ -51,7 +51,7 @@ var initForm = function ({ type }) {
     $("#main_image").prop("src", "");
     $("#main_image").prop("alt", "");
     $("#ul_image").html("");
-
+    $('#singleTblTbody').empty();
     //$("#div_image").fadeOut("fast");
     //$("#div_dtl").fadeOut("fast");
 
@@ -307,6 +307,21 @@ var imgOcr = function(fileInfoList) {
             var appendMultiRecordHtml = "";
             var appendThumbnailHtml = "";
 
+            //singleRecord Label
+            var appendSingleRecordLabelHtml = '';
+            var singleRecordEntryLblList = [];
+            for(var i = 0; i <docLabelDefList.length; i++) {
+                if(docLabelDefList[i].AMOUNT == 'single') {
+                    appendSingleRecordLabelHtml += '<tr class="singleRecordTr" data-entryLbl="' + docLabelDefList[i].SEQNUM + '"><td class="singleRecordLabelTd">' +
+                            '<input type="text" class="singleRecordLabelIpt" disabled value="' + docLabelDefList[i].ENGNM + '">' +
+                            '</td><td class="singleRecordEntryTd"><input type="text" class="singleRecordEntryIpt" value="" data-entryLbl="' + docLabelDefList[i].SEQNUM + '"></td></tr>';
+                }
+            }
+
+            $('#singleTblTbody').append(appendSingleRecordLabelHtml);
+
+
+
             for(var i = 0; i < trainResultList.length; i++) {
                 var trainResult = trainResultList[i].data;
                 var multiRecordObj = {
@@ -319,29 +334,37 @@ var imgOcr = function(fileInfoList) {
                 };
                 for(var j = 0; j < trainResult.length; j++) {
 
-                    // Single Record 추출
-                    if(trainResult[j].entryLbl == 221) {
-                        $('#singleBuyer').val(trainResult[j].text).addClass('ipt_pink');
-                        $('#singleBuyer').attr('data-location', trainResult[j].location).attr('data-filename', trainResultList[i].fileName);
-                    } else if(trainResult[j].entryLbl == 222) {
-                        $('#singlePoNumber').val(trainResult[j].text).addClass('ipt_pink');
-                        $('#singlePoNumber').attr('data-location', trainResult[j].location).attr('data-filename', trainResultList[i].fileName); 
-                    } else if(trainResult[j].entryLbl == 223) {
-                        $('#singlePoDate').val(trainResult[j].text).addClass('ipt_pink');
-                        $('#singlePoDate').attr('data-location', trainResult[j].location).attr('data-filename', trainResultList[i].fileName).attr('data-entryLbl', trainResult[j].entryLbl);;
-                    } else if(trainResult[j].entryLbl == 224) {
-                        $('#singleDeliveryAddress').val(trainResult[j].text).addClass('ipt_pink');
-                        $('#singleDeliveryAddress').attr('data-location', trainResult[j].location).attr('data-filename', trainResultList[i].fileName).attr('data-entryLbl', trainResult[j].entryLbl);;
-                    } else if(trainResult[j].entryLbl == 226) {
-                        $('#singleTotalPrice').val(trainResult[j].text).addClass('ipt_pink');
-                        $('#singleTotalPrice').attr('data-location', trainResult[j].location).attr('data-filename', trainResultList[i].fileName).attr('data-entryLbl', trainResult[j].entryLbl);;
-                    } else if(trainResult[j].entryLbl == 227) {
-                        $('#singleCurrency').val(trainResult[j].text).addClass('ipt_pink');
-                        $('#singleCurrency').attr('data-location', trainResult[j].location).attr('data-filename', trainResultList[i].fileName).attr('data-entryLbl', trainResult[j].entryLbl);;
-                    } else if(trainResult[j].entryLbl == 230) {
-                        $('#singleRequestedDeliveryDate').val(trainResult[j].text).addClass('ipt_pink');
-                        $('#singleRequestedDeliveryDate').attr('data-location', trainResult[j].location).attr('data-filename', trainResultList[i].fileName).attr('data-entryLbl', trainResult[j].entryLbl);;
-                    }
+                    // Single Record Entry추출
+                    $('.singleRecordTr').each(function(){
+                        var appendSingleRecordEntryHtml
+                        if($(this).attr('data-entryLbl') == trainResult[j].entryLbl) {
+                            $(this).find('.singleRecordEntryIpt').val(trainResult[j].text);
+                            $(this).find('.singleRecordEntryIpt').attr('data-location', trainResult[j].location).attr('data-filename', trainResultList[i].fileName);
+                        }
+                    })
+
+                    // if(trainResult[j].entryLbl == 221) {
+                    //     $('#singleBuyer').val(trainResult[j].text).addClass('ipt_pink');
+                    //     $('#singleBuyer').attr('data-location', trainResult[j].location).attr('data-filename', trainResultList[i].fileName);
+                    // } else if(trainResult[j].entryLbl == 222) {
+                    //     $('#singlePoNumber').val(trainResult[j].text).addClass('ipt_pink');
+                    //     $('#singlePoNumber').attr('data-location', trainResult[j].location).attr('data-filename', trainResultList[i].fileName); 
+                    // } else if(trainResult[j].entryLbl == 223) {
+                    //     $('#singlePoDate').val(trainResult[j].text).addClass('ipt_pink');
+                    //     $('#singlePoDate').attr('data-location', trainResult[j].location).attr('data-filename', trainResultList[i].fileName).attr('data-entryLbl', trainResult[j].entryLbl);
+                    // } else if(trainResult[j].entryLbl == 224) {
+                    //     $('#singleDeliveryAddress').val(trainResult[j].text).addClass('ipt_pink');
+                    //     $('#singleDeliveryAddress').attr('data-location', trainResult[j].location).attr('data-filename', trainResultList[i].fileName).attr('data-entryLbl', trainResult[j].entryLbl);
+                    // } else if(trainResult[j].entryLbl == 226) {
+                    //     $('#singleTotalPrice').val(trainResult[j].text).addClass('ipt_pink');
+                    //     $('#singleTotalPrice').attr('data-location', trainResult[j].location).attr('data-filename', trainResultList[i].fileName).attr('data-entryLbl', trainResult[j].entryLbl);
+                    // } else if(trainResult[j].entryLbl == 227) {
+                    //     $('#singleCurrency').val(trainResult[j].text).addClass('ipt_pink');
+                    //     $('#singleCurrency').attr('data-location', trainResult[j].location).attr('data-filename', trainResultList[i].fileName).attr('data-entryLbl', trainResult[j].entryLbl);
+                    // } else if(trainResult[j].entryLbl == 230) {
+                    //     $('#singleRequestedDeliveryDate').val(trainResult[j].text).addClass('ipt_pink');
+                    //     $('#singleRequestedDeliveryDate').attr('data-location', trainResult[j].location).attr('data-filename', trainResultList[i].fileName).attr('data-entryLbl', trainResult[j].entryLbl);
+                    // }
 
                     // // Multi Record 추출
                     // if(trainResult[j].entryLbl == 228) {
@@ -606,7 +629,7 @@ function checkDocMlData(docAnswerDataList) {
 
 // doctotpe으로 TBL_ICR_LABEL_DEF 조회한 결과로 ESSENTIALVAL 체크
 function checkDocLabelDef(docLabelDefList) {
-    $('.singleRecordIpt, .multiRecordIpt').each(function(){
+    $('.singleRecordEntryIpt, .multiRecordIpt').each(function(){
         for(var i = 0; i < docLabelDefList.length; i++) {
             if($(this).attr('data-entryLbl') == docLabelDefList[i].SEQNUM && docLabelDefList[i].ESSENTIALVAL == 1) {
                 if($(this).val() == "") {
@@ -620,7 +643,7 @@ function checkDocLabelDef(docLabelDefList) {
 
 function changeTabindex() {
     var isFocus = false;
-    $('.singleRecordIpt, .multiRecordIpt').each(function(){
+    $('.singleRecordEntryIpt, .multiRecordIpt').each(function(){
         if($(this).val() == "") {
             $(this).attr('tabindex', '-1');
         } else {
@@ -632,16 +655,16 @@ function changeTabindex() {
     }) 
 }
 
-// singleRecordIpt, multiRecordIpt 클릭시 이미지 변경 및 이미지 줌
-// $(document).on('click', '.singleRecordIpt, .multiRecordIpt', function() {
+// singleRecordEntryIpt, multiRecordIpt 클릭시 이미지 변경 및 이미지 줌
+// $(document).on('click', '.singleRecordEntryIpt, .multiRecordIpt', function() {
 //     //console.log($(this).data());
 //     if($(this).val() != "") {
 //         zoomImg_new($(this));
 //     }
 // })
 
-// singleRecordIpt, multiRecordIpt 클릭시 이미지 변경 및 이미지 줌
-$(document).on('focusin', '.singleRecordIpt, .multiRecordIpt', function() {
+// singleRecordEntryIpt, multiRecordIpt 클릭시 이미지 변경 및 이미지 줌
+$(document).on('focusin', '.singleRecordEntryIpt, .multiRecordIpt', function() {
     //console.log($(this).data());
     if($(this).val() != "") {
         zoomImg_new($(this));
@@ -1310,12 +1333,12 @@ function modifyTextData() {
 }
 var fn_initUpload = function () {
     //todo
-    $('.singleRecordIpt').val('').removeClass('ipt_pink');
+    $('.singleRecordEntryIpt').val('').removeClass('ipt_pink');
     $('#multiRecordTblTbody').empty();
     $('#div_invoice_view_image').empty();
-    $('.singleRecordIpt').attr('data-location', '');
-    $('.singleRecordIpt').attr('data-filename', '');
-    $('.singleRecordIpt').removeClass('gradationIpt');
+    $('.singleRecordEntryIpt').attr('data-location', '');
+    $('.singleRecordEntryIpt').attr('data-filename', '');
+    $('.singleRecordEntryIpt').removeClass('gradationIpt');
 }
 
 // UI학습 팝업 초기화

@@ -25,3 +25,25 @@
     -webkit-background-size:30px 30px;
     background-size:30px 30px;
 }
+
+.singleRecordLabelIpt {
+    height: 30px !important; 
+    color: white !important; 
+    border-radius: 15px !important;
+    border: solid 1px #EA7169 !important;
+    background-color: #EA7169 !important;
+}
+
+.singleRecordLabelTd {
+    padding:5px 0 !important;
+}
+
+.singleRecordEntryIpt {
+    height: 30px !important; 
+    border-radius: 15px !important;
+    border: solid 1px darkgray !important;
+}
+
+.singleRecordEntryTd {
+    padding:5px 0 5px 10px !important;
+}
