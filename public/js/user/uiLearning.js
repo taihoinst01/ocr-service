@@ -1904,11 +1904,11 @@ function fn_viewDoctypePop(obj) {
 	var mlDocName = data.docCategory.DOCNAME;
 	var mlPercent = data.docCategory.DOCSCORE;
 
-	console.log("filepath : " + filepath);
-	console.log("imgId : " + imgId);
-	console.log("fileName : " + fileName);
-	console.log("mlDocName : " + mlDocName);
-	console.log("mlPercent : " + mlPercent);
+	//console.log("filepath : " + filepath);
+	//console.log("imgId : " + imgId);
+	//console.log("fileName : " + fileName);
+	//console.log("mlDocName : " + mlDocName);
+	//console.log("mlPercent : " + mlPercent);
 
     //$('#batchListRowNum').val(rowIdx);
     $('#docPopImgId').val(imgId);

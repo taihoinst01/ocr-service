@@ -1183,4 +1183,13 @@ router.post('/insertDoctypeMapping', function (req, res) {
         }
     });
 });
+
+function exists(path) {
+    try {
+        fs.accessSync(path);
+    } catch (err) {
+        return false;
+    }
+    return true;
+}
 module.exports = router;
