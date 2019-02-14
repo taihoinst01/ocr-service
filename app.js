@@ -53,7 +53,7 @@ app.use('/tifTest', express.static(path.join(appRoot)));
 app.use('/tif', express.static(path.join(propertiesConfig.filepath.uploadsPath)));
 app.use('/jpg', express.static(path.join(propertiesConfig.filepath.uploadsPath)));
 app.use('/img', express.static(path.join(propertiesConfig.filepath.uploadsPath)));
-app.use('/sample', express.static(path.join(propertiesConfig.filepath.docFilePath)));
+app.use('/sample', express.static(path.join(propertiesConfig.filepath.doc_sampleImagePath)));
 app.use('/uploads', express.static(__dirname + '/uploads'));
 app.use('/sample', express.static(__dirname + '/sample'));
 app.use('/excel', express.static(__dirname + '/excel'));

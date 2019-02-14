@@ -59,23 +59,30 @@ function popUpEvent() {
 
 // 팝업 확인 이벤트
 function popUpRunEvent() {
-    $('#btn_pop_doc_run').click(function (e) {
+
+	$('#btn_pop_doc_run').click(function (e) {
+
+		var data = layer4Data;
+		var docSentenceList = [];
+		var docSentence = "";
+		//data = $('#mlData').val();
+
         // chkValue 1: 기존문서 양식조회, 2: 신규문서 양식등록, 3: 계산서 아님
         var chkValue = $('input:radio[name=radio_batch]:checked').val();
-
+		//console.log(data);
         if ((chkValue == '1' && $('#orgDocName').val() == '') || (chkValue == '2' && $('#newDocName').val() == '')) {
             fn_alert('alert', 'The document name is missing');
             return false;
         }
 
         // text & check
-        var textList = [];
-        $('.ui_layer1_result_tr').each(function () {
-            var chk = $(this).children().find('input[type="checkbox"]').is(':checked') == true ? 1 : 0;
-            var text = $(this).children()[1].innerHTML;
+        //var textList = [];
+        //$('.batch_layer4_result_tr').each(function () {
+        //    var chk = $(this).children().find('input[type="checkbox"]').is(':checked') == true ? 1 : 0;
+        //    var text = $(this).children()[1].innerHTML;
 
-            textList.push({ "text": text, "check": chk })
-        })
+        //    textList.push({"text": text, "check": chk})
+        //})
 
         // docName
         var docName = '';
@@ -83,22 +90,47 @@ function popUpRunEvent() {
             docName = $('#orgDocName').val();
         } else if (chkValue == '2') {
             docName = $('#newDocName').val();
-        } else if (chkValue == '3') {
+        } else if(chkValue == '3') {
             docName = 'NotInvoice';
-        }
+		}
 
-        var filePath = $("#docPopImgPath").val();
-        filePath = filePath.substring(0, filePath.lastIndexOf("/") + 1);
 
-        var fileName = $("#originImg").attr("src");
-        fileName = fileName.substring(fileName.lastIndexOf("/") + 1, fileName.length);
+		if (layer4Data.data.length > 20) {
+
+			for (var i = 0; i < 20; i++) {
+
+				//console.log(layer4Data.data[i].originText);
+				docSentenceList.push({ "text": layer4Data.data[i].originText })
+				docSentence = docSentence + layer4Data.data[i].originText;
+			}
+		}
+		else {
+			for (var i = 0; i < layer4Data.data.length; i++) {
+
+				//console.log(layer4Data.data[i].originText);
+				docSentenceList.push({ "text": layer4Data.data[i].originText })
+				docSentence = docSentence + layer4Data.data[i].originText;
+			}
+		}
+
+		//console.log(docSentenceList);
+		//console.log(docSentence);
+
+
 
         var param = {
-            filepath: filePath + fileName,
+            imgId: $('#docPopImgId').val(),
+            filepath: $('#docPopImgPath').val(),
             docName: docName,
             radioType: chkValue,
-            textList: textList,
-        }
+            //textList: textList,
+			docTopType: $('#docToptype').val(),
+			docSentenceList: docSentenceList 
+		}
+		//console.log("param : " + param.imgId + " @@ " + param.filepath + " @@ " + param.docName + " @@ " + param.radioType + " @@ " + param.docTopType);
+		//console.log(layer4Data);
+
+		
 
         $.ajax({
             url: '/uiLearning/insertDoctypeMapping',
@@ -107,31 +139,94 @@ function popUpRunEvent() {
             data: JSON.stringify(param),
             contentType: 'application/json; charset=UTF-8',
             beforeSend: function () {
+                $('#progressMsgTitle').html('문서양식 저장중...');
                 progressId = showProgressBar();
             },
             success: function (data) {
-                $('#docName').text(docName);
-                $('#docType').val(data.docType);
-                $('#docSid').val(data.docSid);
-                $('#docPredictionScore').text('');
-                lineText[currentImgCount].data.docCategory.DOCNAME = data.docName;
-                lineText[currentImgCount].data.docCategory.DOCTYPE = data.docType;
-                lineText[currentImgCount].data.docSid = data.docSid;
-                $('#btn_pop_doc_cancel').click();
+                //location.href = location.href;
+                // 해당 로우 화면상 테이블에서 삭제
                 endProgressBar(progressId);
+                var rowNum = $('#batchListRowNum').val();
+                $('#leftRowNum_' + rowNum).find('td:eq(2) a').html(data.docName);
+                $('#leftRowNum_' + rowNum).find('td:eq(2) input[name=docType]').val(data.docType);
+                fn_alert('alert', '문서 양식 저장이 완료 되었습니다.');
+                $('#layer4 .cbtn').click();
             },
             error: function (err) {
                 console.log(err);
+                endProgressBar(progressId);
             }
-        });
+        });           
+        
+        /*
+        $.ajax({
+            url: '/batchLearningTest/insertDoctypeMapping',
+            type: 'post',
+            datatype: 'json',
+            data: JSON.stringify(param),
+            contentType: 'application/json; charset=UTF-8',
+            beforeSend: function () {
+                $('#progressMsgTitle').html('문서양식 저장중...');
+                progressId = showProgressBar();
+            },
+            success: function (data) {
+                //location.href = location.href;
+                // 해당 로우 화면상 테이블에서 삭제               
+                setTimeout(function () {
+                    endProgressBar(progressId);
+                    fn_alert('alert', '문서 등록이 완료 되었습니다.');
+                    $('#btn_pop_doc_cancel.ui_doc_pop_btn2.cbtn').click();
+                    var rowNum = $('#batchListRowNum').val();
+                    $('#leftRowNum_' + rowNum).remove();
+                    $('.rowNum' + rowNum).remove();
+                    $('.mlRowNum' + rowNum).remove();
+                }, 5000);
+                
+                endProgressBar(progressId);
+                $('#btn_pop_doc_cancel').click();
+                var rowNum = $('#batchListRowNum').val();
+                $('#leftRowNum_' + rowNum).remove();
+                $('.rowNum' + rowNum).remove();
+                $('.mlRowNum' + rowNum).remove();
+                
+            },
+            error: function (err) {
+                console.log(err);
+                endProgressBar(progressId);
+            }
+        });  
+        */
     })
+
+    // 20180910 hskim 문장 선택 결과 같이 전송
+    /*
+    $('#btn_pop_doc_run').click(function (e) {
+        var docData = JSON.parse($('#docData').val());
+        for (var i in docData) {
+            if ($('#searchResultDocName').val() == docData[i].DOCNAME) {
+                $('#docName').text(docData[i].DOCNAME);
+                $('#docData').val(JSON.stringify(docData[i]));
+                break;
+            }
+        }
+        $(this).parents('.poplayer').fadeOut();
+        e.stopPropagation();
+        e.preventDefault();
+    });
+    $('#btn_pop_doc_cancel').click(function (e) {
+        $('#docData').val('');
+
+        e.stopPropagation();
+        e.preventDefault();
+    });
+    */
 }
+
 
 //팝업 문서 양식 LIKE 조회
 function popUpSearchDocCategory() {
     $('#searchDocCategoryBtn').click(function () {
-        var keyword = $('#searchDocCategoryKeyword').val();
-        //var keyword = $('#searchDocCategoryKeyword').val().replace(/ /gi, '');
+        var keyword = $('#searchDocCategoryKeyword').val().replace(/ /gi, '');
 
         if (keyword) {
             $('#docSearchResultImg_thumbCount').hide();
@@ -141,23 +236,28 @@ function popUpSearchDocCategory() {
             $('#searchResultDocName').val('');
             $('#countCurrent').html('1');
             $.ajax({
-                url: '/batchLearning/selectLikeDocCategory',
+                url: '/uiLearning/selectLikeDocCategory',
                 type: 'post',
                 datatype: 'json',
                 data: JSON.stringify({ 'keyword': keyword }),
                 contentType: 'application/json; charset=UTF-8',
                 success: function (data) {
                     data = data.data;
+                    //$('#docData').val(JSON.stringify(data));
                     $('#docSearchResult').html('');
-                    $('.button_control10 .button_control11').attr('disabled', true);
-                    $('.button_control10 .button_control12').attr('disabled', true);
+                    //$('#countCurrent').html('1');
+                    $('.button_control10').attr('disabled', true);
                     docPopImagesCurrentCount = 1;
                     if (data.length == 0) {
                         return false;
                     } else {
+                        /**
+                         결과에 따른 이미지폼 만들기
+                         */
                         docPopImages = data;
+						console.log(docPopImages);
+                        var searchResultImg = '<img id="searchResultImg" src="/sample/' + docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH + '">';
 
-                        var searchResultImg = '<img id="searchResultImg" src="/jpg' + docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH + '" style="width: 100%;height: 480px;">';
                         $('#docSearchResult').empty().append(searchResultImg);
 
                         $('#searchResultDocName').val(data[0].DOCNAME);
@@ -689,10 +789,9 @@ function selectClassificationSt(filepath) {
     var param = {
         filepath: filepath
     };
-    var resultOcrData = '';
+
     $.ajax({
-        //todo
-        url: '/batchLearning/selectClassificationSt',
+        url: '/uiLearning/selectClassificationSt',
         type: 'post',
         datatype: "json",
         data: JSON.stringify(param),
@@ -702,46 +801,43 @@ function selectClassificationSt(filepath) {
         },
         success: function (data) {
             //console.log("SUCCESS selectClassificationSt : " + JSON.stringify(data));
-            if (data.code != 500 || data.data != null) {
+            if (data.code != 500 && data.data.length == 1) {
 
-                var ocrdata = JSON.parse($('#ocrData').val());
+                var ocrdata = JSON.parse(data.data[0].OCRDATA);
 
                 //순서 정렬 로직
                 let tempArr = new Array();
                 for (let item in ocrdata) {
-                    tempArr[item] = new Array(makeindex(ocrdata[item].location), ocrdata[item]);
+                    tempArr[item] = new Array(makeindex(ocrdata[item].location),   ocrdata[item]);
                 }
 
                 tempArr.sort(function (a1, a2) {
                     a1[0] = parseInt(a1[0]);
                     a2[0] = parseInt(a2[0]);
-                    return (a1[0] < a2[0]) ? -1 : ((a1[0] > a2[0]) ? 1 : 0);
+                    return (a1[0]<a2[0]) ? -1 : ((a1[0]>a2[0]) ? 1 : 0);
                 });
 
                 for (let i = 0; i < tempArr.length; i++) {
 
-                    var bannedCheck = true;
-                    for (let j = 0; j < data.bannedData.length; j++) {
-                        if (tempArr[i][1].text.toLowerCase().indexOf(data.bannedData[j].WORD) == 0) {
-                            bannedCheck = false;
-                            break;
-                        }
-                    }
-
-                    if (bannedCheck) {
-                        resultOcrData += '<tr class="ui_layer1_result_tr">';
-                        resultOcrData += '<td><input type="checkbox" class="ui_layer1_result_chk"></td>';
-                        resultOcrData += '<td class="td_bannedword">' + tempArr[i][1].text + '</td></tr>';
-                    } else {
-                        resultOcrData += '<tr class="ui_layer1_result_tr">';
-                        resultOcrData += '<td><input type="checkbox" checked="checked" class="ui_layer1_result_chk"></td>';
-                        resultOcrData += '<td class="td_bannedword">' + tempArr[i][1].text + '</td></tr>';
-                    }
-
+                    var resultOcrData = '<tr class="batch_layer4_result_tr">'
+                                    + '<td><input type="checkbox" class="batch_layer4_result_chk"></td>'
+                                    + '<td class="td_sentence"></td></tr>';
+                    $('#batch_layer4_result').append(resultOcrData);
+                    
+                    $('.td_sentence:eq('+ i +')').text(tempArr[i][1].text);
                 }
-                $('#ui_layer1_result').empty().append(resultOcrData);
-                $('input[type=checkbox]').ezMark();
+                $('#batch_layer4_result input[type=checkbox]').ezMark();
 
+                for (var i = 0; i < $("input[type='checkbox'].batch_layer4_result_chk").length; i++) {
+                    $("input[type='checkbox'].batch_layer4_result_chk").eq(i).parent().removeClass("ez-hide");
+                    $("input[type='checkbox'].batch_layer4_result_chk").eq(i).prop("checked", true);
+                    $("input[type='checkbox'].batch_layer4_result_chk").eq(i).parent().addClass("ez-checked")
+    
+                    if (i == 20) {
+                        break;
+                    }
+                }
+                
             }
 
         },
@@ -1615,7 +1711,7 @@ function changeDocPopupImage() {
             $('#countCurrent').html(docPopImagesCurrentCount);
             $('#orgDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
             $('#searchResultDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
-            $('#searchResultImg').attr('src', '/jpg' + docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH);
+            $('#searchResultImg').attr('src', '/sample/' + docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH);
             if (docPopImagesCurrentCount == 1) {
                 $('#docSearchResultImg_thumbPrev').attr('disabled', true);
             } else {
@@ -1634,7 +1730,7 @@ function changeDocPopupImage() {
             $('#countCurrent').html(docPopImagesCurrentCount);
             $('#orgDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
             $('#searchResultDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
-            $('#searchResultImg').attr('src', '/jpg' + docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH);
+            $('#searchResultImg').attr('src', '/sample' + docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH);
             if (docPopImagesCurrentCount == totalCount) {
                 $('#docSearchResultImg_thumbNext').attr('disabled', true);
             } else {
@@ -1655,7 +1751,7 @@ function changeOcrDocPopupImage() {
             return false;
         } else {
             currentImgCount--;
-            var appendImg = '<img id="originImg" src="/tif/' + lineText[currentImgCount].fileName + '" style="width: 100%;height: 480px;">'
+            var appendImg = '<img id="originImg" src="/tif/' + lineText[currentImgCount].fileName + '">'
             $('#originImgDiv').html(appendImg);
             selectClassificationStOcr('', currentImgCount);
             if (currentImgCount == 0) {
@@ -1672,7 +1768,7 @@ function changeOcrDocPopupImage() {
             return false;
         } else {
             currentImgCount++;
-            var appendImg = '<img id="originImg" src="/tif/' + lineText[currentImgCount].fileName + '" style="width: 100%;height: 480px;">'
+            var appendImg = '<img id="originImg" src="/tif/' + lineText[currentImgCount].fileName + '">'
             $('#originImgDiv').html(appendImg);
             selectClassificationStOcr('', currentImgCount);
             if (currentImgCount == totalImgCount) {
@@ -1750,4 +1846,139 @@ function selectClassificationStOcr(filepath, currentImgCount) {
             console.log(err);
         }
     })
+}
+$(document).on('click', '#docCompareBtn',function(){
+    var text1 = [{"location":"121,202,615,40","text":"Migros-Genossenschafts-Bund"},{"location":"1642,132,543,100","text":"MIGROS"},{"location":"121,512,199,22","text":"Bestellnummer:"},{"location":"121,566,174,22","text":"Bestelldatum:"},{"location":"501,497,212,37","text":"14384281"},{"location":"498,557,207,32","text":"20.12.2017"},{"location":"499,811,225,22","text":"Produktbeschrieb"},{"location":"499,860,56,22","text":"EAN"},{"location":"1632,502,141,32","text":"Seite 2/"},{"location":"1808,503,20,30","text":"2"},{"location":"121,811,54,22","text":"pos."},{"location":"121,947,38,28","text":"10"},{"location":"213,811,80,22","text":"Artikel"},{"location":"215,860,133,22","text":"Lief.art.Nr."},{"location":"1502,811,175,28","text":"Bestellmenge"},{"location":"1590,860,88,22","text":"Einheit"},{"location":"1617,947,59,28","text":"100"},{"location":"215,947,817,36","text":"772223500000 Samsung HW-M360 Soundbar"},{"location":"216,1007,553,29","text":"HW-M360/EN 8806088679716"},{"location":"205,1068,448,28","text":"Kontraktnummer 21119331"},{"location":"1725,811,213,27","text":"Preis pro Einheit"},{"location":"1849,860,86,22","text":"CU/TU"},{"location":"1824,947,108,28","text":"181.61"},{"location":"1846,1008,90,28","text":"1 .ooo"},{"location":"1832,1168,83,32","text":"Cl-IF"},{"location":"1797,3353,141,16","text":"P12 / 550 / 025"},{"location":"2118,810,126,29","text":"VP (CHF)"},{"location":"2158,860,85,22","text":"CU/LU"},{"location":"2154,1008,89,28","text":"1 .ooo"},{"location":"2048,1169,182,37","text":"18,161.oo"},{"location":"122,1169,220,31","text":"Bestelltotal"},{"location":"122,1367,613,39","text":"Migros-Genossenschafts-Bund"},{"location":"119,1417,359,36","text":"Zrich, 20.12.2017"}];
+    var text11 = JSON.parse(JSON.stringify(text1));
+    var text2 = [{"location":"298,202,615,40","text":"Migros-Genossenschafts-Bund"},{"location":"298,557,748,40","text":"Samsung Electronics Switzerland GmbH"},{"location":"299,606,398,32","text":"Giesshbelstrasse 30"},{"location":"298,656,217,31","text":"8045 Zrich"},{"location":"300,1182,444,55","text":"Lagerbestellung"},{"location":"1642,132,544,100","text":"MIGROS"},{"location":"1632,557,430,29","text":"Migros-Genossenschafs-Bund"},{"location":"1632,599,245,22","text":"Limmatstrasse 152"},{"location":"1632,640,185,22","text":"Postfach 1766"},{"location":"1631,681,204,23","text":"CH-8031 ZOrich"},{"location":"1631,722,373,29","text":"Telefon +41 (0) 44 277 21 11"},{"location":"1632,805,469,22","text":"MwSt-Nr.: CHE-105.829.940 MWST"},{"location":"1633,1300,140,31","text":"Seite 1 /"},{"location":"1808,1300,20,30","text":"2"},{"location":"298,1321,199,22","text":"Bestellnummer:"},{"location":"298,1375,199,22","text":"Lieferanten-Nr. :"},{"location":"298,1430,174,22","text":"Bestelldatum:"},{"location":"297,1538,236,22","text":"Sachbearbeiter/In:"},{"location":"298,1593,140,22","text":"Direktwahl:"},{"location":"298,1647,87,22","text":"E-Mail:"},{"location":"296,1701,210,23","text":"Telefon Einkauf:"},{"location":"296,1755,102,23","text":"Telefax:"},{"location":"298,1918,306,23","text":"Liefertermin eintreffend:"},{"location":"298,1973,181,22","text":"Lieferadresse:"},{"location":"298,2082,186,28","text":"Logistikklasse:"},{"location":"298,2136,206,22","text":"Incoterms 2010:"},{"location":"298,2190,281,23","text":"Liefertermin Incotem:"},{"location":"296,2300,276,28","text":"Zahlungskonditionen:"},{"location":"297,2404,103,28","text":"Wichtig:"},{"location":"714,1306,212,36","text":"14384281"},{"location":"714,1366,180,31","text":"10030394"},{"location":"711,1420,206,31","text":"20.12.2017"},{"location":"713,1530,260,30","text":"Ronald Lumor"},{"location":"712,1584,376,38","text":"+41 (0) 44 277 27 61"},{"location":"713,1638,436,39","text":"Ronald.Lumor@mgb.ch"},{"location":"712,1692,379,39","text":"+41 (0) 44 277 36 51"},{"location":"714,1910,203,30","text":"10.01 .2018"},{"location":"713,1964,467,31","text":"MVN - Betrieb Neuendorf"},{"location":"710,2019,301,30","text":"4623 Neuendorf"},{"location":"713,2074,105,38","text":"Lager"},{"location":"713,2127,676,39","text":"DDP Migros Lager/Depot/Stock DDP"},{"location":"713,2182,205,31","text":"10.01.2018"},{"location":"711,2291,255,39","text":"30 Tage netto"},{"location":"712,2394,1553,40","text":"Bitte vermerken Sie auf all unseren Dokumenten (Rechnung,Lieferschein etc.)"},{"location":"712,2444,944,38","text":"unsere Bestell-, Kontrakt-, und Artikelnummern."},{"location":"710,2543,1252,40","text":"Terminverschiebungen sind unverzglich dem oben erwhnten"},{"location":"709,2593,561,39","text":"Ansprechpartner zu melden."}];
+    var text22 = JSON.parse(JSON.stringify(text2));
+
+    var data1 = {
+        data: [{colLbl: -1,
+            location: "1642,132,544,100",
+            mappingSid: "4,1642,132,2186,99567,0,0,0,0",
+            originText: "MIGROS",
+            sid: "99567,0,0,0,0",
+            text: "MIGROS"}, {entryLbl: "221",
+            location: "298,202,615,40",
+            mappingSid: "4,298,202,913,99577,0,0,0,0",
+            originText: "Migros-Genossenschafts-Bund",
+            sid: "99577,0,0,0,0",
+            text: "Migros-Genossenschafts-Bund"}
+        ],
+        docCategory: {
+            DOCNAME: "Migros",
+            DOCSOCRE: 0.99,
+            DOCTOPTYPE: 37,
+            DOCTYPE: 4,
+            SAMPLEIMAGEPATH: "/sampleDocImage/14409732-0.png",
+            SEQNUM: 213
+        },
+        fileinfo: {
+            filepath: "C:/ICR/uploads/14384281-0.png",
+            imgId: "201901172245871000000"
+        },
+        labelData: [{ENGNM: "Not Entry", KORNM: null, SEQNUM: "220", DOCID: "37", AMOUNT: "not"}, {ENGNM: "Buyer", KORNM: null, SEQNUM: "221", DOCID: "37", AMOUNT: "single"},
+                {ENGNM: "PO Number", KORNM: null, SEQNUM: "222", DOCID: "37", AMOUNT: "single"}, {ENGNM: "PO Date", KORNM: null, SEQNUM: "223", DOCID: "37", AMOUNT: "single"},
+                {ENGNM: "Delivery Address", KORNM: null, SEQNUM: "224", DOCID: "37", AMOUNT: "single"}, {ENGNM: "Total Price", KORNM: null, SEQNUM: "226", DOCID: "37", AMOUNT: "single"},
+                {ENGNM: "Currency", KORNM: null, SEQNUM: "227", DOCID: "37", AMOUNT: "single"}, {ENGNM: "Material", KORNM: null, SEQNUM: "228", DOCID: "37", AMOUNT: "multi"},
+                {ENGNM: "EAN", KORNM: null, SEQNUM: "229", DOCID: "37", AMOUNT: "multi"}, {ENGNM: "Requested Delivery Date", KORNM: null, SEQNUM: "230", DOCID: "37", AMOUNT: "single"},
+                {ENGNM: "Quantity", KORNM: null, SEQNUM: "231", DOCID: "37", AMOUNT: "multi"}, {ENGNM: "Unit Price", KORNM: null, SEQNUM: "232", DOCID: "37", AMOUNT: "multi"},
+                {ENGNM: "Item Total", KORNM: null, SEQNUM: "233", DOCID: "37", AMOUNT: "multi"}, {ENGNM: "Serial Number", KORNM: null, SEQNUM: "234", DOCID: "37", AMOUNT: "multi"}
+        ]
+    };
+
+    var data2 = {
+        data: text22,
+        docCategory: {
+            DOCNAME: "Migros",
+            DOCSOCRE: 0.99,
+            DOCTOPTYPE: 37,
+            DOCTYPE: 4,
+            SAMPLEIMAGEPATH: "/sampleDocImage/14409732-0.png",
+            SEQNUM: 213
+        },
+        fileinfo: {
+            filepath: "C:/ICR/uploads/14384281-0.png",
+            imgId: "201901172245871000000"
+        },
+        labelData: [{ENGNM: "Not Entry", KORNM: null, SEQNUM: "220", DOCID: "37", AMOUNT: "not"}, {ENGNM: "Buyer", KORNM: null, SEQNUM: "221", DOCID: "37", AMOUNT: "single"},
+                {ENGNM: "PO Number", KORNM: null, SEQNUM: "222", DOCID: "37", AMOUNT: "single"}, {ENGNM: "PO Date", KORNM: null, SEQNUM: "223", DOCID: "37", AMOUNT: "single"},
+                {ENGNM: "Delivery Address", KORNM: null, SEQNUM: "224", DOCID: "37", AMOUNT: "single"}, {ENGNM: "Total Price", KORNM: null, SEQNUM: "226", DOCID: "37", AMOUNT: "single"},
+                {ENGNM: "Currency", KORNM: null, SEQNUM: "227", DOCID: "37", AMOUNT: "single"}, {ENGNM: "Material", KORNM: null, SEQNUM: "228", DOCID: "37", AMOUNT: "multi"},
+                {ENGNM: "EAN", KORNM: null, SEQNUM: "229", DOCID: "37", AMOUNT: "multi"}, {ENGNM: "Requested Delivery Date", KORNM: null, SEQNUM: "230", DOCID: "37", AMOUNT: "single"},
+                {ENGNM: "Quantity", KORNM: null, SEQNUM: "231", DOCID: "37", AMOUNT: "multi"}, {ENGNM: "Unit Price", KORNM: null, SEQNUM: "232", DOCID: "37", AMOUNT: "multi"},
+                {ENGNM: "Item Total", KORNM: null, SEQNUM: "233", DOCID: "37", AMOUNT: "multi"}, {ENGNM: "Serial Number", KORNM: null, SEQNUM: "234", DOCID: "37", AMOUNT: "multi"}
+        ]
+    }
+    var data = {data: [data1, data2]};
+
+    fn_viewDoctypePop(data);
+})
+function fn_viewDoctypePop(obj) {
+    //20180910 filepath로 ocr 데이터 조회 후 text값만 가져올 것
+	//console.log(modifyData);
+	var data = obj.data[0];
+	layer4Data = obj.data[0];
+	var filepath = data.fileinfo.filepath;
+	var imgId = data.fileinfo.imgId;
+    //var rowIdx = $(obj).closest('tr').attr('id').split('_')[1];
+	var fileName = nvl(filepath.substring(filepath.lastIndexOf('/') + 1));
+	var mlDocName = data.docCategory.DOCNAME;
+	var mlPercent = data.docCategory.DOCSCORE;
+
+	console.log("filepath : " + filepath);
+	console.log("imgId : " + imgId);
+	console.log("fileName : " + fileName);
+	console.log("mlDocName : " + mlDocName);
+	console.log("mlPercent : " + mlPercent);
+
+    //$('#batchListRowNum').val(rowIdx);
+    $('#docPopImgId').val(imgId);
+	$('#docPopImgPath').val(filepath);
+	
+    initLayer4();
+    selectClassificationSt(filepath); // 분류제외문장 렌더링
+    //$('#mlPredictionDocName').val('UNKNOWN');
+	//var filename = filename.split('.')[0];
+    var appendPngHtml = '';
+    //if(imgCount == 1) {
+		//var pngName = fileName + '.png';
+		appendPngHtml += '<img src="/img/' + fileName +'" id="originImg">';
+    //} else {
+
+    //    for(var i = 0; i < imgCount; i++) {
+    //        var pngName = filename + '-' + i + '.png';
+    //        appendPngHtml += '<img src="/img/' + pngName +'" style="width: 100%; height: auto; margin-bottom: 20px;">';
+    //    }
+	//}
+	//$('#div_view_image').empty().append(appendPngHtml);
+	$('#originImgDiv').empty().append(appendPngHtml);
+	$('#mlPredictionDocName').val(mlDocName);
+	$('#mlPredictionPercent').val(mlPercent);
+	//$('#mlData').val(data);
+	$('#imgNumIpt').val(1);
+	$('#imgTotalCnt').html(1);
+	
+	layer_open('layer4');
+	$('#div_view_image').scrollTop(0);
+
+}
+
+function initLayer4() {
+    $('#originImgDiv').empty();
+    $('#mlPredictionDocName').val('');
+    $('#docSearchResultImg_thumbCount').hide();
+    $('#docSearchResultMask').hide();
+    $('#countCurrent').empty();
+    $('#countLast').empty();
+    $('#mlPredictionPercent').val('');
+    $('#orgDocSearchRadio').click();
+    $('.ui_doc_pop_ipt').val('');
+    $('#docSearchResult').empty();
+    $('#searchResultDocName').val('');
+    $('#searchDocCategoryKeyword').val('');
+    $('#batch_layer4_result').empty();
+    $('#allCheckClassifySentenses').prop('checked', false);
+    $('#allCheckClassifySentenses').closest('.ez-checkbox').removeClass('ez-checked');
 }

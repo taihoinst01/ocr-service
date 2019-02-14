@@ -206,7 +206,7 @@ body.bg_login { background-image: url(../img/bg_login.png); width: 100%;height: 
 .content_sub_document_title_name { float: left; font: 600 15px 'NanumGothicR'; padding: 20px 0 0 0; }
 .float_right { float: right; }
 .ui_image_div { height: 535px !important; }
-#uiTrainBtn { padding-left: 0; min-width: 100px; }
+#uiTrainBtn { padding-left: 0; min-width: 140px; }
 #uiTrainBtn p { margin-top: 5px; }
 #imageBox span { text-align: center; }
 .page_ui { padding-top: 10px; }
@@ -5524,12 +5524,12 @@ label[disabled] {
     max-height: 150px;
 }
 #docSearchResultMask {
-    width: 496px;
-    height: 481px;
+    width: 473px;
+    height: 560px;
     opacity: 0.3;
     position: absolute;
-    left: 1079px;
-    top: 216px;
+    left: 604px;
+    top: 217px;
     z-index: 260;
     background-color: #000;
     display: none;
@@ -5626,7 +5626,7 @@ label[disabled] {
 .docSearchResultImg_count {
     position: absolute;
     display: inline-block;
-    top: 670px !important;
+    top: 750px !important;
     right: 235px !important;
     z-index: 500;
     display: none;
@@ -6545,7 +6545,7 @@ input:disabled {
 }
 
 .imgbox {
-    height: 480px;
+    height: 560px;
     width: 100%;
 }
 .pop_header h1 {

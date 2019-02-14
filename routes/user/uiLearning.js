@@ -16,6 +16,7 @@ var pythonConfig = require(appRoot + '/config/pythonConfig');
 var PythonShell = require('python-shell');
 var ui = require('../util/ui.js');
 var transPantternVar = require('./transPattern');
+var batch = require('../util/batch.js');
 const upload = multer({
     storage: multer.diskStorage({
         destination: function (req, file, cb) {
@@ -102,31 +103,6 @@ router.post('/uiLearnTraining', function (req, res) {
             res.send(returnObj);
         }
 
-    });
-});
-
-// 문서양식매핑
-router.post('/insertDoctypeMapping', function (req, res) {
-    var returnObj;
-
-    var data = {
-        filepath: req.body.filepath,
-        docName: req.body.docName,
-        radioType: req.body.radioType,
-        textList: req.body.textList
-    }
-
-    sync.fiber(function () {
-        try {
-            let data = req.body;
-            var result = sync.await(ui.insertDoctypeMapping(data, sync.defer()));
-            returnObj = { code: 200, docType: result[0], docSid: result[1] };
-        } catch (e) {
-            console.log(e);
-            returnObj = { code: 500, message: e };
-        } finally {
-            res.send(returnObj);
-        }
     });
 });
 
@@ -1002,4 +978,74 @@ router.get('/trainFormMapping', function (req, res) {
     }
 });
 
+// 분류제외문장조회
+router.post('/selectClassificationSt', function (req, res) {
+    var returnObj;
+    var filepath = req.body.filepath;
+    var data = [];
+    data.push(req.body.filepath);
+
+    sync.fiber(function () {
+        try {
+            var result = sync.await(oracle.selectClassificationSt(data, sync.defer()));
+            if (result.rows) {
+                returnObj = { data: result.rows };
+            } else {
+                returnObj = { data: null };
+            }
+        } catch (e) {
+            console.log(e);
+            returnObj = { code: 500, message: e };
+        } finally {
+            res.send(returnObj);
+        }
+    });
+});
+
+router.post('/selectLikeDocCategory', function (req, res) {
+    var keyword = '%' + req.body.keyword + '%';
+    var returnObj;
+
+    sync.fiber(function () {
+        try {
+            var result = sync.await(oracle.selectDocumentCategory(keyword, sync.defer()));
+            if (result.rows) {
+                returnObj = { data : result.rows };
+            } else {
+                returnObj = { data: null };
+            }
+        } catch (e) {
+            console.log(e);
+            returnObj = { code: 500, message: e };
+        } finally {
+            res.send(returnObj);
+        }
+    });
+});
+
+// 문서양식매핑
+router.post('/insertDoctypeMapping', function (req, res) {
+    var returnObj;
+
+    var data = {
+        imgId: req.body.imgId,
+        filepath: req.body.filepath,
+        docName: req.body.docName,
+        radioType: req.body.radioType,
+        textList: req.body.textList
+    }
+
+    sync.fiber(function () {
+        try {
+            let data = req.body;
+            returnObj = sync.await(batch.insertDoctypeMapping(data, sync.defer()));
+           
+        } catch (e) {
+            console.log(e);
+            returnObj = { code: 500, message: e };
+        } finally {
+            res.send(returnObj);
+        }
+    });
+});
 module.exports = router;

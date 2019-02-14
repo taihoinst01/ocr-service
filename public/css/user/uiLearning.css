@@ -19,8 +19,8 @@ button[disabled] { opacity: 0.5; cursor: default; }
 
 /*문서비교 팝업*/
 .doc_popup { width: 1200px; }
-.imgbox { border: 1px solid #dadada; height: 480px;}
-.imgbox > img { width:450px; height: 600px; }
+.imgbox { border: 1px solid #dadada; height: 560px;}
+.imgbox > img { width:100%; height: 560px; }
 .float-left { float: left; }
 .float-right { float: right; }
 #docName { color: #EA7169; }
