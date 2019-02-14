@@ -1184,6 +1184,24 @@ router.post('/insertDoctypeMapping', function (req, res) {
     });
 });
 
+
+router.post('/selectIcrLabelDef', function (req, res) {
+    var returnObj;
+
+    sync.fiber(function () {
+        try {
+            let docTopType = req.body.docToptype;
+            var labelList = sync.await(oracle.selectIcrLabelDef(docTopType, sync.defer())).rows;
+            returnObj = {code: 200, "labelList": labelList};
+        } catch (e) {
+            console.log(e);
+            returnObj = { code: 500, message: e };
+        } finally {
+            res.send(returnObj);
+        }
+    });
+});
+
 function exists(path) {
     try {
         fs.accessSync(path);

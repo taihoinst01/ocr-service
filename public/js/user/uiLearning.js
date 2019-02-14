@@ -1130,7 +1130,7 @@ function checkBoxMLCssEvent() {
 // 컬럼 select html 가공 함수
 function appendOptionHtml(targetColumn, columns) {
 
-    var selectHTML = '<select>';
+    var selectHTML = '<select class="docLabel">';
     for (var i in columns) {
         var optionHTML = '';
         if (targetColumn == columns[i].COLNUM) {
@@ -1148,7 +1148,7 @@ function appendOptionHtml(targetColumn, columns) {
 // Entry컬럼 select html 가공 함수
 function appendEntryOptionHtml(targetColumn, columns) {
 
-    var selectHTML = '<select>';
+    var selectHTML = '<select class="docLabel">';
     for (var i in columns) {
         var optionHTML = '';
         if (targetColumn == columns[i].COLNUM) {
@@ -2007,7 +2007,7 @@ function fn_uiDocTopType(docCategory) {
 
 function appendSelOptionHtml(targetColumn, columns, docTopType) {
 
-    var selectHTML = '<select>';
+    var selectHTML = '<select class="docLabel">';
     var optionHTML = '';
     optionHTML = '<option value="-1">Unknown</option>';
     selectHTML += optionHTML;
@@ -2185,3 +2185,36 @@ function uiLayerHtml(data) {
 
     })
 }
+
+$(document).on('change', '#uiDocTopType', function(){
+    var docToptype = $(this).val();
+    
+    var param = {
+        "docToptype": docToptype
+    }
+    
+    $.ajax({
+        url: '/uiLearning/selectIcrLabelDef',
+        type: 'post',
+        datatype: 'json',
+        data: JSON.stringify(param),
+        contentType: 'application/json; charset=UTF-8',
+        success: function (data) {
+            if (data.code == 200) {
+                console.log(data);
+                var labelList = data.labelList;
+                var appendSelectOptionHtml = '<option value="-1">Unknown</option>';
+                for(var i = 0; i < labelList.length; i++) {
+                    appendSelectOptionHtml += '<option value="' + labelList[i].SEQNUM + '">' + labelList[i].ENGNM + '</option>';
+                }
+                $('.docLabel').empty().append(appendSelectOptionHtml);
+
+            } else {
+                fn_alert('alert', data.message);
+            }
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
+})
