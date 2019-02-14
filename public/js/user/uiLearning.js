@@ -381,11 +381,16 @@ function processImage(fileInfo) {
             //console.log(data);
             //thumbImgs.push(fileInfo.convertFileName);
             $('#progressMsgTitle').html('OCR 처리 완료');
+
+            uiLayerHtml(data);
             //addProgressBar(31, 40);
             if (ocrCount == 1) {
                 $('#ocrData').val(JSON.stringify(data));
             }
-            appendOcrData(fileInfo, data);
+            //appendOcrData(fileInfo, data);
+            $('#uploadForm').hide();
+            $('#uploadSucessForm').show()
+            endProgressBar(progressId);
         } else if (data.error) { //ocr 이외 에러이면
             //endProgressBar();
             //fn_alert('alert', data.error);
@@ -1786,5 +1791,263 @@ function selectClassificationStOcr(filepath, currentImgCount) {
         error: function (err) {
             console.log(err);
         }
+    })
+}
+
+
+
+// UI학습 팝업 초기화
+var fn_initUiTraining = function () {
+    $('#imgNameTag').text('');
+    $("#uiImg").html('');
+    $("#textResultTbl").html('');
+};
+
+function fn_uiDocTopType(docCategory) {
+    var docTopType = docCategory.DOCTOPTYPE;
+
+    $.ajax({
+        url: '/batchLearningTest/uiDocTopType',
+        type: 'post',
+        datatype: 'json',
+        data: JSON.stringify({ 'docTopType': docTopType }),
+        contentType: 'application/json; charset=UTF-8',
+        success: function (data) {
+            var selHtmlText = "";
+            if (data.docTopData) {
+                $('#uiDocTopTypeDiv').empty();
+                selHtmlText += "<select id='uiDocTopType'>"  
+                                
+                for (var i = 0; i < data.docTopData.length; i++) {
+                    if (docTopType && docTopType == data.docTopData[i].SEQNUM) {
+                        selHtmlText += "<option value='" + data.docTopData[i].SEQNUM + "' selected>" + data.docTopData[i].ENGNM + "</option>";
+                    } else {
+                        selHtmlText += "<option value='" + data.docTopData[i].SEQNUM + "'>" + data.docTopData[i].ENGNM + "</option>";
+                    }
+
+                }
+
+                selHtmlText += "</select>"
+
+            }
+
+            $("#uiDocTopTypeDiv").html(selHtmlText);    
+            $("#uiDocTopType").stbDropdown();
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
+}
+
+function fn_viewDoctypePop(obj) {
+    //20180910 filepath로 ocr 데이터 조회 후 text값만 가져올 것
+    var data = $(obj).closest('tr').find('.fileNamePath');
+    var filepath = data.attr('data-filepath');
+    var imgId = data.attr('data-imgId');
+    var rowIdx = $(obj).closest('tr').attr('id').split('_')[1];
+    var fileName = nvl(filepath.substring(filepath.lastIndexOf('/') + 1));
+    $('#batchListRowNum').val(rowIdx);
+    $('#docPopImgId').val(imgId);
+    $('#docPopImgPath').val(filepath);
+    initLayer4();
+    selectClassificationSt(filepath); // 분류제외문장 렌더링
+    //$('#mlPredictionDocName').val('UNKNOWN');
+
+    loadImage('/tif/' + fileName, function (tifResult) {
+ 
+        if (tifResult) {
+            $(tifResult).css({
+                "width": "100%",
+                "height": "100%",
+                "display": "block"
+            }).addClass("preview");
+            $('#originImgDiv').empty().append(tifResult);
+        }
+        $('#docPopImgPath').val(filepath);
+
+        layer_open('layer4');
+    });
+
+}
+
+function appendSelOptionHtml(targetColumn, columns, docTopType) {
+
+    var selectHTML = '<select>';
+    var optionHTML = '';
+    optionHTML = '<option value="-1">Unknown</option>';
+    selectHTML += optionHTML;
+    for (var i in columns) {
+        if(docTopType == columns[i].DOCID){
+            if (targetColumn == columns[i].SEQNUM) {
+                optionHTML = '<option value="' + columns[i].SEQNUM + '" selected>' + columns[i].ENGNM + '</option>';
+            } else {
+                optionHTML = '<option value="' + columns[i].SEQNUM + '">' + columns[i].ENGNM + '</option>';
+            }
+            selectHTML += optionHTML;
+        }
+    }
+    selectHTML += '</select>';
+
+    return selectHTML;
+}
+
+// UI 레이어 화면 구성 함수
+function uiLayerHtml(data) {
+    var mlData = data.data[0].data;
+    mlDataList = mlData;
+    var labelData = data.data[0].labelData;
+    labelDataList = labelData;
+	var docToptype = data.data[0].docCategory.DOCTOPTYPE;
+	//console.log(modifyData);
+    //var fileName = filePath.substring(filePath.lastIndexOf('/') + 1, filePath.length);
+    fn_initUiTraining(); // 레이어 초기화
+    fn_uiDocTopType(data.data[0].docCategory); // Top Type select box 생성
+	$('#docName').html(data.data[0].docCategory.DOCNAME);
+	$('#docPredictionScore').html(data.data[0].docCategory.DOCSCORE * 100);
+	$('#docPredictionScore').append('%');
+
+	if ($('#docPredictionScore').val() >= 90) {
+		$('#docName').css('color', 'dodgerblue');
+		$('#docPredictionScore').css('color', 'dodgerblue');
+	} else {
+		$('#docName').css('color', 'darkred');
+		$('#docPredictionScore').css('color', 'darkred');
+	}
+
+	$('#docName').click(function () { fn_viewDoctypePop(data) });
+	$('#docPredictionScore').click(function () { fn_viewDoctypePop(data) });
+	$('#docCompareBtn').click(function () { fn_viewDoctypePop(data) });
+    layer_open('layer2');
+
+
+    $('#imgNameTag').text(data.data[0].fileinfo.filepath);
+
+    var mainImgHtml = '';
+    mainImgHtml += '<div id="mainImage" class="ui_mainImage">';
+    mainImgHtml += '<div id="redNemo">';
+    mainImgHtml += '</div>';
+    mainImgHtml += '</div>';
+    mainImgHtml += '<div id="imageZoom" ondblclick="viewOriginImg()">';
+    mainImgHtml += '<div id="redZoomNemo">';
+    mainImgHtml += '</div>';
+    mainImgHtml += '</div>';
+    $('#img_content').html(mainImgHtml);
+
+    /*
+    var fileName = nvl(data.data[0].fileinfo.filepath.substring(data.data[0].fileinfo.filepath.lastIndexOf('/') + 1));
+    fileName = fileName.substring(0, fileName.indexOf('.')) + '.png';
+    $('#mainImage').css('background-image', 'url("/tif/' + fileName + '")');
+    */
+
+    var tblTag = '';
+    var tblSortTag = '';
+
+    var mlDataArray = data.data;
+
+    // UI 레이어 화면 좌측 이미지 html 생성 (다중 이미지이면 아래로 붙어서 나옴)
+    var imgNameHtml = "";
+    for (var l in mlDataArray) {
+        var imgName = nvl(data.data[l].fileinfo.filepath.substring(data.data[l].fileinfo.filepath.lastIndexOf('/') + 1));
+        var fileExt = data.data[l].fileinfo.filepath.substring(data.data[l].fileinfo.filepath.lastIndexOf(".") + 1, data.data[l].fileinfo.filepath.length);
+
+        if (fileExt.toLowerCase() == "png" || fileExt.toLowerCase() == "pdf") {
+            imgName = imgName.substring(0, imgName.lastIndexOf('.')) + '.png';
+        } else if (fileExt.toLowerCase() == "jpg") {
+            imgName = imgName.substring(0, imgName.lastIndexOf('.')) + '.jpg';
+        }
+
+        imgNameHtml += '<img src="/img/' + imgName + '" style="width: 100%; height: auto; margin-bottom: 20px;">';
+    }
+
+    var height = mlDataArray.length * 1600;
+    $("#mainImage").css("height", height + "px !important");
+    $('#mainImage').append(imgNameHtml);
+
+    // UI 레이어 화면 우측 추출 텍스트 및 컬럼 html 생성
+    for (var l in mlDataArray) {
+
+        mlData = mlDataArray[l].data;
+        var filePath = mlDataArray[l].fileinfo.filepath;
+        filePath = filePath.substring(filePath.lastIndexOf("/") + 1, filePath.length);
+
+        for (var i in mlData) {
+            if (mlData[i].entryLbl > 0) {
+                tblTag += '<dl>';
+                tblTag += '<dt onclick="zoomImg(this,' + "'" + filePath + "'" + ')">';
+                tblTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
+                tblTag += '<input type="text" value="' + mlData[i].text + '" style="width:100%; border:0;" />';
+                tblTag += '<input type="hidden" value="' + mlData[i].location + '" />';
+                tblTag += '<input type="hidden" value="' + filePath + '" />';
+                tblTag += '</label>';
+                tblTag += '</dt>';
+                tblTag += '<dd>';
+                tblTag += '<input type="checkbox" style="display:none" class="entryChk" checked>';
+                tblTag += '</dd>';
+                tblTag += '<dd class="columnSelect" style="display:none">';
+                tblTag += '</dd>';
+                tblTag += '<dd class="entrySelect">';
+                tblTag += appendSelOptionHtml((mlData[i].entryLbl + '') ? mlData[i].entryLbl : 999, labelData, docToptype);
+                tblTag += '</dd>';
+                tblTag += '</dl>';
+            } else if (mlData[i].colLbl > 0) {
+                tblSortTag += '<dl>';
+                tblSortTag += '<dt onclick="zoomImg(this,' + "'" + filePath + "'" + ')">';
+                tblSortTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
+                tblSortTag += '<input type="text" value="' + mlData[i].text + '" style="width:100%; border:0;" />';
+                tblSortTag += '<input type="hidden" value="' + mlData[i].location + '" />';
+                tblSortTag += '<input type="hidden" value="' + filePath + '" />';
+                tblSortTag += '</label>';
+                tblSortTag += '</dt>';
+                tblSortTag += '<dd>';
+                tblSortTag += '';
+                tblSortTag += '</dd>';
+                tblSortTag += '<dd class="columnSelect">';
+                tblSortTag += appendSelOptionHtml((mlData[i].colLbl + '') ? mlData[i].colLbl : 999, labelData, docToptype);
+                tblSortTag += '</dd>';
+                tblSortTag += '<dd class="entrySelect" style="display:none">';
+                tblSortTag += '</dd>';
+                tblSortTag += '</dl>';
+            } else {
+                tblSortTag += '<dl>';
+                tblSortTag += '<dt onclick="zoomImg(this,' + "'" + filePath + "'" + ')">';
+                tblSortTag += '<label for="langDiv' + i + '" class="tip" title="Accuracy : 95%" style="width:100%;">';
+                tblSortTag += '<input type="text" value="' + mlData[i].text + '" style="width:100%; border:0;" />';
+                tblSortTag += '<input type="hidden" value="' + mlData[i].location + '" />';
+                tblSortTag += '<input type="hidden" value="' + filePath + '" />';
+                tblSortTag += '</label>';
+                tblSortTag += '</dt>';
+                tblSortTag += '<dd>';
+                tblSortTag += '';
+                tblSortTag += '</dd>';
+                tblSortTag += '<dd class="columnSelect">';
+                tblSortTag += appendSelOptionHtml((mlData[i].colLbl + '') ? mlData[i].colLbl : 999, labelData, docToptype);
+                tblSortTag += '</dd>';
+                tblSortTag += '<dd class="entrySelect" style="display:none">';
+                tblSortTag += '</dd>';
+                tblSortTag += '</dl>';
+            }
+        }
+    }
+
+    $('#textResultTbl').append(tblTag).append(tblSortTag);
+    //$('#textResultTbl select').stbDropdown();
+    
+    // input 태그 마우스오버 말풍선 Tooltip 적용
+    $('#textResultTbl input[type=checkbox]').ezMark();
+    new $.Zebra_Tooltips($('.tip'));
+    dbSelectClickEvent();
+    checkBoxMLCssEvent();
+
+    $(".entryChk").change(function () {
+
+        if ($(this).is(":checked")) {
+            $(this).closest('dl').find('.columnSelect').hide();
+            $(this).closest('dl').find('.entrySelect').show();
+        } else {
+            $(this).closest('dl').find('.columnSelect').show();
+            $(this).closest('dl').find('.entrySelect').hide();
+        }
+
     })
 }
