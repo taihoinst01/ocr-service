@@ -17,6 +17,7 @@ var PythonShell = require('python-shell');
 var ui = require('../util/ui.js');
 var transPantternVar = require('./transPattern');
 var batch = require('../util/batch.js');
+var ocrUtil = require('../util/ocr.js');
 const upload = multer({
     storage: multer.diskStorage({
         destination: function (req, file, cb) {
@@ -64,6 +65,155 @@ router.post('/', function (req, res) {
 });
 
 router.post('/uiLearnTraining', function (req, res) {
+    sync.fiber(function () {
+        var filepath = req.body.fileInfo.filePath;
+        var uiData;
+
+        uiData = sync.await(uiLearnTraining(filepath, sync.defer()));
+        res.send({ data: uiData });
+        /*
+        for (var i = 0; i < filepath.length; i++) {
+            //uiData = sync.await(batchLearnTraining(filepath[i], "LEARN_Y", sync.defer()));
+            uiData = sync.await(uiLearnTraining(filepath[i], sync.defer()));
+
+            res.send({ data: uiData });
+        }
+        */
+    });
+});
+
+function uiLearnTraining(filepath, callback) {
+    sync.fiber(function () {
+        try {
+
+            var filename = filepath.substring(0, filepath.lastIndexOf("."));
+            var fileExt = filepath.substring(filepath.lastIndexOf(".") + 1, filepath.length);
+
+            var fullFilePath = "";
+            var fullFilePathList = [];
+            if (fileExt == "pdf") {
+                var fileCount = 0;
+                while (true) {
+                    if (exists(filename + "-" + fileCount + ".png")) {
+                        fullFilePathList.push(filename + "-" + fileCount + ".png");
+                        fileCount++;
+                    } else {
+                        if (fileCount == 0) {
+                            fullFilePathList.push(filename + ".png");
+                        }
+                        break;
+                    }
+                }
+
+            } else if (fileExt.toLowerCase() == "png") {
+                fullFilePath = filename + ".png";
+                fullFilePathList.push(fullFilePath);
+            } else {
+                var fileCount = 0;
+                while (true) {
+                    if (exists(filename + "-" + fileCount + ".jpg")) {
+                        fullFilePathList.push(filename + "-" + fileCount + ".jpg");
+                        fileCount++;
+                    } else {
+                        if (fileCount == 0) {
+                            fullFilePathList.push(filename + ".jpg");
+                        }
+                        break;
+                    }
+                }
+            }
+
+            var retDataList = [];
+            var docType = 0;
+            for (var i = 0; i < fullFilePathList.length; i++) {
+                var selOcr = sync.await(oracle.selectOcrData(fullFilePathList[i], sync.defer()));
+                if (selOcr.length == 0) {
+                    var ocrResult = sync.await(ocrUtil.localOcr(fullFilePathList[i], sync.defer()));
+
+                    if (ocrResult.orientation != undefined && ocrResult.orientation != "Up") {
+                        var angle = 0;
+
+                        if (ocrResult.orientation == "Left") {
+                            angle += 90;
+                        } else if (ocrResult.orientation == "Right") {
+                            angle += -90;
+                        } else if (ocrResult.orientation == "Down") {
+                            angle += 180;
+                        }
+
+                        execSync('module\\imageMagick\\convert.exe -colors 8 -density 300 -rotate "' + angle + '" ' + fullFilePathList[i] + ' ' + fullFilePathList[i]);
+                        ocrResult = sync.await(ocrUtil.localOcr(fullFilePathList[i], sync.defer()));
+                    }
+
+                    for (var j = 0; j < 10; j++) {
+                        if ((ocrResult.textAngle != undefined && ocrResult.textAngle > 0.03 || ocrResult.textAngle < -0.03)) {
+                            var angle = 0;
+
+                            var textAngle = Math.floor(ocrResult.textAngle * 100);
+
+                            if (textAngle < 0) {
+                                angle += 3;
+                            } else if (textAngle == 17 || textAngle == 15 || textAngle == 14) {
+                                angle = 10;
+                            } else if (textAngle == 103) {
+                                angle = 98;
+                            }
+
+                            execSync('module\\imageMagick\\convert.exe -colors 8 -density 300 -rotate "' + (textAngle + angle) + '" ' + fullFilePathList[i] + ' ' + fullFilePathList[i]);
+
+                            ocrResult = sync.await(ocrUtil.localOcr(fullFilePathList[i], sync.defer()));
+                        } else {
+                            break;
+                        }
+                    }
+
+                    sync.await(oracle.insertOcrData(fullFilePathList[i], JSON.stringify(ocrResult), sync.defer()));
+                    selOcr = sync.await(oracle.selectOcrData(fullFilePathList[i], sync.defer()));
+                }
+
+                var seqNum = selOcr.SEQNUM;
+                pythonConfig.columnMappingOptions.args = [];
+                pythonConfig.columnMappingOptions.args.push(seqNum);
+
+                if (i != 0) {
+                    pythonConfig.columnMappingOptions.args.push(docType);
+                }
+
+                //var resPyStr = sync.await(PythonShell.run('batchClassifyTest.py', pythonConfig.columnMappingOptions, sync.defer()));
+                var resPyStr = sync.await(PythonShell.run('samClassifyTest.py', pythonConfig.columnMappingOptions, sync.defer()));
+                var testStr = resPyStr[0].replace('b', '');
+                testStr = testStr.replace(/'/g, '');
+                var decode = new Buffer(testStr, 'base64').toString('utf-8');
+
+                var resPyArr = JSON.parse(decode);
+
+                resPyArr = sync.await(transPantternVar.trans(resPyArr, sync.defer()));
+                console.log(resPyArr);
+
+                var retData = {};
+                retData = resPyArr;
+                retData.fileinfo = { filepath: fullFilePathList[i] };
+                //sync.await(oracle.insertMLData(retData, sync.defer()));
+
+                var labelData = sync.await(oracle.selectIcrLabelDef(retData.docCategory.DOCTOPTYPE, sync.defer()));
+
+                retData.labelData = labelData.rows;
+
+                retDataList.push(retData);
+            }
+            callback(null, retDataList);
+
+        } catch (e) {
+            console.log(e);
+            callback(null, null);
+        }
+
+
+    });
+}
+
+/*
+router.post('/uiLearnTraining', function (req, res) {
     var ocrData = req.body.ocrData;
     var filePath = req.body.filePath;
     var fileName = req.body.fileName;
@@ -82,17 +232,6 @@ router.post('/uiLearnTraining', function (req, res) {
             var colMappingList = sync.await(oracle.selectColumn(req, sync.defer()));
             var entryMappingList = sync.await(oracle.selectEntryMappingCls(req, sync.defer()));
 
-            /*
-            var fileName = filePath.split('/')[filePath.split('/').length - 1]
-
-            if (fileExt.toLowerCase() == 'tif') {
-                fileName = fileName.replace('.tif', '.jpg');
-            } else if (fileExt.toLowerCase() == 'doc' || fileExt.toLowerCase() == 'docx'
-                || fileExt.toLowerCase() == 'xls' || fileExt.toLowerCase() == 'xlsx'
-                || fileExt.toLowerCase() == 'pdf') {
-                fileName = fileName.replace(/.docx|.doc|.xlsx|.xls|.pdf/gi, '.png');
-            }
-            */
             console.timeEnd("mlTime");
             returnObj = { code: 200, 'fileName': fileName, 'data': resPyArr, 'column': colMappingList, 'entryMappingList': entryMappingList };
         } catch (e) {
@@ -105,6 +244,7 @@ router.post('/uiLearnTraining', function (req, res) {
 
     });
 });
+*/
 
 // ui training
 router.post('/uiTraining', function (req, res) {
@@ -446,11 +586,6 @@ router.post('/uploadFile', upload.any(), function (req, res) {
 var callbackSelectLikeDocCategory = function (rows, req, res) {
     res.send(rows);
 };
-router.post('/selectLikeDocCategory', function (req, res) {
-    var keyword = '%' + req.body.keyword + '%';
-
-    commonDB.reqQueryParam(queryConfig.uiLearningConfig.selectLikeDocCategory, [keyword], callbackSelectLikeDocCategory, req, res);
-});
 
 // 신규문서 양식 등록
 var callbackInsertDocCategory = function (rows, req, res) {
