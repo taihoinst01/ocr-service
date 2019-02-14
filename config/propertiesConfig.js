@@ -13,7 +13,7 @@ var propertiesConfig = {
     },
     ocr: {
         uri: 'https://japaneast.api.cognitive.microsoft.com/vision/v1.0/ocr',
-        subscriptionKey: 'a9e6be39d42d40929a95d1d7214ed764',
+        subscriptionKey: 'c4af1927bf124533bcf2bcc92fd4c63d',
     },
     filepath: {
         uploadsPath: 'C:\\ICR\\uploads\\',
