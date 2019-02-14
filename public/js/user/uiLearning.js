@@ -363,7 +363,44 @@ function uploadFileEvent() {
 
 // OCR API
 function processImage(fileInfo) {
+    $('#progressMsgTitle').html('OCR 처리 중..');
+    $.ajax({
+        url: '/uiLearning/uiLearnTraining',
+        beforeSend: function (jqXHR) {
+            jqXHR.setRequestHeader('Content-Type', 'application/json');
+        },
+        async: false,
+        type: 'POST',
+        data: JSON.stringify({ 'fileInfo': fileInfo })
+    }).success(function (data) {
+        console.log("============================ ocr data ============================ ");
+        console.log(data);
+        console.log("============================ ocr data ============================ ");
+        ocrCount++;
+        if (!data.code) { // 에러가 아니면
+            //console.log(data);
+            //thumbImgs.push(fileInfo.convertFileName);
+            $('#progressMsgTitle').html('OCR 처리 완료');
+            //addProgressBar(31, 40);
+            if (ocrCount == 1) {
+                $('#ocrData').val(JSON.stringify(data));
+            }
+            appendOcrData(fileInfo, data);
+        } else if (data.error) { //ocr 이외 에러이면
+            //endProgressBar();
+            //fn_alert('alert', data.error);
+            //location.href = '/uiLearning';
+        } else { // ocr 에러 이면
+            insertCommError(data.code, 'ocr');
+            endProgressBar(progressId);
+            //endProgressBar();
+            fn_alert('alert', data.message);
+        }
+    }).fail(function (jqXHR, textStatus, errorThrown) {
+    });
 
+
+    /*
     $('#progressMsgTitle').html('OCR 처리 중..');
     //addProgressBar(21, 30);
     $.ajax({
@@ -400,7 +437,7 @@ function processImage(fileInfo) {
         }
     }).fail(function (jqXHR, textStatus, errorThrown) {
     });
-
+    */
 };
 
 function insertCommError(eCode, type) {
