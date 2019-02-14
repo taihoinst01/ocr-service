@@ -103,14 +103,16 @@ var buttonEvent = function () {
 
     // 학습미완료 보기
     $("#tab_before").on("click", function () {
-        $("#listCheckAll_after").prop("checked", false);
+        $("#listCheckAll_after").trigger('click').trigger('click');
+        //$("#listCheckAll_after").prop("checked", false);
         addCond = "LEARN_N";
         //viewServerFileTest();
         searchBatchLearnDataList(addCond);
     });
     // 학습완료 보기
     $("#tab_after").on("click", function () {
-        $("#listCheckAll_before").prop("checked", false);
+        $("#listCheckAll_before").trigger('click').trigger('click');
+        //$("#listCheckAll_before").prop("checked", false);
         addCond = "LEARN_Y";
         searchBatchLearnDataList(addCond);
     });
