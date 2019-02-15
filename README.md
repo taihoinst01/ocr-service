@@ -1,4 +1,1 @@
 ﻿# ocr-service
-
-
-test
