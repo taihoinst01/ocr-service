@@ -33,6 +33,7 @@ var documentCheck = require('./routes/user/documentCheck');
 var invoiceProcessingStatus = require('./routes/user/invoiceProcessingStatus');
 var batchLearningTest = require('./routes/user/batchLearningTest');
 var docRegistration = require('./routes/user/docRegistration');
+var docManagement = require('./routes/user/docManagement');
 var adminLearning = require('./routes/user/adminLearning');
 var wF_WorkflowProc = require('./routes/user/wF_WorkflowProc');
 
@@ -94,6 +95,7 @@ app.use('/documentCheck', documentCheck);
 app.use('/invoiceProcessingStatus', invoiceProcessingStatus);
 app.use('/batchLearningTest', batchLearningTest);
 app.use('/docRegistration', docRegistration);
+app.use('/docManagement', docManagement);
 
 app.use('/adminLearning', adminLearning);
 app.use('/wF_WorkflowProc', wF_WorkflowProc);//jmh

@@ -1,0 +1,544 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<title>ICR</title>
+
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, minimal-ui">
+	<meta name="HandheldFriendly" content="True">
+	<meta name="MobileOptimized" content="320">
+
+	<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+
+	<%include  ../common/commonLib.html%>
+	<!-- tui-grid css import-->
+	<link rel="stylesheet" href="/common/css/font-awesome.min.css">
+    <!-- tui-grid css import-->
+    <link rel="stylesheet" href="/common/css/fileupload/jquery.fileupload.css">
+	<!-- 문서관리 전용 CSS-->
+	<!----><link rel="stylesheet" href="css/user/docManagement.css">
+	<!-- // 문서관리 전용 CSS-->
+
+	<!-- form submit aync & multi-upload js import -->
+    <script type="text/javascript" src="js/import/fileupload/jquery.ui.widget.js"></script>
+    <script type="text/javascript" src="js/import/fileupload/jquery.iframe-transport.js"></script>
+    <script type="text/javascript" src="js/import/fileupload/jquery.fileupload.js"></script>
+    <script type="text/javascript" src="js/import/jquery.form.min.js"></script>
+	<!-- // form submit aync & multi-upload js import -->
+	
+	<!-- TIFF 이미지 미리보기-->
+    <script type="text/javascript" src="js/tiff.min.js"></script>
+	<!-- // TIFF 이미지 미리보기-->
+
+	<!-- 공통 js -->
+    <script type="text/javascript" src="js/common.client.js"></script>
+    <!-- // 공통 js -->
+	<!-- 문서관리 전용 js -->
+	<script type="text/javascript" src="js/user/docManagement.js"></script>
+    <!-- // 문서관리 전용 js -->
+</head>
+<body>
+	<div id="mask"></div>
+	<div id="wrap">
+		<!--로딩바-->
+		<div id="ocrProgress">
+			<div id="ocrBarBg">
+				<div id="ocrBar">
+					<span>1%</span>
+				</div>
+			</div>
+			<!-- 호출하는 ajax에 따라 로딩바 이벤트를 호출 할 때 아래 progressMsgTitle 수정-->
+			<div id="progressMsgTitle">
+				<!-- 로딩바 바로 아래 메시지 -->
+			</div>
+		</div>
+		<!-- // 로딩바-->
+		<!-- skip navi -->
+		<div id="accessibility">
+			<ul>
+				<li><a href="#lnb">메뉴 바로가기</a></li>
+				<li><a href="#container">본문으로 바로가기</a></li>
+			</ul>
+		</div>
+		<!-- //skip navi -->
+		<%include  ../common/header.html%>
+		<!-- Content -->
+		<div id="container">
+			<!-- LNB -->
+			<%include  ../common/leftSideBar.html%>
+			<!-- // LNB -->
+			<!-- 본문영역 -->
+			<div id="content">
+				<div class="content_title_icon_dm"></div>
+				<div class="bl_content_title">ICR 문서관리</div>
+
+				<!-- 구분 목록  -->
+                <div class="box_stsearch">
+                    <div class="box_txt_st01 st00_sh um_select">
+                        <select>
+                            <option value="">문서양식</option>
+                        </select>
+                        <select>
+                            <option value="">소속팀</option>
+                            <option value="">사업1팀</option>
+                            <option value="">사업2팀</option>
+                        </select>
+                        <select>
+							<option value="">문서등록일자</option>
+							<option value="">오늘</option>
+                            <option value="">어제</option>
+                        </select>
+                    </div>
+
+                    <div class="btn_rt">
+                        <button type="button" id="btn_search" class="button_st3">조회</button>
+                    </div>
+                </div>
+				<!-- // 구분 목록 -->
+				
+				<!-- 문서관리목록 영역 -->
+                <div class="tep_content tep_st01" style="height: auto;">
+					<div id="content-6" class="content horizontal-images">
+
+						<div class="table_style03">
+							<!-- RIGHT HEADER(CROSSTAB) START -->
+							<div id="right_header" class="batch_tbl_right_header" style="overflow-x:hidden; overflow-y:hidden;">
+								<table cellspacing="0" cellpadding="0" class="docTableColumn">
+									<colgroup>
+										<col style="width:50px;">
+										<col style="width:210px;">
+										<col style="width:80px;">
+										<col style="width:200px;">
+										<col style="width:150px;">
+										<col style="width:150px;">
+										<col style="width:120px;">
+										<col style="width:250px;">
+										<col style="width:150px;">
+										<col style="width:150px;">
+										<col style="width:180px;">
+										<col style="width:180px;">
+									</colgroup>
+									<thead>
+										<tr>
+											<th scope="row"><div class="checkbox-options mauto"><input type="checkbox" class="sta00_all" value="" id="listCheckAll_before" name="listCheckAll_before" /></div></th>
+											<th scope="row">파일명</th>
+											<th scope="row">정확도</th>
+											<th scope="row">문서타입</th>
+											<th scope="row">Buyer</th>
+											<th scope="row">PO Number</th>
+											<th scope="row">PO date</th>
+											<th scope="row">Delivery Address</th>
+											<th scope="row">Total Price</th>
+											<th scope="row">Currency</th>
+											<th scope="row">Material</th>
+											<th scope="row">EAN</th>
+										</tr>
+									</thead>
+								</table>
+							</div>
+							<!-- RIGHT HEADER(CROSSTAB) END -->
+
+							<!-- RIGHT CONTENTS(CROSSTAB) START -->
+							<div id="right_contents" style="overflow-x:scroll; overflow-y:scroll;" class="batch_tbl_right_divBodyScroll divBodyScroll">
+								<table>
+									<caption>사용자관리 정보</caption>
+									<colgroup>
+										<col style="width:50px;">
+										<col style="width:210px;">
+										<col style="width:80px;">
+										<col style="width:200px;">
+										<col style="width:150px;">
+										<col style="width:150px;">
+										<col style="width:120px;">
+										<col style="width:250px;">
+										<col style="width:150px;">
+										<col style="width:150px;">
+										<col style="width:180px;">
+										<col style="width:180px;">
+									</colgroup>
+									<tbody id="tbody_docList">
+										<tr class="originalTr" data-seq="301">
+											<td><div class="checkbox-options mauto"><input type="checkbox" class="sta00_all" value="" id="listCheckAll_before" name="listCheckAll_before" /></div></td>
+											<td>
+												<a href="#" title="양식" onclick="layer_open('docPop'); return false;">
+														<input type="text" value="TEST_WESTCOAST31.pdf" class="inputst_box03_15radius" data-originalvalue="TEST_WESTCOAST31.pdf">
+												</a>
+											</td>
+											<td><input type="text" value="99%" class="inputst_box03_15radius" data-originalvalue="99%"></td>
+											<td><input type="text" value="WESTCOAST31.pdf" class="inputst_box03_15radius" data-originalvalue="WESTCOAST31.pdf"></td>
+											<td><input type="text" value="WESTCOAST" class="inputst_box03_15radius" data-originalvalue="WESTCOAST"></td>
+											<td><input type="text" value="Q491325" class="inputst_box03_15radius" data-originalvalue="Q491325"></td>
+											<td><input type="text" value="18/06/18" class="inputst_box03_15radius" data-originalvalue="18/06/18"></td>
+											<td><input type="text" value="WILFORD INDUSTRIAL ESTATE.." class="inputst_box03_15radius" data-originalvalue="WILFORD INDUSTRIAL ESTATE.."></td>
+											<td><input type="text" value="396000.00" class="inputst_box03_15radius" data-originalvalue="396000.00"></td>
+											<td><input type="text" value="396000.00" class="inputst_box03_15radius" data-originalvalue="396000.00"></td>
+											<td><input type="text" value="LC34H890WJUXEN" class="inputst_box03_15radius" data-originalvalue="LC34H890WJUXEN"></td>
+											<td><input type="text" value="" class="inputst_box03_15radius" data-originalvalue=""></td>
+										</tr>
+
+										<tr class="originalTr" data-seq="302">
+											<td rowspan="4"><div class="checkbox-options mauto"><input type="checkbox" class="sta00_all" value="" id="listCheckAll_before" name="listCheckAll_before" /></div></td>
+											<td rowspan="4"><input type="text" value="TEST_WESTCOAST31.pdf" class="inputst_box03_15radius" data-originalvalue="TEST_WESTCOAST31.pdf"></td>
+											<td rowspan="4"><input type="text" value="99%" class="inputst_box03_15radius" data-originalvalue="99%"></td>
+											<td><input type="text" value="WESTCOAST31.pdf" class="inputst_box03_15radius" data-originalvalue="WESTCOAST31.pdf"></td>
+											<td><input type="text" value="WESTCOAST" class="inputst_box03_15radius" data-originalvalue="WESTCOAST"></td>
+											<td><input type="text" value="Q491325" class="inputst_box03_15radius" data-originalvalue="Q491325"></td>
+											<td><input type="text" value="18/06/18" class="inputst_box03_15radius" data-originalvalue="18/06/18"></td>
+											<td><input type="text" value="WILFORD INDUSTRIAL ESTATE.." class="inputst_box03_15radius" data-originalvalue="WILFORD INDUSTRIAL ESTATE.."></td>
+											<td><input type="text" value="396000.00" class="inputst_box03_15radius" data-originalvalue="396000.00"></td>
+											<td><input type="text" value="396000.00" class="inputst_box03_15radius" data-originalvalue="396000.00"></td>
+											<td><input type="text" value="LC34H890WJUXEN" class="inputst_box03_15radius" data-originalvalue="LC34H890WJUXEN"></td>
+											<td><input type="text" value="" class="inputst_box03_15radius" data-originalvalue=""></td>
+										</tr>
+										<tr class="originalTr" data-seq="302">
+											<td><input type="text" value="WESTCOAST31.pdf" class="inputst_box03_15radius" data-originalvalue="WESTCOAST31.pdf"></td>
+											<td><input type="text" value="WESTCOAST" class="inputst_box03_15radius" data-originalvalue="WESTCOAST"></td>
+											<td><input type="text" value="Q491325" class="inputst_box03_15radius" data-originalvalue="Q491325"></td>
+											<td><input type="text" value="18/06/18" class="inputst_box03_15radius" data-originalvalue="18/06/18"></td>
+											<td><input type="text" value="WILFORD INDUSTRIAL ESTATE.." class="inputst_box03_15radius" data-originalvalue="WILFORD INDUSTRIAL ESTATE.."></td>
+											<td><input type="text" value="396000.00" class="inputst_box03_15radius" data-originalvalue="396000.00"></td>
+											<td><input type="text" value="396000.00" class="inputst_box03_15radius" data-originalvalue="396000.00"></td>
+											<td><input type="text" value="LC34H890WJUXEN" class="inputst_box03_15radius" data-originalvalue="LC34H890WJUXEN"></td>
+											<td><input type="text" value="" class="inputst_box03_15radius" data-originalvalue=""></td>
+										</tr>
+										<tr class="originalTr" data-seq="302">
+											<td><input type="text" value="WESTCOAST31.pdf" class="inputst_box03_15radius" data-originalvalue="WESTCOAST31.pdf"></td>
+											<td><input type="text" value="WESTCOAST" class="inputst_box03_15radius" data-originalvalue="WESTCOAST"></td>
+											<td><input type="text" value="Q491325" class="inputst_box03_15radius" data-originalvalue="Q491325"></td>
+											<td><input type="text" value="18/06/18" class="inputst_box03_15radius" data-originalvalue="18/06/18"></td>
+											<td><input type="text" value="WILFORD INDUSTRIAL ESTATE.." class="inputst_box03_15radius" data-originalvalue="WILFORD INDUSTRIAL ESTATE.."></td>
+											<td><input type="text" value="396000.00" class="inputst_box03_15radius" data-originalvalue="396000.00"></td>
+											<td><input type="text" value="396000.00" class="inputst_box03_15radius" data-originalvalue="396000.00"></td>
+											<td><input type="text" value="LC34H890WJUXEN" class="inputst_box03_15radius" data-originalvalue="LC34H890WJUXEN"></td>
+											<td><input type="text" value="" class="inputst_box03_15radius" data-originalvalue=""></td>
+										</tr>
+										<tr class="originalTr" data-seq="302">
+											<td><input type="text" value="WESTCOAST31.pdf" class="inputst_box03_15radius" data-originalvalue="WESTCOAST31.pdf"></td>
+											<td><input type="text" value="WESTCOAST" class="inputst_box03_15radius" data-originalvalue="WESTCOAST"></td>
+											<td><input type="text" value="Q491325" class="inputst_box03_15radius" data-originalvalue="Q491325"></td>
+											<td><input type="text" value="18/06/18" class="inputst_box03_15radius" data-originalvalue="18/06/18"></td>
+											<td><input type="text" value="WILFORD INDUSTRIAL ESTATE.." class="inputst_box03_15radius" data-originalvalue="WILFORD INDUSTRIAL ESTATE.."></td>
+											<td><input type="text" value="396000.00" class="inputst_box03_15radius" data-originalvalue="396000.00"></td>
+											<td><input type="text" value="396000.00" class="inputst_box03_15radius" data-originalvalue="396000.00"></td>
+											<td><input type="text" value="LC34H890WJUXEN" class="inputst_box03_15radius" data-originalvalue="LC34H890WJUXEN"></td>
+											<td><input type="text" value="" class="inputst_box03_15radius" data-originalvalue=""></td>
+										</tr>
+										
+										<tr class="originalTr" data-seq="303">
+											<td><div class="checkbox-options mauto"><input type="checkbox" class="sta00_all" value="" id="listCheckAll_before" name="listCheckAll_before" /></div></td>
+											<td><input type="text" value="TEST_WESTCOAST31.pdf" class="inputst_box03_15radius" data-originalvalue="TEST_WESTCOAST31.pdf"></td>
+											<td><input type="text" value="50%" class="inputst_box03_15radius red" data-originalvalue="50%"></td>
+											<td><input type="text" value="WESTCOAST31.pdf" class="inputst_box03_15radius" data-originalvalue="WESTCOAST31.pdf"></td>
+											<td><input type="text" value="" class="inputst_box03_15radius back_sprite" data-originalvalue=""></td>
+											<td><input type="text" value="Q491325" class="inputst_box03_15radius" data-originalvalue="Q491325"></td>
+											<td><input type="text" value="18/06/18" class="inputst_box03_15radius" data-originalvalue="18/06/18"></td>
+											<td><input type="text" value="WILFORD INDUSTRIAL ESTATE.." class="inputst_box03_15radius" data-originalvalue="WILFORD INDUSTRIAL ESTATE.."></td>
+											<td><input type="text" value="396000.00" class="inputst_box03_15radius" data-originalvalue="396000.00"></td>
+											<td><input type="text" value="396000.00" class="inputst_box03_15radius" data-originalvalue="396000.00"></td>
+											<td><input type="text" value="LC34H890WJUXEN" class="inputst_box03_15radius" data-originalvalue="LC34H890WJUXEN"></td>
+											<td><input type="text" value="" class="inputst_box03_15radius" data-originalvalue=""></td>
+										</tr>
+
+										<tr class="originalTr" data-seq="304">
+												<td rowspan="6"><div class="checkbox-options mauto"><input type="checkbox" class="sta00_all" value="" id="listCheckAll_before" name="listCheckAll_before" /></div></td>
+												<td rowspan="6"><input type="text" value="TEST_WESTCOAST31.pdf" class="inputst_box03_15radius" data-originalvalue="TEST_WESTCOAST31.pdf"></td>
+												<td rowspan="6"><input type="text" value="99%" class="inputst_box03_15radius" data-originalvalue="99%"></td>
+												<td><input type="text" value="WESTCOAST31.pdf" class="inputst_box03_15radius" data-originalvalue="WESTCOAST31.pdf"></td>
+												<td><input type="text" value="WESTCOAST" class="inputst_box03_15radius" data-originalvalue="WESTCOAST"></td>
+												<td><input type="text" value="Q491325" class="inputst_box03_15radius" data-originalvalue="Q491325"></td>
+												<td><input type="text" value="18/06/18" class="inputst_box03_15radius" data-originalvalue="18/06/18"></td>
+												<td><input type="text" value="WILFORD INDUSTRIAL ESTATE.." class="inputst_box03_15radius" data-originalvalue="WILFORD INDUSTRIAL ESTATE.."></td>
+												<td><input type="text" value="396000.00" class="inputst_box03_15radius" data-originalvalue="396000.00"></td>
+												<td><input type="text" value="396000.00" class="inputst_box03_15radius" data-originalvalue="396000.00"></td>
+												<td><input type="text" value="LC34H890WJUXEN" class="inputst_box03_15radius" data-originalvalue="LC34H890WJUXEN"></td>
+												<td><input type="text" value="" class="inputst_box03_15radius" data-originalvalue=""></td>
+											</tr>
+											<tr class="originalTr" data-seq="304">
+												<td><input type="text" value="WESTCOAST31.pdf" class="inputst_box03_15radius" data-originalvalue="WESTCOAST31.pdf"></td>
+												<td><input type="text" value="WESTCOAST" class="inputst_box03_15radius" data-originalvalue="WESTCOAST"></td>
+												<td><input type="text" value="Q491325" class="inputst_box03_15radius" data-originalvalue="Q491325"></td>
+												<td><input type="text" value="18/06/18" class="inputst_box03_15radius" data-originalvalue="18/06/18"></td>
+												<td><input type="text" value="WILFORD INDUSTRIAL ESTATE.." class="inputst_box03_15radius" data-originalvalue="WILFORD INDUSTRIAL ESTATE.."></td>
+												<td><input type="text" value="396000.00" class="inputst_box03_15radius" data-originalvalue="396000.00"></td>
+												<td><input type="text" value="396000.00" class="inputst_box03_15radius" data-originalvalue="396000.00"></td>
+												<td><input type="text" value="LC34H890WJUXEN" class="inputst_box03_15radius" data-originalvalue="LC34H890WJUXEN"></td>
+												<td><input type="text" value="" class="inputst_box03_15radius" data-originalvalue=""></td>
+											</tr>
+											<tr class="originalTr" data-seq="304">
+												<td><input type="text" value="WESTCOAST31.pdf" class="inputst_box03_15radius" data-originalvalue="WESTCOAST31.pdf"></td>
+												<td><input type="text" value="WESTCOAST" class="inputst_box03_15radius" data-originalvalue="WESTCOAST"></td>
+												<td><input type="text" value="Q491325" class="inputst_box03_15radius" data-originalvalue="Q491325"></td>
+												<td><input type="text" value="18/06/18" class="inputst_box03_15radius" data-originalvalue="18/06/18"></td>
+												<td><input type="text" value="WILFORD INDUSTRIAL ESTATE.." class="inputst_box03_15radius" data-originalvalue="WILFORD INDUSTRIAL ESTATE.."></td>
+												<td><input type="text" value="396000.00" class="inputst_box03_15radius" data-originalvalue="396000.00"></td>
+												<td><input type="text" value="396000.00" class="inputst_box03_15radius" data-originalvalue="396000.00"></td>
+												<td><input type="text" value="LC34H890WJUXEN" class="inputst_box03_15radius" data-originalvalue="LC34H890WJUXEN"></td>
+												<td><input type="text" value="" class="inputst_box03_15radius" data-originalvalue=""></td>
+											</tr>
+											<tr class="originalTr" data-seq="304">
+												<td><input type="text" value="WESTCOAST31.pdf" class="inputst_box03_15radius" data-originalvalue="WESTCOAST31.pdf"></td>
+												<td><input type="text" value="WESTCOAST" class="inputst_box03_15radius" data-originalvalue="WESTCOAST"></td>
+												<td><input type="text" value="Q491325" class="inputst_box03_15radius" data-originalvalue="Q491325"></td>
+												<td><input type="text" value="18/06/18" class="inputst_box03_15radius" data-originalvalue="18/06/18"></td>
+												<td><input type="text" value="WILFORD INDUSTRIAL ESTATE.." class="inputst_box03_15radius" data-originalvalue="WILFORD INDUSTRIAL ESTATE.."></td>
+												<td><input type="text" value="396000.00" class="inputst_box03_15radius" data-originalvalue="396000.00"></td>
+												<td><input type="text" value="396000.00" class="inputst_box03_15radius" data-originalvalue="396000.00"></td>
+												<td><input type="text" value="LC34H890WJUXEN" class="inputst_box03_15radius" data-originalvalue="LC34H890WJUXEN"></td>
+												<td><input type="text" value="" class="inputst_box03_15radius" data-originalvalue=""></td>
+											</tr>
+											<tr class="originalTr" data-seq="304">
+												<td><input type="text" value="WESTCOAST31.pdf" class="inputst_box03_15radius" data-originalvalue="WESTCOAST31.pdf"></td>
+												<td><input type="text" value="WESTCOAST" class="inputst_box03_15radius" data-originalvalue="WESTCOAST"></td>
+												<td><input type="text" value="Q491325" class="inputst_box03_15radius" data-originalvalue="Q491325"></td>
+												<td><input type="text" value="18/06/18" class="inputst_box03_15radius" data-originalvalue="18/06/18"></td>
+												<td><input type="text" value="WILFORD INDUSTRIAL ESTATE.." class="inputst_box03_15radius" data-originalvalue="WILFORD INDUSTRIAL ESTATE.."></td>
+												<td><input type="text" value="396000.00" class="inputst_box03_15radius" data-originalvalue="396000.00"></td>
+												<td><input type="text" value="396000.00" class="inputst_box03_15radius" data-originalvalue="396000.00"></td>
+												<td><input type="text" value="LC34H890WJUXEN" class="inputst_box03_15radius" data-originalvalue="LC34H890WJUXEN"></td>
+												<td><input type="text" value="" class="inputst_box03_15radius" data-originalvalue=""></td>
+											</tr>
+											<tr class="originalTr" data-seq="304">
+												<td><input type="text" value="WESTCOAST31.pdf" class="inputst_box03_15radius" data-originalvalue="WESTCOAST31.pdf"></td>
+												<td><input type="text" value="WESTCOAST" class="inputst_box03_15radius" data-originalvalue="WESTCOAST"></td>
+												<td><input type="text" value="Q491325" class="inputst_box03_15radius" data-originalvalue="Q491325"></td>
+												<td><input type="text" value="18/06/18" class="inputst_box03_15radius" data-originalvalue="18/06/18"></td>
+												<td><input type="text" value="WILFORD INDUSTRIAL ESTATE.." class="inputst_box03_15radius" data-originalvalue="WILFORD INDUSTRIAL ESTATE.."></td>
+												<td><input type="text" value="396000.00" class="inputst_box03_15radius" data-originalvalue="396000.00"></td>
+												<td><input type="text" value="396000.00" class="inputst_box03_15radius" data-originalvalue="396000.00"></td>
+												<td><input type="text" value="LC34H890WJUXEN" class="inputst_box03_15radius" data-originalvalue="LC34H890WJUXEN"></td>
+												<td><input type="text" value="" class="inputst_box03_15radius" data-originalvalue=""></td>
+											</tr>
+
+											<tr class="originalTr" data-seq="305">
+												<td rowspan="4"><div class="checkbox-options mauto"><input type="checkbox" class="sta00_all" value="" id="listCheckAll_before" name="listCheckAll_before" /></div></td>
+												<td rowspan="4"><input type="text" value="TEST_WESTCOAST31.pdf" class="inputst_box03_15radius" data-originalvalue="TEST_WESTCOAST31.pdf"></td>
+												<td rowspan="4"><input type="text" value="50%" class="inputst_box03_15radius red" data-originalvalue="50%"></td>
+												<td><input type="text" value="WESTCOAST31.pdf" class="inputst_box03_15radius" data-originalvalue="WESTCOAST31.pdf"></td>
+												<td><input type="text" value="WESTCOAST" class="inputst_box03_15radius" data-originalvalue="WESTCOAST"></td>
+												<td><input type="text" value="Q491325" class="inputst_box03_15radius" data-originalvalue="Q491325"></td>
+												<td><input type="text" value="18/06/18" class="inputst_box03_15radius" data-originalvalue="18/06/18"></td>
+												<td><input type="text" value="WILFORD INDUSTRIAL ESTATE.." class="inputst_box03_15radius" data-originalvalue="WILFORD INDUSTRIAL ESTATE.."></td>
+												<td><input type="text" value="396000.00" class="inputst_box03_15radius back_yellow" data-originalvalue="396000.00"></td>
+												<td><input type="text" value="396000.00" class="inputst_box03_15radius" data-originalvalue="396000.00"></td>
+												<td><input type="text" value="LC34H890WJUXEN" class="inputst_box03_15radius" data-originalvalue="LC34H890WJUXEN"></td>
+												<td><input type="text" value="" class="inputst_box03_15radius" data-originalvalue=""></td>
+											</tr>
+											<tr class="originalTr" data-seq="305">
+												<td><input type="text" value="WESTCOAST31.pdf" class="inputst_box03_15radius" data-originalvalue="WESTCOAST31.pdf"></td>
+												<td><input type="text" value="WESTCOAST" class="inputst_box03_15radius" data-originalvalue="WESTCOAST"></td>
+												<td><input type="text" value="Q491325" class="inputst_box03_15radius" data-originalvalue="Q491325"></td>
+												<td><input type="text" value="18/06/18" class="inputst_box03_15radius" data-originalvalue="18/06/18"></td>
+												<td><input type="text" value="WILFORD INDUSTRIAL ESTATE.." class="inputst_box03_15radius" data-originalvalue="WILFORD INDUSTRIAL ESTATE.."></td>
+												<td><input type="text" value="396000.00" class="inputst_box03_15radius" data-originalvalue="396000.00"></td>
+												<td><input type="text" value="396000.00" class="inputst_box03_15radius" data-originalvalue="396000.00"></td>
+												<td><input type="text" value="LC34H890WJUXEN" class="inputst_box03_15radius" data-originalvalue="LC34H890WJUXEN"></td>
+												<td><input type="text" value="" class="inputst_box03_15radius" data-originalvalue=""></td>
+											</tr>
+											<tr class="originalTr" data-seq="305">
+												<td><input type="text" value="WESTCOAST31.pdf" class="inputst_box03_15radius" data-originalvalue="WESTCOAST31.pdf"></td>
+												<td><input type="text" value="WESTCOAST" class="inputst_box03_15radius" data-originalvalue="WESTCOAST"></td>
+												<td><input type="text" value="Q491325" class="inputst_box03_15radius" data-originalvalue="Q491325"></td>
+												<td><input type="text" value="18/06/18" class="inputst_box03_15radius" data-originalvalue="18/06/18"></td>
+												<td><input type="text" value="WILFORD INDUSTRIAL ESTATE.." class="inputst_box03_15radius" data-originalvalue="WILFORD INDUSTRIAL ESTATE.."></td>
+												<td><input type="text" value="396000.00" class="inputst_box03_15radius" data-originalvalue="396000.00"></td>
+												<td><input type="text" value="396000.00" class="inputst_box03_15radius" data-originalvalue="396000.00"></td>
+												<td><input type="text" value="LC34H890WJUXEN" class="inputst_box03_15radius" data-originalvalue="LC34H890WJUXEN"></td>
+												<td><input type="text" value="" class="inputst_box03_15radius" data-originalvalue=""></td>
+											</tr>
+											<tr class="originalTr" data-seq="305">
+												<td><input type="text" value="WESTCOAST31.pdf" class="inputst_box03_15radius" data-originalvalue="WESTCOAST31.pdf"></td>
+												<td><input type="text" value="WESTCOAST" class="inputst_box03_15radius" data-originalvalue="WESTCOAST"></td>
+												<td><input type="text" value="Q491325" class="inputst_box03_15radius" data-originalvalue="Q491325"></td>
+												<td><input type="text" value="18/06/18" class="inputst_box03_15radius" data-originalvalue="18/06/18"></td>
+												<td><input type="text" value="WILFORD INDUSTRIAL ESTATE.." class="inputst_box03_15radius" data-originalvalue="WILFORD INDUSTRIAL ESTATE.."></td>
+												<td><input type="text" value="396000.00" class="inputst_box03_15radius" data-originalvalue="396000.00"></td>
+												<td><input type="text" value="396000.00" class="inputst_box03_15radius" data-originalvalue="396000.00"></td>
+												<td><input type="text" value="LC34H890WJUXEN" class="inputst_box03_15radius" data-originalvalue="LC34H890WJUXEN"></td>
+												<td><input type="text" value="" class="inputst_box03_15radius" data-originalvalue=""></td>
+											</tr>
+
+											<tr class="originalTr" data-seq="305">
+												<td rowspan="3"><div class="checkbox-options mauto"><input type="checkbox" class="sta00_all" value="" id="listCheckAll_before" name="listCheckAll_before" /></div></td>
+												<td rowspan="3"><input type="text" value="TEST_WESTCOAST31.pdf" class="inputst_box03_15radius" data-originalvalue="TEST_WESTCOAST31.pdf"></td>
+												<td rowspan="3"><input type="text" value="99%" class="inputst_box03_15radius" data-originalvalue="50%"></td>
+												<td><input type="text" value="WESTCOAST31.pdf" class="inputst_box03_15radius" data-originalvalue="WESTCOAST31.pdf"></td>
+												<td><input type="text" value="WESTCOAST" class="inputst_box03_15radius" data-originalvalue="WESTCOAST"></td>
+												<td><input type="text" value="Q491325" class="inputst_box03_15radius" data-originalvalue="Q491325"></td>
+												<td><input type="text" value="18/06/18" class="inputst_box03_15radius" data-originalvalue="18/06/18"></td>
+												<td><input type="text" value="WILFORD INDUSTRIAL ESTATE.." class="inputst_box03_15radius" data-originalvalue="WILFORD INDUSTRIAL ESTATE.."></td>
+												<td><input type="text" value="396000.00" class="inputst_box03_15radius" data-originalvalue="396000.00"></td>
+												<td><input type="text" value="396000.00" class="inputst_box03_15radius" data-originalvalue="396000.00"></td>
+												<td><input type="text" value="LC34H890WJUXEN" class="inputst_box03_15radius" data-originalvalue="LC34H890WJUXEN"></td>
+												<td><input type="text" value="" class="inputst_box03_15radius" data-originalvalue=""></td>
+											</tr>
+											<tr class="originalTr" data-seq="305">
+												<td><input type="text" value="WESTCOAST31.pdf" class="inputst_box03_15radius" data-originalvalue="WESTCOAST31.pdf"></td>
+												<td><input type="text" value="WESTCOAST" class="inputst_box03_15radius" data-originalvalue="WESTCOAST"></td>
+												<td><input type="text" value="Q491325" class="inputst_box03_15radius" data-originalvalue="Q491325"></td>
+												<td><input type="text" value="18/06/18" class="inputst_box03_15radius" data-originalvalue="18/06/18"></td>
+												<td><input type="text" value="WILFORD INDUSTRIAL ESTATE.." class="inputst_box03_15radius" data-originalvalue="WILFORD INDUSTRIAL ESTATE.."></td>
+												<td><input type="text" value="396000.00" class="inputst_box03_15radius" data-originalvalue="396000.00"></td>
+												<td><input type="text" value="396000.00" class="inputst_box03_15radius" data-originalvalue="396000.00"></td>
+												<td><input type="text" value="LC34H890WJUXEN" class="inputst_box03_15radius" data-originalvalue="LC34H890WJUXEN"></td>
+												<td><input type="text" value="" class="inputst_box03_15radius" data-originalvalue=""></td>
+											</tr>
+											<tr class="originalTr" data-seq="305">
+												<td><input type="text" value="WESTCOAST31.pdf" class="inputst_box03_15radius" data-originalvalue="WESTCOAST31.pdf"></td>
+												<td><input type="text" value="WESTCOAST" class="inputst_box03_15radius" data-originalvalue="WESTCOAST"></td>
+												<td><input type="text" value="Q491325" class="inputst_box03_15radius" data-originalvalue="Q491325"></td>
+												<td><input type="text" value="18/06/18" class="inputst_box03_15radius" data-originalvalue="18/06/18"></td>
+												<td><input type="text" value="WILFORD INDUSTRIAL ESTATE.." class="inputst_box03_15radius" data-originalvalue="WILFORD INDUSTRIAL ESTATE.."></td>
+												<td><input type="text" value="396000.00" class="inputst_box03_15radius" data-originalvalue="396000.00"></td>
+												<td><input type="text" value="396000.00" class="inputst_box03_15radius" data-originalvalue="396000.00"></td>
+												<td><input type="text" value="LC34H890WJUXEN" class="inputst_box03_15radius" data-originalvalue="LC34H890WJUXEN"></td>
+												<td><input type="text" value="" class="inputst_box03_15radius" data-originalvalue=""></td>
+											</tr>
+									</tbody>
+								</table>
+								<!-- RIGHT CONTENTS(CROSSTAB) END -->
+							</div>
+						</div>
+
+					</div>
+
+				</div>
+				<!-- // 문서관리목록 영역 -->
+
+				<div class="btn_rt">
+					<button type="button" id="" class="btn_w100_h35">재학습</button>
+					<button type="button" id="" class="btn_w100_h35">등록</button>
+				</div>
+				
+			</div>
+			<!-- // 본문영역 -->
+		</div>
+		<!-- // Content -->
+	</div>
+</body>
+</html>
+
+<!-- 팝업_양식이미지 -->
+<div id="docPop" class="poplayer docPop">
+	<div class="bg"></div>
+	<div class="pop_layer">
+		<div class="pop_popup0 ">
+			<div class="pop_header">
+				<h1>양식이미지</h1>
+			</div>
+			<div class="pop_content_dm">
+				<div class="pop_box_120 box_txt_st01">
+					<!-- 문서 이미지 (상단) -->
+					<div class="batch_tbl_right_divBodyScroll divBodyScroll pop_dm_01">
+						<img src="/publish/image/sample02.jpg" style="width: 100%; height: auto">
+					</div>
+					<!-- // 문서 이미지 (상단) -->
+
+					<div class="btn_rt02">
+						<div class="date_left_sm_btn"></div>
+						<div style="color: rgba(0,0,0,.4);float: left;padding: 7px;">Page 1 of 4</div>
+						<div class="date_right_sm_btn"></div>
+					</div>
+
+					<!-- 문서 정보 (하단) -->
+					<div class="table_style03">
+						<!-- 테이블 HEADER(CROSSTAB) START -->
+						<div id="right_header" class="batch_tbl_right_header" style="overflow-x:hidden; overflow-y:hidden;">
+							<table cellspacing="0" cellpadding="0" class="docTableColumn">
+								<colgroup>
+									<col style="width:18%">
+									<col style="width:18%">
+									<col style="width:13%">
+									<col style="width:24%">
+									<col style="width:15%">
+									<col style="width:15%">
+									<col style="width:20%">
+									<col style="width:20%">
+								</colgroup>
+								<thead>
+									<tr>
+										<th scope="row">Buyer</th>
+										<th scope="row">PO Number</th>
+										<th scope="row">PO date</th>
+										<th scope="row">Delivery Address</th>
+										<th scope="row">Total Price</th>
+										<th scope="row">Currency</th>
+										<th scope="row">Material</th>
+										<th scope="row">EAN</th>
+									</tr>
+								</thead>
+							</table>
+						</div>
+						<!-- 테이블 HEADER(CROSSTAB) END -->
+
+						<!-- 테이블 CONTENTS(CROSSTAB) START -->
+						<div style="overflow-y:scroll;height:85px;background: white;" class="batch_tbl_right_divBodyScroll divBodyScroll">
+							<table>
+								<caption>사용자관리 정보</caption>
+								<colgroup>
+									<col style="width:18%">
+									<col style="width:18%">
+									<col style="width:13%">
+									<col style="width:24%">
+									<col style="width:15%">
+									<col style="width:15%">
+									<col style="width:20%">
+									<col style="width:20%">
+								</colgroup>
+								<tbody>
+									<tr class="originalTr" data-seq="301">
+										<td><input type="text" value="WESTCOAST" class="inputst_box03_15radius" data-originalvalue="WESTCOAST"></td>
+										<td><input type="text" value="Q491325" class="inputst_box03_15radius" data-originalvalue="Q491325"></td>
+										<td><input type="text" value="18/06/18" class="inputst_box03_15radius" data-originalvalue="18/06/18"></td>
+										<td><input type="text" value="WILFORD INDUSTRIAL ESTATE.." class="inputst_box03_15radius" data-originalvalue="WILFORD INDUSTRIAL ESTATE.."></td>
+										<td><input type="text" value="396000.00" class="inputst_box03_15radius" data-originalvalue="396000.00"></td>
+										<td><input type="text" value="396000.00" class="inputst_box03_15radius" data-originalvalue="396000.00"></td>
+										<td><input type="text" value="LC34H890WJUXEN" class="inputst_box03_15radius" data-originalvalue="LC34H890WJUXEN"></td>
+										<td><input type="text" value="" class="inputst_box03_15radius" data-originalvalue=""></td>
+									</tr>
+									<tr class="originalTr" data-seq="302">
+										<td><input type="text" value="WESTCOAST" class="inputst_box03_15radius" data-originalvalue="WESTCOAST"></td>
+										<td><input type="text" value="Q491325" class="inputst_box03_15radius" data-originalvalue="Q491325"></td>
+										<td><input type="text" value="18/06/18" class="inputst_box03_15radius" data-originalvalue="18/06/18"></td>
+										<td><input type="text" value="WILFORD INDUSTRIAL ESTATE.." class="inputst_box03_15radius" data-originalvalue="WILFORD INDUSTRIAL ESTATE.."></td>
+										<td><input type="text" value="396000.00" class="inputst_box03_15radius" data-originalvalue="396000.00"></td>
+										<td><input type="text" value="396000.00" class="inputst_box03_15radius" data-originalvalue="396000.00"></td>
+										<td><input type="text" value="LC34H890WJUXEN" class="inputst_box03_15radius" data-originalvalue="LC34H890WJUXEN"></td>
+										<td><input type="text" value="" class="inputst_box03_15radius" data-originalvalue=""></td>
+									</tr>
+									<tr class="originalTr" data-seq="303">
+										<td><input type="text" value="WESTCOAST" class="inputst_box03_15radius" data-originalvalue="WESTCOAST"></td>
+										<td><input type="text" value="Q491325" class="inputst_box03_15radius" data-originalvalue="Q491325"></td>
+										<td><input type="text" value="18/06/18" class="inputst_box03_15radius" data-originalvalue="18/06/18"></td>
+										<td><input type="text" value="WILFORD INDUSTRIAL ESTATE.." class="inputst_box03_15radius" data-originalvalue="WILFORD INDUSTRIAL ESTATE.."></td>
+										<td><input type="text" value="396000.00" class="inputst_box03_15radius" data-originalvalue="396000.00"></td>
+										<td><input type="text" value="396000.00" class="inputst_box03_15radius" data-originalvalue="396000.00"></td>
+										<td><input type="text" value="LC34H890WJUXEN" class="inputst_box03_15radius" data-originalvalue="LC34H890WJUXEN"></td>
+										<td><input type="text" value="" class="inputst_box03_15radius" data-originalvalue=""></td>
+									</tr>
+									<tr class="originalTr" data-seq="304">
+										<td><input type="text" value="WESTCOAST" class="inputst_box03_15radius" data-originalvalue="WESTCOAST"></td>
+										<td><input type="text" value="Q491325" class="inputst_box03_15radius" data-originalvalue="Q491325"></td>
+										<td><input type="text" value="18/06/18" class="inputst_box03_15radius" data-originalvalue="18/06/18"></td>
+										<td><input type="text" value="WILFORD INDUSTRIAL ESTATE.." class="inputst_box03_15radius" data-originalvalue="WILFORD INDUSTRIAL ESTATE.."></td>
+										<td><input type="text" value="396000.00" class="inputst_box03_15radius" data-originalvalue="396000.00"></td>
+										<td><input type="text" value="396000.00" class="inputst_box03_15radius" data-originalvalue="396000.00"></td>
+										<td><input type="text" value="LC34H890WJUXEN" class="inputst_box03_15radius" data-originalvalue="LC34H890WJUXEN"></td>
+										<td><input type="text" value="" class="inputst_box03_15radius" data-originalvalue=""></td>
+									</tr>
+
+								</tbody>
+							</table>
+							<!-- 테이블 CONTENTS(CROSSTAB) END -->
+						</div>
+					</div>
+					<!-- // 문서 정보 (하단) -->
+				</div>
+			</div>
+			<div class="pop_footer">
+				<button type="button" id="btn_header_userPop_cancel" class="button_st4 cbtn">닫기</button>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- //팝업_양식이미지 -->
