@@ -202,13 +202,38 @@ var dateEvent = function () {
     });
 
     $('#roll_back_btn').click(function (e) {
-        $('#progressMsgTitle').html('roll back 중..');
-        progressId = showProgressBar();
-        setTimeout(function () {
-            endProgressBar(progressId);
-            $('#progressMsgTitle').html('');
-            fn_alert('alert', '현시점으로 roll back 완료 되었습니다.');
-        }, 5000);
+
+        var year = $('#rollbackYear').html();
+        var month = $('#rollbackMonth').html();
+        var date = $('#rollbackDate').html();
+        var modifyYYMMDD = year + '/' + month + '/' + date;
+        
+        var param = {
+            "modifyYYMMDD": modifyYYMMDD
+        };
+
+        $.ajax({
+            url: '/invoiceProcessingStatus/rollbackTraining',
+            type: 'post',
+            datatype: 'json',
+            data: JSON.stringify(param),
+            contentType: 'application/json; charset=UTF-8',
+            beforeSend: function(){
+                $('#progressMsgTitle').html('roll back 중..');
+                progressId = showProgressBar();
+            },
+            success: function (data) {
+                if (data.code == 200) {
+                    fn_alert('alert', '설정하신 시점으로 roll back 완료 되었습니다.');
+                } else {
+                    fn_alert('alert', data.message);
+                }
+                endProgressBar(progressId);
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
         
         /*
         var d = new Date();
