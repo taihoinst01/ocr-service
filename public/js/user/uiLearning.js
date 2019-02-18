@@ -11,6 +11,7 @@ var docPopImages; // 문서조회팝업 이미지 리스트
 var docPopImagesCurrentCount = 1; // 문서조회팝업 이미지 현재 카운트
 var docType = '';
 var currentImgCount = 0;
+var modifyData = []; // UI 수정할 데이터 
 
 $(function () {
 
@@ -483,7 +484,7 @@ function processImage(fileInfo) {
             //console.log(data);
             //thumbImgs.push(fileInfo.convertFileName);
             $('#progressMsgTitle').html('OCR 처리 완료');
-
+            modifyData = $.extend([], data.data);
             uiLayerHtml(data);
             //addProgressBar(31, 40);
             if (ocrCount == 1) {
@@ -581,7 +582,7 @@ function changeOcrImg(data) {
     $(data).parent().parent().parent().addClass('on');
     var fileName = data.src.substring(data.src.lastIndexOf("/") + 1, data.src.length);
     $('#imageZoom').hide();
-    $('#mainImage').css('background-image', 'url("/tif/' + fileName + '")');
+    $('#mainImage').css('background-image', 'url("/img/' + fileName + '")');
 }
 
 // 초기 썸네일 이미지 렌더링
@@ -591,10 +592,10 @@ function thumnImg() {
             var imageTag = '';
             
             if (i == 0) {
-                imageTag = '<li class="on"><div class="box_img"><i><img src="/tif/' + thumbImgs[i] + '" onclick="changeOcrImg(this)" style="background-color: white;"></i>'
+                imageTag = '<li class="on"><div class="box_img"><i><img src="/img/' + thumbImgs[i] + '" onclick="changeOcrImg(this)" style="background-color: white;"></i>'
                     + ' </div ><span>' + thumbImgs[i] + '</span></li >';
             } else {
-                imageTag = '<li><div class="box_img"><i><img src="/tif/' + thumbImgs[i] + '" onclick="changeOcrImg(this)" style="background-color: white;"></i>'
+                imageTag = '<li><div class="box_img"><i><img src="/img/' + thumbImgs[i] + '" onclick="changeOcrImg(this)" style="background-color: white;"></i>'
                     + ' </div ><span>' + thumbImgs[i] + '</span></li >';
             }
             $('#imageBox').append(imageTag);
@@ -641,7 +642,7 @@ function thumbImgPaging(pageCount) {
         //imageTag += '<li>';
         //imageTag += '<a href="javascript:void(0);" class="imgtmb thumb-img" style="background-image:url(../../uploads/' + thumbImgs[i] + '); width: 48px;"></a>';
         //imageTag += '</li>';
-        imageTag += '<li><div class="box_img"><i><img src="/tif/' + thumbImgs[i] + '" onclick="changeOcrImg(this)" style="background-color: white;"></i>'
+        imageTag += '<li><div class="box_img"><i><img src="/img/' + thumbImgs[i] + '" onclick="changeOcrImg(this)" style="background-color: white;"></i>'
             + ' </div ><span>' + thumbImgs[i] + '</span></li >';
     }
     $('#imageBox').append(imageTag);
@@ -719,7 +720,7 @@ function executeML(totData) {
                     mainImgHtml += '</div>';
                     mainImgHtml += '</div>';
                     $('#img_content').html(mainImgHtml);
-                    $('#mainImage').css('background-image', 'url("/tif/' + data.fileName + '")');
+                    $('#mainImage').css('background-image', 'url("/img/' + data.fileName + '")');
                     
                     $('#imageBox > li').eq(0).addClass('on');
                     /*
@@ -817,7 +818,7 @@ function docComparePopup(imgIndex) {
         selectClassificationSt($('#docPopImgPath').val());
         $('#mlPredictionDocName').val($('#docName').text());
         $('#mlPredictionPercent').val($('#docPredictionScore').text());
-        var appendImg = '<img id="originImg" src="/tif/' + lineText[imgIndex].fileName + '" style="width: 100%;height: 480px;">'
+        var appendImg = '<img id="originImg" src="/img/' + lineText[imgIndex].fileName + '" style="width: 100%;height: 480px;">'
         $('#originImgDiv').html(appendImg);
         //$('#originImg').attr('src', '../../uploads/' + lineText[imgIndex].fileName);
         //$('#searchImg').attr('src', '../../' + lineText[imgIndex].docCategory.SAMPLEIMAGEPATH);
@@ -1225,79 +1226,41 @@ function dbColumnsOption(data, column) {
 
 // 마우스 오버 이벤트
 function zoomImg(e, fileName) {
-    // 해당 페이지로 이동
-    /* 몇 페이지 어디인지 표시
-    var fileName = $(e).find('input[type=hidden]').attr('alt');
-    $('.thumb-img').each(function (i, el) {
-        if ($(this).attr('src').split('/')[3] == fileName) {
-            $(this).click();
-        }
-    });
-    */
-
-    var mainImage = $("#mainImage").css('background-image');
-    mainImage = mainImage.replace('url(', '').replace(')', '').replace(/\"/gi, "");
-    mainImage = mainImage.substring(mainImage.lastIndexOf("/") + 1, mainImage.length);
-
-    if (mainImage != fileName) {
-        $('#mainImage').css('background-image', 'url("/tif/' + fileName + '")');
-    }
 
     //실제 이미지 사이즈와 메인이미지div 축소율 판단
     var reImg = new Image();
-    var imgPath = $('#mainImage').css('background-image').split('("')[1];
-    imgPath = imgPath.split('")')[0];
-    reImg.src = imgPath;
-    var width = reImg.width;
-    var height = reImg.height;
+    reImg.onload = function() {
+        var width;
+        var height;
+        width = reImg.width;
+        height = reImg.height;
+        //imageZoom 고정크기
+        var fixWidth = 744;
+        var fixHeight = 1052;
+    
+        var widthPercent = fixWidth / width;
+        var heightPercent = fixHeight / height;
+    
+        $('#mainImage').hide();
+        $('#imageZoom').css('height', '570px').css('background-image', 'url("/img/' + fileName + '")').css('background-size', fixWidth + 'px ' + fixHeight + 'px').show();
+    
+        // 사각형 좌표값
+        var location = $(e).find('input[type=hidden]').val().split(',');
+        x = parseInt(location[0]);
+        y = parseInt(location[1]);
+        textWidth = parseInt(location[2]);
+        textHeight = parseInt(location[3]);
+    
+        var xPosition = '100px ';
+        var yPosition = ((- (y * heightPercent)) + 200) + 'px';
 
-    //imageZoom 고정크기
-    var fixWidth = 744;
-    var fixHeight = 1052;
+        $('#imageZoom').css('background-position', xPosition + yPosition);
+    
 
-    var widthPercent = fixWidth / width;
-    var heightPercent = fixHeight / height;
-
-    $('#mainImage').hide();
-    $('#imageZoom').css('height', '570px').css('background-image', $('#mainImage').css('background-image')).css('background-size', fixWidth + 'px ' + fixHeight + 'px').show();
-
-    // 사각형 좌표값
-    var location = $(e).find('input[type=hidden]').val().split(',');
-    x = parseInt(location[0]);
-    y = parseInt(location[1]);
-    textWidth = parseInt(location[2]);
-    textHeight = parseInt(location[3]);
-    //console.log("선택한 글씨: " + $(e).find('input[type=text]').val());
-
-    //console.log("x: " + (x) + 'px y: ' + (y) + 'px');
-    // 해당 텍스트 x y좌표 원본 이미지에서 찾기
-
-    //var xPosition = (x * 0.4) > 0 ? '-' + ((x * 0.4) + 'px ') : (x * 0.4)  + 'px ';
-    //var yPosition = (y * 0.4) > 0 ? '-' + ((y * 0.4) + 'px') : (y * 0.4) + 'px';
-
-    var xPosition = ((- (x * widthPercent)) + 300) + 'px ';
-    var yPosition = ((- (y * heightPercent)) + 200) + 'px';
-    //console.log(xPosition + yPosition);
-    $('#imageZoom').css('background-position', xPosition + yPosition);
-
-
-    //실제 이미지 사이즈와 메인이미지div 축소율 판단
-    //var reImg = new Image();
-    //var imgPath = $('#mainImage').css('background-image').split('("')[1];
-    //imgPath = imgPath.split('")')[0];
-    //reImg.src = imgPath;
-    //var width = reImg.width;
-    //var height = reImg.height;
-
-    // 선택한 글씨에 빨간 네모 그리기
-    //$('#redNemo').css('top', ((y / (height / $('#mainImage').height())) + $('#imgHeader').height() + 22 + 42 - 10) + 'px');
-    //$('#redNemo').css('left', ((x / (width / $('#mainImage').width())) + 22 + 99 - 10) + 'px');
-    //$('#redNemo').css('width', ((textWidth / (width / $('#mainImage').width())) + 20) + 'px');
-    //$('#redNemo').css('height', ((textHeight / (height / $('#mainImage').height())) + 20) + 'px');
-    //$('#redNemo').show();
-    //$('#redZoomNemo').css('width', '100%');
-    $('#redZoomNemo').css('height', (textHeight + 5) + 'px');
-    $('#redZoomNemo').show();
+        $('#redZoomNemo').css('height', (textHeight + 5) + 'px');
+        $('#redZoomNemo').show();
+    }
+    reImg.src = '/img/' + fileName;
 }
 
 // 마우스 아웃 이벤트
@@ -1400,114 +1363,51 @@ function imageMove(xDistance, yDistance) {
 function uiTrainEvent() {
     $("#uiTrainBtn").click(function (e) {
         modifyTextData();
-        /*
-        var docData;
-        if ($('#docData').val() != '') {
-            docData = JSON.parse($('#docData').val());
-        }
-        if (docData && docData.DOCTYPE != 0) {
-            modifyTextData();
-        } else {
-            fn_alert('alert', 'There is no document form, I do not training.');
-            return;
-        }
-        */
     });
 }
 
-//개별 학습 학습 내용 추가 ui training add
 function modifyTextData() {
-    var beforeData = lineText;
-    var afterData = [];
-    var array = [];
-    var dataCount = 0;
+    var beforeData = [modifyData];
+    var afterData = {};
+    afterData.data = [];
     beforeData = beforeData.slice(0);
+
+    for (var i = 0; i < modifyData.length; i++) {
+        if (i > 0) {
+            for (var j = 0; j < modifyData[i].data.length; j++) {
+                modifyData[0].data.push(modifyData[i].data[j]);
+            }
+        }
+    }
+    beforeData = modifyData[0];
 
     // afterData Processing
     $('#textResultTbl > dl').each(function (index, el) {
-        var fileName = $(el).find('label').children().eq(2).val();
         var location = $(el).find('label').children().eq(1).val();
         var text = $(el).find('label').children().eq(0).val();
         var colLbl = $(el).find('select').find('option:selected').val();
-
-        if (array.length < beforeData[dataCount].data.data.length) {
-            array.push({ 'location': location, 'text': text, 'colLbl': Number(colLbl ? colLbl : 38) });
-        }
-
-        if (array.length == beforeData[dataCount].data.data.length) {
-            var obj = {}
-            obj.fileName = fileName;
-            obj.data = array;
-            afterData.push(obj);
-            dataCount++;
-            array = [];
-        }
-
+        afterData.data.push({ 'location': location, 'text': text, 'colLbl': colLbl });
     });
 
-    //afterData.fileName = $('#imageBox > .on span').text();
-    /*
+    // find an array of data with the same filename
     $.ajax({
-        url: '/uiLearning/uiTraining',
+        url: '/common/modifyBatchUiTextData',
         type: 'post',
         datatype: "json",
-        data: JSON.stringify({
-            'beforeData': beforeData[0].data,
-            'afterData': afterData,
-            'docType': $('#docType').val(),
-            'docSid': $('#docSid').val()
-        }),
+        data: JSON.stringify({ 'beforeData': beforeData, 'afterData': afterData }),
         contentType: 'application/json; charset=UTF-8',
+        beforeSend: function () {
+            $("#progressMsgTitle").html("retrieving learn data...");
+            progressId = showProgressBar();
+        },
         success: function (data) {
-            //makeTrainingData();
-            endProgressBar(progressId);
             fn_alert('alert', "success training");
+            endProgressBar(progressId);
         },
         error: function (err) {
             console.log(err);
-            endProgressBar(progressId);
         }
     });
-    */
-    // find an array of data with the same filename
-    for (var i in beforeData) {
-        if (beforeData[i].fileName == afterData[i].fileName) {
-
-            $.ajax({
-                url: '/uiLearning/uiTraining',
-                type: 'post',
-                datatype: "json",
-                data: JSON.stringify({
-                    'beforeData': beforeData[i].data,
-                    'afterData': afterData[i],
-                    //'docType': $('#docType').val(),
-                    //'docSid': $('#docSid').val()
-                    'docType': lineText[i].data.docCategory.DOCTYPE,
-                    'docSid': lineText[i].data.docSid
-                }),
-                contentType: 'application/json; charset=UTF-8',
-                beforeSend: function () {
-                    progressId = showProgressBar();
-                },
-                success: function (data) {
-                    //makeTrainingData();
-                    
-                    if (beforeData.length - 1 == i) {
-                        //endProgressBar(progressId);
-                        setTimeout(function () {
-                            endProgressBar(progressId);
-                            fn_alert('alert', '학습이 완료 되었습니다.');
-                        }, 5000);
-                        //fn_alert('alert', "success training");
-                    }
-                },
-                error: function (err) {
-                    console.log(err);
-                    endProgressBar(progressId);
-                }
-            });
-        }
-    }
 }
 
 function makeTrainingData() {
@@ -1795,7 +1695,7 @@ function changeOcrDocPopupImage() {
             return false;
         } else {
             currentImgCount--;
-            var appendImg = '<img id="originImg" src="/tif/' + lineText[currentImgCount].fileName + '">'
+            var appendImg = '<img id="originImg" src="/img/' + lineText[currentImgCount].fileName + '">'
             $('#originImgDiv').html(appendImg);
             selectClassificationStOcr('', currentImgCount);
             if (currentImgCount == 0) {
@@ -1812,7 +1712,7 @@ function changeOcrDocPopupImage() {
             return false;
         } else {
             currentImgCount++;
-            var appendImg = '<img id="originImg" src="/tif/' + lineText[currentImgCount].fileName + '">'
+            var appendImg = '<img id="originImg" src="/img/' + lineText[currentImgCount].fileName + '">'
             $('#originImgDiv').html(appendImg);
             selectClassificationStOcr('', currentImgCount);
             if (currentImgCount == totalImgCount) {
@@ -2218,3 +2118,32 @@ $(document).on('change', '#uiDocTopType', function(){
         }
     });
 })
+
+var uiLearnTraining = function (imgIdArray) {
+
+    $.ajax({
+        url: '/uiLearning/uiLearnTraining',
+        type: 'post',
+        datatype: 'json',
+        data: JSON.stringify({ imgIdArray: imgIdArray }),
+        contentType: 'application/json; charset=UTF-8',
+        beforeSend: function () {
+            $('#btn_pop_batch_close').click();
+            $('#progressMsgTitle').html("processing UI learn data...");
+            progressId = showProgressBar();
+        },
+        success: function (data) {
+            console.log(data);
+            //modifyData = data.data;
+            $('#progressMsgTitle').html("success UI learn data...");
+            //selectTypoData(data);
+            modifyData = $.extend([], data.data);
+            uiLayerHtml(data);
+            endProgressBar(progressId);
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
+
+};
