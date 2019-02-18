@@ -34,6 +34,16 @@ router.post('/processCountSel', function (req, res) {
     if (req.isAuthenticated()) fnProcessCountSel(req, res);
 });
 
+// 문저별현황 조회
+router.post('/docCountSel', function (req, res) {
+    if (req.isAuthenticated()) fnDocCountSel(req, res);
+});
+
+//신규문서 등록현황  
+router.post('/newDocTopTypeSel', function (req, res) {
+    if (req.isAuthenticated()) fnDocTopTypeSel(req, res);
+});
+
 var fnProcessCountSel = function (req, res) {
     sync.fiber(function () {
         try {
@@ -72,5 +82,58 @@ var fnProcessCountSel = function (req, res) {
         }
     });
 };
+
+var fnDocTopTypeSel = function (req, res) {
+    sync.fiber(function () {
+        try {
+            var docTopTypeArr = sync.await(oracle.selectDocTopTypeList(req, sync.defer()));
+        
+            if (docTopTypeArr.length != 0) {
+
+                res.send({ 'data': docTopTypeArr, 'code': 200});
+            } else {
+                res.send({ 'data': {}, 'code': 200});
+            }
+
+        } catch (e) {
+            console.log(e);
+            res.send({ code: 400 });
+        }
+    });
+};
+
+var fnDocCountSel = function (req, res) {
+    sync.fiber(function () {
+        try {
+            var processDocCountArr = sync.await(oracle.selectProcessDocCountList(req, sync.defer()));
+        
+            if (processDocCountArr.length != 0) {
+                var monthArr = [];
+                var monthlyCntArr = [];
+
+                for(var i = 0; i < processDocCountArr.length; i++) {
+                    monthArr.push(changeMonthFnc(processDocCountArr[i].MONTH_VALUE));
+                    monthlyCntArr.push(processDocCountArr[i].COUNT_VALUE);
+                }
+
+                var returnObj = {monthArr:monthArr, monthlyCntArr:monthlyCntArr}
+                res.send({ 'data': returnObj, 'code': 200});
+            } else {
+                res.send({ 'data': {}, 'code': 200});
+            }
+
+        } catch (e) {
+            console.log(e);
+            res.send({ code: 400 });
+        }
+    });
+};
+
+var changeMonthFnc = function (monthVal) {
+    var monthObj = {'01':'January', '02':'February', '03':'March', '04':'April', 
+                    '05':'May', '06':'June', '07':'July', '08':'August', 
+                    '09':'September', '10':'October', '11':'November', '12':'December'}
+    return (typeof monthObj[monthVal]!='undefined'?monthObj[monthVal]:'None');
+}
 
 module.exports = router;

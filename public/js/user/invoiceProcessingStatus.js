@@ -11,6 +11,8 @@ var progressId; // progress Id
 $(function () {
     _init();
     processCountSel();
+    newDocTopTypListFnc();
+    docCountSel();
     dateEvent();
 });
 
@@ -39,7 +41,9 @@ var _init = function () {
         }
     };
 
+    /*
     var color = Chart.helpers.color;
+    //두연
     var barChartData = {
         labels: ['January', 'February', 'March', 'April', 'May'],
         datasets: [{
@@ -55,7 +59,6 @@ var _init = function () {
                 7
             ]
         }]
-
     };
 
     var barConfig = {
@@ -79,15 +82,16 @@ var _init = function () {
             }
         }
     };
+    */
 
 	window.onload = function() {
         // var lineCtx = document.getElementById('line').getContext('2d');
         var pieCtx = document.getElementById('pie').getContext('2d');
-        var barCtx = document.getElementById('bar').getContext('2d');
+        //var barCtx = document.getElementById('bar').getContext('2d');
 
         // window.myLine = new Chart(lineCtx, lineConfig);
         window.myPie = new Chart(pieCtx, pieConfig);
-        window.myBar = new Chart(barCtx, barConfig);
+        //window.myBar = new Chart(barCtx, barConfig);
     };
 
 };
@@ -247,6 +251,43 @@ var dateEvent = function () {
     
 };
 
+var newDocTopTypListFnc = function() {
+    // 필요없음
+    var param = {
+    };
+
+    $.ajax({
+        url: '/invoiceProcessingStatus/newDocTopTypeSel',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify(param),
+        contentType: 'application/json; charset=UTF-8',
+        beforeSend: function () {
+            $('#userProcessingStatus .ips_user_tbody').html('');
+        },
+        success: function (data) {
+            if (data.code != 200) {
+                return false;
+            }
+            var resultArr = data.data;
+            var inputHtml = '';
+            for (var i=0; i<resultArr.length; i++) {
+                inputHtml += '<tr>';
+                inputHtml += '<td name="td_base">' + resultArr[i].ENGNM + '</td>';
+                inputHtml += '<td name="td_base">' + resultArr[i].KORNM + '</td>';
+                inputHtml += '<td name="td_base">' + resultArr[i].SEQNUM + '</td>';
+                inputHtml += '<td name="td_base" class="red">' + resultArr[i].USERID + '</td>';
+                inputHtml += '</tr>';
+            }
+            $('#userProcessingStatus .ips_user_tbody').html(inputHtml);
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
+};
+
+
 var processCountSel = function() {
     // 필요없음
     var param = {
@@ -355,3 +396,80 @@ var processCountSel = function() {
         }
     });
 };
+
+
+
+var docCountSel = function() {
+    // 필요없음
+    var param = {
+    };
+
+    $.ajax({
+        url: '/invoiceProcessingStatus/docCountSel',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify(param),
+        contentType: 'application/json; charset=UTF-8',
+        beforeSend: function () {
+        },
+        success: function (data) {
+            if (data.code != 200) {
+                return false;
+            }
+            makeDocCountBarFnc(data.data);
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
+};
+
+var makeDocCountBarFnc = function(resultObj) {
+    
+    var monthArr = resultObj.monthArr;
+    var monthlyCntArr = resultObj.monthlyCntArr;
+
+    var color = Chart.helpers.color;
+
+    var barChartData = {
+        labels: monthArr,//['January', 'February', 'March', 'April', 'May'],
+        datasets: [{
+            label: '',
+            backgroundColor: color(window.chartColors.red).alpha(0.3).rgbString(),
+            borderColor: 'rgba(234,113,105,1)',
+            borderWidth: 1,
+            data: monthlyCntArr
+            /*[
+                6,
+                7,
+                5,
+                4,
+                7
+            ]*/
+        }]
+    };
+    var barConfig = {
+        type: 'bar',
+        data: barChartData,
+        options: {
+            responsive: true,
+            legend: {
+                position: '0',
+            },
+            scales: {
+                yAxes: [{
+                    display: true,
+                    ticks: {
+                        beginAtZero: true,
+                        steps: 1,
+                        stepValue: 1,
+                        min: 0
+                    }
+                }]
+            }
+        }
+    };
+    
+    var barCtx = document.getElementById('bar').getContext('2d');
+    window.myBar = new Chart(barCtx, barConfig);
+}

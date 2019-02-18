@@ -4399,3 +4399,61 @@ exports.selectProcessCount = function (req, done) {
         }
     });
 };
+
+exports.selectProcessDocCountList = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);          
+            var query = `SELECT * FROM ( 
+                            SELECT TO_CHAR(REGDATE, 'MM') AS MONTH_VALUE, COUNT(*) AS COUNT_VALUE 
+                              FROM TBL_BATCH_LEARN_LIST 
+                             WHERE 1=1 
+                             --AND TO_CHAR(REGDATE, 'YYYYMMDD') <= :endDate 
+                            GROUP BY TO_CHAR(REGDATE, 'MM') 
+                            ORDER BY TO_CHAR(REGDATE, 'MM') DESC) 
+                          WHERE ROWNUM <=5`; 
+            let resDocCount = await conn.execute(query);
+            //let resAnswerFile = await conn.execute(query, [req.body.]);
+            return done(null, resDocCount.rows);
+        } catch (err) { // catches errors in getConnection and the query
+            console.log(err);
+            return done(null, "error");
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+exports.selectDocTopTypeList = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);          
+            var query = `SELECT SEQNUM, NVL(KORNM,'NONE') AS KORNM, USEYN, NVL(USERID,'NONE') AS USERID, NVL(ENGNM,'NONE') AS ENGNM 
+                           FROM TBL_ICR_DOC_TOPTYPE`; 
+            let resDocCount = await conn.execute(query);
+            //let resAnswerFile = await conn.execute(query, [req.body.]);
+            return done(null, resDocCount.rows);
+        } catch (err) { // catches errors in getConnection and the query
+            console.log(err);
+            return done(null, "error");
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
