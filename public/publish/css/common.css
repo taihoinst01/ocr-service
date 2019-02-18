@@ -337,7 +337,7 @@ canvas.preview { border-radius: 5px; }
 .after_div { height: 30%; color: #BDBDBD; font: bold 23px 'NanumGothicR'; padding-top: 12px; }
 .before_div p { text-align: center; }
 .main_div p { text-align: center; }
-.ips_date_year .main_div p { padding-top: 13px; }
+.ips_date_year .main_div p { padding-top: 8px; }
 .after_div p { text-align: center; }
 .ips_date_count span { color: #BDBDBD; font: bold 23px 'NanumGothicR'; }
 .bottom_line { border-bottom: 1px solid red; padding-bottom: 8px; display:inline-block; width: 52px; height: 27px; }

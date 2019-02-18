@@ -73,4 +73,26 @@ var fnProcessCountSel = function (req, res) {
     });
 };
 
+// TBL_BATCH_COLUMN_MAPPING_TRAIN 롤백
+router.post('/rollbackTraining', function (req, res) {
+    var modifyYYMMDD = req.body.modifyYYMMDD;
+    var returnObj;
+    var param;
+    sync.fiber(function () {
+        try {
+            param = {'modifyYYMMDD': modifyYYMMDD};
+            sync.await(oracle.rollbackTraining(param, sync.defer()));
+
+            returnObj = { 'code': 200};
+        } catch (e) {
+            console.log(e);
+            returnObj = { 'code': 500, 'message': e };
+
+        } finally {
+            res.send(returnObj);
+        }
+
+    });
+});
+
 module.exports = router;

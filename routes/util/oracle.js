@@ -4399,3 +4399,29 @@ exports.selectProcessCount = function (req, done) {
         }
     });
 };
+
+exports.rollbackTraining = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let param;
+        let modifyYYMMDD = req.modifyYYMMDD;
+        try {
+            conn = await oracledb.getConnection(dbConfig);          
+            var query = 'delete from TBL_BATCH_COLUMN_MAPPING_TRAIN where REGDATE < :modifyYYMMDD';
+            param = [modifyYYMMDD]
+            await conn.execute(query, param);
+            return done(null, null);
+        } catch (err) { // catches errors in getConnection and the query
+            console.log(err);
+            return done(null, "error");
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};

@@ -654,10 +654,22 @@ function thumbImgEvent() {
     $('.thumb-img').click(function () {
         $('#imageBox > li').removeClass('on');
         $(this).parent().addClass('on');
-        $('#mainImage').css('background-image', $(this).css('background-image'));
-        detailTable($(this).css('background-image').split('/')[4].split('")')[0]);
+
+        
+        $('#mainImage').css('background-image', 'url("/img/' + $(this).attr('title') + '")');
+
+        $(this).parents('imageBox').find('li').removeClass('on');
+        $(this).parents('li').addClass('on');
+        viewOriginImg();
+        //$('#mainImage').css('background-image', $(this).attr('title'));
+        //detailTable($(this).attr('title'));
+
+
+        //$('#mainImage').css('background-image', $(this).css('background-image'));
+        //detailTable($(this).css('background-image').split('/')[4].split('")')[0]);
     });
 }
+
 
 // 상세 테이블 렌더링 & DB컬럼 조회
 function appendOcrData(fileInfo, data) {
@@ -1978,7 +1990,7 @@ function uiLayerHtml(data) {
     var tblSortTag = '';
 
     var mlDataArray = data.data;
-
+    
     // UI 레이어 화면 좌측 이미지 html 생성 (다중 이미지이면 아래로 붙어서 나옴)
     var imgNameHtml = "";
     for (var l in mlDataArray) {
@@ -1993,10 +2005,63 @@ function uiLayerHtml(data) {
 
         imgNameHtml += '<img src="/img/' + imgName + '" style="width: 100%; height: auto; margin-bottom: 20px;">';
     }
+    
+    //$('#mainImage').append(imgNameHtml);
 
-    var height = mlDataArray.length * 1600;
-    $("#mainImage").css("height", height + "px !important");
-    $('#mainImage').append(imgNameHtml);
+
+
+    //두연두연두연
+
+    var firstImgName = "";
+    var appendThumbnailHtml = "";
+    // imgThumbnail
+    for(var i = 0; i < mlDataArray.length; i++) {
+        if(i == 0) {
+            firstImgName = nvl(data.data[i].fileinfo.filepath.substring(data.data[i].fileinfo.filepath.lastIndexOf('/') + 1));
+            appendThumbnailHtml += '<li class="on">';
+        } else {
+            appendThumbnailHtml += '<li>';
+        }
+
+        var imgName = nvl(data.data[i].fileinfo.filepath.substring(data.data[i].fileinfo.filepath.lastIndexOf('/') + 1));
+        var fileExt = data.data[i].fileinfo.filepath.substring(data.data[i].fileinfo.filepath.lastIndexOf(".") + 1, data.data[i].fileinfo.filepath.length);
+
+        if (fileExt.toLowerCase() == "png" || fileExt.toLowerCase() == "pdf") {
+            imgName = imgName.substring(0, imgName.lastIndexOf('.')) + '.png';
+        } else if (fileExt.toLowerCase() == "jpg") {
+            imgName = imgName.substring(0, imgName.lastIndexOf('.')) + '.jpg';
+        }
+        
+        appendThumbnailHtml += '<div class="box_img"><i><img src="/img/' + nvl(imgName) + '" ' +
+                'class="thumb-img" title="' + nvl(imgName) + '"></i>' +
+                '</div>' +
+                '<span>' + nvl(imgName) + '</span>' +
+                '</li> ';
+    }
+
+    var mainImgHtml = '';
+    mainImgHtml += '<div id="mainImage" class="docUpload_mainImage" style="height:1600px !important;">';
+    mainImgHtml += '</div>';
+    mainImgHtml += '<div id="imageZoom" ondblclick="viewOriginImg()">';
+    mainImgHtml += '<div id="redZoomNemo">';
+    mainImgHtml += '</div>';
+    mainImgHtml += '</div>';
+    $('#div_invoice_view_image_2').html(mainImgHtml);
+
+    //var height = 1600 + "px !important";
+    //$("#mainImage").css("height", height);
+    $('#mainImage').css('background-image', 'url("/img/' + firstImgName + '")');
+    $("#imageBox").empty().append(appendThumbnailHtml);
+    //checkDocLabelDef(docLabelDefList);
+    //checkDocMlData(docAnswerDataList);
+    //changeTabindex();
+    thumbImgEvent();
+
+
+
+
+
+
 
     // UI 레이어 화면 우측 추출 텍스트 및 컬럼 html 생성
     for (var l in mlDataArray) {
@@ -2005,6 +2070,7 @@ function uiLayerHtml(data) {
         var filePath = mlDataArray[l].fileinfo.filepath;
         filePath = filePath.substring(filePath.lastIndexOf("/") + 1, filePath.length);
 
+        //tblSortTag = '';
         for (var i in mlData) {
             if (mlData[i].entryLbl > 0) {
                 tblTag += '<dl>';
@@ -2062,6 +2128,9 @@ function uiLayerHtml(data) {
                 tblSortTag += '</dl>';
             }
         }
+        //$('#textResultTbl').append('<div id="' + imgNameText + '" name="textColDiv">');
+        //$('#textResultTbl').append(tblTag + tblSortTag);//.append(tblSortTag);
+        //$('#textResultTbl').append('</div>');
     }
 
     $('#textResultTbl').append(tblTag).append(tblSortTag);
