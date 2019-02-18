@@ -17,7 +17,7 @@ $(function () {
 });
 
 var _init = function () {
-    
+    var colorList = ['#FFB6C1', '#FFCFDA', '#FFAAAF', '#FFDCE1', '#FF9E9B', '#FFD0CD', '#FF7A85', '#FFACB7', '#FF5675', '#FF88A7'];
     var pieConfig = {
         type: 'doughnut',
         data: {
@@ -83,6 +83,45 @@ var _init = function () {
         }
     };
     */
+
+    //문서별현황(도넛차트) 조회
+    $.ajax({
+        url: '/invoiceProcessingStatus/selectDocStatus',
+        type: 'post',
+        datatype: 'json',
+        contentType: 'application/json; charset=UTF-8',
+        beforeSend: function(){
+            $('#progressMsgTitle').html('문서별현황 조회중..');
+            pieConfig.data.labels = [];
+            pieConfig.data.datasets[0].data = [];
+            pieConfig.data.datasets[0].backgroundColor = [];
+            progressId = showProgressBar();
+        },
+        success: function (data) {
+            //console.log(data);
+            if (data.code == 200) {
+                var docStatusList = data.docStatusList;
+
+                if(docStatusList.length != 0) {
+                    for(var i = 0; i < docStatusList.length; i++) {
+                        pieConfig.data.labels.push(docStatusList[i].ENGNM);
+                        pieConfig.data.datasets[0].data.push(docStatusList[i].COUNT);
+                        pieConfig.data.datasets[0].backgroundColor.push(i < 10 ? colorList[i] : colorList[i - 10]);
+                    }
+                } else {
+                    pieConfig.data.labels.push('문서없음');
+                    pieConfig.data.datasets[0].data.push(100);
+                    pieConfig.data.datasets[0].backgroundColor.push('#edebeb');
+                }
+            } else {
+                
+            }
+            endProgressBar(progressId);
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
 
 	window.onload = function() {
         // var lineCtx = document.getElementById('line').getContext('2d');
@@ -206,13 +245,38 @@ var dateEvent = function () {
     });
 
     $('#roll_back_btn').click(function (e) {
-        $('#progressMsgTitle').html('roll back 중..');
-        progressId = showProgressBar();
-        setTimeout(function () {
-            endProgressBar(progressId);
-            $('#progressMsgTitle').html('');
-            fn_alert('alert', '현시점으로 roll back 완료 되었습니다.');
-        }, 5000);
+
+        var year = $('#rollbackYear').html();
+        var month = $('#rollbackMonth').html();
+        var date = $('#rollbackDate').html();
+        var modifyYYMMDD = year + '/' + month + '/' + date;
+        
+        var param = {
+            "modifyYYMMDD": modifyYYMMDD
+        };
+
+        $.ajax({
+            url: '/invoiceProcessingStatus/rollbackTraining',
+            type: 'post',
+            datatype: 'json',
+            data: JSON.stringify(param),
+            contentType: 'application/json; charset=UTF-8',
+            beforeSend: function(){
+                $('#progressMsgTitle').html('roll back 중..');
+                progressId = showProgressBar();
+            },
+            success: function (data) {
+                if (data.code == 200) {
+                    fn_alert('alert', '설정하신 시점으로 roll back 완료 되었습니다.');
+                } else {
+                    fn_alert('alert', data.message);
+                }
+                endProgressBar(progressId);
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
         
         /*
         var d = new Date();

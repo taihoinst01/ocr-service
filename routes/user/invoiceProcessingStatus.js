@@ -136,4 +136,47 @@ var changeMonthFnc = function (monthVal) {
     return (typeof monthObj[monthVal]!='undefined'?monthObj[monthVal]:'None');
 }
 
+// TBL_BATCH_COLUMN_MAPPING_TRAIN 롤백
+router.post('/rollbackTraining', function (req, res) {
+    var modifyYYMMDD = req.body.modifyYYMMDD;
+    var returnObj;
+    var param;
+    sync.fiber(function () {
+        try {
+            param = {'modifyYYMMDD': modifyYYMMDD};
+            sync.await(oracle.rollbackTraining(param, sync.defer()));
+
+            returnObj = { 'code': 200};
+        } catch (e) {
+            console.log(e);
+            returnObj = { 'code': 500, 'message': e };
+
+        } finally {
+            res.send(returnObj);
+        }
+
+    });
+});
+
+// 문서별현황(도넛차트) 조회
+router.post('/selectDocStatus', function (req, res) {
+    var returnObj;
+    var param;
+    sync.fiber(function () {
+        try {
+
+            var docStatusList = sync.await(oracle.selectDocStatus(null, sync.defer()));
+
+            returnObj = { 'code': 200, 'docStatusList': docStatusList};
+        } catch (e) {
+            console.log(e);
+            returnObj = { 'code': 500, 'message': e };
+
+        } finally {
+            res.send(returnObj);
+        }
+
+    });
+});
+
 module.exports = router;

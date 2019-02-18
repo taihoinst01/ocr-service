@@ -195,6 +195,10 @@ function uiLearnTraining(filepath, callback) {
                 retData.fileinfo = { filepath: fullFilePathList[i] };
                 //sync.await(oracle.insertMLData(retData, sync.defer()));
 
+                if (i == 0) {
+                    docType = retData.docCategory.DOCTYPE;
+                }
+
                 var labelData = sync.await(oracle.selectIcrLabelDef(retData.docCategory.DOCTOPTYPE, sync.defer()));
 
                 retData.labelData = labelData.rows;
