@@ -5,54 +5,17 @@ var monthEngNames = ['January', 'Febuary', 'March', 'April', 'May', 'June', 'Jul
 var dayEngNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday','Saturday'];
 var progressId; // progress Id
 
+// var addCond = "LEARN_N"; // LEARN_N:학습미완료, LEARN_Y:학습완료, default:학습미완료
+
 
 $(function () {
     _init();
+    processCountSel();
     dateEvent();
 });
 
 var _init = function () {
-    var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September',
-        'October', 'November', 'December'];
-
-	var lineConfig = {
-        type: 'line',
-		data: {
-            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-			datasets: [{
-                label: '',
-                backgroundColor: 'rgba(255,255,255,1)',
-                borderColor: 'rgba(234,113,105,1)',
-                data: [5,4,7,8,3,3,0],
-                fill: false,
-            }]
-        },
-		options: {
-        legend: {
-            display: false
-        },
-		tooltips: {
-            enabled: true,
-            mode: 'index',
-            position: 'nearest',
-				callbacks: {
-                    label: function(tooltipItem) {
-                        return tooltipItem.yLabel;
-                    }
-                }
-            },
-			scales: {
-                yAxes: [{
-                    ticks: {
-                        stepSize: 1,
-                        suggestedMin: 0,
-                        suggestedMax: 10,
-                    }
-                }]
-            }
-        }
-    };
-
+    
     var pieConfig = {
         type: 'doughnut',
         data: {
@@ -118,11 +81,11 @@ var _init = function () {
     };
 
 	window.onload = function() {
-        var lineCtx = document.getElementById('line').getContext('2d');
+        // var lineCtx = document.getElementById('line').getContext('2d');
         var pieCtx = document.getElementById('pie').getContext('2d');
         var barCtx = document.getElementById('bar').getContext('2d');
 
-        window.myLine = new Chart(lineCtx, lineConfig);
+        // window.myLine = new Chart(lineCtx, lineConfig);
         window.myPie = new Chart(pieCtx, pieConfig);
         window.myBar = new Chart(barCtx, barConfig);
     };
@@ -282,4 +245,113 @@ var dateEvent = function () {
         */
     });
     
+};
+
+var processCountSel = function() {
+    // 필요없음
+    var param = {
+    };
+
+    $.ajax({
+        url: '/invoiceProcessingStatus/processCountSel',
+        type: 'post',
+        datatype: "json",
+        data: JSON.stringify(param),
+        contentType: 'application/json; charset=UTF-8',
+        beforeSend: function () {
+        },
+        success: function (data) {
+            var list = data.data;
+            var waitCnt = data.waitCnt;
+            var completeCnt = data.completeCnt;
+            var maxNum = 0;
+            
+            $('#waitCnt').html(waitCnt);
+            $('#completeCnt').html(completeCnt);
+            
+            var lastMon = list[list.length - 1].PROCESSDATE.substring(list[list.length - 1].PROCESSDATE.length-2,list[list.length - 1].PROCESSDATE.length);
+
+            for(var i=0; i < list.length; i++) {
+                if(list[i].DATECNT > maxNum){
+                    maxNum = list[i].DATECNT
+                }
+            }
+
+            // 12 - 6 + 2 = 8,9,10,11,12,1,2
+            // 12 - 6 + 3 = 9,10,11,12,1,2,3
+            var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            var CHARTMONTHS = [];
+            var CHARTMONTHSVAL = [];
+            var sw = false;
+
+            var startMon = 12 - 6 + parseInt(lastMon);
+
+            for (var i=0; i<7; i++) {
+                if(startMon < 13) {
+                    CHARTMONTHS.push(MONTHS[parseInt(startMon)-1]);
+                    
+                    for(var j=0; j < list.length; j++) {
+                        var tempMon = parseInt(list[j].PROCESSDATE.substring(list[j].PROCESSDATE.length-2,list[j].PROCESSDATE.length));
+                        if(startMon == tempMon) {
+                            CHARTMONTHSVAL.push(list[j].DATECNT);
+                            sw = true;
+                            break;
+                        }
+
+                        if(j == list.length-1 && sw == false) {
+                            CHARTMONTHSVAL.push(0);
+                        }
+                    }
+                    sw = false;
+                    startMon++;
+                } else {
+                    startMon = 1;
+                    i--;
+                }
+            }
+
+            var lineCtx = document.getElementById('line').getContext('2d');
+            var lineConfig = {
+                type: 'line',
+                data: {
+                    labels: [CHARTMONTHS[0], CHARTMONTHS[1], CHARTMONTHS[2], CHARTMONTHS[3], CHARTMONTHS[4], CHARTMONTHS[5], CHARTMONTHS[6]],
+                    datasets: [{
+                        label: '',
+                        backgroundColor: 'rgba(255,255,255,1)',
+                        borderColor: 'rgba(234,113,105,1)',
+                        data: [CHARTMONTHSVAL[0],CHARTMONTHSVAL[1],CHARTMONTHSVAL[2],CHARTMONTHSVAL[3],CHARTMONTHSVAL[4],CHARTMONTHSVAL[5],CHARTMONTHSVAL[6]],
+                        fill: false,
+                    }]
+                },
+                options: {
+                legend: {
+                    display: false
+                },
+                tooltips: {
+                    enabled: true,
+                    mode: 'index',
+                    position: 'nearest',
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                return tooltipItem.yLabel;
+                            }
+                        }
+                    },
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                stepSize: Math.round(maxNum / 5),
+                                suggestedMin: 0,
+                                suggestedMax: maxNum,
+                            }
+                        }]
+                    }
+                }
+            };
+            window.myLine = new Chart(lineCtx, lineConfig);
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
 };

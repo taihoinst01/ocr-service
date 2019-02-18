@@ -4341,3 +4341,61 @@ function getConvertDate() {
 
     return '' + yyyy + mm + dd + hh + minute + ss + mss;
 }
+
+exports.selectProcessCountList = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);          
+            var query = `select to_char(REGDATE, 'YYYYMM') PROCESSDATE, count(REGDATE) DATECNT
+                           from TBL_BATCH_LEARN_LIST
+                          where to_char(REGDATE, 'YYYYMM')
+                        between (select to_char(add_months(MAX(REGDATE), -6), 'YYYYMM') 
+                                   from TBL_BATCH_LEARN_LIST) and 
+                                (select to_char(MAX(REGDATE), 'YYYYMM') 
+                                   from TBL_BATCH_LEARN_LIST)
+                       group by to_char(REGDATE, 'YYYYMM')
+                       order by to_char(REGDATE, 'YYYYMM')`;
+            let resAnswerFile = await conn.execute(query);
+            return done(null, resAnswerFile.rows);
+        } catch (err) { // catches errors in getConnection and the query
+            console.log(err);
+            return done(null, "error");
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+exports.selectProcessCount = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);          
+            var query = `select status, count(status) statusCnt
+                           from tbl_batch_learn_list
+                       group by status`;
+            let resAnswerFile = await conn.execute(query);
+            return done(null, resAnswerFile.rows);
+        } catch (err) { // catches errors in getConnection and the query
+            console.log(err);
+            return done(null, "error");
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
