@@ -33,6 +33,7 @@ var documentCheck = require('./routes/user/documentCheck');
 var invoiceProcessingStatus = require('./routes/user/invoiceProcessingStatus');
 var batchLearningTest = require('./routes/user/batchLearningTest');
 var docRegistration = require('./routes/user/docRegistration');
+var docManagement = require('./routes/user/docManagement');
 var adminLearning = require('./routes/user/adminLearning');
 var wF_WorkflowProc = require('./routes/user/wF_WorkflowProc');
 
@@ -53,7 +54,7 @@ app.use('/tifTest', express.static(path.join(appRoot)));
 app.use('/tif', express.static(path.join(propertiesConfig.filepath.uploadsPath)));
 app.use('/jpg', express.static(path.join(propertiesConfig.filepath.uploadsPath)));
 app.use('/img', express.static(path.join(propertiesConfig.filepath.uploadsPath)));
-app.use('/sample', express.static(path.join(propertiesConfig.filepath.docFilePath)));
+app.use('/sample', express.static(path.join(propertiesConfig.filepath.doc_sampleImagePath)));
 app.use('/uploads', express.static(__dirname + '/uploads'));
 app.use('/sample', express.static(__dirname + '/sample'));
 app.use('/excel', express.static(__dirname + '/excel'));
@@ -94,6 +95,7 @@ app.use('/documentCheck', documentCheck);
 app.use('/invoiceProcessingStatus', invoiceProcessingStatus);
 app.use('/batchLearningTest', batchLearningTest);
 app.use('/docRegistration', docRegistration);
+app.use('/docManagement', docManagement);
 
 app.use('/adminLearning', adminLearning);
 app.use('/wF_WorkflowProc', wF_WorkflowProc);//jmh

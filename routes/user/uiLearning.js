@@ -16,6 +16,7 @@ var pythonConfig = require(appRoot + '/config/pythonConfig');
 var PythonShell = require('python-shell');
 var ui = require('../util/ui.js');
 var transPantternVar = require('./transPattern');
+var batch = require('../util/batch.js');
 var ocrUtil = require('../util/ocr.js');
 const upload = multer({
     storage: multer.diskStorage({
@@ -194,6 +195,10 @@ function uiLearnTraining(filepath, callback) {
                 retData.fileinfo = { filepath: fullFilePathList[i] };
                 //sync.await(oracle.insertMLData(retData, sync.defer()));
 
+                if (i == 0) {
+                    docType = retData.docCategory.DOCTYPE;
+                }
+
                 var labelData = sync.await(oracle.selectIcrLabelDef(retData.docCategory.DOCTOPTYPE, sync.defer()));
 
                 retData.labelData = labelData.rows;
@@ -244,31 +249,6 @@ router.post('/uiLearnTraining', function (req, res) {
     });
 });
 */
-
-// 문서양식매핑
-router.post('/insertDoctypeMapping', function (req, res) {
-    var returnObj;
-
-    var data = {
-        filepath: req.body.filepath,
-        docName: req.body.docName,
-        radioType: req.body.radioType,
-        textList: req.body.textList
-    }
-
-    sync.fiber(function () {
-        try {
-            let data = req.body;
-            var result = sync.await(ui.insertDoctypeMapping(data, sync.defer()));
-            returnObj = { code: 200, docType: result[0], docSid: result[1] };
-        } catch (e) {
-            console.log(e);
-            returnObj = { code: 500, message: e };
-        } finally {
-            res.send(returnObj);
-        }
-    });
-});
 
 // ui training
 router.post('/uiTraining', function (req, res) {
@@ -610,11 +590,6 @@ router.post('/uploadFile', upload.any(), function (req, res) {
 var callbackSelectLikeDocCategory = function (rows, req, res) {
     res.send(rows);
 };
-router.post('/selectLikeDocCategory', function (req, res) {
-    var keyword = '%' + req.body.keyword + '%';
-
-    commonDB.reqQueryParam(queryConfig.uiLearningConfig.selectLikeDocCategory, [keyword], callbackSelectLikeDocCategory, req, res);
-});
 
 // 신규문서 양식 등록
 var callbackInsertDocCategory = function (rows, req, res) {
@@ -1142,4 +1117,101 @@ router.get('/trainFormMapping', function (req, res) {
     }
 });
 
+// 분류제외문장조회
+router.post('/selectClassificationSt', function (req, res) {
+    var returnObj;
+    var filepath = req.body.filepath;
+    var data = [];
+    data.push(req.body.filepath);
+
+    sync.fiber(function () {
+        try {
+            var result = sync.await(oracle.selectClassificationSt(data, sync.defer()));
+            if (result.rows) {
+                returnObj = { data: result.rows };
+            } else {
+                returnObj = { data: null };
+            }
+        } catch (e) {
+            console.log(e);
+            returnObj = { code: 500, message: e };
+        } finally {
+            res.send(returnObj);
+        }
+    });
+});
+
+router.post('/selectLikeDocCategory', function (req, res) {
+    var keyword = '%' + req.body.keyword + '%';
+    var returnObj;
+
+    sync.fiber(function () {
+        try {
+            var result = sync.await(oracle.selectDocumentCategory(keyword, sync.defer()));
+            if (result.rows) {
+                returnObj = { data : result.rows };
+            } else {
+                returnObj = { data: null };
+            }
+        } catch (e) {
+            console.log(e);
+            returnObj = { code: 500, message: e };
+        } finally {
+            res.send(returnObj);
+        }
+    });
+});
+
+// 문서양식매핑
+router.post('/insertDoctypeMapping', function (req, res) {
+    var returnObj;
+
+    var data = {
+        imgId: req.body.imgId,
+        filepath: req.body.filepath,
+        docName: req.body.docName,
+        radioType: req.body.radioType,
+        textList: req.body.textList
+    }
+
+    sync.fiber(function () {
+        try {
+            let data = req.body;
+            returnObj = sync.await(batch.insertDoctypeMapping(data, sync.defer()));
+           
+        } catch (e) {
+            console.log(e);
+            returnObj = { code: 500, message: e };
+        } finally {
+            res.send(returnObj);
+        }
+    });
+});
+
+
+router.post('/selectIcrLabelDef', function (req, res) {
+    var returnObj;
+
+    sync.fiber(function () {
+        try {
+            let docTopType = req.body.docToptype;
+            var labelList = sync.await(oracle.selectIcrLabelDef(docTopType, sync.defer())).rows;
+            returnObj = {code: 200, "labelList": labelList};
+        } catch (e) {
+            console.log(e);
+            returnObj = { code: 500, message: e };
+        } finally {
+            res.send(returnObj);
+        }
+    });
+});
+
+function exists(path) {
+    try {
+        fs.accessSync(path);
+    } catch (err) {
+        return false;
+    }
+    return true;
+}
 module.exports = router;

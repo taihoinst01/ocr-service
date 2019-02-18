@@ -17,7 +17,7 @@
     <!-- 문서 조회 학습 전용 js -->
     <script type="text/javascript" src="js/user/invoiceProcessingStatus.js"></script>
     <!-- // 문서 조회 전용 js -->
-
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.min.js"></script>-->
     <script type="text/javascript" src="/publish/js/chart/Chart.bundle.min.js"></script>
     <script type="text/javascript" src="/publish/js/chart/utils.js"></script>
 
@@ -74,16 +74,16 @@
                             </div>
                             <div class="ips_box_document" style=" text-align: center; align-content: center;">
                                 <div style="padding-top: 35px;">
-                                    <div class="wait_doc_icon"></div>
-                                    <span style="font-size: 35px; padding-right:50px;">15</span>
+                                    <div class="wait_doc_icon" style="margin: 4px 0 0 53px;"></div>
+                                    <span style="font-size: 35px; padding-right:50px;" id="waitCnt"></span>
                                     <div class="clear_both"></div><br />
                                     <span class="doc_text" style="font-size: 25px;">대기중인 문서</span>
                                 </div>
                             </div>
                             <div class="ips_box_last ips_box_document" style=" text-align: center; align-content: center;">
                                 <div style="padding-top: 35px;">
-                                    <div class="success_doc_icon"></div>
-                                    <span style="font-size: 35px; padding-right:50px;">70</span>
+                                    <div class="success_doc_icon" style="margin: 4px 0 0 53px;"></div>
+                                    <span style="font-size: 35px; padding-right:50px;" id="completeCnt"></span>
                                     <div class="clear_both"></div><br />
                                     <span class="doc_text" style="font-size: 25px;">완료된 문서</span>
                                 </div>
@@ -99,7 +99,7 @@
                                         <div id="year_up_btn" class="date_up_btn"></div>
                                         <div class="date_content">
                                             <div class="before_div"><p><span class="bottom_line">2017</span></p></div>
-                                            <div class="main_div"><p>2018</p></div>
+                                            <div class="main_div"><p id="rollbackYear">2018</p></div>
                                             <div class="after_div"><p><span class="top_line">2019</span></p></div>
                                         </div>
                                         <div id="year_down_btn" class="date_down_btn"></div>
@@ -108,7 +108,7 @@
                                         <div id="month_up_btn" class="date_up_btn"></div>
                                         <div class="date_content">
                                             <div class="before_div"><p><span class="bottom_line">9</span></p></div>
-                                            <div class="main_div"><p>10</p><p style="font-size: 12px;">October</p></div>
+                                            <div class="main_div"><p id="rollbackMonth">10</p><p style="font-size: 12px;">October</p></div>
                                             <div class="after_div"><p><span class="top_line">11</span></div>
                                         </div>
                                         <div id="month_down_btn" class="date_down_btn"></div>
@@ -117,7 +117,7 @@
                                         <div id="day_up_btn" class="date_up_btn"></div>
                                         <div class="date_content">
                                             <div class="before_div"><p><span class="bottom_line">22</span></p></div>
-                                            <div class="main_div"><p>23</p><p style="font-size: 12px;">Tuesday</p></div>
+                                            <div class="main_div"><p id="rollbackDate">23</p><p style="font-size: 12px;">Tuesday</p></div>
                                             <div class="after_div"><p><span class="top_line">24</span></p></div>
                                         </div>
                                         <div id="day_down_btn" class="date_down_btn"></div>
@@ -132,7 +132,7 @@
                     <div class="ips_content_sub_bottom">
                         <div class="ips_user_status">
                             <div class="ips_top_comment">
-                                <span>사용자별 현황</span>
+                                <span>신규문서 등록현황</span>
                             </div>
 
                             <div class="table_style02">
@@ -145,13 +145,16 @@
                                     </colgroup>
                                     <thead>
                                         <tr>
-                                            <th scope="row">문서번호</th>
-                                            <th scope="row">페이지수</th>
-                                            <th scope="row">마감년월</th>
-                                            <th scope="row">마감년월</th>
+                                            <th scope="row">영어이름</th>
+                                            <th scope="row">한글이름</th>
+                                            <th scope="row">레이블수</th>
+                                            <th scope="row">등록아이디</th>
                                         </tr>
                                     </thead>
-                                    <tbody class="ips_user_tbody">
+                                    <tbody class="ips_user_tbody" >
+                                        <!--
+                                            영어이름 한글이름 레이블수 등록아이디 
+                                            문서번호 페이지수 마감년월 마감년월
                                         <tr>
                                             <td name="td_base">ICR20181018</td>
                                             <td name="td_base">27</td>
@@ -194,6 +197,7 @@
                                             <td name="td_base">1010</td>
                                             <td name="td_base" class="red">70%</td>
                                         </tr>
+                                        -->
                                     </tbody>
                                 </table>
                             </div>

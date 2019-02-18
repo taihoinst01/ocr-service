@@ -1,0 +1,102 @@
+table .stb-select { 
+  width:-webkit-calc(100% - 10px) !important; 
+  border-bottom-left-radius: 10px !important; 
+  border-bottom-right-radius: 10px !important; 
+  padding-left: 10px !important; top: 18px !important;
+}
+table .stb-select-container{ 
+  width: 100%; background: #FFF; 
+  padding: 3px 0 8px 10px; 
+  border-radius:14px !important;
+}
+table .newTr .stb-select-container{ 
+  width: 96%; background: #FFF; 
+  padding: 3px 0 8px 10px; 
+  border-radius:14px !important; 
+  border:solid 1px #d5d5d5;
+}::after{
+  color: #666 !important;
+}
+table .newTr .stb-select { 
+  width:-webkit-calc(100% - 10px) !important; 
+  border-bottom-left-radius: 10px !important; 
+  border-left:solid 1px #d5d5d5;
+  border-right:solid 1px #d5d5d5; 
+  border-bottom:solid 1px #d5d5d5;
+  border-bottom-right-radius: 10px !important; 
+  padding-left: 10px !important; 
+  top: 18px !important;
+}
+table .newTr .selected {color: #666 !important; }
+
+.box_txt_st01.st00_us > dl:last-child {
+    width: 600px !important;
+    margin: 0 0 0 10px;
+}
+.um_list {
+    border-radius: 5px;
+    border: 1px solid #D8D8D8;
+}
+
+.table_style03 table > tbody > tr > td{
+  padding: 5px !important;
+}
+
+.btn_rt {
+    position: absolute;
+    bottom: 70px;
+    right: 22px
+}
+
+.btn_rt02 {
+  position: absolute;
+  bottom: 212px;
+  right: 25px;
+}
+
+.btn_w100_h35 {
+    display: inline-block;
+    width: 100px;
+    height: 35px;
+    line-height: 16px;
+    padding: 9px 15px 11px;
+    margin: 0;
+    font-size: 15px;
+    color: #fff;
+    background: #EA7169;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.inputst_box03_15radius {
+  display: table;
+  width: 100%;
+  border: 1px solid #EA7169;
+  border-radius: 15px;
+  color: #4f5468;
+}
+
+.back_yellow {
+  background: #F9F495;
+}
+
+.back_sprite {
+    background: linear-gradient(135deg,
+    #727272 25%, white 0, white 50%,
+    #727272 0, #727272 75%, white 0);
+
+    background-size: 15px 15px;
+}
+
+.pop_popup0 .pop_content_dm{
+  display: block;
+  height: 605px;
+  padding: 26px 26px 0;
+}
+
+.pop_dm_01 {
+  overflow-y:scroll;
+  height:425px;
+  background: white;
+  margin: 0px 0 50px 0px;
+}

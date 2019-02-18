@@ -11,6 +11,7 @@ var docPopImages; // 문서조회팝업 이미지 리스트
 var docPopImagesCurrentCount = 1; // 문서조회팝업 이미지 현재 카운트
 var docType = '';
 var currentImgCount = 0;
+var modifyData = []; // UI 수정할 데이터 
 
 $(function () {
 
@@ -59,23 +60,30 @@ function popUpEvent() {
 
 // 팝업 확인 이벤트
 function popUpRunEvent() {
-    $('#btn_pop_doc_run').click(function (e) {
+
+	$('#btn_pop_doc_run').click(function (e) {
+
+		var data = layer4Data;
+		var docSentenceList = [];
+		var docSentence = "";
+		//data = $('#mlData').val();
+
         // chkValue 1: 기존문서 양식조회, 2: 신규문서 양식등록, 3: 계산서 아님
         var chkValue = $('input:radio[name=radio_batch]:checked').val();
-
+		//console.log(data);
         if ((chkValue == '1' && $('#orgDocName').val() == '') || (chkValue == '2' && $('#newDocName').val() == '')) {
             fn_alert('alert', 'The document name is missing');
             return false;
         }
 
         // text & check
-        var textList = [];
-        $('.ui_layer1_result_tr').each(function () {
-            var chk = $(this).children().find('input[type="checkbox"]').is(':checked') == true ? 1 : 0;
-            var text = $(this).children()[1].innerHTML;
+        //var textList = [];
+        //$('.batch_layer4_result_tr').each(function () {
+        //    var chk = $(this).children().find('input[type="checkbox"]').is(':checked') == true ? 1 : 0;
+        //    var text = $(this).children()[1].innerHTML;
 
-            textList.push({ "text": text, "check": chk })
-        })
+        //    textList.push({"text": text, "check": chk})
+        //})
 
         // docName
         var docName = '';
@@ -83,22 +91,47 @@ function popUpRunEvent() {
             docName = $('#orgDocName').val();
         } else if (chkValue == '2') {
             docName = $('#newDocName').val();
-        } else if (chkValue == '3') {
+        } else if(chkValue == '3') {
             docName = 'NotInvoice';
-        }
+		}
 
-        var filePath = $("#docPopImgPath").val();
-        filePath = filePath.substring(0, filePath.lastIndexOf("/") + 1);
 
-        var fileName = $("#originImg").attr("src");
-        fileName = fileName.substring(fileName.lastIndexOf("/") + 1, fileName.length);
+		if (layer4Data.data.length > 20) {
+
+			for (var i = 0; i < 20; i++) {
+
+				//console.log(layer4Data.data[i].originText);
+				docSentenceList.push({ "text": layer4Data.data[i].originText })
+				docSentence = docSentence + layer4Data.data[i].originText;
+			}
+		}
+		else {
+			for (var i = 0; i < layer4Data.data.length; i++) {
+
+				//console.log(layer4Data.data[i].originText);
+				docSentenceList.push({ "text": layer4Data.data[i].originText })
+				docSentence = docSentence + layer4Data.data[i].originText;
+			}
+		}
+
+		//console.log(docSentenceList);
+		//console.log(docSentence);
+
+
 
         var param = {
-            filepath: filePath + fileName,
+            imgId: $('#docPopImgId').val(),
+            filepath: $('#docPopImgPath').val(),
             docName: docName,
             radioType: chkValue,
-            textList: textList,
-        }
+            //textList: textList,
+			docTopType: $('#uiDocTopType').val(),
+			docSentenceList: docSentenceList 
+		}
+		//console.log("param : " + param.imgId + " @@ " + param.filepath + " @@ " + param.docName + " @@ " + param.radioType + " @@ " + param.docTopType);
+		//console.log(layer4Data);
+
+		
 
         $.ajax({
             url: '/uiLearning/insertDoctypeMapping',
@@ -107,31 +140,96 @@ function popUpRunEvent() {
             data: JSON.stringify(param),
             contentType: 'application/json; charset=UTF-8',
             beforeSend: function () {
+                $('#progressMsgTitle').html('문서양식 저장중...');
                 progressId = showProgressBar();
             },
             success: function (data) {
-                $('#docName').text(docName);
-                $('#docType').val(data.docType);
-                $('#docSid').val(data.docSid);
-                $('#docPredictionScore').text('');
-                lineText[currentImgCount].data.docCategory.DOCNAME = data.docName;
-                lineText[currentImgCount].data.docCategory.DOCTYPE = data.docType;
-                lineText[currentImgCount].data.docSid = data.docSid;
-                $('#btn_pop_doc_cancel').click();
+                //location.href = location.href;
+                // 해당 로우 화면상 테이블에서 삭제
                 endProgressBar(progressId);
+                var rowNum = $('#batchListRowNum').val();
+                //$('#leftRowNum_' + rowNum).find('td:eq(2) a').html(data.docName);
+                //$('#leftRowNum_' + rowNum).find('td:eq(2) input[name=docType]').val(data.docType);
+                $('#docName').html(data.docName);
+                $('#docPredictionScore').html('');
+                fn_alert('alert', '문서 양식 저장이 완료 되었습니다.');
+                $('#layer4 .cbtn').click();
             },
             error: function (err) {
                 console.log(err);
+                endProgressBar(progressId);
             }
-        });
+        });           
+        
+        /*
+        $.ajax({
+            url: '/batchLearningTest/insertDoctypeMapping',
+            type: 'post',
+            datatype: 'json',
+            data: JSON.stringify(param),
+            contentType: 'application/json; charset=UTF-8',
+            beforeSend: function () {
+                $('#progressMsgTitle').html('문서양식 저장중...');
+                progressId = showProgressBar();
+            },
+            success: function (data) {
+                //location.href = location.href;
+                // 해당 로우 화면상 테이블에서 삭제               
+                setTimeout(function () {
+                    endProgressBar(progressId);
+                    fn_alert('alert', '문서 등록이 완료 되었습니다.');
+                    $('#btn_pop_doc_cancel.ui_doc_pop_btn2.cbtn').click();
+                    var rowNum = $('#batchListRowNum').val();
+                    $('#leftRowNum_' + rowNum).remove();
+                    $('.rowNum' + rowNum).remove();
+                    $('.mlRowNum' + rowNum).remove();
+                }, 5000);
+                
+                endProgressBar(progressId);
+                $('#btn_pop_doc_cancel').click();
+                var rowNum = $('#batchListRowNum').val();
+                $('#leftRowNum_' + rowNum).remove();
+                $('.rowNum' + rowNum).remove();
+                $('.mlRowNum' + rowNum).remove();
+                
+            },
+            error: function (err) {
+                console.log(err);
+                endProgressBar(progressId);
+            }
+        });  
+        */
     })
+
+    // 20180910 hskim 문장 선택 결과 같이 전송
+    /*
+    $('#btn_pop_doc_run').click(function (e) {
+        var docData = JSON.parse($('#docData').val());
+        for (var i in docData) {
+            if ($('#searchResultDocName').val() == docData[i].DOCNAME) {
+                $('#docName').text(docData[i].DOCNAME);
+                $('#docData').val(JSON.stringify(docData[i]));
+                break;
+            }
+        }
+        $(this).parents('.poplayer').fadeOut();
+        e.stopPropagation();
+        e.preventDefault();
+    });
+    $('#btn_pop_doc_cancel').click(function (e) {
+        $('#docData').val('');
+
+        e.stopPropagation();
+        e.preventDefault();
+    });
+    */
 }
+
 
 //팝업 문서 양식 LIKE 조회
 function popUpSearchDocCategory() {
     $('#searchDocCategoryBtn').click(function () {
-        var keyword = $('#searchDocCategoryKeyword').val();
-        //var keyword = $('#searchDocCategoryKeyword').val().replace(/ /gi, '');
+        var keyword = $('#searchDocCategoryKeyword').val().replace(/ /gi, '');
 
         if (keyword) {
             $('#docSearchResultImg_thumbCount').hide();
@@ -141,23 +239,28 @@ function popUpSearchDocCategory() {
             $('#searchResultDocName').val('');
             $('#countCurrent').html('1');
             $.ajax({
-                url: '/batchLearning/selectLikeDocCategory',
+                url: '/uiLearning/selectLikeDocCategory',
                 type: 'post',
                 datatype: 'json',
                 data: JSON.stringify({ 'keyword': keyword }),
                 contentType: 'application/json; charset=UTF-8',
                 success: function (data) {
                     data = data.data;
+                    //$('#docData').val(JSON.stringify(data));
                     $('#docSearchResult').html('');
-                    $('.button_control10 .button_control11').attr('disabled', true);
-                    $('.button_control10 .button_control12').attr('disabled', true);
+                    //$('#countCurrent').html('1');
+                    $('.button_control10').attr('disabled', true);
                     docPopImagesCurrentCount = 1;
                     if (data.length == 0) {
                         return false;
                     } else {
+                        /**
+                         결과에 따른 이미지폼 만들기
+                         */
                         docPopImages = data;
+						console.log(docPopImages);
+                        var searchResultImg = '<img id="searchResultImg" src="/sample/' + docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH + '">';
 
-                        var searchResultImg = '<img id="searchResultImg" src="/jpg' + docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH + '" style="width: 100%;height: 480px;">';
                         $('#docSearchResult').empty().append(searchResultImg);
 
                         $('#searchResultDocName').val(data[0].DOCNAME);
@@ -381,7 +484,7 @@ function processImage(fileInfo) {
             //console.log(data);
             //thumbImgs.push(fileInfo.convertFileName);
             $('#progressMsgTitle').html('OCR 처리 완료');
-
+            modifyData = $.extend([], data.data);
             uiLayerHtml(data);
             //addProgressBar(31, 40);
             if (ocrCount == 1) {
@@ -479,7 +582,7 @@ function changeOcrImg(data) {
     $(data).parent().parent().parent().addClass('on');
     var fileName = data.src.substring(data.src.lastIndexOf("/") + 1, data.src.length);
     $('#imageZoom').hide();
-    $('#mainImage').css('background-image', 'url("/tif/' + fileName + '")');
+    $('#mainImage').css('background-image', 'url("/img/' + fileName + '")');
 }
 
 // 초기 썸네일 이미지 렌더링
@@ -489,10 +592,10 @@ function thumnImg() {
             var imageTag = '';
             
             if (i == 0) {
-                imageTag = '<li class="on"><div class="box_img"><i><img src="/tif/' + thumbImgs[i] + '" onclick="changeOcrImg(this)" style="background-color: white;"></i>'
+                imageTag = '<li class="on"><div class="box_img"><i><img src="/img/' + thumbImgs[i] + '" onclick="changeOcrImg(this)" style="background-color: white;"></i>'
                     + ' </div ><span>' + thumbImgs[i] + '</span></li >';
             } else {
-                imageTag = '<li><div class="box_img"><i><img src="/tif/' + thumbImgs[i] + '" onclick="changeOcrImg(this)" style="background-color: white;"></i>'
+                imageTag = '<li><div class="box_img"><i><img src="/img/' + thumbImgs[i] + '" onclick="changeOcrImg(this)" style="background-color: white;"></i>'
                     + ' </div ><span>' + thumbImgs[i] + '</span></li >';
             }
             $('#imageBox').append(imageTag);
@@ -539,7 +642,7 @@ function thumbImgPaging(pageCount) {
         //imageTag += '<li>';
         //imageTag += '<a href="javascript:void(0);" class="imgtmb thumb-img" style="background-image:url(../../uploads/' + thumbImgs[i] + '); width: 48px;"></a>';
         //imageTag += '</li>';
-        imageTag += '<li><div class="box_img"><i><img src="/tif/' + thumbImgs[i] + '" onclick="changeOcrImg(this)" style="background-color: white;"></i>'
+        imageTag += '<li><div class="box_img"><i><img src="/img/' + thumbImgs[i] + '" onclick="changeOcrImg(this)" style="background-color: white;"></i>'
             + ' </div ><span>' + thumbImgs[i] + '</span></li >';
     }
     $('#imageBox').append(imageTag);
@@ -551,10 +654,22 @@ function thumbImgEvent() {
     $('.thumb-img').click(function () {
         $('#imageBox > li').removeClass('on');
         $(this).parent().addClass('on');
-        $('#mainImage').css('background-image', $(this).css('background-image'));
-        detailTable($(this).css('background-image').split('/')[4].split('")')[0]);
+
+        
+        $('#mainImage').css('background-image', 'url("/img/' + $(this).attr('title') + '")');
+
+        $(this).parents('imageBox').find('li').removeClass('on');
+        $(this).parents('li').addClass('on');
+        viewOriginImg();
+        //$('#mainImage').css('background-image', $(this).attr('title'));
+        //detailTable($(this).attr('title'));
+
+
+        //$('#mainImage').css('background-image', $(this).css('background-image'));
+        //detailTable($(this).css('background-image').split('/')[4].split('")')[0]);
     });
 }
+
 
 // 상세 테이블 렌더링 & DB컬럼 조회
 function appendOcrData(fileInfo, data) {
@@ -617,7 +732,7 @@ function executeML(totData) {
                     mainImgHtml += '</div>';
                     mainImgHtml += '</div>';
                     $('#img_content').html(mainImgHtml);
-                    $('#mainImage').css('background-image', 'url("/tif/' + data.fileName + '")');
+                    $('#mainImage').css('background-image', 'url("/img/' + data.fileName + '")');
                     
                     $('#imageBox > li').eq(0).addClass('on');
                     /*
@@ -715,7 +830,7 @@ function docComparePopup(imgIndex) {
         selectClassificationSt($('#docPopImgPath').val());
         $('#mlPredictionDocName').val($('#docName').text());
         $('#mlPredictionPercent').val($('#docPredictionScore').text());
-        var appendImg = '<img id="originImg" src="/tif/' + lineText[imgIndex].fileName + '" style="width: 100%;height: 480px;">'
+        var appendImg = '<img id="originImg" src="/img/' + lineText[imgIndex].fileName + '" style="width: 100%;height: 480px;">'
         $('#originImgDiv').html(appendImg);
         //$('#originImg').attr('src', '../../uploads/' + lineText[imgIndex].fileName);
         //$('#searchImg').attr('src', '../../' + lineText[imgIndex].docCategory.SAMPLEIMAGEPATH);
@@ -731,10 +846,9 @@ function selectClassificationSt(filepath) {
     var param = {
         filepath: filepath
     };
-    var resultOcrData = '';
+
     $.ajax({
-        //todo
-        url: '/batchLearning/selectClassificationSt',
+        url: '/uiLearning/selectClassificationSt',
         type: 'post',
         datatype: "json",
         data: JSON.stringify(param),
@@ -744,46 +858,43 @@ function selectClassificationSt(filepath) {
         },
         success: function (data) {
             //console.log("SUCCESS selectClassificationSt : " + JSON.stringify(data));
-            if (data.code != 500 || data.data != null) {
+            if (data.code != 500 && data.data.length == 1) {
 
-                var ocrdata = JSON.parse($('#ocrData').val());
+                var ocrdata = JSON.parse(data.data[0].OCRDATA);
 
                 //순서 정렬 로직
                 let tempArr = new Array();
                 for (let item in ocrdata) {
-                    tempArr[item] = new Array(makeindex(ocrdata[item].location), ocrdata[item]);
+                    tempArr[item] = new Array(makeindex(ocrdata[item].location),   ocrdata[item]);
                 }
 
                 tempArr.sort(function (a1, a2) {
                     a1[0] = parseInt(a1[0]);
                     a2[0] = parseInt(a2[0]);
-                    return (a1[0] < a2[0]) ? -1 : ((a1[0] > a2[0]) ? 1 : 0);
+                    return (a1[0]<a2[0]) ? -1 : ((a1[0]>a2[0]) ? 1 : 0);
                 });
 
                 for (let i = 0; i < tempArr.length; i++) {
 
-                    var bannedCheck = true;
-                    for (let j = 0; j < data.bannedData.length; j++) {
-                        if (tempArr[i][1].text.toLowerCase().indexOf(data.bannedData[j].WORD) == 0) {
-                            bannedCheck = false;
-                            break;
-                        }
-                    }
-
-                    if (bannedCheck) {
-                        resultOcrData += '<tr class="ui_layer1_result_tr">';
-                        resultOcrData += '<td><input type="checkbox" class="ui_layer1_result_chk"></td>';
-                        resultOcrData += '<td class="td_bannedword">' + tempArr[i][1].text + '</td></tr>';
-                    } else {
-                        resultOcrData += '<tr class="ui_layer1_result_tr">';
-                        resultOcrData += '<td><input type="checkbox" checked="checked" class="ui_layer1_result_chk"></td>';
-                        resultOcrData += '<td class="td_bannedword">' + tempArr[i][1].text + '</td></tr>';
-                    }
-
+                    var resultOcrData = '<tr class="batch_layer4_result_tr">'
+                                    + '<td><input type="checkbox" class="batch_layer4_result_chk"></td>'
+                                    + '<td class="td_sentence"></td></tr>';
+                    $('#batch_layer4_result').append(resultOcrData);
+                    
+                    $('.td_sentence:eq('+ i +')').text(tempArr[i][1].text);
                 }
-                $('#ui_layer1_result').empty().append(resultOcrData);
-                $('input[type=checkbox]').ezMark();
+                $('#batch_layer4_result input[type=checkbox]').ezMark();
 
+                for (var i = 0; i < $("input[type='checkbox'].batch_layer4_result_chk").length; i++) {
+                    $("input[type='checkbox'].batch_layer4_result_chk").eq(i).parent().removeClass("ez-hide");
+                    $("input[type='checkbox'].batch_layer4_result_chk").eq(i).prop("checked", true);
+                    $("input[type='checkbox'].batch_layer4_result_chk").eq(i).parent().addClass("ez-checked")
+    
+                    if (i == 20) {
+                        break;
+                    }
+                }
+                
             }
 
         },
@@ -1032,7 +1143,7 @@ function checkBoxMLCssEvent() {
 // 컬럼 select html 가공 함수
 function appendOptionHtml(targetColumn, columns) {
 
-    var selectHTML = '<select>';
+    var selectHTML = '<select class="docLabel">';
     for (var i in columns) {
         var optionHTML = '';
         if (targetColumn == columns[i].COLNUM) {
@@ -1050,7 +1161,7 @@ function appendOptionHtml(targetColumn, columns) {
 // Entry컬럼 select html 가공 함수
 function appendEntryOptionHtml(targetColumn, columns) {
 
-    var selectHTML = '<select>';
+    var selectHTML = '<select class="docLabel">';
     for (var i in columns) {
         var optionHTML = '';
         if (targetColumn == columns[i].COLNUM) {
@@ -1127,15 +1238,16 @@ function dbColumnsOption(data, column) {
 
 // 마우스 오버 이벤트
 function zoomImg(e, fileName) {
+
     // 해당 페이지로 이동
-    /* 몇 페이지 어디인지 표시
-    var fileName = $(e).find('input[type=hidden]').attr('alt');
+    // 몇 페이지 어디인지 표시
+    //var fileName = $(e).find('input[type=hidden]').attr('alt');
     $('.thumb-img').each(function (i, el) {
-        if ($(this).attr('src').split('/')[3] == fileName) {
+        if ($(this).attr('src').split('/')[2] == fileName) {
             $(this).click();
         }
     });
-    */
+    
 
     var mainImage = $("#mainImage").css('background-image');
     mainImage = mainImage.replace('url(', '').replace(')', '').replace(/\"/gi, "");
@@ -1144,62 +1256,41 @@ function zoomImg(e, fileName) {
     if (mainImage != fileName) {
         $('#mainImage').css('background-image', 'url("/tif/' + fileName + '")');
     }
-
+    
     //실제 이미지 사이즈와 메인이미지div 축소율 판단
     var reImg = new Image();
-    var imgPath = $('#mainImage').css('background-image').split('("')[1];
-    imgPath = imgPath.split('")')[0];
-    reImg.src = imgPath;
-    var width = reImg.width;
-    var height = reImg.height;
+    reImg.onload = function() {
+        var width;
+        var height;
+        width = reImg.width;
+        height = reImg.height;
+        //imageZoom 고정크기
+        var fixWidth = 744;
+        var fixHeight = 1052;
+    
+        var widthPercent = fixWidth / width;
+        var heightPercent = fixHeight / height;
+    
+        $('#mainImage').hide();
+        $('#imageZoom').css('height', '570px').css('background-image', 'url("/img/' + fileName + '")').css('background-size', fixWidth + 'px ' + fixHeight + 'px').show();
+    
+        // 사각형 좌표값
+        var location = $(e).find('input[type=hidden]').val().split(',');
+        x = parseInt(location[0]);
+        y = parseInt(location[1]);
+        textWidth = parseInt(location[2]);
+        textHeight = parseInt(location[3]);
+    
+        var xPosition = '100px ';
+        var yPosition = ((- (y * heightPercent)) + 200) + 'px';
 
-    //imageZoom 고정크기
-    var fixWidth = 744;
-    var fixHeight = 1052;
+        $('#imageZoom').css('background-position', xPosition + yPosition);
+    
 
-    var widthPercent = fixWidth / width;
-    var heightPercent = fixHeight / height;
-
-    $('#mainImage').hide();
-    $('#imageZoom').css('height', '570px').css('background-image', $('#mainImage').css('background-image')).css('background-size', fixWidth + 'px ' + fixHeight + 'px').show();
-
-    // 사각형 좌표값
-    var location = $(e).find('input[type=hidden]').val().split(',');
-    x = parseInt(location[0]);
-    y = parseInt(location[1]);
-    textWidth = parseInt(location[2]);
-    textHeight = parseInt(location[3]);
-    //console.log("선택한 글씨: " + $(e).find('input[type=text]').val());
-
-    //console.log("x: " + (x) + 'px y: ' + (y) + 'px');
-    // 해당 텍스트 x y좌표 원본 이미지에서 찾기
-
-    //var xPosition = (x * 0.4) > 0 ? '-' + ((x * 0.4) + 'px ') : (x * 0.4)  + 'px ';
-    //var yPosition = (y * 0.4) > 0 ? '-' + ((y * 0.4) + 'px') : (y * 0.4) + 'px';
-
-    var xPosition = ((- (x * widthPercent)) + 300) + 'px ';
-    var yPosition = ((- (y * heightPercent)) + 200) + 'px';
-    //console.log(xPosition + yPosition);
-    $('#imageZoom').css('background-position', xPosition + yPosition);
-
-
-    //실제 이미지 사이즈와 메인이미지div 축소율 판단
-    //var reImg = new Image();
-    //var imgPath = $('#mainImage').css('background-image').split('("')[1];
-    //imgPath = imgPath.split('")')[0];
-    //reImg.src = imgPath;
-    //var width = reImg.width;
-    //var height = reImg.height;
-
-    // 선택한 글씨에 빨간 네모 그리기
-    //$('#redNemo').css('top', ((y / (height / $('#mainImage').height())) + $('#imgHeader').height() + 22 + 42 - 10) + 'px');
-    //$('#redNemo').css('left', ((x / (width / $('#mainImage').width())) + 22 + 99 - 10) + 'px');
-    //$('#redNemo').css('width', ((textWidth / (width / $('#mainImage').width())) + 20) + 'px');
-    //$('#redNemo').css('height', ((textHeight / (height / $('#mainImage').height())) + 20) + 'px');
-    //$('#redNemo').show();
-    //$('#redZoomNemo').css('width', '100%');
-    $('#redZoomNemo').css('height', (textHeight + 5) + 'px');
-    $('#redZoomNemo').show();
+        $('#redZoomNemo').css('height', (textHeight + 5) + 'px');
+        $('#redZoomNemo').show();
+    }
+    reImg.src = '/img/' + fileName;
 }
 
 // 마우스 아웃 이벤트
@@ -1302,114 +1393,51 @@ function imageMove(xDistance, yDistance) {
 function uiTrainEvent() {
     $("#uiTrainBtn").click(function (e) {
         modifyTextData();
-        /*
-        var docData;
-        if ($('#docData').val() != '') {
-            docData = JSON.parse($('#docData').val());
-        }
-        if (docData && docData.DOCTYPE != 0) {
-            modifyTextData();
-        } else {
-            fn_alert('alert', 'There is no document form, I do not training.');
-            return;
-        }
-        */
     });
 }
 
-//개별 학습 학습 내용 추가 ui training add
 function modifyTextData() {
-    var beforeData = lineText;
-    var afterData = [];
-    var array = [];
-    var dataCount = 0;
+    var beforeData = [modifyData];
+    var afterData = {};
+    afterData.data = [];
     beforeData = beforeData.slice(0);
+
+    for (var i = 0; i < modifyData.length; i++) {
+        if (i > 0) {
+            for (var j = 0; j < modifyData[i].data.length; j++) {
+                modifyData[0].data.push(modifyData[i].data[j]);
+            }
+        }
+    }
+    beforeData = modifyData[0];
 
     // afterData Processing
     $('#textResultTbl > dl').each(function (index, el) {
-        var fileName = $(el).find('label').children().eq(2).val();
         var location = $(el).find('label').children().eq(1).val();
         var text = $(el).find('label').children().eq(0).val();
         var colLbl = $(el).find('select').find('option:selected').val();
-
-        if (array.length < beforeData[dataCount].data.data.length) {
-            array.push({ 'location': location, 'text': text, 'colLbl': Number(colLbl ? colLbl : 38) });
-        }
-
-        if (array.length == beforeData[dataCount].data.data.length) {
-            var obj = {}
-            obj.fileName = fileName;
-            obj.data = array;
-            afterData.push(obj);
-            dataCount++;
-            array = [];
-        }
-
+        afterData.data.push({ 'location': location, 'text': text, 'colLbl': colLbl });
     });
 
-    //afterData.fileName = $('#imageBox > .on span').text();
-    /*
+    // find an array of data with the same filename
     $.ajax({
-        url: '/uiLearning/uiTraining',
+        url: '/common/modifyBatchUiTextData',
         type: 'post',
         datatype: "json",
-        data: JSON.stringify({
-            'beforeData': beforeData[0].data,
-            'afterData': afterData,
-            'docType': $('#docType').val(),
-            'docSid': $('#docSid').val()
-        }),
+        data: JSON.stringify({ 'beforeData': beforeData, 'afterData': afterData }),
         contentType: 'application/json; charset=UTF-8',
+        beforeSend: function () {
+            $("#progressMsgTitle").html("retrieving learn data...");
+            progressId = showProgressBar();
+        },
         success: function (data) {
-            //makeTrainingData();
-            endProgressBar(progressId);
             fn_alert('alert', "success training");
+            endProgressBar(progressId);
         },
         error: function (err) {
             console.log(err);
-            endProgressBar(progressId);
         }
     });
-    */
-    // find an array of data with the same filename
-    for (var i in beforeData) {
-        if (beforeData[i].fileName == afterData[i].fileName) {
-
-            $.ajax({
-                url: '/uiLearning/uiTraining',
-                type: 'post',
-                datatype: "json",
-                data: JSON.stringify({
-                    'beforeData': beforeData[i].data,
-                    'afterData': afterData[i],
-                    //'docType': $('#docType').val(),
-                    //'docSid': $('#docSid').val()
-                    'docType': lineText[i].data.docCategory.DOCTYPE,
-                    'docSid': lineText[i].data.docSid
-                }),
-                contentType: 'application/json; charset=UTF-8',
-                beforeSend: function () {
-                    progressId = showProgressBar();
-                },
-                success: function (data) {
-                    //makeTrainingData();
-                    
-                    if (beforeData.length - 1 == i) {
-                        //endProgressBar(progressId);
-                        setTimeout(function () {
-                            endProgressBar(progressId);
-                            fn_alert('alert', '학습이 완료 되었습니다.');
-                        }, 5000);
-                        //fn_alert('alert', "success training");
-                    }
-                },
-                error: function (err) {
-                    console.log(err);
-                    endProgressBar(progressId);
-                }
-            });
-        }
-    }
 }
 
 function makeTrainingData() {
@@ -1657,7 +1685,7 @@ function changeDocPopupImage() {
             $('#countCurrent').html(docPopImagesCurrentCount);
             $('#orgDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
             $('#searchResultDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
-            $('#searchResultImg').attr('src', '/jpg' + docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH);
+            $('#searchResultImg').attr('src', '/sample/' + docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH);
             if (docPopImagesCurrentCount == 1) {
                 $('#docSearchResultImg_thumbPrev').attr('disabled', true);
             } else {
@@ -1676,7 +1704,7 @@ function changeDocPopupImage() {
             $('#countCurrent').html(docPopImagesCurrentCount);
             $('#orgDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
             $('#searchResultDocName').val(docPopImages[docPopImagesCurrentCount - 1].DOCNAME);
-            $('#searchResultImg').attr('src', '/jpg' + docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH);
+            $('#searchResultImg').attr('src', '/sample' + docPopImages[docPopImagesCurrentCount - 1].SAMPLEIMAGEPATH);
             if (docPopImagesCurrentCount == totalCount) {
                 $('#docSearchResultImg_thumbNext').attr('disabled', true);
             } else {
@@ -1697,7 +1725,7 @@ function changeOcrDocPopupImage() {
             return false;
         } else {
             currentImgCount--;
-            var appendImg = '<img id="originImg" src="/tif/' + lineText[currentImgCount].fileName + '" style="width: 100%;height: 480px;">'
+            var appendImg = '<img id="originImg" src="/img/' + lineText[currentImgCount].fileName + '">'
             $('#originImgDiv').html(appendImg);
             selectClassificationStOcr('', currentImgCount);
             if (currentImgCount == 0) {
@@ -1714,7 +1742,7 @@ function changeOcrDocPopupImage() {
             return false;
         } else {
             currentImgCount++;
-            var appendImg = '<img id="originImg" src="/tif/' + lineText[currentImgCount].fileName + '" style="width: 100%;height: 480px;">'
+            var appendImg = '<img id="originImg" src="/img/' + lineText[currentImgCount].fileName + '">'
             $('#originImgDiv').html(appendImg);
             selectClassificationStOcr('', currentImgCount);
             if (currentImgCount == totalImgCount) {
@@ -1794,6 +1822,73 @@ function selectClassificationStOcr(filepath, currentImgCount) {
     })
 }
 
+function fn_viewDoctypePop(obj) {
+    //20180910 filepath로 ocr 데이터 조회 후 text값만 가져올 것
+	//console.log(modifyData);
+	var data = obj.data[0];
+	layer4Data = obj.data[0];
+	var filepath = data.fileinfo.filepath;
+	var imgId = data.fileinfo.imgId;
+    //var rowIdx = $(obj).closest('tr').attr('id').split('_')[1];
+	var fileName = nvl(filepath.substring(filepath.lastIndexOf('/') + 1));
+	var mlDocName = data.docCategory.DOCNAME;
+	var mlPercent = data.docCategory.DOCSCORE;
+
+	//console.log("filepath : " + filepath);
+	//console.log("imgId : " + imgId);
+	//console.log("fileName : " + fileName);
+	//console.log("mlDocName : " + mlDocName);
+	//console.log("mlPercent : " + mlPercent);
+
+    //$('#batchListRowNum').val(rowIdx);
+    $('#docPopImgId').val(imgId);
+	$('#docPopImgPath').val(filepath);
+	
+    initLayer4();
+    selectClassificationSt(filepath); // 분류제외문장 렌더링
+    //$('#mlPredictionDocName').val($('#docName').text());
+	//var filename = filename.split('.')[0];
+    var appendPngHtml = '';
+    //if(imgCount == 1) {
+		//var pngName = fileName + '.png';
+		appendPngHtml += '<img src="/img/' + fileName +'" id="originImg">';
+    //} else {
+
+    //    for(var i = 0; i < imgCount; i++) {
+    //        var pngName = filename + '-' + i + '.png';
+    //        appendPngHtml += '<img src="/img/' + pngName +'" style="width: 100%; height: auto; margin-bottom: 20px;">';
+    //    }
+	//}
+	//$('#div_view_image').empty().append(appendPngHtml);
+	$('#originImgDiv').empty().append(appendPngHtml);
+	$('#mlPredictionDocName').val(mlDocName);
+	$('#mlPredictionPercent').val(mlPercent);
+	//$('#mlData').val(data);
+	$('#imgNumIpt').val(1);
+	$('#imgTotalCnt').html(1);
+	
+	layer_open('layer4');
+	$('#div_view_image').scrollTop(0);
+
+}
+
+function initLayer4() {
+    $('#originImgDiv').empty();
+    $('#mlPredictionDocName').val('');
+    $('#docSearchResultImg_thumbCount').hide();
+    $('#docSearchResultMask').hide();
+    $('#countCurrent').empty();
+    $('#countLast').empty();
+    $('#mlPredictionPercent').val('');
+    $('#orgDocSearchRadio').click();
+    $('.ui_doc_pop_ipt').val('');
+    $('#docSearchResult').empty();
+    $('#searchResultDocName').val('');
+    $('#searchDocCategoryKeyword').val('');
+    $('#batch_layer4_result').empty();
+    $('#allCheckClassifySentenses').prop('checked', false);
+    $('#allCheckClassifySentenses').closest('.ez-checkbox').removeClass('ez-checked');
+}
 
 
 // UI학습 팝업 초기화
@@ -1840,40 +1935,9 @@ function fn_uiDocTopType(docCategory) {
     });
 }
 
-function fn_viewDoctypePop(obj) {
-    //20180910 filepath로 ocr 데이터 조회 후 text값만 가져올 것
-    var data = $(obj).closest('tr').find('.fileNamePath');
-    var filepath = data.attr('data-filepath');
-    var imgId = data.attr('data-imgId');
-    var rowIdx = $(obj).closest('tr').attr('id').split('_')[1];
-    var fileName = nvl(filepath.substring(filepath.lastIndexOf('/') + 1));
-    $('#batchListRowNum').val(rowIdx);
-    $('#docPopImgId').val(imgId);
-    $('#docPopImgPath').val(filepath);
-    initLayer4();
-    selectClassificationSt(filepath); // 분류제외문장 렌더링
-    //$('#mlPredictionDocName').val('UNKNOWN');
-
-    loadImage('/tif/' + fileName, function (tifResult) {
- 
-        if (tifResult) {
-            $(tifResult).css({
-                "width": "100%",
-                "height": "100%",
-                "display": "block"
-            }).addClass("preview");
-            $('#originImgDiv').empty().append(tifResult);
-        }
-        $('#docPopImgPath').val(filepath);
-
-        layer_open('layer4');
-    });
-
-}
-
 function appendSelOptionHtml(targetColumn, columns, docTopType) {
 
-    var selectHTML = '<select>';
+    var selectHTML = '<select class="docLabel">';
     var optionHTML = '';
     optionHTML = '<option value="-1">Unknown</option>';
     selectHTML += optionHTML;
@@ -1918,7 +1982,7 @@ function uiLayerHtml(data) {
 	$('#docName').click(function () { fn_viewDoctypePop(data) });
 	$('#docPredictionScore').click(function () { fn_viewDoctypePop(data) });
 	$('#docCompareBtn').click(function () { fn_viewDoctypePop(data) });
-    layer_open('layer2');
+    //layer_open('layer2');
 
 
     $('#imgNameTag').text(data.data[0].fileinfo.filepath);
@@ -1944,7 +2008,7 @@ function uiLayerHtml(data) {
     var tblSortTag = '';
 
     var mlDataArray = data.data;
-
+    
     // UI 레이어 화면 좌측 이미지 html 생성 (다중 이미지이면 아래로 붙어서 나옴)
     var imgNameHtml = "";
     for (var l in mlDataArray) {
@@ -1959,10 +2023,63 @@ function uiLayerHtml(data) {
 
         imgNameHtml += '<img src="/img/' + imgName + '" style="width: 100%; height: auto; margin-bottom: 20px;">';
     }
+    
+    //$('#mainImage').append(imgNameHtml);
 
-    var height = mlDataArray.length * 1600;
-    $("#mainImage").css("height", height + "px !important");
-    $('#mainImage').append(imgNameHtml);
+
+
+    //두연두연두연
+
+    var firstImgName = "";
+    var appendThumbnailHtml = "";
+    // imgThumbnail
+    for(var i = 0; i < mlDataArray.length; i++) {
+        if(i == 0) {
+            firstImgName = nvl(data.data[i].fileinfo.filepath.substring(data.data[i].fileinfo.filepath.lastIndexOf('/') + 1));
+            appendThumbnailHtml += '<li class="on">';
+        } else {
+            appendThumbnailHtml += '<li>';
+        }
+
+        var imgName = nvl(data.data[i].fileinfo.filepath.substring(data.data[i].fileinfo.filepath.lastIndexOf('/') + 1));
+        var fileExt = data.data[i].fileinfo.filepath.substring(data.data[i].fileinfo.filepath.lastIndexOf(".") + 1, data.data[i].fileinfo.filepath.length);
+
+        if (fileExt.toLowerCase() == "png" || fileExt.toLowerCase() == "pdf") {
+            imgName = imgName.substring(0, imgName.lastIndexOf('.')) + '.png';
+        } else if (fileExt.toLowerCase() == "jpg") {
+            imgName = imgName.substring(0, imgName.lastIndexOf('.')) + '.jpg';
+        }
+        
+        appendThumbnailHtml += '<div class="box_img"><i><img src="/img/' + nvl(imgName) + '" ' +
+                'class="thumb-img" title="' + nvl(imgName) + '"></i>' +
+                '</div>' +
+                '<span>' + nvl(imgName) + '</span>' +
+                '</li> ';
+    }
+
+    var mainImgHtml = '';
+    mainImgHtml += '<div id="mainImage" class="docUpload_mainImage" style="height:1600px !important;">';
+    mainImgHtml += '</div>';
+    mainImgHtml += '<div id="imageZoom" ondblclick="viewOriginImg()">';
+    mainImgHtml += '<div id="redZoomNemo">';
+    mainImgHtml += '</div>';
+    mainImgHtml += '</div>';
+    $('#div_invoice_view_image_2').html(mainImgHtml);
+
+    //var height = 1600 + "px !important";
+    //$("#mainImage").css("height", height);
+    $('#mainImage').css('background-image', 'url("/img/' + firstImgName + '")');
+    $("#imageBox").empty().append(appendThumbnailHtml);
+    //checkDocLabelDef(docLabelDefList);
+    //checkDocMlData(docAnswerDataList);
+    //changeTabindex();
+    thumbImgEvent();
+
+
+
+
+
+
 
     // UI 레이어 화면 우측 추출 텍스트 및 컬럼 html 생성
     for (var l in mlDataArray) {
@@ -1971,6 +2088,7 @@ function uiLayerHtml(data) {
         var filePath = mlDataArray[l].fileinfo.filepath;
         filePath = filePath.substring(filePath.lastIndexOf("/") + 1, filePath.length);
 
+        //tblSortTag = '';
         for (var i in mlData) {
             if (mlData[i].entryLbl > 0) {
                 tblTag += '<dl>';
@@ -2028,6 +2146,9 @@ function uiLayerHtml(data) {
                 tblSortTag += '</dl>';
             }
         }
+        //$('#textResultTbl').append('<div id="' + imgNameText + '" name="textColDiv">');
+        //$('#textResultTbl').append(tblTag + tblSortTag);//.append(tblSortTag);
+        //$('#textResultTbl').append('</div>');
     }
 
     $('#textResultTbl').append(tblTag).append(tblSortTag);
@@ -2051,3 +2172,65 @@ function uiLayerHtml(data) {
 
     })
 }
+
+$(document).on('change', '#uiDocTopType', function(){
+    var docToptype = $(this).val();
+    
+    var param = {
+        "docToptype": docToptype
+    }
+    
+    $.ajax({
+        url: '/uiLearning/selectIcrLabelDef',
+        type: 'post',
+        datatype: 'json',
+        data: JSON.stringify(param),
+        contentType: 'application/json; charset=UTF-8',
+        success: function (data) {
+            if (data.code == 200) {
+                console.log(data);
+                var labelList = data.labelList;
+                var appendSelectOptionHtml = '<option value="-1">Unknown</option>';
+                for(var i = 0; i < labelList.length; i++) {
+                    appendSelectOptionHtml += '<option value="' + labelList[i].SEQNUM + '">' + labelList[i].ENGNM + '</option>';
+                }
+                $('.docLabel').empty().append(appendSelectOptionHtml);
+
+            } else {
+                fn_alert('alert', data.message);
+            }
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
+})
+
+var uiLearnTraining = function (imgIdArray) {
+
+    $.ajax({
+        url: '/uiLearning/uiLearnTraining',
+        type: 'post',
+        datatype: 'json',
+        data: JSON.stringify({ imgIdArray: imgIdArray }),
+        contentType: 'application/json; charset=UTF-8',
+        beforeSend: function () {
+            $('#btn_pop_batch_close').click();
+            $('#progressMsgTitle').html("processing UI learn data...");
+            progressId = showProgressBar();
+        },
+        success: function (data) {
+            console.log(data);
+            //modifyData = data.data;
+            $('#progressMsgTitle').html("success UI learn data...");
+            //selectTypoData(data);
+            modifyData = $.extend([], data.data);
+            uiLayerHtml(data);
+            endProgressBar(progressId);
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
+
+};
