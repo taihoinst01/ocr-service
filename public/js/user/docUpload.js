@@ -300,153 +300,158 @@ var imgOcr = function(fileInfoList) {
 			$("#progressMsgTitle").html("Ocr ...");
 		},
 		success: function (data) {
-            console.log(data);          
-            var trainResultList = data.trainResultList;
-            var docLabelDefList = data.docLabelDefList;
-            var docAnswerDataList = data.docAnswerDataList;
-            var appendMultiRecordHtml = "";
-            var appendThumbnailHtml = "";
-            var arrayList = [];
-            var headHtml = "";
-            headHtml += "<thread><tr>";
-            for (var i = 0; i < docLabelDefList.length; i++) {
-                if (docLabelDefList[i].AMOUNT == "multi") {
-                    headHtml += "<th>";
-                    headHtml += docLabelDefList[i].ENGNM;
-                    headHtml += "</th>";
+            console.log(data);      
+            if(data.status == 200) {
+
+                var trainResultList = data.trainResultList;
+                var docLabelDefList = data.docLabelDefList;
+                var docAnswerDataList = data.docAnswerDataList;
+                var appendMultiRecordHtml = "";
+                var appendThumbnailHtml = "";
+                var arrayList = [];
+                var headHtml = "";
+                headHtml += "<thread><tr>";
+                for (var i = 0; i < docLabelDefList.length; i++) {
+                    if (docLabelDefList[i].AMOUNT == "multi") {
+                        headHtml += "<th>";
+                        headHtml += docLabelDefList[i].ENGNM;
+                        headHtml += "</th>";
+                    }
                 }
-            }
-            headHtml += "</tr></thread>";
-            $("#labelHead").html(headHtml);
-
-            //singleRecord Label
-            var appendSingleRecordLabelHtml = '';
-            var singleRecordEntryLblList = [];
-            for(var i = 0; i <docLabelDefList.length; i++) {
-                if(docLabelDefList[i].AMOUNT == 'single') {
-                    appendSingleRecordLabelHtml += '<tr class="singleRecordTr" data-entryLbl="' + docLabelDefList[i].SEQNUM + '"><td class="singleRecordLabelTd">' +
-                            '<input type="text" class="singleRecordLabelIpt" disabled value="' + docLabelDefList[i].ENGNM + '">' +
-                            '</td><td class="singleRecordEntryTd"><input type="text" class="singleRecordEntryIpt" value="" data-entryLbl="' + docLabelDefList[i].SEQNUM + '"></td></tr>';
+                headHtml += "</tr></thread>";
+                $("#labelHead").html(headHtml);
+    
+                //singleRecord Label
+                var appendSingleRecordLabelHtml = '';
+                var singleRecordEntryLblList = [];
+                for(var i = 0; i <docLabelDefList.length; i++) {
+                    if(docLabelDefList[i].AMOUNT == 'single') {
+                        appendSingleRecordLabelHtml += '<tr class="singleRecordTr" data-entryLbl="' + docLabelDefList[i].SEQNUM + '"><td class="singleRecordLabelTd">' +
+                                '<input type="text" class="singleRecordLabelIpt" disabled value="' + docLabelDefList[i].ENGNM + '">' +
+                                '</td><td class="singleRecordEntryTd"><input type="text" class="singleRecordEntryIpt" value="" data-entryLbl="' + docLabelDefList[i].SEQNUM + '"></td></tr>';
+                    }
                 }
-            }
-            $('#singleTblTbody').append(appendSingleRecordLabelHtml);
-
-            for(var i = 0; i < trainResultList.length; i++) {
-                var trainResult = trainResultList[i].data;
-                for(var j = 0; j < trainResult.length; j++) {
-
-                    // Single Record Entry 추출
-                    $('.singleRecordTr').each(function(){
-                        var appendSingleRecordEntryHtml
-                        if($(this).attr('data-entryLbl') == trainResult[j].entryLbl) {
-                            $(this).find('.singleRecordEntryIpt').val(trainResult[j].text);
-                            $(this).find('.singleRecordEntryIpt').attr('data-location', trainResult[j].location).attr('data-filename', trainResultList[i].fileName);
-                        }
-                    })
-
-                    // Multi Record entry
-                    var data = trainResult[j];
-                    var dataLocation = data.location.split(",");
-
-                    for (var k = 0; k < docLabelDefList.length; k++) {
-                        if (docLabelDefList[k].AMOUNT == "multi" && data.entryLbl == docLabelDefList[k].SEQNUM) {
-                            var bool = false;
-
-                            if (arrayList.length == 0) {
-                                var array = [];
-                                data.fileName = trainResultList[i].fileName;
-                                array.push(data);
-                                arrayList.push(array);
-                                console.log("0 : " + arrayList);
-                            } else {
-
-                                var aLength = arrayList.length;
-                                for (var l = 0; l < aLength; l++) {
-                                    var mlLocation = arrayList[l][0].location.split(",");
-                                    if (dataLocation[1] - mlLocation[1] < 20 && dataLocation[1] - mlLocation[1] > -20) {
-                                        data.fileName = trainResultList[i].fileName;
-                                        arrayList[l].push(data);
-                                        break;
-                                    }
-
-                                    if (l == aLength - 1) {
-                                        bool = true;
-                                    }
-                                }
-
-                                if (bool) {
+                $('#singleTblTbody').append(appendSingleRecordLabelHtml);
+    
+                for(var i = 0; i < trainResultList.length; i++) {
+                    var trainResult = trainResultList[i].data;
+                    for(var j = 0; j < trainResult.length; j++) {
+    
+                        // Single Record Entry 추출
+                        $('.singleRecordTr').each(function(){
+                            var appendSingleRecordEntryHtml
+                            if($(this).attr('data-entryLbl') == trainResult[j].entryLbl) {
+                                $(this).find('.singleRecordEntryIpt').val(trainResult[j].text);
+                                $(this).find('.singleRecordEntryIpt').attr('data-location', trainResult[j].location).attr('data-filename', trainResultList[i].fileName);
+                            }
+                        })
+    
+                        // Multi Record entry
+                        var data = trainResult[j];
+                        var dataLocation = data.location.split(",");
+    
+                        for (var k = 0; k < docLabelDefList.length; k++) {
+                            if (docLabelDefList[k].AMOUNT == "multi" && data.entryLbl == docLabelDefList[k].SEQNUM) {
+                                var bool = false;
+    
+                                if (arrayList.length == 0) {
                                     var array = [];
                                     data.fileName = trainResultList[i].fileName;
                                     array.push(data);
                                     arrayList.push(array);
-                                    bool = false;
+                                    console.log("0 : " + arrayList);
+                                } else {
+    
+                                    var aLength = arrayList.length;
+                                    for (var l = 0; l < aLength; l++) {
+                                        var mlLocation = arrayList[l][0].location.split(",");
+                                        if (dataLocation[1] - mlLocation[1] < 20 && dataLocation[1] - mlLocation[1] > -20) {
+                                            data.fileName = trainResultList[i].fileName;
+                                            arrayList[l].push(data);
+                                            break;
+                                        }
+    
+                                        if (l == aLength - 1) {
+                                            bool = true;
+                                        }
+                                    }
+    
+                                    if (bool) {
+                                        var array = [];
+                                        data.fileName = trainResultList[i].fileName;
+                                        array.push(data);
+                                        arrayList.push(array);
+                                        bool = false;
+                                    }
+    
                                 }
-
+    
                             }
-
                         }
                     }
                 }
-            }
-
-            for (var j = 0; j < arrayList.length; j++) {
-                appendMultiRecordHtml += "<tr>";
-
-                for (var k = 0; k < docLabelDefList.length; k++) {
-                    if (docLabelDefList[k].AMOUNT == "multi") {
-                        var text = "";
-                        var location = "";
-                        var entryLbl = "";
-                        var fileName = "";
-                        for (var l = 0; l < arrayList[j].length; l++) {
-                            if (docLabelDefList[k].SEQNUM == arrayList[j][l].entryLbl) {
-                                text = arrayList[j][l].text;
-                                location = arrayList[j][l].location;
-                                entryLbl = arrayList[j][l].entryLbl;
-                                fileName = arrayList[j][l].fileName;
+    
+                for (var j = 0; j < arrayList.length; j++) {
+                    appendMultiRecordHtml += "<tr>";
+    
+                    for (var k = 0; k < docLabelDefList.length; k++) {
+                        if (docLabelDefList[k].AMOUNT == "multi") {
+                            var text = "";
+                            var location = "";
+                            var entryLbl = "";
+                            var fileName = "";
+                            for (var l = 0; l < arrayList[j].length; l++) {
+                                if (docLabelDefList[k].SEQNUM == arrayList[j][l].entryLbl) {
+                                    text = arrayList[j][l].text;
+                                    location = arrayList[j][l].location;
+                                    entryLbl = arrayList[j][l].entryLbl;
+                                    fileName = arrayList[j][l].fileName;
+                                }
                             }
+    
+                            appendMultiRecordHtml += '<td><input type="text" class="multiRecordIpt ' + (nvl(text) == "" ? 'ipt_gray"' : 'ipt_pink"') + '" value="' + nvl(text) + '" ';
+                            appendMultiRecordHtml += 'data-filename="' + fileName + '" data-location="' + location + '" data-entryLbl="' + entryLbl + '"></td>';
+    
                         }
-
-                        appendMultiRecordHtml += '<td><input type="text" class="multiRecordIpt ' + (nvl(text) == "" ? 'ipt_gray"' : 'ipt_pink"') + '" value="' + nvl(text) + '" ';
-                        appendMultiRecordHtml += 'data-filename="' + fileName + '" data-location="' + location + '" data-entryLbl="' + entryLbl + '"></td>';
-
                     }
+    
+                    appendMultiRecordHtml += "</tr>";
                 }
-
-                appendMultiRecordHtml += "</tr>";
-            }
-
-            // imgThumbnail
-            for(var i = 0; i < fileInfoList.length; i++) {
-                if(i == 0) {
-                    appendThumbnailHtml += '<li class="on">';
-                } else {
-                    appendThumbnailHtml += '<li>';
+    
+                // imgThumbnail
+                for(var i = 0; i < fileInfoList.length; i++) {
+                    if(i == 0) {
+                        appendThumbnailHtml += '<li class="on">';
+                    } else {
+                        appendThumbnailHtml += '<li>';
+                    }
+                    appendThumbnailHtml += '<div class="box_img"><i><img src="/img/' + nvl(fileInfoList[i].convertFileName) + '" ' +
+                            'class="thumb-img" title="' + nvl(fileInfoList[i].convertFileName) + '"></i>' +
+                            '</div>' +
+                            '<span>' + nvl(fileInfoList[i].convertFileName) + '</span>' +
+                            '</li> ';
                 }
-                appendThumbnailHtml += '<div class="box_img"><i><img src="/img/' + nvl(fileInfoList[i].convertFileName) + '" ' +
-                        'class="thumb-img" title="' + nvl(fileInfoList[i].convertFileName) + '"></i>' +
-                        '</div>' +
-                        '<span>' + nvl(fileInfoList[i].convertFileName) + '</span>' +
-                        '</li> ';
+    
+                var mainImgHtml = '';
+                        mainImgHtml += '<div id="mainImage" class="docUpload_mainImage">';
+                        mainImgHtml += '</div>';
+                        mainImgHtml += '<div id="imageZoom" ondblclick="viewOriginImg()">';
+                        mainImgHtml += '<div id="redZoomNemo">';
+                        mainImgHtml += '</div>';
+                        mainImgHtml += '</div>';
+                $('#div_invoice_view_image').html(mainImgHtml);
+                $('#mainImage').css('background-image', 'url("/img/' + fileInfoList[0].convertFileName + '")');
+                $("#ul_image").empty().append(appendThumbnailHtml);
+                $('#multiRecordTblTbody').append(appendMultiRecordHtml);
+                checkDocLabelDef(docLabelDefList);
+                checkDocMlData(docAnswerDataList);
+                changeTabindex();
+                thumbImgEvent();
+            } else {
+                fn_alert('alert', 'error');
             }
-
-            var mainImgHtml = '';
-                    mainImgHtml += '<div id="mainImage" class="docUpload_mainImage">';
-                    mainImgHtml += '</div>';
-                    mainImgHtml += '<div id="imageZoom" ondblclick="viewOriginImg()">';
-                    mainImgHtml += '<div id="redZoomNemo">';
-                    mainImgHtml += '</div>';
-                    mainImgHtml += '</div>';
-            $('#div_invoice_view_image').html(mainImgHtml);
-            $('#mainImage').css('background-image', 'url("/img/' + fileInfoList[0].convertFileName + '")');
-            $("#ul_image").empty().append(appendThumbnailHtml);
-            $('#multiRecordTblTbody').append(appendMultiRecordHtml);
-            checkDocLabelDef(docLabelDefList);
-            checkDocMlData(docAnswerDataList);
-            changeTabindex();
-            thumbImgEvent();
-			endProgressBar(progressId);
-		}
+            endProgressBar(progressId);
+        }   
 	})
 }
 
