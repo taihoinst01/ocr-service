@@ -157,13 +157,13 @@ function ocrParsing(body) {
                     }
                     break;
                 }
-
+                /*
                 if ((body.regions[i].lines[j].words[0] != undefined && body.regions[i].lines[j].words[0].text == 'Delivery') && (body.regions[i].lines[j].words[1] != undefined && body.regions[i].lines[j].words[1].text == 'Unit')) {
                     data.push({ 'location': body.regions[i].lines[j].words[0].boundingBox, 'text': body.regions[i].lines[j].words[0].text.trim() });
                     data.push({ 'location': body.regions[i].lines[j].words[1].boundingBox, 'text': body.regions[i].lines[j].words[1].text.trim() });
                     break;
                 }
-
+                */
                 var item = '';
                 for (var k = 0; k < body.regions[i].lines[j].words.length; k++) {
                     item += body.regions[i].lines[j].words[k].text + ' ';
