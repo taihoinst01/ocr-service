@@ -357,7 +357,6 @@ var imgOcr = function(fileInfoList) {
                                 data.fileName = trainResultList[i].fileName;
                                 array.push(data);
                                 arrayList.push(array);
-                                console.log("0 : " + arrayList);
                             } else {
 
                                 var aLength = arrayList.length;
