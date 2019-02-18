@@ -4408,9 +4408,34 @@ exports.rollbackTraining = function (req, done) {
         try {
             conn = await oracledb.getConnection(dbConfig);          
             var query = 'delete from TBL_BATCH_COLUMN_MAPPING_TRAIN where REGDATE < :modifyYYMMDD';
-            param = [modifyYYMMDD]
+            param = [modifyYYMMDD];
             await conn.execute(query, param);
             return done(null, null);
+        } catch (err) { // catches errors in getConnection and the query
+            console.log(err);
+            return done(null, "error");
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+exports.selectDocStatus = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let param;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);          
+            var query = 'select doctoptype ,count(*) as count, engnm from tbl_batch_learn_list a, TBL_ICR_DOC_TOPTYPE b where a.doctoptype = b.seqnum group by doctoptype, engnm';
+            var result = await conn.execute(query);
+            return done(null, result.rows);
         } catch (err) { // catches errors in getConnection and the query
             console.log(err);
             return done(null, "error");

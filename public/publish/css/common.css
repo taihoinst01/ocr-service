@@ -332,7 +332,7 @@ canvas.preview { border-radius: 5px; }
 .red { color: red !important; }
 /*.doc_text { margin: 0 0 0 25px; }*/
 .date_content { width: 100%; height: 70%; }
-.before_div { padding-top: 16%; height: 20%; color: #BDBDBD; font: bold 23px 'NanumGothicR'; }
+.before_div { padding-top: 10%; height: 20%; color: #BDBDBD; font: bold 23px 'NanumGothicR'; }
 .main_div { height: 30%; color: #000; font: bold 40px 'NanumGothicR'; }
 .after_div { height: 30%; color: #BDBDBD; font: bold 23px 'NanumGothicR'; padding-top: 12px; }
 .before_div p { text-align: center; }

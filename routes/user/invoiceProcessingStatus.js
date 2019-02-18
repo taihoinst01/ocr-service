@@ -95,4 +95,25 @@ router.post('/rollbackTraining', function (req, res) {
     });
 });
 
+// 문서별현황(도넛차트) 조회
+router.post('/selectDocStatus', function (req, res) {
+    var returnObj;
+    var param;
+    sync.fiber(function () {
+        try {
+
+            var docStatusList = sync.await(oracle.selectDocStatus(null, sync.defer()));
+
+            returnObj = { 'code': 200, 'docStatusList': docStatusList};
+        } catch (e) {
+            console.log(e);
+            returnObj = { 'code': 500, 'message': e };
+
+        } finally {
+            res.send(returnObj);
+        }
+
+    });
+});
+
 module.exports = router;
