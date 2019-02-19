@@ -109,6 +109,8 @@ var _init = function () {
                     pieConfig.data.datasets[0].data.push(100);
                     pieConfig.data.datasets[0].backgroundColor.push('#edebeb');
                 }
+                var pieCtx = document.getElementById('pie').getContext('2d');
+                new Chart(pieCtx, pieConfig);
             } else {
                 
             }
@@ -121,11 +123,11 @@ var _init = function () {
 
 	window.onload = function() {
         // var lineCtx = document.getElementById('line').getContext('2d');
-        var pieCtx = document.getElementById('pie').getContext('2d');
+        //var pieCtx = document.getElementById('pie').getContext('2d');
         var barCtx = document.getElementById('bar').getContext('2d');
 
         // window.myLine = new Chart(lineCtx, lineConfig);
-        window.myPie = new Chart(pieCtx, pieConfig);
+        //window.myPie = new Chart(pieCtx, pieConfig);
         window.myBar = new Chart(barCtx, barConfig);
     };
 
