@@ -927,6 +927,7 @@ def findEntry(ocrData, docTopType, docType):
                     if int(labelRow[0]) == int(item["colLbl"]):
                         valid = labelRow[6]
 
+                isStop = False
                 # multi entry
                 for entry in ocrData:
                     entrySid = entry["mappingSid"].split(",")
@@ -985,15 +986,22 @@ def findEntry(ocrData, docTopType, docType):
                             if p.match(entry["text"]) and checkVerticalSpringer(entrySid, mappingSid, -50, 50) and int(mappingSid[2]) - 15 < int(entrySid[2]) and "colLbl" not in entry and item["text"] != entry["text"]:
                                 entry["entryLbl"] = item["colLbl"]
                     elif docType == 49:
-                        if int(item["colLbl"]) == 336 or int(item["colLbl"]) == 338 or int(item["colLbl"]) == 343:
-                            if p.match(entry["text"]) and checkVerticalSpringer(entrySid, mappingSid, -100, 100) and int(mappingSid[2]) - 15 < int(entrySid[2]) and "colLbl" not in entry and item["text"] != entry["text"]:
-                                entry["entryLbl"] = item["colLbl"]
-                        elif int(item["colLbl"]) == 339:
-                            if p.match(entry["text"]) and checkVerticalSpringer(entrySid, mappingSid, -230, 230) and int(mappingSid[2]) - 15 < int(entrySid[2]) and "colLbl" not in entry and item["text"] != entry["text"]:
-                                entry["entryLbl"] = item["colLbl"]
-                        elif int(item["colLbl"]) == 340:
-                            if p.match(entry["text"]) and checkVerticalSpringer(entrySid, mappingSid, -490, 490) and int(mappingSid[2]) - 15 < int(entrySid[2]) and "colLbl" not in entry and item["text"] != entry["text"]:
-                                entry["entryLbl"] = item["colLbl"]
+                        breakText = ['Total Weight', 'PLEASE SEND RA #', 'COSTC', 'COSTCO # 256', 'Request', 'RA reques', 'RA REQUEST COSTCO 1157', 'Total Weight :',
+                                     'PLEASE ISSUE', 'COSTCO WHOLESALE #258', 'Costco #162 ATV RA', '(l z-L(G27qs-', ' RA.r# Request', 'RA # Requested'] # COSTCO break point text (수직 label 범위 지정)
+                        if entry["text"] in breakText:
+                            isStop = True
+                            break
+
+                        if not isStop:
+                            if int(item["colLbl"]) == 336 or int(item["colLbl"]) == 338 or int(item["colLbl"]) == 343:
+                                if p.match(entry["text"]) and checkVerticalSpringer(entrySid, mappingSid, -100, 100) and int(mappingSid[2]) - 15 < int(entrySid[2]) and "colLbl" not in entry and item["text"] != entry["text"]:
+                                    entry["entryLbl"] = item["colLbl"]
+                            elif int(item["colLbl"]) == 339:
+                                if p.match(entry["text"]) and checkVerticalSpringer(entrySid, mappingSid, -230, 230) and int(mappingSid[2]) - 15 < int(entrySid[2]) and "colLbl" not in entry and item["text"] != entry["text"]:
+                                    entry["entryLbl"] = item["colLbl"]
+                            elif int(item["colLbl"]) == 340:
+                                if p.match(entry["text"]) and checkVerticalSpringer(entrySid, mappingSid, -490, 490) and int(mappingSid[2]) - 15 < int(entrySid[2]) and "colLbl" not in entry and item["text"] != entry["text"]:
+                                    entry["entryLbl"] = item["colLbl"]
                     elif p.match(entry["text"]) and checkVertical(entrySid, mappingSid) and int(mappingSid[2]) -15 < int(entrySid[2]) and "colLbl" not in entry and item["text"] != entry["text"]:
 
                         if not (int(entrySid[2]) - preVerticalLoc > 400) and "entryLbl" not in entry:

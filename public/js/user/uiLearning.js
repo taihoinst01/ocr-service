@@ -1239,6 +1239,24 @@ function dbColumnsOption(data, column) {
 // 마우스 오버 이벤트
 function zoomImg(e, fileName) {
 
+    // 해당 페이지로 이동
+    // 몇 페이지 어디인지 표시
+    //var fileName = $(e).find('input[type=hidden]').attr('alt');
+    $('.thumb-img').each(function (i, el) {
+        if ($(this).attr('src').split('/')[2] == fileName) {
+            $(this).click();
+        }
+    });
+    
+
+    var mainImage = $("#mainImage").css('background-image');
+    mainImage = mainImage.replace('url(', '').replace(')', '').replace(/\"/gi, "");
+    mainImage = mainImage.substring(mainImage.lastIndexOf("/") + 1, mainImage.length);
+
+    if (mainImage != fileName) {
+        $('#mainImage').css('background-image', 'url("/tif/' + fileName + '")');
+    }
+    
     //실제 이미지 사이즈와 메인이미지div 축소율 판단
     var reImg = new Image();
     reImg.onload = function() {
