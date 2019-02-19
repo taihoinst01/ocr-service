@@ -8,7 +8,7 @@
 }
 
 .btn_rt {
-    position: absolute;
+    position: relative;
     bottom: 18px;
     right: 22px
 }
@@ -17,6 +17,13 @@
     position: absolute;
     top: 0;
     right: 0;
+}
+
+.btn_rt2 {
+    float: left;
+    min-width: 88px;
+    width: 5%;
+    padding-top: 10px;
 }
 
 .userTable1{
@@ -49,4 +56,20 @@
     max-height:550px;
     background:#fff;
     overflow:auto;
+}
+
+.um_list .um_select > dl {
+    display: table;
+    position: relative;
+    width: 20%;
+}
+.um_list .um_select > dl.lastDl {
+
+    width: 51% !important;
+    margin: 0 0 0 15px;
+}
+
+.um_select {
+    display: table;
+    width: 100%;
 }
