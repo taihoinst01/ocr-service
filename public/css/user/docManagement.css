@@ -43,9 +43,8 @@ table .newTr .selected {color: #666 !important; }
 }
 
 .btn_rt {
-    position: absolute;
-    bottom: 70px;
-    right: 22px
+  float: right;
+  margin: 15px 0px;
 }
 
 .btn_rt02 {
