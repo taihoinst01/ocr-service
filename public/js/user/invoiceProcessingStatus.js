@@ -127,21 +127,18 @@ var _init = function () {
 
 	window.onload = function() {
         // var lineCtx = document.getElementById('line').getContext('2d');
-<<<<<<< HEAD
         //var pieCtx = document.getElementById('pie').getContext('2d');
         var barCtx = document.getElementById('bar').getContext('2d');
 
         // window.myLine = new Chart(lineCtx, lineConfig);
         //window.myPie = new Chart(pieCtx, pieConfig);
         window.myBar = new Chart(barCtx, barConfig);
-=======
-        var pieCtx = document.getElementById('pie').getContext('2d');
+        //var pieCtx = document.getElementById('pie').getContext('2d');
         //var barCtx = document.getElementById('bar').getContext('2d');
 
         // window.myLine = new Chart(lineCtx, lineConfig);
-        window.myPie = new Chart(pieCtx, pieConfig);
+        //window.myPie = new Chart(pieCtx, pieConfig);
         //window.myBar = new Chart(barCtx, barConfig);
->>>>>>> 9943e973839fb352d072f34166f6af35290c64cf
     };
 
 };
