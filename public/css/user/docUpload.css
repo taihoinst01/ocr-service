@@ -62,3 +62,20 @@
     height: 45%;
     overflow-y: scroll;
 }
+
+.content_icon {
+    position: relative;
+    top: 20px;
+    left: 20px;
+}
+
+.content_title1 {
+    font-weight: bold;
+    font-family: 'NanumGothicR';
+    font-size: 20px;
+    margin-top: 3px;
+    color: #4C5059;
+    position: relative;
+    top: 20px;
+    left: 35px;
+}
