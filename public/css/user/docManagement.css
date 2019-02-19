@@ -99,3 +99,26 @@ table .newTr .selected {color: #666 !important; }
   background: white;
   margin: 0px 0 50px 0px;
 }
+
+.content_title_icon_dm {
+  display: inline-block;
+  background: url('../image/icon-icr02.png') no-repeat;
+  width:40px; 
+  height: 30px;
+  float:left;
+}
+
+.box_stsearch_doc_management {
+    position: relative;
+    /* width: 100%; */
+    width: calc(100% - 40px);
+    padding: 14px 0;
+    bottom: 0;
+    left: 20px;
+}
+
+.box_stsearch_doc_management .btn_rt {
+  position: absolute;
+  bottom: 18px;
+  right: 22px
+}
