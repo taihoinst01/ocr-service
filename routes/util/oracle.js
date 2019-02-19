@@ -4341,3 +4341,169 @@ function getConvertDate() {
 
     return '' + yyyy + mm + dd + hh + minute + ss + mss;
 }
+
+exports.selectProcessCountList = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);          
+            var query = `select to_char(REGDATE, 'YYYYMM') PROCESSDATE, count(REGDATE) DATECNT
+                           from TBL_BATCH_LEARN_LIST
+                          where to_char(REGDATE, 'YYYYMM')
+                        between (select to_char(add_months(MAX(REGDATE), -6), 'YYYYMM') 
+                                   from TBL_BATCH_LEARN_LIST) and 
+                                (select to_char(MAX(REGDATE), 'YYYYMM') 
+                                   from TBL_BATCH_LEARN_LIST)
+                       group by to_char(REGDATE, 'YYYYMM')
+                       order by to_char(REGDATE, 'YYYYMM')`;
+            let resAnswerFile = await conn.execute(query);
+            return done(null, resAnswerFile.rows);
+        } catch (err) { // catches errors in getConnection and the query
+            console.log(err);
+            return done(null, "error");
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+exports.selectProcessCount = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);          
+            var query = `select status, count(status) statusCnt
+                           from tbl_batch_learn_list
+                       group by status`;
+            let resAnswerFile = await conn.execute(query);
+            return done(null, resAnswerFile.rows);
+        } catch (err) { // catches errors in getConnection and the query
+            console.log(err);
+            return done(null, "error");
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+exports.selectProcessDocCountList = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);          
+            var query = `SELECT * FROM ( 
+                            SELECT TO_CHAR(REGDATE, 'MM') AS MONTH_VALUE, COUNT(*) AS COUNT_VALUE 
+                              FROM TBL_BATCH_LEARN_LIST 
+                             WHERE 1=1 
+                             --AND TO_CHAR(REGDATE, 'YYYYMMDD') <= :endDate 
+                            GROUP BY TO_CHAR(REGDATE, 'MM') 
+                            ORDER BY TO_CHAR(REGDATE, 'MM') DESC) 
+                          WHERE ROWNUM <=5`; 
+            let resDocCount = await conn.execute(query);
+            //let resAnswerFile = await conn.execute(query, [req.body.]);
+            return done(null, resDocCount.rows);
+        } catch (err) { // catches errors in getConnection and the query
+            console.log(err);
+            return done(null, "error");
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+exports.rollbackTraining = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let param;
+        let modifyYYMMDD = req.modifyYYMMDD;
+        try {
+            conn = await oracledb.getConnection(dbConfig);          
+            var query = 'delete from TBL_BATCH_COLUMN_MAPPING_TRAIN where REGDATE < :modifyYYMMDD';
+            param = [modifyYYMMDD];
+            await conn.execute(query, param);
+            return done(null, null);
+        } catch (err) { // catches errors in getConnection and the query
+            console.log(err);
+            return done(null, "error");
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+exports.selectDocTopTypeList = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);          
+            var query = `SELECT SEQNUM, NVL(KORNM,'NONE') AS KORNM, USEYN, NVL(USERID,'NONE') AS USERID, NVL(ENGNM,'NONE') AS ENGNM 
+                           FROM TBL_ICR_DOC_TOPTYPE`; 
+            let resDocCount = await conn.execute(query);
+            //let resAnswerFile = await conn.execute(query, [req.body.]);
+            return done(null, resDocCount.rows);
+        } catch (err) { // catches errors in getConnection and the query
+            console.log(err);
+            return done(null, "error");
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+exports.selectDocStatus = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let param;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);          
+            var query = 'select doctoptype ,count(*) as count, engnm from tbl_batch_learn_list a, TBL_ICR_DOC_TOPTYPE b where a.doctoptype = b.seqnum group by doctoptype, engnm';
+            var result = await conn.execute(query);
+            return done(null, result.rows);
+        } catch (err) { // catches errors in getConnection and the query
+            console.log(err);
+            return done(null, "error");
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
