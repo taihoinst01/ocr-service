@@ -2202,7 +2202,7 @@ function uiLearnTraining(filepath, callback) {
                 var resPyArr = JSON.parse(decode);
                 
                 resPyArr = sync.await(transPatternVar.trans(resPyArr, sync.defer()));
-                console.log(resPyArr);
+                //console.log(resPyArr);
 
                 var retData = {};
                 retData = resPyArr;
