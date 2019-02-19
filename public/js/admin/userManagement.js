@@ -33,6 +33,7 @@ $(function () {
 
     // 페이징 초기화
     // $("#pagination").html(pagination(curPage, $("#totalCount").val()));
+
 });
 
 /**
@@ -102,6 +103,9 @@ function fn_searchUser() {
             }
             $("#tbody_user").empty().append(appendHtml);
             //$("#pagination").html(pagination(curPage, data[0].totalCount));
+
+            $(".tableSize1").css({ 'height': data.length * 37.5 + 'px' });
+
             endProgressBar();
         },
         error: function (err) {

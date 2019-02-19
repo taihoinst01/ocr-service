@@ -9,6 +9,22 @@ var progressId; // progress Id
 $(function () {
     _init();
     dateEvent();
+
+
+    //$('#wrapper').css({ 'height': ($(document).height()) + 'px' });
+    //console.log($('.first_content').height());
+    //var initContentHeight1 = $('.first_content').height();
+    //$('.first_content').css({ 'height': initContentHeight1 + 'px' });
+    //$('.content1').css({ 'height': initContentHeight1 + 'px' });
+    //$('.content2').css({ 'height': initContentHeight1 + 'px' });
+    //$('.content3').css({ 'height': initContentHeight1 + 'px' });
+
+    $(window).resize(function () {
+        console.log('aaaaaaa');
+        //$('#wrapper').css({ 'height': ($(document).height()) + 'px' });
+        //$('.wc-carousel').css({ 'width': ($(document).width() - 74) + 'px' });
+        //$('.tooltip').tooltip('show');
+    });
 });
 
 var _init = function () {

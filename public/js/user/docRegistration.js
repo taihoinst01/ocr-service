@@ -159,6 +159,7 @@ function fn_selectDocLabelDefList(docToptype) {
 					}
 				}
 
+                $(".docTable2").css({ 'height': (docToptypeListLength * 51) + 40 + 'px' });
 				$('#tbody_docList').append(appendDocListHtml);
 			}
 		})

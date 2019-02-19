@@ -1,100 +1,107 @@
-﻿<script type="text/javascript" src="js/header.js"></script>
-
-<header>
-    <div id="header">
-        <div id="lnb" class="lnb">
-            <a href="/" title="TIIZ OCR Service Web"><h1><span class="blind">TIIZ OCR Service Web</span></h1></a>
-            <!-- GNB -->
-            <div class="gnb_box">
-                <div class="gnb_connectionday">
-                    <input type="text" class="totalSearch" id="totalSearch" placeholder="Search..." />
-                </div>
-                <div class="gnb_setting">
-                    <a href="#" title="서비스설정">Settings</a>
-                </div>
-                <% if(currentUser != null) { %>
-                <div class="gnb_infor">
-                    <a href="#" title="회원정보" id="btn_openUserPop" onclick="layer_open('userInfoPop'); return false;">
-                        <span><%=currentUser.userId%></span>
+﻿<html>
+<head>
+    <title>ICR</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <script type="text/javascript" src="js/header.js"></script>
+</head>
+<body>
+    <header>
+        <div id="header">
+            <div id="lnb" class="lnb">
+                <a href="/" title="TIIZ OCR Service Web"><h1><span class="blind">TIIZ OCR Service Web</span></h1></a>
+                <!-- GNB -->
+                <div class="gnb_box">
+                    <div class="gnb_connectionday">
+                        <input type="text" class="totalSearch" id="totalSearch" placeholder="Search..." />
+                    </div>
+                    <div class="gnb_setting">
+                        <a href="#" title="서비스설정">Settings</a>
+                    </div>
+                    <% if(currentUser != null) { %>
+                    <div class="gnb_infor">
+                        <a href="#" title="회원정보" id="btn_openUserPop" onclick="layer_open('userInfoPop'); return false;">
+                            <span><%=currentUser.userId%></span>
+                        </a>
+                        <span class="gnb_infor_img"></span>
+                    </div>
+                    <a href="/logout" title="로그아웃">
+                        <b class="b_logout">Logout</b>
+                        <div class="btn_logout">
+                            <span class="blind">로그아웃</span>
+                        </div>
                     </a>
-                    <span class="gnb_infor_img"></span>
+                    <% } %>
                 </div>
-                <a href="/logout" title="로그아웃">     
-                    <b class="b_logout">Logout</b>
-                    <div class="btn_logout">                       
-                        <span class="blind">로그아웃</span>
-                    </div>
-                </a>
-                <% } %>
+                <!-- // GNB -->
             </div>
-            <!-- // GNB -->
         </div>
-    </div>
-</header>
+    </header>
 
-<!-- 팝업_회원 정보 -->
-<div id="userInfoPop" class="poplayer userInfoPop">
-    <div class="bg"></div>
-    <div class="pop_layer">
-        <div class="pop_popup0 ">
-            <div class="pop_header">
-                <h1>회원정보</h1>
-            </div>
-            <div class="pop_content">
-                <div class="pop_box_120 box_txt_st01">
-                    <div class="pop_content_01">
-                        <span class="title">ID</span>
-                        <input type="text" name="header_userPop_userId" id="header_userPop_userId" class="inputst_box01" value="<%=currentUser.userId%>" disabled="disabled" />
-                    </div>
-                    <div class="pop_content_01">
-                        <span class="title">기존 Password</span>
-                        <input type="password" name="header_userPop_userPw" id="header_userPop_userPw" class="inputst_box01" value="" />
-                    </div>
-                    <div class="pop_content_01">
-                        <span class="span_pwd title">새로운 Password</span><span class="necessary"> *</span>
-                        <input type="password" name="header_userPop_newUserPw" id="header_userPop_newUserPw" class="inputst_box01" value="" />
-                        <span id="newPwd" class="warnning">
-                            영문 숫자 특수문자 2가지 이상 8~15자 조합으로 입력해주세요.
-                        </span>
-                    </div>
-                    <div class="pop_content_01">
-                        <span class="span_pwd title">새로운 Password 확인</span><span class="necessary"> *</span>
-                        <input type="password" name="header_userPop_newUserPw_confirm" id="header_userPop_newUserPw_confirm" class="inputst_box01" value="" />
-                        <span id="newPwdCheck" class="warnning">
-                            영문 숫자 특수문자 2가지 이상 8~15자 조합으로 입력해주세요.
-                        </span>
+    <!-- 팝업_회원 정보 -->
+    <div id="userInfoPop" class="poplayer userInfoPop">
+        <div class="bg"></div>
+        <div class="pop_layer">
+            <div class="pop_popup0 ">
+                <div class="pop_header">
+                    <h1>회원정보</h1>
+                </div>
+                <div class="pop_content">
+                    <div class="pop_box_120 box_txt_st01">
+                        <div class="pop_content_01">
+                            <span class="title">ID</span>
+                            <input type="text" name="header_userPop_userId" id="header_userPop_userId" class="inputst_box01" value="<%=currentUser.userId%>" disabled="disabled" />
+                        </div>
+                        <div class="pop_content_01">
+                            <span class="title">기존 Password</span>
+                            <input type="password" name="header_userPop_userPw" id="header_userPop_userPw" class="inputst_box01" value="" />
+                        </div>
+                        <div class="pop_content_01">
+                            <span class="span_pwd title">새로운 Password</span><span class="necessary"> *</span>
+                            <input type="password" name="header_userPop_newUserPw" id="header_userPop_newUserPw" class="inputst_box01" value="" />
+                            <span id="newPwd" class="warnning">
+                                영문 숫자 특수문자 2가지 이상 8~15자 조합으로 입력해주세요.
+                            </span>
+                        </div>
+                        <div class="pop_content_01">
+                            <span class="span_pwd title">새로운 Password 확인</span><span class="necessary"> *</span>
+                            <input type="password" name="header_userPop_newUserPw_confirm" id="header_userPop_newUserPw_confirm" class="inputst_box01" value="" />
+                            <span id="newPwdCheck" class="warnning">
+                                영문 숫자 특수문자 2가지 이상 8~15자 조합으로 입력해주세요.
+                            </span>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="pop_footer">
-                <button type="button" id="btn_header_userPop_cancel" class="button_st4 cbtn">취소</button>
-                <button type="button" id="btn_header_userPop_submit" class="button_st1">확인</button>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- //팝업_회원 정보 -->
-
-<!-- alert -->
-<div id="layer_alert" class="poplayer alert_pop_k">
-    <div class="bg"></div>
-    <div class="pop_layer">
-        <div class="pop_popup0 pop_popup_alert">
-            <div class="pop_header">
-                <h1 id="alertTitle"><i class="alert_icon"></i><span>알림</span></h1>
-            </div>
-            <div class="pop_content">
-                <span id="alertContent" class="alertContent_span">alert 내용</span>
-            </div>
-            <div class="pop_footer">
-                <button type="button" id="btn_layer_alert_cancel" class="button_st4 cbtn">취소</button>
-                <button type="button" id="btn_layer_alert_submit" class="button_st1">확인</button>
+                <div class="pop_footer">
+                    <button type="button" id="btn_header_userPop_cancel" class="button_st4 cbtn">취소</button>
+                    <button type="button" id="btn_header_userPop_submit" class="button_st1">확인</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<!-- //alert -->
+    <!-- //팝업_회원 정보 -->
+    <!-- alert -->
+    <div id="layer_alert" class="poplayer alert_pop_k">
+        <div class="bg"></div>
+        <div class="pop_layer">
+            <div class="pop_popup0 pop_popup_alert">
+                <div class="pop_header">
+                    <h1 id="alertTitle"><i class="alert_icon"></i><span>알림</span></h1>
+                </div>
+                <div class="pop_content">
+                    <span id="alertContent" class="alertContent_span">alert 내용</span>
+                </div>
+                <div class="pop_footer">
+                    <button type="button" id="btn_layer_alert_cancel" class="button_st4 cbtn">취소</button>
+                    <button type="button" id="btn_layer_alert_submit" class="button_st1">확인</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- //alert -->
 
-<script type="text/javascript">
-    //layer_open('layer_alert');
-</script>
+    <script type="text/javascript">
+                        //layer_open('layer_alert');
+    </script>
+</body>
+</html>
