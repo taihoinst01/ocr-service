@@ -78,7 +78,8 @@ body{ font-family:NanumGothicR,sans-serif,ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿? }
     background-color: #61646d;
     display: flex;
     flex-direction: column;
-    top:70px
+    top:70px;
+    z-index:2000;
     /*margin-top: 69px;*/
 }
 
@@ -301,7 +302,7 @@ canvas.preview { border-radius: 5px; }
 */
 .ips_content_title { font-weight: bold; font-family: 'NanumGothicR'; font-size: 20px; margin: 3px 0 20px 0; color: #4C5059; position:absolute; top:20px; left:65px;}
 .ips_content_sub { width: 100%; height: 780px; }
-.ips_content_sub span { font: bold 15px 'NanumGothicR'; color: #000; padding-top:8px}
+.ips_content_sub span { font: bold 15px 'NanumGothicR'; color: #000; /*padding-top:8px*/}
 .ips_content_sub_top { width: calc(100% - 40px); height: 60%; position: absolute; top: 65px;left: 20px;}
 .ips_content_sub_bottom { width: calc(100% - 40px); height: 40%; position: absolute; top: 500px;left: 20px;}
 .ips_line_graph { float:left; height: 100%; width: 50%; }
