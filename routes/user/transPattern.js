@@ -64,7 +64,7 @@ function convertedUY(reqArr) {
 function convertedEntry(reqArr, done) {
     sync.fiber(function () {
         try {
-            console.log(reqArr)
+            //console.log(reqArr)
             var docName = reqArr.docCategory.DOCNAME;
             var data = reqArr.data;
             var docToptype = reqArr.docCategory.DOCTOPTYPE;

@@ -987,7 +987,8 @@ def findEntry(ocrData, docTopType, docType):
                                 entry["entryLbl"] = item["colLbl"]
                     elif docType == 49:
                         breakText = ['Total Weight', 'PLEASE SEND RA #', 'COSTC', 'COSTCO # 256', 'Request', 'RA reques', 'RA REQUEST COSTCO 1157', 'Total Weight :',
-                                     'PLEASE ISSUE', 'COSTCO WHOLESALE #258', 'Costco #162 ATV RA', '(l z-L(G27qs-', ' RA.r# Request', 'RA # Requested'] # COSTCO break point text (수직 label 범위 지정)
+                                     'PLEASE ISSUE', 'COSTCO WHOLESALE #258', 'Costco #162 ATV RA', '(l z-L(G27qs-', ' RA.r# Request', 'RA # Requested', 'Costco 528 Pointe-CNaire',
+                                     'Poids total :', 'RAP :', 'Costco Wholesale #543'] # COSTCO break point text (수직 label 범위 지정)
                         if entry["text"] in breakText:
                             isStop = True
                             break
