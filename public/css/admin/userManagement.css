@@ -12,3 +12,41 @@
     bottom: 18px;
     right: 22px
 }
+
+.btn_rt1 {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.userTable1{
+    /*position:absolute;*/
+    position:relative;
+    left:20px;
+    top:130px;
+    width: calc(100% - 40px);
+}
+
+.box_stsearch1 {
+    position: absolute;
+    top: 70px;
+    left:20px;
+    width: calc(100% - 40px);
+}
+
+.box_stsearch2 {
+    /*position: absolute;
+    bottom: 30px;*/
+    position: relative;
+    left:20px;
+    top:145px;
+    width: calc(100% - 60px);
+    background: #fff;
+    padding: 10px
+}
+
+.tableSize1 {
+    max-height:550px;
+    background:#fff;
+    overflow:auto;
+}

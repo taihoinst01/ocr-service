@@ -14,6 +14,22 @@ $(function () {
     newDocTopTypListFnc();
     docCountSel();
     dateEvent();
+
+
+    //$('#wrapper').css({ 'height': ($(document).height()) + 'px' });
+    //console.log($('.first_content').height());
+    //var initContentHeight1 = $('.first_content').height();
+    //$('.first_content').css({ 'height': initContentHeight1 + 'px' });
+    //$('.content1').css({ 'height': initContentHeight1 + 'px' });
+    //$('.content2').css({ 'height': initContentHeight1 + 'px' });
+    //$('.content3').css({ 'height': initContentHeight1 + 'px' });
+
+    $(window).resize(function () {
+        console.log('aaaaaaa');
+        //$('#wrapper').css({ 'height': ($(document).height()) + 'px' });
+        //$('.wc-carousel').css({ 'width': ($(document).width() - 74) + 'px' });
+        //$('.tooltip').tooltip('show');
+    });
 });
 
 var _init = function () {
@@ -113,6 +129,8 @@ var _init = function () {
                     pieConfig.data.datasets[0].data.push(100);
                     pieConfig.data.datasets[0].backgroundColor.push('#edebeb');
                 }
+                var pieCtx = document.getElementById('pie').getContext('2d');
+                new Chart(pieCtx, pieConfig);
             } else {
                 
             }
@@ -125,11 +143,17 @@ var _init = function () {
 
 	window.onload = function() {
         // var lineCtx = document.getElementById('line').getContext('2d');
-        var pieCtx = document.getElementById('pie').getContext('2d');
+        //var pieCtx = document.getElementById('pie').getContext('2d');
+        var barCtx = document.getElementById('bar').getContext('2d');
+
+        // window.myLine = new Chart(lineCtx, lineConfig);
+        //window.myPie = new Chart(pieCtx, pieConfig);
+        window.myBar = new Chart(barCtx, barConfig);
+        //var pieCtx = document.getElementById('pie').getContext('2d');
         //var barCtx = document.getElementById('bar').getContext('2d');
 
         // window.myLine = new Chart(lineCtx, lineConfig);
-        window.myPie = new Chart(pieCtx, pieConfig);
+        //window.myPie = new Chart(pieCtx, pieConfig);
         //window.myBar = new Chart(barCtx, barConfig);
     };
 

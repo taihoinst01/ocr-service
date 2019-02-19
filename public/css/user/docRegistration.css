@@ -6,3 +6,29 @@ table .newTr .selected {color: #666 !important; }
 ::-webkit-scrollbar { 
     display: none !important; 
   }
+
+.docTable1 {
+    /*position:absolute;*/
+    position: relative;
+    left: 20px;
+    top: 40px;
+    width: calc(100% - 40px);
+}
+
+.docTable2 {
+    background:#fff;
+    overflow:auto;
+}
+
+.box_stsearch1 {
+    position: relative;
+    left: 20px;
+    top: 25px;
+    width: calc(100% - 40px);
+}
+.box_stsearch1_box1 {
+    /*float:right;*/
+}
+.box_stsearch1_box2 {
+    float: right;
+}

@@ -11,13 +11,16 @@
 
     <%include  ../common/commonLib.html%>
 
+    <!-- 문서 조회 학습 전용 css -->
+    <link rel="stylesheet" href="/css/user/invoiceProcessingStatus.css">
+
     <!-- 공통 js -->
     <script type="text/javascript" src="js/common.client.js"></script>
     <!-- // 공통 js -->
     <!-- 문서 조회 학습 전용 js -->
     <script type="text/javascript" src="js/user/invoiceProcessingStatus.js"></script>
     <!-- // 문서 조회 전용 js -->
-    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.min.js"></script>-->
+
     <script type="text/javascript" src="/publish/js/chart/Chart.bundle.min.js"></script>
     <script type="text/javascript" src="/publish/js/chart/utils.js"></script>
 
@@ -60,6 +63,77 @@
 
                 <div class="ips_content_sub">
                     <div class="ips_content_sub_top">
+                        <div class="first_content_title">
+                            <div class="first_contentTitle1">
+                                <span>일반처리건수</span>
+                                <span class="fr">업데이트 시간 : 2018.10.18 00:00:00</span>
+                            </div>
+                            <div class="first_contentTitle2">&nbsp;</div>
+                            <div class="first_contentTitle3">
+                                <span>일반처리건수</span>
+                            </div>
+                        </div>
+                        <div class="first_content">
+                            <div class="first_content1">
+                                <div class="ips_line_convas">
+                                    <canvas id="line" height="120"></canvas>
+                                </div>
+                            </div>
+                            <div class="first_content2">
+                                <div class="ips_box_document1">
+                                    <div class="wait_doc_icon"></div>
+                                    <span style="font-size: 35px;">15</span>
+                                    <div class="clear_both"></div><br />
+                                    <span class="doc_text" style="font-size: 25px;">대기중인 문서</span>
+                                </div>
+                                <div class="clear_both"></div>
+                                <div class="ips_box_document2">
+                                    <div class="success_doc_icon"></div>
+                                    <span style="font-size: 35px;">70</span>
+                                    <div class="clear_both"></div><br />
+                                    <span class="doc_text" style="font-size: 25px;">완료된 문서</span>
+                                </div>
+                            </div>
+                            <div class="first_content3">
+                                <div class="ips_date_top">
+                                    <div class="ips_date_year">
+                                        <div id="year_up_btn" class="date_up_btn"></div>
+                                        <div class="date_content">
+                                            <div class="before_div"><p><span class="bottom_line">2017</span></p></div>
+                                            <div class="main_div"><p>2018</p></div>
+                                            <div class="after_div"><p><span class="top_line">2019</span></p></div>
+                                        </div>
+                                        <div id="year_down_btn" class="date_down_btn"></div>
+                                    </div>
+                                    <div class="ips_date_month">
+                                        <div id="month_up_btn" class="date_up_btn"></div>
+                                        <div class="date_content">
+                                            <div class="before_div"><p><span class="bottom_line">9</span></p></div>
+                                            <div class="main_div"><p>10</p><p style="font-size: 12px;">October</p></div>
+                                            <div class="after_div"><p><span class="top_line">11</span></div>
+                                        </div>
+                                        <div id="month_down_btn" class="date_down_btn"></div>
+                                    </div>
+                                    <div class="ips_date_day">
+                                        <div id="day_up_btn" class="date_up_btn"></div>
+                                        <div class="date_content">
+                                            <div class="before_div"><p><span class="bottom_line">22</span></p></div>
+                                            <div class="main_div"><p>23</p><p style="font-size: 12px;">Tuesday</p></div>
+                                            <div class="after_div"><p><span class="top_line">24</span></p></div>
+                                        </div>
+                                        <div id="day_down_btn" class="date_down_btn"></div>
+                                    </div>
+                                </div>
+                                <div class="ips_date_bottom">
+                                    <button id="roll_back_btn">Roll back</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    
+                    
+                    <!--<div class="ips_content_sub_top">
                         <div class="ips_line_graph">
                             <div class="ips_top_comment">
                                 <span>일반처리건수</span>
@@ -73,17 +147,17 @@
                             <div class="ips_top_comment">
                             </div>
                             <div class="ips_box_document" style=" text-align: center; align-content: center;">
-                                <div style="padding-top: 35px;">
-                                    <div class="wait_doc_icon" style="margin: 4px 0 0 53px;"></div>
-                                    <span style="font-size: 35px; padding-right:50px;" id="waitCnt"></span>
+                                <div>
+                                    <div class="wait_doc_icon"></div>
+                                    <span style="font-size: 35px;">15</span>
                                     <div class="clear_both"></div><br />
                                     <span class="doc_text" style="font-size: 25px;">대기중인 문서</span>
                                 </div>
                             </div>
-                            <div class="ips_box_last ips_box_document" style=" text-align: center; align-content: center;">
-                                <div style="padding-top: 35px;">
-                                    <div class="success_doc_icon" style="margin: 4px 0 0 53px;"></div>
-                                    <span style="font-size: 35px; padding-right:50px;" id="completeCnt"></span>
+                            <div class="ips_box_last ips_box_document" style=" text-align: center; align-content: center; bottom:0">
+                                <div>
+                                    <div class="success_doc_icon"></div>
+                                    <span style="font-size: 35px;">70</span>
                                     <div class="clear_both"></div><br />
                                     <span class="doc_text" style="font-size: 25px;">완료된 문서</span>
                                 </div>
@@ -99,7 +173,7 @@
                                         <div id="year_up_btn" class="date_up_btn"></div>
                                         <div class="date_content">
                                             <div class="before_div"><p><span class="bottom_line">2017</span></p></div>
-                                            <div class="main_div"><p id="rollbackYear">2018</p></div>
+                                            <div class="main_div"><p>2018</p></div>
                                             <div class="after_div"><p><span class="top_line">2019</span></p></div>
                                         </div>
                                         <div id="year_down_btn" class="date_down_btn"></div>
@@ -108,7 +182,7 @@
                                         <div id="month_up_btn" class="date_up_btn"></div>
                                         <div class="date_content">
                                             <div class="before_div"><p><span class="bottom_line">9</span></p></div>
-                                            <div class="main_div"><p id="rollbackMonth">10</p><p style="font-size: 12px;">October</p></div>
+                                            <div class="main_div"><p>10</p><p style="font-size: 12px;">October</p></div>
                                             <div class="after_div"><p><span class="top_line">11</span></div>
                                         </div>
                                         <div id="month_down_btn" class="date_down_btn"></div>
@@ -117,7 +191,7 @@
                                         <div id="day_up_btn" class="date_up_btn"></div>
                                         <div class="date_content">
                                             <div class="before_div"><p><span class="bottom_line">22</span></p></div>
-                                            <div class="main_div"><p id="rollbackDate">23</p><p style="font-size: 12px;">Tuesday</p></div>
+                                            <div class="main_div"><p>23</p><p style="font-size: 12px;">Tuesday</p></div>
                                             <div class="after_div"><p><span class="top_line">24</span></p></div>
                                         </div>
                                         <div id="day_down_btn" class="date_down_btn"></div>
@@ -128,11 +202,110 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div>-->
+
                     <div class="ips_content_sub_bottom">
+                        <div class="second_content_title">
+                            <div class="second_contentTitle1">
+                                <span>사용자별 현황</span>
+                            </div>
+                            <div class="second_contentTitle2">
+                                <span>문서별 현황</span>
+                                <span class="fr">업데이트 시간 : 2018.10.18 00:00:00</span>
+                            </div>
+                            <div class="second_contentTitle3">
+                                <span>문서별 현황</span>
+                                <span class="fr">업데이트 시간 : 2018.10.18 00:00:00</span>
+                            </div>
+                        </div>
+
+                        <div class="second_content">
+                            <div class="second_content1">
+                                <div class="table_style02">
+                                    <table id="userProcessingStatus">
+                                        <colgroup>
+                                            <col style="width: 25%">
+                                            <col style="width: 25%">
+                                            <col style="width: 25%">
+                                            <col style="width: 25%">
+                                        </colgroup>
+                                        <thead>
+                                            <tr>
+                                                <th scope="row">문서번호</th>
+                                                <th scope="row">페이지수</th>
+                                                <th scope="row">마감년월</th>
+                                                <th scope="row">마감년월</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="ips_user_tbody">
+                                            <tr>
+                                                <td name="td_base">ICR20181018</td>
+                                                <td name="td_base">27</td>
+                                                <td name="td_base">1018</td>
+                                                <td name="td_base" class="red">42%</td>
+                                            </tr>
+                                            <tr>
+                                                <td name="td_base">ICR20181017</td>
+                                                <td name="td_base">20</td>
+                                                <td name="td_base">1017</td>
+                                                <td name="td_base" class="red">50%</td>
+                                            </tr>
+                                            <tr>
+                                                <td name="td_base">ICR20181016</td>
+                                                <td name="td_base">34</td>
+                                                <td name="td_base">1016</td>
+                                                <td name="td_base" class="red">67%</td>
+                                            </tr>
+                                            <tr>
+                                                <td name="td_base">ICR20181015</td>
+                                                <td name="td_base">12</td>
+                                                <td name="td_base">1015</td>
+                                                <td name="td_base" class="red">46%</td>
+                                            </tr>
+                                            <tr>
+                                                <td name="td_base">ICR20181013</td>
+                                                <td name="td_base">39</td>
+                                                <td name="td_base">1013</td>
+                                                <td name="td_base" class="red">55%</td>
+                                            </tr>
+                                            <tr>
+                                                <td name="td_base">ICR20181011</td>
+                                                <td name="td_base">23</td>
+                                                <td name="td_base">1011</td>
+                                                <td name="td_base" class="red">62%</td>
+                                            </tr>
+                                            <tr>
+                                                <td name="td_base">ICR20181010</td>
+                                                <td name="td_base">41</td>
+                                                <td name="td_base">1010</td>
+                                                <td name="td_base" class="red">70%</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="second_content2">
+                                <div id="pie_convas">
+                                    <canvas id="pie" height="150"></canvas>
+                                </div>
+                            </div>
+                            <div class="second_content3">
+                                <div id="bar_convas">
+                                    <canvas id="bar"></canvas>
+                                </div>
+                            </div>
+
+                        </div>
+                    
+                    </div>
+
+
+
+
+                    <!--<div class="ips_content_sub_bottom">
                         <div class="ips_user_status">
                             <div class="ips_top_comment">
-                                <span>신규문서 등록현황</span>
+                                <span>사용자별 현황</span>
                             </div>
 
                             <div class="table_style02">
@@ -145,16 +318,13 @@
                                     </colgroup>
                                     <thead>
                                         <tr>
-                                            <th scope="row">영어이름</th>
-                                            <th scope="row">한글이름</th>
-                                            <th scope="row">레이블수</th>
-                                            <th scope="row">등록아이디</th>
+                                            <th scope="row">문서번호</th>
+                                            <th scope="row">페이지수</th>
+                                            <th scope="row">마감년월</th>
+                                            <th scope="row">마감년월</th>
                                         </tr>
                                     </thead>
-                                    <tbody class="ips_user_tbody" >
-                                        <!--
-                                            영어이름 한글이름 레이블수 등록아이디 
-                                            문서번호 페이지수 마감년월 마감년월
+                                    <tbody class="ips_user_tbody">
                                         <tr>
                                             <td name="td_base">ICR20181018</td>
                                             <td name="td_base">27</td>
@@ -197,7 +367,6 @@
                                             <td name="td_base">1010</td>
                                             <td name="td_base" class="red">70%</td>
                                         </tr>
-                                        -->
                                     </tbody>
                                 </table>
                             </div>
@@ -220,7 +389,7 @@
                                 <canvas id="bar"></canvas>
                             </div>
                         </div>
-                    </div>
+                    </div>-->
                 </div>
                 <!-- // Content -->
 
