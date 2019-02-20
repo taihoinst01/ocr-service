@@ -17,6 +17,12 @@ body {}
 button[disabled] { opacity: 0.5; cursor: default; }
 */
 
+.upload_sucesss_form {
+    top: 40px;
+    position: relative;
+    padding: 20px;
+}
+
 /*문서비교 팝업*/
 .doc_popup { width: 1200px; }
 .imgbox { border: 1px solid #dadada; height: 560px;}

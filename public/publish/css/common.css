@@ -203,15 +203,15 @@ body.bg_login { background-image: url(../img/bg_login.png); width: 100%;height: 
 /*
     uiLearning.html css (�����н�)
 */
-#uploadForm { border: 2px dashed #D4635B; background-color: #E1E1E1; border-radius: 10px; /*margin: 20px 0 0 0;*/ cursor: pointer; position:absolute; top:80px; left:20px; height:calc(100% - 90px)}
+#uploadForm { border: 2px dashed #D4635B; background-color: #E1E1E1; border-radius: 10px; /*margin: 20px 0 0 0;*/ cursor: pointer; position: relative; top:40px; left:20px; height:calc(100% - 90px)}
 .ui_uploadText { font: 300 20px 'NanumGothicR'; width: 350px !important; color: #D4635B; text-align: center; }
-.content_sub_title { font: bold 20px 'NanumGothicR'; color: #4C5059; /*margin: 5px 0 20px 5px;*/ float: left; width:-webkit-calc(60% - 16px); position:absolute; top:25px; left:75px}
+.content_sub_title { font: bold 20px 'NanumGothicR'; color: #4C5059; /*margin: 5px 0 20px 5px;*/ float: left; width:-webkit-calc(60% - 16px); position: relative; top:25px; left:40px}
 .box_content_R { float: right; display: table; position: relative; width: 48%; width: calc(50% - 16px); width: -webkit-calc(40% - 16px); height: 740px; padding: 0px; margin: 0; }
 .box_content_bg { height: 350px; }
 .table_style100 table > thead > tr > th { height: 44px; font-size: 13px; color: #000000; background: #E1E1E1; font-family: 'notokr-medium', sans-serif; }
 .box_scroll_st100 { display: block; height: 660px; overflow: auto; }
 .columnSelect > select , .entrySelect > select { height: 35px; width: 85%; border-radius: 15px; padding: 0 3px 0 3px; font-size: 13px; border: 1px solid #EA7169; color: #EA7169; outline: none; text-align-last:center; }
-#textResultTbl { background: #FFF; }
+
 #textResultTbl input[type="text"] { color: #8C8C8C; background:#FFF; }
 /*.content_sub_title { float: left; width:-webkit-calc(60% - 16px); }*/
 .content_sub_document_title { float: right; width:-webkit-calc(40% - 16px); height:47px; }
@@ -334,22 +334,13 @@ canvas.preview { border-radius: 5px; }
 .red { color: red !important; }
 /*.doc_text { margin: 0 0 0 25px; }*/
 .date_content { width: 100%; height: 70%; }
-<<<<<<< HEAD
 .before_div { /*padding-top: 16%;*/ height: 20%; color: #BDBDBD; font: bold 23px 'NanumGothicR'; }
-=======
-.before_div { padding-top: 10%; height: 20%; color: #BDBDBD; font: bold 23px 'NanumGothicR'; }
->>>>>>> 977147e78f6a2de6e2d0edc051e0eaa1ecbd9b4a
 .main_div { height: 30%; color: #000; font: bold 40px 'NanumGothicR'; }
 .after_div { height: 30%; color: #BDBDBD; font: bold 23px 'NanumGothicR'; /*padding-top: 12px;*/ }
 .before_div p { text-align: center; }
 .main_div p { text-align: center; }
-<<<<<<< HEAD
 .ips_date_year .main_div p { padding: 7px 0; }
 .after_div p { text-align: center; padding-top:8px}
-=======
-.ips_date_year .main_div p { padding-top: 8px; }
-.after_div p { text-align: center; }
->>>>>>> 977147e78f6a2de6e2d0edc051e0eaa1ecbd9b4a
 .ips_date_count span { color: #BDBDBD; font: bold 23px 'NanumGothicR'; }
 .bottom_line { border-bottom: 1px solid red; /*padding-bottom: 8px;*/ display:inline-block; width: 52px; height: 27px; }
 .top_line { border-top: 1px solid red; /*padding-top: 8px;*/ display:inline-block; width: 52px; height: 36px; }
@@ -793,9 +784,8 @@ h3.tits:before,
     display: inline-block;
     background: url('../image/bg_img.png') no-repeat; 
 }
-<<<<<<< HEAD
 .content_title_icon { width:30px; height: 30px; float:left; background-position: -5px -475px; position:absolute; top:20px; left:20px }
-.content_title_icon_ui { width:40px; height: 30px; float:left; background-position: -70px -472px; position:absolute; top:20px; left:20px}
+.content_title_icon_ui { width:40px; height: 30px; float:left; background-position: -70px -472px; position:relative; top:20px; left:20px}
 .content_title_icon_bl { width:40px; height: 30px; float:left; background-position: -140px -472px; position:relative; top:20px; left:20px}
 .content_title_icon_dc { width:40px; height: 35px; float:left; background-position: -280px -472px;  }
 .content_title_icon_ips { width:40px; height: 35px; float:left; background-position: -345px -475px; position:absolute; top:20px; left:20px }
@@ -804,26 +794,6 @@ h3.tits:before,
 .content_title_icon_um { width:40px; height: 30px; float:left; background-position: -214px -476px; position:absolute; top:20px;left:20px;}
 .date_up_btn { width:100%; /*height: 15%;*/height:40px; background-position: -143px -643px; cursor: pointer; }
 .date_down_btn { width:100%; /*height: 15%;*/height:40px; background-position: -143px -720px; cursor: pointer; }
-=======
-
-.content_title_icon_dm {
-    display: inline-block;
-    background: url('../image/icon-icr02.png') no-repeat;
-    width:40px; 
-    height: 30px;
-    float:left;
-}
-.content_title_icon { width:30px; height: 30px; float:left; background-position: -5px -475px; }
-.content_title_icon_ui { width:40px; height: 30px; float:left; background-position: -70px -472px; }
-.content_title_icon_bl { width:40px; height: 30px; float:left; background-position: -140px -472px; }
-.content_title_icon_dc { width:40px; height: 35px; float:left; background-position: -280px -472px; }
-.content_title_icon_ips { width:40px; height: 35px; float:left; background-position: -345px -475px; }
-.wait_doc_icon { width:40px; height: 40px; float:left; background-position: -8px -645px; margin: 4px 0 0 62px; }
-.success_doc_icon { width:40px; height: 40px; float:left; background-position: -75px -646px; margin: 4px 0 0 62px; }
-.content_title_icon_um { width:40px; height: 30px; float:left; background-position: -214px -476px; }
-.date_up_btn { width:100%; height: 15%; background-position: -143px -643px; cursor: pointer; }
-.date_down_btn { width:100%; height: 15%; background-position: -143px -720px; cursor: pointer; }
->>>>>>> 977147e78f6a2de6e2d0edc051e0eaa1ecbd9b4a
 .upload_icon { float:left; margin: 8px 0 0 5px; background-position: -60px -346px; }
 .delete_icon { float:left; margin: 0 0 0 5px; background-position: -115px -346px; }
 .train_icon_01 { float:left; margin: 0 0 0 15px; background-position: -3px -346px; }
@@ -2407,7 +2377,7 @@ h3.tits span {
 }
 
 .box_table_st04 > dl > dd {
-    width: 52px !important;
+    width: 8% !important;
     height: 35px !important;
     padding: 15px 0 0 !important;
     margin: 0 !important;
