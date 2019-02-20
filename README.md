@@ -1,2 +1,1 @@
 ﻿# ocr-service
-test

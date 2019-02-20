@@ -32,6 +32,13 @@ var layer4Data; // 문서양식 조회 및 저장 팝청 mldata
 $(function () {
     _init();
     //viewServerFileTest();  
+
+    $(window).resize(function () {
+        $('.pop_layer.pop_layer_K01').css({ height: $(window).height() * 0.93 + 'px' });
+        $('.pop_layer.pop_layer_K01').css({ width: $(window).width() - 220 + 'px' });
+        $('#div_view_image').css({ height: $(window).height() * 0.65 + 'px' });
+    });
+
 });
 
 // [Select Event]
