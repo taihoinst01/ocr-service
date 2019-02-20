@@ -21,7 +21,7 @@
 
 .btn_rt2 {
     float: left;
-    min-width: 88px;
+    min-width: 80px;
     width: 5%;
     padding-top: 10px;
 }
@@ -65,7 +65,7 @@
 }
 .um_list .um_select > dl.lastDl {
 
-    width: 51% !important;
+    width: 53% !important;
     margin: 0 0 0 15px;
 }
 
