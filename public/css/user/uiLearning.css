@@ -31,3 +31,6 @@ button[disabled] { opacity: 0.5; cursor: default; }
 .float-right { float: right; }
 #docName { color: #EA7169; }
 #docPredictionScore { font-size: 15px; }
+.box_table_st04 {
+    background: #FFF;
+}

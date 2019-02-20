@@ -1190,6 +1190,7 @@ var fn_initUpload = function () {
     $('.singleRecordEntryIpt').attr('data-location', '');
     $('.singleRecordEntryIpt').attr('data-filename', '');
     $('.singleRecordEntryIpt').removeClass('gradationIpt');
+    $('#labelHead tbody').empty();
 }
 
 // UI학습 팝업 초기화

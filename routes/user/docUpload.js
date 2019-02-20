@@ -39,6 +39,13 @@ const upload = multer({
             cb(null, propertiesConfig.filepath.uploadsPath);
         },
         filename: function (req, file, cb) {
+            var fileName = file.originalname.substring(0, file.originalname.lastIndexOf("."));
+            var fileExt = file.originalname.substring(file.originalname.lastIndexOf(".") + 1, file.originalname.length);
+
+            var tempName = new Date().isoNum(14) + "" + Math.floor(Math.random() * 99);
+
+            file.originalname = fileName + "_" + tempName + "." + fileExt;
+
             cb(null, file.originalname);
         }
     }),
@@ -321,7 +328,7 @@ router.post('/imgOcr', function (req, res) {
                 if (selOcr.length == 0) {
                     var ocrResult = sync.await(ocrUtil.localOcr(fullFilePathList[i], sync.defer()));
 
-                    if ((ocrResult.textAngle != "undefined" && ocrResult.textAngle > 0.01 || ocrResult.textAngle < -0.01) || ocrResult.orientation != "Up") {
+                    if (ocrResult.orientation != undefined && ocrResult.orientation != "Up") {
                         var angle = 0;
 
                         if (ocrResult.orientation == "Left") {
@@ -332,17 +339,30 @@ router.post('/imgOcr', function (req, res) {
                             angle += 180;
                         }
 
-                        angle += Math.floor(ocrResult.textAngle * 100);
-
-                        if (angle < 0) {
-                            angle += 2;
-                        } else {
-                            angle -= 1;
-                        }
-
-                        execSync('module\\imageMagick\\convert.exe -rotate "' + angle + '" ' + fullFilePathList[i] + ' ' + fullFilePathList[i]);
-
+                        execSync('module\\imageMagick\\convert.exe -colors 8 -density 300 -rotate "' + angle + '" ' + fullFilePathList[i] + ' ' + fullFilePathList[i]);
                         ocrResult = sync.await(ocrUtil.localOcr(fullFilePathList[i], sync.defer()));
+                    }
+
+                    for (var j = 0; j < 10; j++) {
+                        if ((ocrResult.textAngle != undefined && ocrResult.textAngle > 0.03 || ocrResult.textAngle < -0.03)) {
+                            var angle = 0;
+
+                            var textAngle = Math.floor(ocrResult.textAngle * 100);
+
+                            if (textAngle < 0) {
+                                angle += 3;
+                            } else if (textAngle == 17 || textAngle == 15 || textAngle == 14) {
+                                angle = 10;
+                            } else if (textAngle == 103) {
+                                angle = 98;
+                            }
+
+                            execSync('module\\imageMagick\\convert.exe -colors 8 -density 300 -rotate "' + (textAngle + angle) + '" ' + fullFilePathList[i] + ' ' + fullFilePathList[i]);
+
+                            ocrResult = sync.await(ocrUtil.localOcr(fullFilePathList[i], sync.defer()));
+                        } else {
+                            break;
+                        }
                     }
 
                     sync.await(oracle.insertOcrData(fullFilePathList[i], JSON.stringify(ocrResult), sync.defer()));
