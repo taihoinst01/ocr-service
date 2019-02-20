@@ -160,7 +160,8 @@ function fn_selectDocLabelDefList(docToptype) {
 				}
 
                 $(".docTable2").css({ 'height': (docToptypeListLength * 51) + 40 + 'px' });
-				$('#tbody_docList').append(appendDocListHtml);
+				$('#tbody_docList').html(appendDocListHtml);
+				$(".docTable2").mCustomScrollbar("destroy");
 			}
 		})
 
@@ -254,8 +255,9 @@ $(document).on('click', '#addTbody', function () {
 		'<td><button class="btn btn_delete" style="display: inline-block;">Delete</button></td>'
 	'</tr>';
 	$('#tbody_docList').append(appendDocListHtml);
-	$('#tbody_div').scrollTop($("#tbody_div")[0].scrollHeight);
 
+	$(".docTable2").mCustomScrollbar("destroy");
+	$('#tbody_div').animate({scrollTop:$("#tbody_div")[0].scrollHeight}, 'slow');
 })
 
 $(document).on('click', '.btn_delete', function () {

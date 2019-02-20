@@ -34,6 +34,19 @@ $(function () {
     // 페이징 초기화
     // $("#pagination").html(pagination(curPage, $("#totalCount").val()));
 
+
+
+    var a = $('#content').width();
+    var b = $(document).width();
+    var c = $(this).width();
+    $(window).resize(function () {
+        console.log(a);
+        console.log(b);
+        console.log(c);
+    });
+    //$(window).scroll(function (){
+    //    console.log('aa');
+    //});
 });
 
 /**

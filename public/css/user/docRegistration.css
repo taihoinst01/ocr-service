@@ -7,12 +7,25 @@ table .newTr .selected {color: #666 !important; }
     display: none !important; 
   }
 
+.fr{float:right}
+
+.docMenu1 {
+    height:60px;
+    position:relative;
+    top:20px
+}
+
+.newDocEdit1 {
+    position:relative;
+    bottom:25px
+}
+
 .docTable1 {
     /*position:absolute;*/
     position: relative;
     left: 20px;
-    top: 40px;
     width: calc(100% - 40px);
+    margin: 30px 0;
 }
 
 .docTable2 {
@@ -23,12 +36,17 @@ table .newTr .selected {color: #666 !important; }
 .box_stsearch1 {
     position: relative;
     left: 20px;
-    top: 25px;
+    /*top: 25px;*/
     width: calc(100% - 40px);
 }
 .box_stsearch1_box1 {
-    /*float:right;*/
+    height:60px;
+    display:inline-block;
+    width:80%;
 }
 .box_stsearch1_box2 {
+    height: 60px;
+    display: inline-block;
     float: right;
+    width:20%
 }
