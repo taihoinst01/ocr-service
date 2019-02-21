@@ -107,7 +107,7 @@ h3.layer2_tits {
     z-index: 200;
 }
 
-.pop_layer {    
+#layer2 .pop_layer {    
     margin-top: -24% !important;
     margin-left: -47.5% !important;
     height: auto !important;
