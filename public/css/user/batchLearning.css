@@ -68,7 +68,7 @@ h3.layer2_tits {
     top: 120px;
     left: 20px;
     display: table;
-    width: 100%;
+    width: calc(100% - 22px);
     margin-bottom: -1px;
     z-index: 1
 }
@@ -81,8 +81,8 @@ h3.layer2_tits {
     position: absolute;
     top: 170px;
     left: 20px;
-    width: 100%;
-    height: 87%;
+    width: calc(99% - 22px);
+    height: 600px;
     background-color: #fff;
     border: 1px solid #ccc;
     -webkit-box-shadow: 0px 0px 8px 1px rgba(120,120,120,.1);
@@ -105,6 +105,12 @@ h3.layer2_tits {
     width: 1920px;
     height: 937px;
     z-index: 200;
+}
+
+#layer2 .pop_layer {    
+    margin-top: -24% !important;
+    margin-left: -47.5% !important;
+    height: auto !important;
 }
 
 .pop_layer_K01 {
@@ -136,3 +142,66 @@ h3.layer2_tits {
     height: 15px;
 }
 
+.batch_pop2 {
+    z-index: 2100;
+}
+
+#layer2 .box_scroll_st99 {
+    width: 95% !important;
+}
+
+.box_content_R .tits {
+    width: 39%;
+    min-width: 250px;
+}
+
+#docCompareBtn {
+    margin-left : 0;
+}
+
+#uiTrainBtn .train_icon_03 {
+    margin: 0 0 0 5px;
+}
+
+#uiDocTopTypeDiv {
+    width:25%;
+}
+#uiDocTopTypeDiv .stb-select-container {
+    width: 84%;
+}
+
+#uiDocTopTypeDiv .selected {
+    max-width: max-content;
+}
+
+#uiDocTopTypeDiv .stb-select {
+    max-width: max-content;
+    padding: 0 5%;
+}
+
+#content-6 > .mainTable > tbody > tr:first-child > td:first-child {
+    width: 29% !important;
+}
+
+#content-6 > .mainTable > tbody > tr:first-child > td:last-child {
+    width: 68% !important;
+}
+
+#left_header {
+    width: 98%;
+}
+#left_contents {
+    width: 98%;
+}
+
+#dd_indent {
+    width: 5% !important;
+}
+
+#right_contents {
+    height: 490px !important;
+}
+
+#left_contents {
+    height: 490px !important;
+}

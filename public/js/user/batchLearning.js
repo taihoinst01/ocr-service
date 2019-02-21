@@ -32,14 +32,29 @@ var layer4Data; // 문서양식 조회 및 저장 팝청 mldata
 $(function () {
     _init();
     //viewServerFileTest();  
-
+    changeLayerSizeFnc();
     $(window).resize(function () {
+        changeLayerSizeFnc();
+    });
+});
+
+// layer init size
+var changeLayerSizeFnc = function () {
+    
+    if ($('#layer2').css('display') == 'block') {
+        $('#layer2 .pop_popup0').css({ height: $(window).height() * 0.78 + 'px' });
+        $('#layer2 .pop_popup0').css({ width: $(window).width() - 120 + 'px' });
+        $('#img_content').css({ height: $(window).height() * 0.65 + 'px' });
+        $('#layer2 #mCSB_2_container').css({ width: '100%' });
+        $('#layer2').css('width', $(window).width() -20 + 'px');
+        //$('#imageZoom').css({ height: $(window).height() * 0.65 + 'px' });
+    } else {
         $('.pop_layer.pop_layer_K01').css({ height: $(window).height() * 0.93 + 'px' });
         $('.pop_layer.pop_layer_K01').css({ width: $(window).width() - 220 + 'px' });
         $('#div_view_image').css({ height: $(window).height() * 0.65 + 'px' });
-    });
-
-});
+    }
+    
+};
 
 // [Select Event]
 var selectViewCount = function (value) {
@@ -1741,6 +1756,8 @@ function fn_viewImageData(filename, rowNum, imgId, obj) {
     layer_open('layer3');
     $('#div_view_image').scrollTop(0);
 
+    
+    changeLayerSizeFnc();
     //loadImage('/tif/' + filename, function (tifResult) {
 
     //     if (tifResult) {
@@ -2271,6 +2288,7 @@ var uiLearnTraining = function (imgIdArray) {
             //selectTypoData(data);
             modifyData = $.extend([], data.data);
             uiLayerHtml(data);
+            changeLayerSizeFnc();
             endProgressBar(progressId);
         },
         error: function (err) {
@@ -2388,7 +2406,7 @@ function uiLayerHtml(data) {
                 tblTag += '<input type="hidden" value="' + filePath + '" />';
                 tblTag += '</label>';
                 tblTag += '</dt>';
-                tblTag += '<dd>';
+                tblTag += '<dd id="dd_indent">';
                 tblTag += '<input type="checkbox" style="display:none" class="entryChk" checked>';
                 tblTag += '</dd>';
                 tblTag += '<dd class="columnSelect" style="display:none">';
@@ -2406,7 +2424,7 @@ function uiLayerHtml(data) {
                 tblSortTag += '<input type="hidden" value="' + filePath + '" />';
                 tblSortTag += '</label>';
                 tblSortTag += '</dt>';
-                tblSortTag += '<dd>';
+                tblSortTag += '<dd id="dd_indent">';
                 tblSortTag += '';
                 tblSortTag += '</dd>';
                 tblSortTag += '<dd class="columnSelect">';
@@ -2424,7 +2442,7 @@ function uiLayerHtml(data) {
                 tblSortTag += '<input type="hidden" value="' + filePath + '" />';
                 tblSortTag += '</label>';
                 tblSortTag += '</dt>';
-                tblSortTag += '<dd>';
+                tblSortTag += '<dd id="dd_indent">';
                 tblSortTag += '';
                 tblSortTag += '</dd>';
                 tblSortTag += '<dd class="columnSelect">';
@@ -4103,3 +4121,15 @@ var loadImage = function (filepath, callBack) {
     };
     xhr.send();
 };
+
+$(document).ready(function(){
+    $(document).on('click', '.datepicker', function() {
+        $('.ui-datepicker-prev').addClass('date_left_sm_btn');
+        $('.ui-datepicker-next').addClass('date_right_sm_btn');
+    });
+
+    $(document).on('click', '.dateclick', function() {
+        $('.ui-datepicker-prev').addClass('date_left_sm_btn');
+        $('.ui-datepicker-next').addClass('date_right_sm_btn');
+    });
+});
