@@ -79,7 +79,7 @@ body{ font-family:NanumGothicR,sans-serif,ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿? }
     display: flex;
     flex-direction: column;
     top:70px;
-    z-index:2000;
+    z-index:110;
     /*margin-top: 69px;*/
 }
 
