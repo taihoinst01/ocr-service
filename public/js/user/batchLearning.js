@@ -3896,7 +3896,7 @@ function fn_viewDoctypePop(obj) {
     var appendPngHtml = '';
     //if(imgCount == 1) {
 		//var pngName = fileName + '.png';
-		appendPngHtml += '<img src="/img/' + fileName +'" style="width: 100%; height: auto">';
+		appendPngHtml += '<img src="/img/' + fileName +'" style="width: 100%; height: 100%;">';
     //} else {
 
     //    for(var i = 0; i < imgCount; i++) {
