@@ -150,3 +150,11 @@ table .newTr .selected {color: #666 !important; }
   z-index: 0;
   margin: 0px 20px;
 }
+
+.pop_popup0 {
+  width: 100% !important;
+}
+
+.pop_layer {
+  width: 80% !important;
+}
