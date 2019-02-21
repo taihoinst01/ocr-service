@@ -800,8 +800,8 @@ h3.tits:before,
 .train_icon_01 { float:left; margin: 0 0 0 15px; background-position: -3px -346px; }
 .train_icon_02 { float:left; margin: 0 0 0 15px; background-position: -3px -346px; }
 .train_icon_03 { float:left; margin: 0 0 0 15px; background-position: -3px -346px; }
-.date_left_sm_btn { width:30px; height: 30px; float:left; background-position: -215px -147px; cursor: pointer;}
-.date_right_sm_btn { width:30px; height: 30px; float:left; background-position: -286px -147px; cursor: pointer;}
+.date_left_sm_btn { width:30px !important; height: 30px !important; float:left; background-position: -215px -147px; cursor: pointer;}
+.date_right_sm_btn { width:30px !important; height: 30px !important; float:left; background-position: -286px -147px; cursor: pointer;}
 
 /* input */
 input[type='text'].inputst_box01,
