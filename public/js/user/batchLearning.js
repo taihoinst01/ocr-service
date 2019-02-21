@@ -4121,3 +4121,15 @@ var loadImage = function (filepath, callBack) {
     };
     xhr.send();
 };
+
+$(document).ready(function(){
+    $(document).on('click', '.datepicker', function() {
+        $('.ui-datepicker-prev').addClass('date_left_sm_btn');
+        $('.ui-datepicker-next').addClass('date_right_sm_btn');
+    });
+
+    $(document).on('click', '.dateclick', function() {
+        $('.ui-datepicker-prev').addClass('date_left_sm_btn');
+        $('.ui-datepicker-next').addClass('date_right_sm_btn');
+    });
+});
