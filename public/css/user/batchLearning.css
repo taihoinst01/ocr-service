@@ -188,10 +188,7 @@ h3.layer2_tits {
 }
 
 #left_header {
-    width: 98%;
-}
-#left_contents {
-    width: 98%;
+    width: 100% !important;
 }
 
 #dd_indent {
@@ -204,4 +201,5 @@ h3.layer2_tits {
 
 #left_contents {
     height: 490px !important;
+    width: 100% !important;
 }
