@@ -651,7 +651,7 @@ function thumbImgPaging(pageCount) {
 
 // 썸네일 이미지 클릭 이벤트
 function thumbImgEvent() {
-    $('.thumb-img').click(function () {
+    $(document).on('click','.thumb-img', function () {
         $('#imageBox > li').removeClass('on');
         $(this).parent().addClass('on');
 
@@ -660,7 +660,8 @@ function thumbImgEvent() {
 
         $(this).parents('imageBox').find('li').removeClass('on');
         $(this).parents('li').addClass('on');
-        viewOriginImg();
+        $('#touchSlider').scrollTop($(this)[0].offsetTop - 12);
+        //viewOriginImg();
         //$('#mainImage').css('background-image', $(this).attr('title'));
         //detailTable($(this).attr('title'));
 
@@ -1256,7 +1257,7 @@ function zoomImg(e, fileName) {
     if (mainImage != fileName) {
         $('#mainImage').css('background-image', 'url("/tif/' + fileName + '")');
     }
-    
+
     //실제 이미지 사이즈와 메인이미지div 축소율 판단
     var reImg = new Image();
     reImg.onload = function() {
