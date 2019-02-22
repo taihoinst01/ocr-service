@@ -850,7 +850,7 @@ def makeLabel(ocrData, docTopType, docType):
 
                 trainText = sentenceRow[0][0]
 
-                if "colLbl" not in item and "entryLbl" not in item and trainText in item["text"].lower():
+                if trainText is not None and "colLbl" not in item and "entryLbl" not in item and trainText in item["text"].lower():
 
                     textList = list(find_all(item["originText"], trainText))
 
