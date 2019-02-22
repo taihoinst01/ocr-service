@@ -499,6 +499,9 @@ def typoSentence(ocrData, langDetect):
         elif langDetect == "de":
             dictionary_path = os.path.join(os.path.dirname(__file__),
                                            "frequency_dictionary_de.txt")
+        elif langDetect == "ko":
+            dictionary_path = os.path.join(os.path.dirname(__file__),
+                                           "frequency_dictionary_ko.txt")
 
         term_index = 0
         count_index = 1
@@ -507,21 +510,25 @@ def typoSentence(ocrData, langDetect):
             print("Dictionary file not found")
             return
 
+        p = re.compile("[0-9]+")
+
         for item in ocrData:
             text = item["text"]
             text = text.split(" ")
             symText = ''
 
             for i in text:
-                input_term = i
 
-                max_edit_distance_lookup = 2
-                suggestion_verbosity = Verbosity.TOP
-                suggestions = sym_spell.lookup(input_term, suggestion_verbosity,
-                                               max_edit_distance_lookup)
+                if i.isdigit() == False and p.match(i) == None:
+                    input_term = i
 
-                if len(suggestions) > 0:
-                    i = suggestions[0].term
+                    max_edit_distance_lookup = 2
+                    suggestion_verbosity = Verbosity.TOP
+                    suggestions = sym_spell.lookup(input_term, suggestion_verbosity,
+                                                   max_edit_distance_lookup)
+
+                    if len(suggestions) > 0:
+                        i = suggestions[0].term
 
                 symText += i + " "
 
@@ -803,6 +810,120 @@ def addLabel(ocrData, docTopType, docType):
         raise Exception(str({'code': 500, 'message': 'getMappingSid error',
                              'error': str(e).replace("'", "").replace('"', '')}))
 
+def find_all(a_str, sub):
+    start = 0
+    while True:
+        start = a_str.find(sub, start)
+        if start == -1: return
+        yield start
+        start += len(sub) # use start += 1 to find overlapping matches
+
+def makeLabel(ocrData, docTopType, docType):
+    try:
+        delete = []
+        for item in ocrData:
+            if item["text"] == "":
+                delete.append(item)
+
+        for item in delete:
+            ocrData.remove(item)
+
+        trainSql = "SELECT * FROM TBL_BATCH_COLUMN_MAPPING_TRAIN WHERE DATA like '" + str(docType) + "%'"
+        curs.execute(trainSql)
+        trainRows = curs.fetchall()
+
+        # label 나누기
+        for item in ocrData:
+            textLen = len(item["text"])
+            location = item["location"].split(",")
+            value = math.ceil(int(location[2]) / textLen)
+            # value = int(int(location[2]) / textLen)
+
+            for row in trainRows:
+                data = row[1].split(",")
+                data = data[4:]
+                sid = data[0] + "," + data[1] + "," + data[2] + "," + data[3] + "," + data[4]
+
+                sentenceSql = "SELECT EXPORT_SENTENCE(:sid) AS TEXT FROM DUAL"
+                curs.execute(sentenceSql, {"sid":sid})
+                sentenceRow = curs.fetchall()
+
+                trainText = sentenceRow[0][0]
+
+                if "colLbl" not in item and "entryLbl" not in item and trainText in item["text"].lower():
+
+                    textList = list(find_all(item["originText"], trainText))
+
+                    for i in textList:
+
+                        find = i
+                        width = int(value * find)
+                        item["text"] = item["text"].lower().replace(trainText, "").strip()
+
+                        dic = {}
+                        if find == 0:
+                            dic["location"] = location[0] + "," + location[1] + "," + str(int(value * len(trainText))) + "," + location[3]
+                        else :
+                            dic["location"] = str(int(location[0]) + width) + "," + location[1] + "," + str(int(value * len(trainText))) + "," + location[3]
+                        dic["text"] = trainText
+                        dic["originText"] = trainText
+                        dic["sid"] = sid
+                        dic["mappingSid"] = ""
+                        dic["colLbl"] = row[2]
+
+                        ocrData.append(dic)
+
+        # label 합치기
+        for idx in range(len(ocrData)):
+            data = ocrData[idx]
+            nextData = ocrData[idx+1]
+
+            labelText = data["text"] + " " + nextData["text"]
+
+            for row in trainRows:
+                mlData = row[1].split(",")
+                mlData = mlData[4:]
+                sid = mlData[0] + "," + mlData[1] + "," + mlData[2] + "," + mlData[3] + "," + mlData[4]
+
+                sentenceSql = "SELECT EXPORT_SENTENCE(:sid) AS TEXT FROM DUAL"
+                curs.execute(sentenceSql, {"sid":sid})
+                sentenceRow = curs.fetchall()
+
+                trainText = sentenceRow[0][0]
+
+                if trainText == labelText.lower():
+
+                    location = ''
+                    dataLocation = data["location"].split(",")
+                    nextLocation = nextData["location"].split(",")
+
+                    location = dataLocation[0] + "," + dataLocation[1] + "," + str(int(dataLocation[2]) + int(nextLocation[2])) + "," + dataLocation[3]
+                    text = labelText
+
+                    ocrData[idx]["location"] = location
+                    ocrData[idx]["text"] = text
+
+                    del ocrData[idx+1]
+
+            if idx == len(ocrData) - 2:
+                break
+
+        delete = []
+        for item in ocrData:
+            if item["text"] == "":
+                delete.append(item)
+
+        for item in delete:
+            ocrData.remove(item)
+
+        ocrData = getSid(ocrData)
+        ocrData = getMappingSid(ocrData, docType)
+
+        return ocrData
+
+    except Exception as e:
+        raise Exception(str({'code': 500, 'message': 'makeLabel error','error': str(e).replace("'", "").replace('"', '')}))
+
 def findEntry(ocrData, docTopType, docType):
     try:
 
@@ -894,6 +1015,8 @@ def findEntry(ocrData, docTopType, docType):
 
                     if p.match(item["text"]):
                         item["entryLbl"] = trainRow[2]
+
+        ocrData = makeLabel(ocrData, docTopType, docType)
 
         # subMulti entry 추출
         for item in ocrData:
