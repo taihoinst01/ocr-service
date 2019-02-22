@@ -159,7 +159,7 @@ function uiLearnTraining(filepath, callback) {
                                 angle = 98;
                             }
 
-                            execSync('module\\imageMagick\\convert.exe -colors 8 -density 300 -rotate "' + (textAngle + angle) + '" ' + fullFilePathList[i] + ' ' + fullFilePathList[i]);
+                            execSync('module\\imageMagick\\convert.exe -colors 8 -density 300 -depth 8 -gravity center -rotate "' + (textAngle + angle) + '" ' + fullFilePathList[i] + ' ' + fullFilePathList[i]);
 
                             ocrResult = sync.await(ocrUtil.localOcr(fullFilePathList[i], sync.defer()));
                         } else {
