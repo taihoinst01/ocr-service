@@ -4507,3 +4507,29 @@ exports.selectDocStatus = function (req, done) {
         }
     });
 };
+
+exports.selectDocTypeList = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let param;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);          
+            var query = 'select * from TBL_DOCUMENT_CATEGORY where doctoptype = :doctoptype';
+            param = req;
+            var result = await conn.execute(query, param);
+            return done(null, result.rows);
+        } catch (err) { // catches errors in getConnection and the query
+            console.log(err);
+            return done(null, "error");
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};

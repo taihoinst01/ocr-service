@@ -1,0 +1,144 @@
+﻿<!doctype html>
+<html lang="kr">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, minimal-ui">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <title>ICR</title>
+    <%include  ../common/commonLib.html%>
+    <!--selectareas-->
+    <link href="css/selectareas/jquery.selectareas.css" media="screen" rel="stylesheet" type="text/css" />
+    <!--//selectareas-->
+    <!-- 문서 조회 학습 전용 css -->
+    <link rel="stylesheet" href="/css/user/templateRegistration.css">
+    <!-- // 문서 조회 학습 전용 css -->
+    <!-- file upload css -->
+    <link rel="stylesheet" href="/common/css/fileupload/jquery.fileupload.css">
+    <!-- // file upload css -->
+    <link rel="stylesheet" href="css/dropdown.css">
+    <link rel="stylesheet" href="css/editable-select.css">
+    <link rel="stylesheet" href="/common/css/font-awesome.min.css">
+    <!-- multiFileUpload & form async js -->
+    <script type="text/javascript" src="js/import/fileupload/jquery.ui.widget.js"></script>
+    <script type="text/javascript" src="js/import/fileupload/jquery.iframe-transport.js"></script>
+    <script type="text/javascript" src="js/import/fileupload/jquery.fileupload.js"></script>
+    <script type="text/javascript" src="js/import/jquery.form.min.js"></script>
+    <!-- // multiFileUpload & form async js -->
+    <script type="text/javascript" src="js/import/jquery.selectareas.js"></script>
+    <!-- 공통 js -->
+    <script type="text/javascript" src="js/common.client.js"></script>
+    <!-- // 공통 js -->
+    <!-- 문서 조회 학습 전용 js -->
+    <script type="text/javascript" src="js/user/templateRegistration.js"></script>
+    <!-- // 문서 조회 전용 js -->
+
+</head>
+<body>
+    <input type="hidden" id="userId" value="<%=currentUser.userId%>" />
+    <input type="hidden" id="adminApproval" value="<%=currentUser.admin%>" />
+
+    <div id="mask"></div>
+    <div id="wrap">
+        <!--로딩바-->
+        <div id="ocrProgress">
+            <div id="ocrBarBg">
+                <div id="ocrBar">
+                    <span>1%</span>
+                </div>
+            </div>
+            <!-- 호출하는 ajax에 따라 로딩바 이벤트를 호출 할 때 아래 progressMsgTitle, progressMsgDetail 메시지도 수정-->
+            <div id="progressMsgTitle">
+                <!-- 로딩바 바로 아래 메시지 -->
+            </div>
+        </div>
+        <!--로딩바-->
+        <!-- skip navi -->
+        <%include  ../common/header.html%>
+        <!-- //skip navi -->
+        <!-- Content -->
+        <div id="container">
+            <!-- LNB -->
+            <%include  ../common/leftSideBar.html%>
+            <!-- // LNB -->
+            <!-- 본문영역 -->
+            <div id="content">
+                <div class="title">
+                    <div class="content_title_icon"></div>
+                    <div class="bl_content_title">템플릿 등록</div>
+                </div>
+                <div class="clear_both"></div>
+                <div class="box_content">
+                    <!-- 양식이미지 -->
+                    <div id="uploadSucessForm" class="upload_sucesss_form">
+                        <div class="box_content_L">    
+                            <div id="div_invoice_view_image_2" class="imgtmb_b mCustomScrollbar ui_image_div" data-mcs-axis="yx" data-mcs-theme="dark-3">
+                                <!--<img src="publish/image/sample02.jpg" alt="샘플이미지" />-->
+                                <!--<div id="img_content">
+    
+                                </div>-->
+                            </div>
+    
+                            <div class="box_imgtmb">
+                                <div id="touchSlider">
+                                    <ul id="imageBox">
+                                        <!--
+                                        <li class="on">
+                                            <div class="box_img"><i><img src="publish/image/sample02.jpg" title="샘플이미지"></i></div>
+                                            <span>sample02.png</span>
+                                        </li>
+                                        <li>
+                                            <div class="box_img"><i><img src="publish/image/sample01.jpg" title="샘플이미지"></i></div>
+                                            <span>sample01.png</span>
+                                        </li>
+                                        -->
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- // 양식이미지 -->
+                        <!-- 양식분석상세 -->
+                        <div class="box_content_R st_last">
+                            <div class="box_content_R_menu">
+                                <form id="uploadFileForm" action="/templateRegistration/uploadFile" method="post" enctype="multipart/form-data">
+                                    <p class="attach_btn fl">
+                                        <i class="upload_icon"></i>
+                                        <input type="file" id="uploadFile" name="file" multiple />
+                                        <label for="uploadFile">파일 업로드</label>
+                                    </p>
+                                </form>
+                                <div class="tR_select">
+                                    <select class="editSelect" id="docToptype">
+                                        <option>unknown</option>
+                                    </select>
+                                    <select class="editSelect" id="docType">
+                                        <option>unknown</option>
+                                    </select>
+                                    <select class="editSelect" id="docLabel">
+                                        <option>unknown</option>
+                                    </select>
+                                </div>
+                                <button type="button" id="saveBtn" class="button_ocr fr">확인</button>
+                            </div>
+                            <div class="box_content_R_content">
+                                <div id="canversDiv" style="display:none;">
+
+                                </div>
+                                <div id="ocrTextImgDiv" class="div_ocrTextImg">
+
+                                </div>
+                            </div>
+                        </div>
+                        <!-- // 양식분석상세 -->
+                    </div>
+                </div>
+            </div>
+            <!-- // Content -->
+        </div>
+    </div>
+    <script type="text/javascript">
+        //layer_open('layer1');
+    </script>
+</body>
+</html>
