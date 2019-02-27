@@ -169,6 +169,16 @@ body{ font-family:NanumGothicR,sans-serif,�������? }
     margin-bottom: 20px;
 }
 
+.lnb-box ul a .menu08:before {
+    content: '';
+    display: block;
+    background: url(../image/icon-icr08-1.png) no-repeat;
+    width: 29px;
+    height: 29px;
+    margin: 0 auto;
+    margin-bottom: 20px;
+}
+
 .lnb-box ul a li:hover {
     background-color: #4d5059;
 }
