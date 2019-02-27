@@ -3573,6 +3573,8 @@ function batchLearnTraining(filepath, callback) {
 
             var fullFilePath = "";
             var fullFilePathList = [];
+            var docLabelDefList;
+
             if (fileExt.toLowerCase() == "pdf") {
                 var fileCount = 0;
                 while(true){
@@ -3733,7 +3735,11 @@ function batchLearnTraining(filepath, callback) {
                 retData.labelData = labelData.rows;
 
             }
-            sync.await(oracle.insertSamMLData(filepath, imgid, sync.defer()));
+
+            var docToptype = resPyArr.docCategory.DOCTOPTYPE;
+            docLabelDefList = sync.await(oracle.selectDocLabelDefList(([docToptype]), sync.defer()));
+
+            sync.await(oracle.insertSamMLData(filepath, imgid, retData, docLabelDefList, sync.defer()));
             sync.await(oracle.updateBatchLearnListStatus(imgid, sync.defer()));
             callback(null, retData);
 
