@@ -472,6 +472,7 @@ router.post('/modifyBatchUiTextData', function (req, res) {
                         if (afterData.data[i].text != beforeData.data[j].text) {
                             var item = [beforeData.data[j].originText, '', afterData.data[i].text, ''];
                             sync.await(oracle.insertContractMapping(item, sync.defer()));
+                            sync.await(oracle.insertSymspell(afterData.data[i], sync.defer()));
                         }
                         //사용자가 지정한 컬럼라벨의 텍스트가 유효한 컬럼의 경우 OcrSymspell에 before text(중요!!) insert
                         if (afterData.data[i].colLbl >= 1) {

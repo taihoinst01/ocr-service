@@ -1851,6 +1851,39 @@ exports.insertContractMapping = function (req, done) {
     });
 };
 
+exports.insertSymspell = function (item, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+        let result;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);
+
+            text = item.text.split(" ");
+
+            for (var i = 0; i < text.length; i++) {
+                var selRes = await conn.execute('SELECT * FROM TBL_OCR_SYMSPELL_KO WHERE KEYWORD = :keywrod', [text[i]]);
+
+                if (selRes.rows.length == 0) {
+                    await conn.execute('INSERT INTO TBL_OCR_SYMSPELL_KO VALUES (SEQ_OCR_SYMSPELL_KO.NEXTVAL, :keyword, 1)', [text[i]]);
+                }
+            }
+
+            return done(null, null);
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
 exports.selectCurCd = function (req, done) {
     return new Promise(async function (resolve, reject) {
         let conn;
