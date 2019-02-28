@@ -36,6 +36,7 @@ var docRegistration = require('./routes/user/docRegistration');
 var docManagement = require('./routes/user/docManagement');
 var adminLearning = require('./routes/user/adminLearning');
 var wF_WorkflowProc = require('./routes/user/wF_WorkflowProc');
+var templateRegistration = require('./routes/user/templateRegistration');
 
 //admin
 var adminDashboard = require('./routes/admin/adminDashboard');
@@ -96,6 +97,7 @@ app.use('/invoiceProcessingStatus', invoiceProcessingStatus);
 app.use('/batchLearningTest', batchLearningTest);
 app.use('/docRegistration', docRegistration);
 app.use('/docManagement', docManagement);
+app.use('/templateRegistration', templateRegistration);
 
 app.use('/adminLearning', adminLearning);
 app.use('/wF_WorkflowProc', wF_WorkflowProc);//jmh

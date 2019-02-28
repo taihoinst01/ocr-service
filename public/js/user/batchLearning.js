@@ -44,7 +44,7 @@ var changeLayerSizeFnc = function () {
     if ($('#layer2').css('display') == 'block') {
         $('#layer2 .pop_popup0').css({ height: $(window).height() * 0.78 + 'px' });
         $('#layer2 .pop_popup0').css({ width: $(window).width() - 120 + 'px' });
-        $('#img_content').css({ height: $(window).height() * 0.65 + 'px' });
+        //$('#img_content').css({ height: $(window).height() * 0.65 + 'px' });
         $('#layer2 #mCSB_2_container').css({ width: '100%' });
         $('#layer2').css('width', $(window).width() -20 + 'px');
         //$('#imageZoom').css({ height: $(window).height() * 0.65 + 'px' });
@@ -2657,8 +2657,8 @@ var batchLearnTraining = function (imgIdArray, flag) {
         },
         success: function (data) {
             $("#progressMsgTitle").html("processing learn data...");
-            //console.log(data);
-            //searchBatchLearnDataList(addCond);
+            console.log(data);
+
             if (flag == "LEARN_N") {
                 $("input[name=listCheck_before]").each(function (index, entry) {
                     if ($(this).is(":checked")) {

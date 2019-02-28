@@ -169,6 +169,16 @@ body{ font-family:NanumGothicR,sans-serif,�������? }
     margin-bottom: 20px;
 }
 
+.lnb-box ul a .menu08:before {
+    content: '';
+    display: block;
+    background: url(../image/icon-icr08-1.png) no-repeat;
+    width: 29px;
+    height: 29px;
+    margin: 0 auto;
+    margin-bottom: 20px;
+}
+
 .lnb-box ul a li:hover {
     background-color: #4d5059;
 }
@@ -262,7 +272,7 @@ body.bg_login { background-image: url(../img/bg_login.png); width: 100%;height: 
 /*
     batchLearning.html (�ϰ� �н�)
 */
-.bl_content_title { font-weight: bold; font-family: 'NanumGothicR'; font-size: 20px; margin: 4px 0 10px 5px; color: #4C5059; position:relative;top:20px; left:40px}
+.bl_content_title { font-weight: bold; font-family: 'NanumGothicR'; font-size: 20px; margin: 4px 0 10px 5px; color: #4C5059; position:relative;top:20px; left:40px; display: inline-block;}
 .bl_btn_div { margin: 20px 0 10px 0; }
 #content-6 { border-left: 1px solid #D8D8D8; border-bottom: 1px solid #D8D8D8; border-radius: 10px 0 0 10px; }
 .batchListTbody .answerTr ul { top: 15px !important; width:-webkit-calc(100% - 5px) !important; border-radius: 0 0 10px 10px !important;}
@@ -761,6 +771,7 @@ h3.tits:before,
 .content_title_icon_bl,
 .content_title_icon_dc,
 .content_title_icon_ips,
+.content_title_icon_tR,
 .wait_doc_icon,
 .success_doc_icon,
 .content_title_icon_um,
@@ -789,6 +800,7 @@ h3.tits:before,
 .content_title_icon_ui { width:40px; height: 30px; float:left; background-position: -70px -472px; position:relative; top:20px; left:20px}
 .content_title_icon_bl { width:40px; height: 30px; float:left; background-position: -140px -472px; position:relative; top:20px; left:20px}
 .content_title_icon_dc { width:40px; height: 35px; float:left; background-position: -280px -472px;  }
+.content_title_icon_tR { width:40px; height: 30px; float:left; background-position: -140px -472px; position:relative; top:20px; left:20px}
 .content_title_icon_ips { width:40px; height: 35px; float:left; background-position: -345px -475px; position:absolute; top:20px; left:20px }
 .wait_doc_icon { width:40px; height: 40px; /*float:left;*/ background-position: -8px -645px; /*margin: 4px 0 0 62px;*/ position:relative; top:10px;}
 .success_doc_icon { width:40px; height: 40px; /*float:left;*/ background-position: -75px -646px; /*margin: 4px 0 0 62px;*/ position:relative; top:10px; }
