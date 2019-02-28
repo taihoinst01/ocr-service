@@ -2657,8 +2657,8 @@ var batchLearnTraining = function (imgIdArray, flag) {
         },
         success: function (data) {
             $("#progressMsgTitle").html("processing learn data...");
-            //console.log(data);
-            //searchBatchLearnDataList(addCond);
+            console.log(data);
+
             if (flag == "LEARN_N") {
                 $("input[name=listCheck_before]").each(function (index, entry) {
                     if ($(this).is(":checked")) {
