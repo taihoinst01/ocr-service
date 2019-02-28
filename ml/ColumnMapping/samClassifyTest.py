@@ -417,8 +417,9 @@ if __name__ == '__main__':
         langDetect = bUtil.langDetect(ocrData)
 
         # ocr데이터 오타수정
-        # ocrData = bUtil.typoSentence(ocrData, langDetect)
+        #ocrData = bUtil.typoSentence(ocrData, langDetect)
 
+        ocrData = bUtil.checkOcrWord(ocrData)
         #sid 추출
         ocrData = getSid(ocrData)
 

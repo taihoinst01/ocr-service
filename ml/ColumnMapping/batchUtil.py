@@ -1654,3 +1654,30 @@ def selectDocTopType(type):
     except Exception as e:
         raise Exception(str({'code': 500, 'message': 'TBL_BATCH_OCR_DATA table select fail',
                              'error': str(e).replace("'", "").replace('"', '')}))
+
+
+def checkOcrWord(ocrData):
+    try:
+        sql = ""
+        sql = "SELECT * FROM TBL_ICR_SYMSPELL"
+
+        curs.execute(sql)
+        symspellRows = curs.fetchall()
+
+        for item in ocrData:
+            
+            text = item["text"]
+            # text = text
+
+            for dbObj in symspellRows:
+                dbText = dbObj[3]
+                if text.find(dbText) != -1:
+                    correctText = dbObj[1]
+                    item["text"] = item["text"].replace(dbText, correctText)
+
+        return ocrData
+
+    except Exception as e:
+        raise Exception(str({'code': 500, 'message': 'typoSentence error',
+                             'error': str(e).replace("'", "").replace('"', '')}))
+
