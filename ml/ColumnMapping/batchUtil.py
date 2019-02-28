@@ -446,6 +446,111 @@ def checkVerticalSpringer(entLoc, lblLoc, minus, plus):
         raise Exception(str({'code': 500, 'message': 'checkVerticalEntry fail',
                          'error': str(e).replace("'", "").replace('"', '')}))
 
+# 단일 label 기준 수평 Scan 함수 (Single Label)
+def checkHorizonSingleLbl(item, ocrData, valid, type):
+    try:
+        targetEntLoc = '' # 타겟 entry location 값
+        minDistance = 3000 # 최소거리
+        p = re.compile(valid) # label 패턴 객체
+        lblLoc = item["location"].split(",")
+
+        if type == 'U': # up scan
+            xLblUpLoc = (int(lblLoc[0]) + (int(lblLoc[2]) / 2))  # label 상단 중앙 x좌표
+            yLblUpLoc = int(lblLoc[1]) # label 상단 중앙 y좌표
+
+            for entry in ocrData:
+                entLoc = entry["location"].split(",")
+                xEntUpLoc = (int(entLoc[0]) + (int(entLoc[2]) / 2)) # entry 대상 하단 중앙 x좌표
+                yEntUpLoc = int(entLoc[1]) + int(entLco[3]) # entry 대상 하단 중앙 y좌표
+
+                # label과 entry의 거리 계산
+                dx = xLblUpLoc - xEntUpLoc
+                dy = yLblUpLoc - yEntUpLoc
+                entryDistance = math.sqrt((dx * dx) + (dy * dy))
+           
+                # text 패턴 일치 and 최소거리 and 자신 제외 and label y좌표 > entry y좌표 and label이 아니면
+                if p.match(entry["text"]) and minDistance > entryDistance and item["text"] != entry["text"] and yLblUpLoc > int(entLoc[1]) and "colLbl" not in entry:
+                    minDistance = entryDistance # 최소거리 변경
+                    targetEntLoc = entry["location"] # 타겟 entry 찾기 위한 location 값 저장 
+
+        elif type == 'R': # right scan           
+            xLblRightLoc = (int(lblLoc[0]) + int(lblLoc[2]))  # label 우측 중앙 x좌표
+            yLblRightLoc = (int(lblLoc[1]) + (int(lblLoc[3]) / 2)) # label 우측 중앙 y좌표
+
+            for entry in ocrData:
+                entLoc = entry["location"].split(",")
+                xEntRightLoc = int(entLoc[0]) # entry 대상 좌측 중앙 x좌표
+                yEntRightLoc = (int(entLoc[1]) + (int(entLoc[3]) / 2)) # entry 대상 좌측 중앙 y좌표
+
+                # label과 entry의 거리 계산
+                dx = xLblRightLoc - xEntRightLoc
+                dy = yLblRightLoc - yEntRightLoc
+                entryDistance = math.sqrt((dx * dx) + (dy * dy))
+           
+                # text 패턴 일치 and 최소거리 and 자신 제외 and label x좌표 < entry x좌표 and label이 아니면
+                if p.match(entry["text"]) and minDistance > entryDistance and item["text"] != entry["text"] and xLblRightLoc < int(entLoc[0]) and "colLbl" not in entry:
+                    minDistance = entryDistance # 최소거리 변경
+                    targetEntLoc = entry["location"] # 타겟 entry 찾기 위한 location 값 저장         
+        
+        elif type == 'D': # down scan
+            xLblDownLoc = (int(lblLoc[0]) + (int(lblLoc[2]) / 2))  # label 하단 중앙 x좌표
+            yLblDownLoc = int(lblLoc[1]) + int(lblLoc[3]) # label 하단 중앙 y좌표
+
+            for entry in ocrData:
+                entLoc = entry["location"].split(",")
+                xEntDownLoc = (int(entLoc[0]) + (int(entLoc[2]) / 2)) # entry 대상 상단 중앙 x좌표
+                yEntDownLoc = int(entLoc[1]) # entry 대상 상단 중앙 y좌표
+
+                # label과 entry의 거리 계산
+                dx = xLblDownLoc - xEntDownLoc
+                dy = yLblDownLoc - yEntDownLoc
+                entryDistance = math.sqrt((dx * dx) + (dy * dy))
+           
+                # text 패턴 일치 and 최소거리 and 자신 제외 and label y좌표 < entry y좌표 and label이 아니면
+                if p.match(entry["text"]) and minDistance > entryDistance and item["text"] != entry["text"] and yLblDownLoc < int(entLoc[1]) and "colLbl" not in entry:
+                    minDistance = entryDistance # 최소거리 변경
+                    targetEntLoc = entry["location"] # 타겟 entry 찾기 위한 location 값 저장 
+
+        elif type == 'L': # left scan
+            xLblLeftLoc = int(lblLoc[0]) # label 좌측 중앙 x좌표
+            yLblLeftLoc = (int(lblLoc[1]) + (int(lblLoc[3]) / 2)) # label 좌측 중앙 y좌표
+
+            for entry in ocrData:
+                entLoc = entry["location"].split(",")
+                xEntLeftLoc = int(entLoc[0]) + int(entLoc[2]) # entry 대상 우측 중앙 x좌표
+                yEntLeftLoc = (int(entLoc[1]) + (int(entLoc[3]) / 2)) # entry 대상 우측 중앙 y좌표
+
+                # label과 entry의 거리 계산
+                dx = xLblLeftLoc - xEntLeftLoc
+                dy = yLblLeftLoc - yEntLeftLoc
+                entryDistance = math.sqrt((dx * dx) + (dy * dy))
+           
+                # text 패턴 일치 and 최소거리 and 자신 제외 and label x좌표 > entry x좌표 and label이 아니면
+                if p.match(entry["text"]) and minDistance > entryDistance and item["text"] != entry["text"] and xLblLeftLoc > int(entLoc[0]) and "colLbl" not in entry:
+                    minDistance = entryDistance # 최소거리 변경
+                    targetEntLoc = entry["location"] # 타겟 entry 찾기 위한 location 값 저장
+
+        for entry in ocrData: # 타겟 entry 찾아 entryLbl 값 저장
+            if entry["location"] == targetEntLoc:
+                entry["entryLbl"] = item["colLbl"]
+
+        return ocrData
+
+    except Exception as e:
+        raise Exception(str({'code': 500, 'message': 'checkHorizonSingleLbl fail',
+                         'error': str(e).replace("'", "").replace('"', '')}))
+
+# 단일 label 기준 수평 Scan 함수 (Multi Label)
+def checkHorizonMultiLbl(label, ocrData, valid, type):
+    try:
+        
+        return ocrData
+
+    except Exception as e:
+        raise Exception(str({'code': 500, 'message': 'checkHorizonMultiLbl fail',
+                         'error': str(e).replace("'", "").replace('"', '')}))
+
+
 def selectLabelBehaviorDrug(label, entryLabel):
     try:
         colLabel = label["colLbl"]
@@ -1163,7 +1268,7 @@ def findEntry(ocrData, docTopType, docType):
                             if int(entrySid[2]) < 1358:
                                 entry["entryLbl"] = item["colLbl"]
 
-        # single entry 추출
+        # single entry 추출 
         for item in ocrData:
             mappingSid = item["mappingSid"].split(",")
             distance = 3000
@@ -1174,43 +1279,49 @@ def findEntry(ocrData, docTopType, docType):
                 for labelRow in labelRows:
                     if int(labelRow[0]) == int(item["colLbl"]):
                         valid = labelRow[6]
+                if docType == 58 or docType == 59 or docType == 60 or docType == 61 or docType == 62 or docType == 68 or docType == 70 or docType == 71 or docType == 72 or docType == 73:
+                    if item["colLbl"] in ['500','501','511','512','513','514','515','516','522','523']: # 상호, 송장날짜, 납품장소, 운반차번호, 납품출발시간, 납품도착시간, 납품용적, 납품용적누계, 물결합재비, 잔골재율
+                        ocrData = checkHorizonSingleLbl(item, ocrData, valid, 'R')
+                    elif item["colLbl"] in ['517','518','519','520','521','524','525','526','527','528','529','530','531','532','533','534','535','536','537','538','539']: # 나머지
+                        ocrData = checkHorizonSingleLbl(item, ocrData, valid, 'D')
 
-                # label 에서 가장 가까운 entry distance 측정
-                for entry in ocrData:
-                    entrySid = entry["mappingSid"].split(",")
+                else:
+                    # label 에서 가장 가까운 entry distance 측정
+                    for entry in ocrData:
+                        entrySid = entry["mappingSid"].split(",")
 
-                    dx = int(entrySid[1]) - int(mappingSid[1])
-                    dy = int(entrySid[2]) - int(mappingSid[2])
+                        dx = int(entrySid[1]) - int(mappingSid[1])
+                        dy = int(entrySid[2]) - int(mappingSid[2])
 
-                    # label과 entry 거리 측정
-                    entryDistance = math.sqrt((dx * dx) + (dy * dy))
+                        # label과 entry 거리 측정
+                        entryDistance = math.sqrt((dx * dx) + (dy * dy))
 
-                    p = re.compile(valid)
+                        p = re.compile(valid)
 
-                    # (정규식) and (거리) and (label 보다 낮은 위치 검사) and (자신의 label 제외)
-                    if p.match(entry["text"]) and distance > entryDistance and int(mappingSid[2]) - 20 < int(entrySid[2]) and item["text"] != entry["text"]:
+                        # (정규식) and (거리) and (label 보다 낮은 위치 검사) and (자신의 label 제외)
+                        if p.match(entry["text"]) and distance > entryDistance and int(mappingSid[2]) - 20 < int(entrySid[2]) and item["text"] != entry["text"]:
 
-                        if docType == 4:
-                            if "colLbl" not in entry and (boundaryCheck(mappingSid[2], entrySid[2]) or checkVertical(entrySid,mappingSid)):
-                                distance = entryDistance
-                        elif docType == 31:
-                            if "colLbl" not in entry and boundaryCheck(mappingSid[2], entrySid[2]):
-                                distance = entryDistance
-                        else:
-                            if "colLbl" not in entry:
-                                distance = entryDistance
+                            if docType == 4:
+                                if "colLbl" not in entry and (boundaryCheck(mappingSid[2], entrySid[2]) or checkVertical(entrySid,mappingSid)):
+                                    distance = entryDistance
+                            elif docType == 31:
+                                if "colLbl" not in entry and boundaryCheck(mappingSid[2], entrySid[2]):
+                                    distance = entryDistance
+                            else:
+                                if "colLbl" not in entry:
+                                    distance = entryDistance
 
-                # 가장 가까운 entry mapping
-                for entry in ocrData:
-                    entrySid = entry["mappingSid"].split(",")
+                    # 가장 가까운 entry mapping
+                    for entry in ocrData:
+                        entrySid = entry["mappingSid"].split(",")
 
-                    dx = int(entrySid[1]) - int(mappingSid[1])
-                    dy = int(entrySid[2]) - int(mappingSid[2])
+                        dx = int(entrySid[1]) - int(mappingSid[1])
+                        dy = int(entrySid[2]) - int(mappingSid[2])
 
-                    entryDistance = math.sqrt((dx * dx) + (dy * dy))
+                        entryDistance = math.sqrt((dx * dx) + (dy * dy))
 
-                    if entryDistance == distance:
-                        entry["entryLbl"] = item["colLbl"]
+                        if entryDistance == distance:
+                            entry["entryLbl"] = item["colLbl"]
 
         for item in ocrData:
             if "colLbl" not in item and "entryLbl" not in item:
@@ -1543,3 +1654,30 @@ def selectDocTopType(type):
     except Exception as e:
         raise Exception(str({'code': 500, 'message': 'TBL_BATCH_OCR_DATA table select fail',
                              'error': str(e).replace("'", "").replace('"', '')}))
+
+
+def checkOcrWord(ocrData):
+    try:
+        sql = ""
+        sql = "SELECT * FROM TBL_ICR_SYMSPELL"
+
+        curs.execute(sql)
+        symspellRows = curs.fetchall()
+
+        for item in ocrData:
+            
+            text = item["text"]
+            # text = text
+
+            for dbObj in symspellRows:
+                dbText = dbObj[3]
+                if text.find(dbText) != -1:
+                    correctText = dbObj[1]
+                    item["text"] = item["text"].replace(dbText, correctText)
+
+        return ocrData
+
+    except Exception as e:
+        raise Exception(str({'code': 500, 'message': 'typoSentence error',
+                             'error': str(e).replace("'", "").replace('"', '')}))
+
