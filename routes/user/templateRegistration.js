@@ -222,57 +222,80 @@ router.post('/imgOcr', function (req, res) {
                 fullFilePathList.push(fileInfoList[i].convertedFilePath + fileInfoList[i].convertFileName);
             }
 
+            var docType = 0;
             for (var i = 0; i < fullFilePathList.length; i++) {
+                var selOcr = sync.await(oracle.selectOcrData(fullFilePathList[i], sync.defer()));
+                if (selOcr.length == 0) {
+                    var ocrResult = sync.await(ocrUtil.localOcr(fullFilePathList[i], sync.defer()));
 
-                var ocrResult = sync.await(ocrUtil.localOcr(fullFilePathList[i], sync.defer()));
-
-                if (ocrResult.orientation != undefined && ocrResult.orientation != "Up") {
-                    var angle = 0;
-
-                    if (ocrResult.orientation == "Left") {
-                        angle += 90;
-                    } else if (ocrResult.orientation == "Right") {
-                        angle += -90;
-                    } else if (ocrResult.orientation == "Down") {
-                        angle += 180;
-                    }
-
-                    execSync('module\\imageMagick\\convert.exe -colors 8 -density 300 -rotate "' + angle + '" ' + fullFilePathList[i] + ' ' + fullFilePathList[i]);
-                    ocrResult = sync.await(ocrUtil.localOcr(fullFilePathList[i], sync.defer()));
-                }
-
-                for (var j = 0; j < 10; j++) {
-                    if ((ocrResult.textAngle != undefined && ocrResult.textAngle > 0.03 || ocrResult.textAngle < -0.03)) {
+                    if (ocrResult.orientation != undefined && ocrResult.orientation != "Up") {
                         var angle = 0;
 
-                        var textAngle = Math.floor(ocrResult.textAngle * 100);
-
-                        if (textAngle < 0) {
-                            angle += 3;
-                        } else if (textAngle == 17 || textAngle == 15 || textAngle == 14) {
-                            angle = 10;
-                        } else if (textAngle == 103) {
-                            angle = 98;
+                        if (ocrResult.orientation == "Left") {
+                            angle += 90;
+                        } else if (ocrResult.orientation == "Right") {
+                            angle += -90;
+                        } else if (ocrResult.orientation == "Down") {
+                            angle += 180;
                         }
 
-                        execSync('module\\imageMagick\\convert.exe -colors 8 -density 300 -rotate "' + (textAngle + angle) + '" ' + fullFilePathList[i] + ' ' + fullFilePathList[i]);
-
+                        execSync('module\\imageMagick\\convert.exe -colors 8 -density 300 -rotate "' + angle + '" ' + fullFilePathList[i] + ' ' + fullFilePathList[i]);
                         ocrResult = sync.await(ocrUtil.localOcr(fullFilePathList[i], sync.defer()));
-                    } else {
-                        break;
                     }
-                    
+
+                    for (var j = 0; j < 10; j++) {
+                        if ((ocrResult.textAngle != undefined && ocrResult.textAngle > 0.03 || ocrResult.textAngle < -0.03)) {
+                            var angle = 0;
+
+                            var textAngle = Math.floor(ocrResult.textAngle * 100);
+
+                            if (textAngle < 0) {
+                                angle += 3;
+                            } else if (textAngle == 17 || textAngle == 15 || textAngle == 14) {
+                                angle = 10;
+                            } else if (textAngle == 103) {
+                                angle = 98;
+                            }
+
+                            execSync('module\\imageMagick\\convert.exe -colors 8 -density 300 -depth 8 -gravity center -rotate "' + (textAngle + angle) + '" ' + fullFilePathList[i] + ' ' + fullFilePathList[i]);
+
+                            ocrResult = sync.await(ocrUtil.localOcr(fullFilePathList[i], sync.defer()));
+                        } else {
+                            break;
+                        }
+                    }
+
+                    sync.await(oracle.insertOcrData(fullFilePathList[i], JSON.stringify(ocrResult), sync.defer()));
+                    selOcr = sync.await(oracle.selectOcrData(fullFilePathList[i], sync.defer()));
                 }
-                
+
+                var seqNum = selOcr.SEQNUM;
                 pythonConfig.columnMappingOptions.args = [];
-                pythonConfig.columnMappingOptions.args.push(JSON.stringify(ocrResult));
+                pythonConfig.columnMappingOptions.args.push(seqNum);
+
+                if (i != 0) {
+                    pythonConfig.columnMappingOptions.args.push(docType);
+                }
+
                 //var resPyStr = sync.await(PythonShell.run('batchClassifyTest.py', pythonConfig.columnMappingOptions, sync.defer()));
-                var resPyStr = sync.await(PythonShell.run('notInsertClassifyTest.py', pythonConfig.columnMappingOptions, sync.defer()));
+                var resPyStr = sync.await(PythonShell.run('samClassifyTest.py', pythonConfig.columnMappingOptions, sync.defer()));
                 var testStr = resPyStr[0].replace('b', '');
                 testStr = testStr.replace(/'/g, '');
                 var decode = new Buffer(testStr, 'base64').toString('utf-8');
-                
+
                 var resPyArr = JSON.parse(decode);
+
+                resPyArr = sync.await(transPantternVar.trans(resPyArr, sync.defer()));
+                console.log(resPyArr);
+                
+                var retData = {};
+                retData = resPyArr;
+                //retData.fileinfo = { filepath: fullFilePathList[i] };
+
+                if (i == 0) {
+                    docType = retData.docCategory.DOCTYPE;
+                }
+
                 resPyArr = sync.await(transPantternVar.trans(resPyArr, sync.defer()));
                 resPyArr.fileName = fullFilePathList[i].substring(fullFilePathList[i].lastIndexOf('/') + 1);
                 console.log(resPyArr);
@@ -291,8 +314,87 @@ router.post('/imgOcr', function (req, res) {
                 // docLabelDefList = sync.await(oracle.selectDocLabelDefList(([docToptype]), sync.defer()));
                 //console.log(docLabelDefList);
             
-                status = 200;
             }
+            status = 200;
+            
+            // for (var i = 0; i < fullFilePathList.length; i++) {
+
+            //     var ocrResult = sync.await(ocrUtil.localOcr(fullFilePathList[i], sync.defer()));
+
+            //     if (ocrResult.orientation != undefined && ocrResult.orientation != "Up") {
+            //         var angle = 0;
+
+            //         if (ocrResult.orientation == "Left") {
+            //             angle += 90;
+            //         } else if (ocrResult.orientation == "Right") {
+            //             angle += -90;
+            //         } else if (ocrResult.orientation == "Down") {
+            //             angle += 180;
+            //         }
+
+            //         execSync('module\\imageMagick\\convert.exe -colors 8 -density 300 -rotate "' + angle + '" ' + fullFilePathList[i] + ' ' + fullFilePathList[i]);
+            //         ocrResult = sync.await(ocrUtil.localOcr(fullFilePathList[i], sync.defer()));
+            //     }
+
+            //     for (var j = 0; j < 10; j++) {
+            //         var selOcr = sync.await(oracle.selectOcrData(fullFilePathList[i], sync.defer()));
+            //         if (selOcr.length == 0) {
+            //             var ocrResult = sync.await(ocrUtil.localOcr(fullFilePathList[i], sync.defer()));
+            //             if ((ocrResult.textAngle != undefined && ocrResult.textAngle > 0.03 || ocrResult.textAngle < -0.03)) {
+            //                 var angle = 0;
+    
+            //                 var textAngle = Math.floor(ocrResult.textAngle * 100);
+    
+            //                 if (textAngle < 0) {
+            //                     angle += 3;
+            //                 } else if (textAngle == 17 || textAngle == 15 || textAngle == 14) {
+            //                     angle = 10;
+            //                 } else if (textAngle == 103) {
+            //                     angle = 98;
+            //                 }
+    
+            //                 execSync('module\\imageMagick\\convert.exe -colors 8 -density 300 -rotate "' + (textAngle + angle) + '" ' + fullFilePathList[i] + ' ' + fullFilePathList[i]);
+    
+            //                 ocrResult = sync.await(ocrUtil.localOcr(fullFilePathList[i], sync.defer()));
+            //             } else {
+            //                 break;
+            //             }
+            //         }
+                    
+            //         sync.await(oracle.insertOcrData(fullFilePathList[i], JSON.stringify(ocrResult), sync.defer()));
+            //         selOcr = sync.await(oracle.selectOcrData(fullFilePathList[i], sync.defer()));
+            //     }
+
+            //     var seqNum = selOcr.SEQNUM;
+            //     pythonConfig.columnMappingOptions.args = [];
+            //     pythonConfig.columnMappingOptions.args.push(seqNum);
+
+            //     var resPyStr = sync.await(PythonShell.run('batchClassifyTest.py', pythonConfig.columnMappingOptions, sync.defer()));
+            //     var testStr = resPyStr[0].replace('b', '');
+            //     testStr = testStr.replace(/'/g, '');
+            //     var decode = new Buffer(testStr, 'base64').toString('utf-8');
+                
+            //     var resPyArr = JSON.parse(decode);
+            //     resPyArr = sync.await(transPantternVar.trans(resPyArr, sync.defer()));
+            //     resPyArr.fileName = fullFilePathList[i].substring(fullFilePathList[i].lastIndexOf('/') + 1);
+            //     console.log(resPyArr);
+            //     ocrResultList.push({
+            //         'fileName': resPyArr.fileName, 
+            //         'ocrTextList': ocrResult, 
+            //         'docCategory': resPyArr.docCategory
+            //     })
+
+            //     // TBL_ICR_DOC_TOPTYPE 조회
+            //     let userId = req.session.userId;
+            //     docToptypeList = sync.await(oracle.selectDocTopType([userId], sync.defer()));
+
+            //     // tbl_icr_label_def 조회
+            //     // var docToptype = resPyArr.docCategory.DOCTOPTYPE;
+            //     // docLabelDefList = sync.await(oracle.selectDocLabelDefList(([docToptype]), sync.defer()));
+            //     //console.log(docLabelDefList);
+            
+            //     status = 200;
+            // }
 
         } catch (e) {
             status = 500;
