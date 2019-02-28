@@ -597,7 +597,7 @@ def typoSentence(ocrData, langDetect):
 
         sym_spell = SymSpell(initial_capacity, max_edit_distance_dictionary,
                              prefix_length)
-
+        sql = ""
         if langDetect == "en":
             dictionary_path = os.path.join(os.path.dirname(__file__),
                                        "frequency_dictionary_en_82_765.txt")
@@ -607,13 +607,19 @@ def typoSentence(ocrData, langDetect):
         elif langDetect == "ko":
             dictionary_path = os.path.join(os.path.dirname(__file__),
                                            "frequency_dictionary_ko.txt")
+            sql = "SELECT * FROM TBL_OCR_SYMSPELL_KO"
+
+        curs.execute(sql)
+        symspellRows = curs.fetchall()
 
         term_index = 0
         count_index = 1
 
-        if not sym_spell.load_dictionary(dictionary_path, term_index, count_index):
-            print("Dictionary file not found")
-            return
+        # if not sym_spell.load_dictionary(dictionary_path, term_index, count_index):
+        #     print("Dictionary file not found")
+        #     return
+
+        sym_spell.load_dictionary_make(symspellRows, term_index, count_index)
 
         p = re.compile("[0-9]+")
 
@@ -637,7 +643,7 @@ def typoSentence(ocrData, langDetect):
 
                 symText += i + " "
 
-            item["text"] = symText
+            item["text"] = symText[:-1]
 
         return ocrData
 
@@ -955,7 +961,7 @@ def makeLabel(ocrData, docTopType, docType):
 
                 trainText = sentenceRow[0][0]
 
-                if "colLbl" not in item and "entryLbl" not in item and trainText in item["text"].lower():
+                if trainText is not None and "colLbl" not in item and "entryLbl" not in item and trainText in item["text"].lower():
 
                     textList = list(find_all(item["originText"], trainText))
 

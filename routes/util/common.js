@@ -220,7 +220,7 @@ function uploadConvert(files, callback) {
             filePath: fileObj.path.replace(/\\/gi, '/'),
             oriFileName: fileObj.originalname,
             convertedFilePath: convertedImagePath.replace(/\\/gi, '/'),
-            convertFileName: fileObj.originalname.split('.')[0] + '.jpg',
+            convertFileName: fileObj.originalname.substring(0, fileObj.originalname.lastIndexOf(".")) + '.jpg',
             fileExt: fileExt,
             fileSize: fileObj.size,
             contentType: fileObj.mimetype,
@@ -238,13 +238,19 @@ function uploadConvert(files, callback) {
         if (result.status != 0) {
             throw new Error(result.stderr);
         }
+
+        var encode = Buffer.from(ofile).toString("base64");
+        pythonConfig.columnMappingOptions.args = [];
+        pythonConfig.columnMappingOptions.args.push(encode);
+        var resPyStr = sync.await(PythonShell.run('lineDeleteAndNoiseDelete.py', pythonConfig.columnMappingOptions, sync.defer()));
+
     } else if (fileExt.toLowerCase() === 'png') {
         var fileItem = {
             imgId: new Date().isoNum(8) + "" + Math.floor(Math.random() * 9999999) + 1000000,
             filePath: fileObj.path.replace(/\\/gi, '/'),
             oriFileName: fileObj.originalname,
             convertedFilePath: convertedImagePath.replace(/\\/gi, '/'),
-            convertFileName: fileObj.originalname.split('.')[0] + '.png',
+            convertFileName: fileObj.originalname.substring(0, fileObj.originalname.lastIndexOf(".")) + '.png',
             fileExt: fileExt,
             fileSize: fileObj.size,
             contentType: fileObj.mimetype,
@@ -256,7 +262,12 @@ function uploadConvert(files, callback) {
         returnResult.returnObj = fileItem.convertFileName;
 
         var ifile = convertedImagePath + fileObj.originalname;
-        var ofile = convertedImagePath + fileObj.originalname.split('.')[0] + '.png';
+        var ofile = convertedImagePath + fileObj.originalname.substring(0, fileObj.originalname.lastIndexOf(".")) + '.png';
+
+        var encode = Buffer.from(ofile).toString("base64");
+        pythonConfig.columnMappingOptions.args = [];
+        pythonConfig.columnMappingOptions.args.push(encode);
+        var resPyStr = sync.await(PythonShell.run('lineDeleteAndNoiseDelete.py', pythonConfig.columnMappingOptions, sync.defer()));
 
     } else if (fileExt.toLowerCase() === 'docx' || fileExt.toLowerCase() === 'doc'
         || fileExt.toLowerCase() === 'xlsx' || fileExt.toLowerCase() === 'xls'
@@ -302,7 +313,7 @@ function uploadConvert(files, callback) {
                             filePath: fileObj.path.replace(/\\/gi, '/'),
                             oriFileName: fileObj.originalname,
                             convertedFilePath: convertedImagePath.replace(/\\/gi, '/'),
-                            convertFileName: fileObj.originalname.split('.')[0] + '-' + j + '.png',
+                            convertFileName: fileObj.originalname.substring(0, fileObj.originalname.lastIndexOf(".")) + '-' + j + '.png',
                             fileExt: fileExt,
                             fileSize: fileObj.size,
                             contentType: fileObj.mimetype,
@@ -311,6 +322,11 @@ function uploadConvert(files, callback) {
  
                         returnResult.fileInfo = fileItem;
                         returnResult.returnObj = fileItem.convertFileName;
+
+                        var encode = Buffer.from(convertFileFullPath).toString("base64");
+                        pythonConfig.columnMappingOptions.args = [];
+                        pythonConfig.columnMappingOptions.args.push(encode);
+                        var resPyStr = sync.await(PythonShell.run('lineDeleteAndNoiseDelete.py', pythonConfig.columnMappingOptions, sync.defer()));
                     } else {
                         isStop = true;
                         break;
@@ -325,7 +341,7 @@ function uploadConvert(files, callback) {
                                 filePath: fileObj.path.replace(/\\/gi, '/'),
                                 oriFileName: fileObj.originalname,
                                 convertedFilePath: convertedImagePath.replace(/\\/gi, '/'),
-                                convertFileName: fileObj.originalname.split('.')[0] + '.png',
+                                convertFileName: fileObj.originalname.substring(0, fileObj.originalname.lastIndexOf(".")) + '.png',
                                 fileExt: fileExt,
                                 fileSize: fileObj.size,
                                 contentType: fileObj.mimetype,
@@ -333,6 +349,12 @@ function uploadConvert(files, callback) {
                             };
                             returnResult.fileInfo = fileItem;
                             returnResult.returnObj = fileItem.convertFileName;
+
+                            var encode = Buffer.from(convertFileFullPath).toString("base64");
+                            pythonConfig.columnMappingOptions.args = [];
+                            pythonConfig.columnMappingOptions.args.push(encode);
+                            var resPyStr = sync.await(PythonShell.run('lineDeleteAndNoiseDelete.py', pythonConfig.columnMappingOptions, sync.defer()));
+
                             break;
                         }
                     } catch (e) {
@@ -472,6 +494,7 @@ router.post('/modifyBatchUiTextData', function (req, res) {
                         if (afterData.data[i].text != beforeData.data[j].text) {
                             var item = [beforeData.data[j].originText, '', afterData.data[i].text, ''];
                             sync.await(oracle.insertContractMapping(item, sync.defer()));
+                            sync.await(oracle.insertSymspell(afterData.data[i], sync.defer()));
                         }
                         //사용자가 지정한 컬럼라벨의 텍스트가 유효한 컬럼의 경우 OcrSymspell에 before text(중요!!) insert
                         if (afterData.data[i].colLbl >= 1) {
