@@ -244,7 +244,8 @@ router.post('/uploadFile', upload.any(), function (req, res) {
         
                     //file convert Pdf to Png
                     if (convertPdf || fileExt.toLowerCase() === 'pdf') {
-                        var result = execSync('module\\imageMagick\\convert.exe -density 300 -colorspace Gray -alpha remove -alpha off "' + ifile + '" "' + ofile + '"');
+						//var result = execSync('module\\imageMagick\\convert.exe -density 300 -colorspace Gray -alpha remove -alpha off "' + ifile + '" "' + ofile + '"');
+						var result = execSync('module\\imageMagick\\convert.exe -colors 8 -density 300 -colorspace Gray -alpha remove -alpha off "' + ifile + '" "' + ofile + '"');
         
                         if (result.status != 0) {
                             throw new Error(result.stderr);
@@ -379,7 +380,8 @@ router.post('/imgOcr', function (req, res) {
                                 angle = 98;
                             }
 
-                            execSync('module\\imageMagick\\convert.exe -colors 8 -density 300 -rotate "' + (textAngle + angle) + '" ' + fullFilePathList[i] + ' ' + fullFilePathList[i]);
+							//execSync('module\\imageMagick\\convert.exe -colors 8 -density 300 -rotate "' + (textAngle + angle) + '" ' + fullFilePathList[i] + ' ' + fullFilePathList[i]);
+							execSync('module\\imageMagick\\convert.exe -colors 8 -density 300 -depth 8 -gravity center -rotate "' + (textAngle + angle) + '" ' + fullFilePathList[i] + ' ' + fullFilePathList[i]);
 
                             ocrResult = sync.await(ocrUtil.localOcr(fullFilePathList[i], sync.defer()));
                         } else {
