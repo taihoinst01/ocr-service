@@ -170,7 +170,7 @@ router.post('/uploadFile', upload.any(), function (req, res) {
     
                 console.time("file upload & convert");
                 var fileObj = files[i];
-                var fileExt = fileObj.originalname.split('.')[1];
+                var fileExt = fileObj.originalname.substring(fileObj.originalname.lastIndexOf(".") + 1, fileObj.originalname.length);
         
                 if (fileExt.toLowerCase() === 'tif' || fileExt.toLowerCase() === 'jpg') {
                     var fileItem = {
@@ -178,7 +178,7 @@ router.post('/uploadFile', upload.any(), function (req, res) {
                         filePath: fileObj.path.replace(/\\/gi, '/'),
                         oriFileName: fileObj.originalname,
                         convertedFilePath: convertedImagePath.replace(/\\/gi, '/'),
-                        convertFileName: fileObj.originalname.split('.')[0] + '.jpg',
+                        convertFileName: fileObj.originalname.substring(0, fileObj.originalname.lastIndexOf(".")) + '.jpg',
                         fileExt: fileExt,
                         fileSize: fileObj.size,
                         contentType: fileObj.mimetype
@@ -186,19 +186,25 @@ router.post('/uploadFile', upload.any(), function (req, res) {
                     fileInfoList.push(fileItem);
         
                     var ifile = convertedImagePath + fileObj.originalname;
-                    var ofile = convertedImagePath + fileObj.originalname.split('.')[0] + '.jpg';
+                    var ofile = convertedImagePath + fileObj.originalname.substring(0, fileObj.originalname.lastIndexOf(".")) + '.jpg';
                     
                     var result = execSync('module\\imageMagick\\convert.exe -colorspace Gray -density 800x800 ' + ifile + ' ' + ofile);
                     if (result.status != 0) {
                         throw new Error(result.stderr);
                     }
+
+                    var encode = Buffer.from(ofile).toString("base64");
+                    pythonConfig.columnMappingOptions.args = [];
+                    pythonConfig.columnMappingOptions.args.push(encode);
+                    var resPyStr = sync.await(PythonShell.run('lineDeleteAndNoiseDelete.py', pythonConfig.columnMappingOptions, sync.defer()));
+
                 } else if (fileExt.toLowerCase() === 'png') {
                     var fileItem = {
                         imgId: new Date().isoNum(8) + "" + Math.floor(Math.random() * 9999999) + 1000000,
                         filePath: fileObj.path.replace(/\\/gi, '/'),
                         oriFileName: fileObj.originalname,
                         convertedFilePath: convertedImagePath.replace(/\\/gi, '/'),
-                        convertFileName: fileObj.originalname.split('.')[0] + '.png',
+                        convertFileName: fileObj.originalname.substring(0, fileObj.originalname.lastIndexOf(".")) + '.png',
                         fileExt: fileExt,
                         fileSize: fileObj.size,
                         contentType: fileObj.mimetype
@@ -206,7 +212,12 @@ router.post('/uploadFile', upload.any(), function (req, res) {
                     fileInfoList.push(fileItem);
         
                     var ifile = convertedImagePath + fileObj.originalname;
-                    var ofile = convertedImagePath + fileObj.originalname.split('.')[0] + '.png';
+                    var ofile = convertedImagePath + fileObj.originalname.substring(0, fileObj.originalname.lastIndexOf(".")) + '.png';
+
+                    var encode = Buffer.from(ofile).toString("base64");
+                    pythonConfig.columnMappingOptions.args = [];
+                    pythonConfig.columnMappingOptions.args.push(encode);
+                    var resPyStr = sync.await(PythonShell.run('lineDeleteAndNoiseDelete.py', pythonConfig.columnMappingOptions, sync.defer()));
         
                 } else if (fileExt.toLowerCase() === 'docx' || fileExt.toLowerCase() === 'doc'
                     || fileExt.toLowerCase() === 'xlsx' || fileExt.toLowerCase() === 'xls'
@@ -215,7 +226,7 @@ router.post('/uploadFile', upload.any(), function (req, res) {
         
         
                     var ifile = convertedImagePath + fileObj.originalname;
-                    var ofile = convertedImagePath + fileObj.originalname.split('.')[0] + '.pdf';
+                    var ofile = convertedImagePath + fileObj.originalname.substring(0, fileObj.originalname.lastIndexOf(".")) + '.pdf';
         
                     var convertPdf = '';
         
@@ -228,12 +239,13 @@ router.post('/uploadFile', upload.any(), function (req, res) {
                         convertPdf = execSync('"C:/Program Files/LibreOffice/program/python.exe" C:/projectWork/ocrService/module/unoconv/unoconv.py -f pdf -o "' + ofile + '" "' + ifile + '"');
                     }
         
-                    ifile = convertedImagePath + fileObj.originalname.split('.')[0] + '.pdf';
-                    ofile = convertedImagePath + fileObj.originalname.split('.')[0] + '.png';
+                    ifile = convertedImagePath + fileObj.originalname.substring(0, fileObj.originalname.lastIndexOf(".")) + '.pdf';
+                    ofile = convertedImagePath + fileObj.originalname.substring(0, fileObj.originalname.lastIndexOf(".")) + '.png';
         
                     //file convert Pdf to Png
                     if (convertPdf || fileExt.toLowerCase() === 'pdf') {
-                        var result = execSync('module\\imageMagick\\convert.exe -density 300 -colorspace Gray -alpha remove -alpha off "' + ifile + '" "' + ofile + '"');
+						//var result = execSync('module\\imageMagick\\convert.exe -density 300 -colorspace Gray -alpha remove -alpha off "' + ifile + '" "' + ofile + '"');
+						var result = execSync('module\\imageMagick\\convert.exe -colors 8 -density 300 -colorspace Gray -alpha remove -alpha off "' + ifile + '" "' + ofile + '"');
         
                         if (result.status != 0) {
                             throw new Error(result.stderr);
@@ -244,7 +256,7 @@ router.post('/uploadFile', upload.any(), function (req, res) {
         
                         while (!isStop) {
                             try { // 하나의 파일 안의 여러 페이지면
-                                var convertFileFullPath = fileObj.path.split('.')[0] + '-' + j + '.png';
+                                var convertFileFullPath = files[i].path.substring(0, files[i].path.lastIndexOf(".")) + '-' + j + '.png';
                                 var stat = fs.statSync(convertFileFullPath);
                                 if (stat) {
                                     var fileItem = {
@@ -252,7 +264,7 @@ router.post('/uploadFile', upload.any(), function (req, res) {
                                         filePath: fileObj.path.replace(/\\/gi, '/'),
                                         oriFileName: fileObj.originalname,
                                         convertedFilePath: convertedImagePath.replace(/\\/gi, '/'),
-                                        convertFileName: fileObj.originalname.split('.')[0] + '-' + j + '.png',
+                                        convertFileName: fileObj.originalname.substring(0, fileObj.originalname.lastIndexOf(".")) + '-' + j + '.png',
                                         fileExt: fileExt,
                                         fileSize: fileObj.size,
                                         contentType: fileObj.mimetype,
@@ -260,13 +272,18 @@ router.post('/uploadFile', upload.any(), function (req, res) {
                                     };
             
                                     fileInfoList.push(fileItem);
+
+                                    var encode = Buffer.from(convertFileFullPath).toString("base64");
+                                    pythonConfig.columnMappingOptions.args = [];
+                                    pythonConfig.columnMappingOptions.args.push(encode);
+                                    var resPyStr = sync.await(PythonShell.run('lineDeleteAndNoiseDelete.py', pythonConfig.columnMappingOptions, sync.defer()));
                                 } else {
                                     isStop = true;
                                     break;
                                 }
                             } catch (err) { // 하나의 파일 안의 한 페이지면
                                 try {
-                                    var convertFileFullPath = fileObj.path.split('.')[0] + '.png';
+                                    var convertFileFullPath = files[i].path.substring(0, files[i].path.lastIndexOf(".")) + '.png';
                                     var stat2 = fs.statSync(convertFileFullPath);
                                     if (stat2) {
                                         var fileItem = {
@@ -274,13 +291,19 @@ router.post('/uploadFile', upload.any(), function (req, res) {
                                             filePath: fileObj.path.replace(/\\/gi, '/'),
                                             oriFileName: fileObj.originalname,
                                             convertedFilePath: convertedImagePath.replace(/\\/gi, '/'),
-                                            convertFileName: fileObj.originalname.split('.')[0] + '.png',
+                                            convertFileName: fileObj.originalname.substring(0, fileObj.originalname.lastIndexOf(".")) + '.png',
                                             fileExt: fileExt,
                                             fileSize: fileObj.size,
                                             contentType: fileObj.mimetype,
                                             imgCount : (j + 1)
                                         };
                                         fileInfoList.push(fileItem);
+
+                                        var encode = Buffer.from(convertFileFullPath).toString("base64");
+                                        pythonConfig.columnMappingOptions.args = [];
+                                        pythonConfig.columnMappingOptions.args.push(encode);
+                                        var resPyStr = sync.await(PythonShell.run('lineDeleteAndNoiseDelete.py', pythonConfig.columnMappingOptions, sync.defer()));
+
                                         break;
                                     }
                                 } catch (e) {
@@ -357,7 +380,8 @@ router.post('/imgOcr', function (req, res) {
                                 angle = 98;
                             }
 
-                            execSync('module\\imageMagick\\convert.exe -colors 8 -density 300 -rotate "' + (textAngle + angle) + '" ' + fullFilePathList[i] + ' ' + fullFilePathList[i]);
+							//execSync('module\\imageMagick\\convert.exe -colors 8 -density 300 -rotate "' + (textAngle + angle) + '" ' + fullFilePathList[i] + ' ' + fullFilePathList[i]);
+							execSync('module\\imageMagick\\convert.exe -colors 8 -density 300 -depth 8 -gravity center -rotate "' + (textAngle + angle) + '" ' + fullFilePathList[i] + ' ' + fullFilePathList[i]);
 
                             ocrResult = sync.await(ocrUtil.localOcr(fullFilePathList[i], sync.defer()));
                         } else {
