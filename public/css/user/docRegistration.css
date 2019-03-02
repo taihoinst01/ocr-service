@@ -7,6 +7,13 @@ table .newTr .selected {color: #666 !important; }
     display: none !important; 
   }
 
+@media ( max-height: 800px ) {
+    .box_scroll_st5 {
+        height: 450px !important;
+    }
+}
+
+
 .fr{float:right}
 
 .docMenu1 {
@@ -49,4 +56,8 @@ table .newTr .selected {color: #666 !important; }
     display: inline-block;
     float: right;
     width:20%
+}
+
+.box_scroll_st5 {
+    height: 100%;
 }
