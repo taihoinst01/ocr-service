@@ -11,7 +11,11 @@ table .newTr .selected {color: #666 !important; }
     .box_scroll_st5 {
         height: 450px !important;
     }
+    #tbody_div {
+        max-height: 414px !important;
+    }
 }
+
 
 
 .fr{float:right}
