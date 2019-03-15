@@ -82,6 +82,35 @@ router.post('/uiLearnTraining', function (req, res) {
     });
 });
 
+function uiLearnTraining_new(filepath, callback) {
+    sync.fiber(function () {
+        try{
+            pythonConfig.columnMappingOptions.args = [];
+            pythonConfig.columnMappingOptions.args.push(filepath);
+            var resPyStr = sync.await(PythonShell.run('pyOcr.py', pythonConfig.columnMappingOptions, sync.defer()));
+            var testStr = resPyStr[0].replace('b', '');
+            testStr = testStr.replace(/'/g, '');
+            var decode = new Buffer(testStr, 'base64').toString('utf-8');
+            var resPyArr = JSON.parse(decode);
+
+            resPyArr = sync.await(transPantternVar.trans(resPyArr, sync.defer()));
+
+            var retDataList = [];
+            var retData = {};
+            retData = resPyArr;
+            var labelData = sync.await(oracle.selectIcrLabelDef(retData.docCategory.DOCTOPTYPE, sync.defer()));
+            retData.labelData = labelData.rows;
+            retDataList.push(retData);
+            callback(null, retDataList);
+
+        } catch (e) {
+            console.log(e);
+            callback(null, null);
+        }
+
+    });
+}
+
 function uiLearnTraining(filepath, callback) {
     sync.fiber(function () {
         try {

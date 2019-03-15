@@ -465,12 +465,57 @@ exports.insertBatchColumnMapping = function (req, docTopType, before, done) {
         let conn;
         try {
             conn = await oracledb.getConnection(dbConfig);
+
             let selectSqlText = `SELECT SEQNUM FROM TBL_BATCH_COLUMN_MAPPING_TRAIN WHERE DATA = :data`;
             let insertSqlText = `INSERT INTO TBL_BATCH_COLUMN_MAPPING_TRAIN (SEQNUM, DATA, CLASS, REGDATE) VALUES (SEQ_BATCH_COLUMN_MAPPING_TRAIN.NEXTVAL,:data,:class,SYSDATE)`;
             let selectLearnListSqlText = `SELECT DOCTYPE FROM TBL_BATCH_LEARN_LIST WHERE FILEPATH = :filepath`;
             let updateBatchColumnMapping = 'UPDATE TBL_BATCH_COLUMN_MAPPING_TRAIN SET CLASS = :class WHERE DATA = :data';
 
             //var resLearnList = await conn.execute(selectLearnListSqlText, [filepath]);
+            let insertNewSqlLabelText = `
+            INSERT INTO TBL_NEW_BATCH_LABEL_MAPPING 
+            (SEQNUM, REGDATE, DOCTYPE, OCR_TEXT, LOCATION_X, LOCATION_Y, CLASS, X_TEXT1, X_TEXT2, X_TEXT3, X_TEXT4, Y_TEXT1, Y_TEXT2, Y_TEXT3, Y_TEXT4) 
+            VALUES (SEQ_NEW_BATCH_LABEL_MAPPING.NEXTVAL, SYSDATE, :data1, :data2, :data3, :data4, :data5, :data6, :data7, :data8, :data9, :data10, :data11, :data12, :data13)`;
+
+            let insertNewSqlText = `
+            INSERT INTO TBL_NEW_BATCH_COLUMN_MAPPING 
+            (SEQNUM, CLASS, REGDATE, DOCTYPE, OCR_TEXT, OCR_TEXT_X, OCR_TEXT_Y) 
+            VALUES (SEQ_NEW_BATCH_COLUMN_MAPPING.NEXTVAL,:class, SYSDATE, :docTop, :text, :text_x, :text_y
+            )`;
+            
+            
+            /*
+            let insertNewSqlText = `
+            INSERT INTO TBL_NEW_BATCH_COLUMN_MAPPING 
+            (SEQNUM, CLASS, REGDATE, DOCTYPE, OCR_TEXT, OCR_TEXT_X, OCR_TEXT_Y, RELATION_LABEL1, RELATION_LABEL1_X
+                , RELATION_LABEL1_Y, RELATION_LABEL2, RELATION_LABEL2_X, RELATION_LABEL2_Y, RELATION_LABEL3, RELATION_LABEL3_X
+                , RELATION_LABEL3_Y, RELATION_LABEL4, RELATION_LABEL4_X, RELATION_LABEL4_Y) 
+            VALUES (SEQ_NEW_BATCH_COLUMN_MAPPING.NEXTVAL,:class, SYSDATE, :docTop, :text, :text_x, :text_y
+                    , :relation1, :relation1_x, :relation1_y, :relation2, :relation2_x, :relation2_y
+                    , :relation3, :relation3_x, :relation3_y, :relation4, :relation4_x, :relation4_y
+                )`;
+
+            let insertNewSqlText = `
+            INSERT INTO TBL_NEW_BATCH_COLUMN_MAPPING 
+            (SEQNUM, CLASS, REGDATE, DOCTYPE, OCR_TEXT, X_TEXT1, X_TEXT2, X_TEXT3, X_TEXT4, Y_TEXT1, Y_TEXT2, Y_TEXT3, Y_TEXT4) 
+            VALUES (SEQ_NEW_BATCH_COLUMN_MAPPING.NEXTVAL,:class, SYSDATE, :data1, :data2, :data3, :data4, :data5, :data6, :data7, :data8, :data9, :data10)`;
+
+            await conn.execute(insertNewSqlText, [req.colLbl+"", ocrData[0], ocrData[1], ocrData[5], ocrData[6], ocrData[7], ocrData[8], ocrData[9], ocrData[10], ocrData[11], ocrData[12]]);
+            */
+            
+
+
+           var ocrData = req.inputOcrData;
+            if (req.isLabel) {
+                await conn.execute(insertNewSqlLabelText, [ocrData[0]+"", ocrData[1], ocrData[2], ocrData[3], ocrData[4], ocrData[5], ocrData[6], ocrData[7], ocrData[8], ocrData[9], ocrData[10], ocrData[11], ocrData[12]]);
+            } else {
+                await conn.execute(insertNewSqlText, [req.colLbl+"", ocrData[0]+"", ocrData[1], ocrData[2], ocrData[3]
+                //, ocrData[5], ocrData[6], ocrData[7], ocrData[8], ocrData[9], ocrData[10], ocrData[11], ocrData[12]
+                //, ocrData[13], ocrData[14], ocrData[15], ocrData[16], ocrData[17]
+                                ]);
+            }
+            
+            return done(null, req);
 
             var sidSplit = req.sid.split(",");
             var len = sidSplit.length;
