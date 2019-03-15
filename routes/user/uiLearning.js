@@ -37,6 +37,9 @@ const defaults = {
     encoding: 'utf8',
 };
 var aimain = require('../util/aiMain');
+
+var mlclassify = require('../util/mlClassify.js');
+
 var router = express.Router();
 
 var insertTextClassification = queryConfig.uiLearningConfig.insertTextClassification;
@@ -69,7 +72,7 @@ router.post('/uiLearnTraining', function (req, res) {
         var filepath = req.body.fileInfo.filePath;
         var uiData;
 
-        uiData = sync.await(uiLearnTraining(filepath, sync.defer()));
+        uiData = sync.await(uiLearnTraining_new(filepath, sync.defer()));
         res.send({ data: uiData });
         /*
         for (var i = 0; i < filepath.length; i++) {
@@ -92,15 +95,26 @@ function uiLearnTraining_new(filepath, callback) {
             testStr = testStr.replace(/'/g, '');
             var decode = new Buffer(testStr, 'base64').toString('utf-8');
             var resPyArr = JSON.parse(decode);
-
-            resPyArr = sync.await(transPantternVar.trans(resPyArr, sync.defer()));
-
-            var retDataList = [];
             var retData = {};
-            retData = resPyArr;
-            var labelData = sync.await(oracle.selectIcrLabelDef(retData.docCategory.DOCTOPTYPE, sync.defer()));
-            retData.labelData = labelData.rows;
-            retDataList.push(retData);
+            var retDataList = [];
+            for (var i in resPyArr)
+            {
+                retData = sync.await(mlclassify.classify(resPyArr[i], sync.defer()));
+                var labelData = sync.await(oracle.selectIcrLabelDef(retData.docCategory.DOCTOPTYPE, sync.defer()));
+                retData.labelData = labelData.rows;
+                retData.fileinfo = { filepath: "C:/ICR/uploads/"+resPyArr[i].fileName };
+                retDataList.push(retData);
+            }
+            console.log(retDataList);
+            // resPyArr = sync.await(transPantternVar.trans(resPyArr, sync.defer()));
+
+            // retData = resPyArr;
+            // var labelData = sync.await(oracle.selectIcrLabelDef(retData.docCategory.DOCTOPTYPE, sync.defer()));
+            // retData.labelData = labelData.rows;
+            //retDataList.push(retData);
+            //var labelData = sync.await(oracle.selectIcrLabelDef(retData.docCategory.DOCTOPTYPE, sync.defer()));
+            //retData.labelData = labelData.rows;
+            //retDataList["labelData"] = labelData.rows;
             callback(null, retDataList);
 
         } catch (e) {

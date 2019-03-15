@@ -73,7 +73,7 @@ def get_Ocr_Info(filePath):
         conn.request("POST", "/vision/v2.0/ocr?%s" % params, body, headers)
         response = conn.getresponse()
         data = response.read()
-        data = json.loads(data)
+        data = json.loads(data.decode("UTF-8"))
         data = ocrParsing(data)
         conn.close()
 
