@@ -54,7 +54,8 @@
     "winston": "^3.0.0",
     "winston-daily-rotate-file": "^3.3.0",
     "xlsx": "^0.13.3",
-    "xml2js": "^0.4.19"
+    "xml2js": "^0.4.19",
+    "difflib": "0.2.4"
   },
   "engines": {
     "node": "~6.10.x"

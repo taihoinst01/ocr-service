@@ -4760,3 +4760,108 @@ exports.selectDocTypeList = function (req, done) {
         }
     });
 };
+
+
+//PKS 
+
+exports.selectRefindDocTopTypeList = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+
+        try {
+            conn = await oracledb.getConnection(dbConfig);          
+            var query = 'SELECT DATA, DOCTYPE, DOCTOPTYPE, SENTENCELENGTH FROM TBL_DOCUMENT_SENTENCE';
+            let result = await conn.execute(query);
+            return done(null, result.rows);
+        } catch (err) { // catches errors in getConnection and the query
+            console.log(err);
+            return done(null, "error");
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+// tbl_icr_label_def 검색
+exports.selectDocIdLabelDefList = function (req, done) {
+	return new Promise(async function (resolve, reject) {
+		let conn;
+		
+		try {
+			conn = await oracledb.getConnection(dbConfig);
+            let query = 'select SEQNUM, DOCID, KORNM, ENGNM, LABELTYPE, AMOUNT, VALID, STATUS, ESSENTIALVAL from tbl_icr_label_def where docid = :docid ';
+            console.log(req);
+			let result = await conn.execute(query, req);
+			
+			return done(null, result.rows);
+		} catch (err) { // catches errors in getConnection and the query
+			reject(err);
+		} finally {
+			if (conn) {   // the conn assignment worked, must release
+				try {
+					await conn.release();
+				} catch (e) {
+					console.error(e);
+				}
+			}
+		}
+	});
+};
+
+exports.selectLabelTrainDataList = function (req, done) {
+	return new Promise(async function (resolve, reject) {
+		let conn;
+		
+		try {
+			conn = await oracledb.getConnection(dbConfig);
+            let query = "SELECT OCR_TEXT, LOCATION_X, LOCATION_Y, CLASS FROM TBL_NEW_BATCH_LABEL_MAPPING WHERE DOCTYPE =:DOCTYPE ";
+            //console.log("DOCTYPE : "+req);
+			let result = await conn.execute(query,req);
+            console.log("result.rows");
+            console.log(result.rows);
+			return done(null, result.rows);
+		} catch (err) { // catches errors in getConnection and the query
+			reject(err);
+		} finally {
+			if (conn) {   // the conn assignment worked, must release
+				try {
+					await conn.release();
+				} catch (e) {
+					console.error(e);
+				}
+			}
+		}
+	});
+};
+
+exports.selectTrainDataList = function (req, done) {
+	return new Promise(async function (resolve, reject) {
+		let conn;
+		
+		try {
+			conn = await oracledb.getConnection(dbConfig);
+            let query = "SELECT CLASS, DOCTYPE, OCR_TEXT, OCR_TEXT_X, OCR_TEXT_Y FROM TBL_NEW_BATCH_COLUMN_MAPPING WHERE SEQNUM = 65 AND DOCTYPE =:DOCTYPE ";
+            //console.log("DOCTYPE : "+req);
+			let result = await conn.execute(query,req);
+            console.log("result.rows");
+            console.log(result.rows);
+			return done(null, result.rows);
+		} catch (err) { // catches errors in getConnection and the query
+			reject(err);
+		} finally {
+			if (conn) {   // the conn assignment worked, must release
+				try {
+					await conn.release();
+				} catch (e) {
+					console.error(e);
+				}
+			}
+		}
+	});
+};

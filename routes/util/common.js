@@ -40,7 +40,7 @@ const upload = multer({
 
             var tempName = new Date().isoNum(14) + "" + Math.floor(Math.random() * 99);
 
-            file.originalname = fileName + "_" + tempName + "." + fileExt;
+            file.originalname = "tempFileName" + "_" + tempName + "." + fileExt;
 
             cb(null, file.originalname);
         }
@@ -136,7 +136,7 @@ router.post('/imageUpload', upload.any(), function (req, res) {
             function uploadConvertStep() {
                 var self = this;
                 files.forEach(function (element) {
-                    var result = uploadConvert(element, self.parallel());
+                    var result = uploadConvert_new(element, self.parallel());
                     fileInfo.push(result.fileInfo);
                     returnObj.push(result.returnObj);
                 });
@@ -203,6 +203,106 @@ router.post('/imageUpload', upload.any(), function (req, res) {
     }
     */
 });
+
+function uploadConvert_new(files, callback) {
+    var returnResult = {};
+    var imagePath = propertiesConfig.filepath.imagePath;
+    //var convertedImagePath = appRoot + '\\uploads\\';
+    var convertedImagePath = propertiesConfig.filepath.uploadsPath;
+    console.time("file upload & convert");
+    var fileObj = files;
+    //var fileExt = fileObj.originalname.split('.')[1];
+    var fileExt = fileObj.originalname.substring(fileObj.originalname.lastIndexOf(".") + 1, fileObj.originalname.length);
+
+    if (fileExt.toLowerCase() === 'tif' || fileExt.toLowerCase() === 'jpg') {
+        var fileItem = {
+            imgId: new Date().isoNum(8) + "" + Math.floor(Math.random() * 9999999) + 1000000,
+            filePath: fileObj.path.replace(/\\/gi, '/'),
+            oriFileName: fileObj.originalname,
+            convertedFilePath: convertedImagePath.replace(/\\/gi, '/'),
+            convertFileName: fileObj.originalname.substring(0, fileObj.originalname.lastIndexOf(".")) + '.jpg',
+            fileExt: fileExt,
+            fileSize: fileObj.size,
+            contentType: fileObj.mimetype,
+            imgCount: 1
+        };
+        returnResult.fileInfo = fileItem;
+
+        var fileNames = [];
+        returnResult.returnObj = fileItem.convertFileName;
+
+        var ifile = convertedImagePath + fileObj.originalname;
+        var ofile = convertedImagePath + fileObj.originalname.substring(0, fileObj.originalname.lastIndexOf(".")) + '.jpg';
+
+    } else if (fileExt.toLowerCase() === 'png') {
+        var fileItem = {
+            imgId: new Date().isoNum(8) + "" + Math.floor(Math.random() * 9999999) + 1000000,
+            filePath: fileObj.path.replace(/\\/gi, '/'),
+            oriFileName: fileObj.originalname,
+            convertedFilePath: convertedImagePath.replace(/\\/gi, '/'),
+            convertFileName: fileObj.originalname.substring(0, fileObj.originalname.lastIndexOf(".")) + '.png',
+            fileExt: fileExt,
+            fileSize: fileObj.size,
+            contentType: fileObj.mimetype,
+            imgCount: 1
+        };
+        returnResult.fileInfo = fileItem;
+
+        var fileNames = [];
+        returnResult.returnObj = fileItem.convertFileName;
+
+        var ifile = convertedImagePath + fileObj.originalname;
+        var ofile = convertedImagePath + fileObj.originalname.substring(0, fileObj.originalname.lastIndexOf(".")) + '.png';
+
+    } else if (fileExt.toLowerCase() === 'docx' || fileExt.toLowerCase() === 'doc'
+        || fileExt.toLowerCase() === 'xlsx' || fileExt.toLowerCase() === 'xls'
+        || fileExt.toLowerCase() === 'pptx' || fileExt.toLowerCase() === 'ppt'
+        || fileExt.toLowerCase() === 'pdf') {
+
+
+        var ifile = convertedImagePath + fileObj.originalname;
+        var ofile = convertedImagePath + fileObj.originalname.substring(0, fileObj.originalname.lastIndexOf(".")) + '.pdf';
+
+        var convertPdf = '';
+
+        //file decription 운영 경로
+        //execSync('java -jar C:/ICR/app/source/module/DrmDec.jar "' + ifile + '"');
+
+        //file convert MsOffice to Pdf
+        if (!(fileExt.toLowerCase() === 'pdf')) {
+            //convertPdf = execSync('"C:/Program Files/LibreOffice/program/python.exe" C:/ICR/app/source/module/unoconv/unoconv.py -f pdf -o "' + ofile + '" "' + ifile + '"');  //운영
+            convertPdf = execSync('"C:/Program Files/LibreOffice/program/python.exe" C:/projectWork/ocrService/module/unoconv/unoconv.py -f pdf -o "' + ofile + '" "' + ifile + '"');
+        }
+
+        ifile = convertedImagePath + fileObj.originalname.substring(0, fileObj.originalname.lastIndexOf(".")) + '.pdf';
+        ofile = convertedImagePath + fileObj.originalname.substring(0, fileObj.originalname.lastIndexOf(".")) + '.png';
+
+        //file convert Pdf to Png
+        if (convertPdf || fileExt.toLowerCase() === 'pdf') {
+
+            var fileItem = {
+                imgId: new Date().isoNum(8) + "" + Math.floor(Math.random() * 9999999) + 1000000,
+                filePath: fileObj.path.replace(/\\/gi, '/'),
+                oriFileName: fileObj.originalname,
+                convertedFilePath: convertedImagePath.replace(/\\/gi, '/'),
+                convertFileName: fileObj.originalname.substring(0, fileObj.originalname.lastIndexOf(".")) + '.png',
+                fileExt: fileExt,
+                fileSize: fileObj.size,
+                contentType: fileObj.mimetype,
+                imgCount: 1
+            };
+            returnResult.fileInfo = fileItem;
+            returnResult.returnObj = fileItem.convertFileName;
+
+        } else {
+            throw new Error("pdf convert fail");
+        }
+    }
+    console.timeEnd("file upload & convert");
+
+    callback();
+    return returnResult;
+}
 
 function uploadConvert(files, callback) {
     var returnResult = {};
