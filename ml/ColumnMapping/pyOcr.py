@@ -88,7 +88,7 @@ def ocrParsing(body):
             item = ""
             for k in j["words"]:
                 item += k["text"] + " "
-            data.append({"location":j["boundingBox"], "text":item[:-1]})
+            data.append({"location":j["boundingBox"], "text":item[:-1],"originText":item[:-1]})           
     return data
 
 # y축 정렬
@@ -229,11 +229,11 @@ def findDocType(ocrData):
         sentenceList = []
 
         for line in file:
-            sentence,docType,docTopType = line.strip().split("||")
+            sentence,type,topType = line.strip().split("||")
             dic = {}
             dic["sentence"] = sentence
-            dic["docType"] = docType
-            dic["docTopType"] = docTopType
+            dic["docType"] = type
+            dic["docTopType"] = topType
             sentenceList.append(dic)
         file.close()
 
@@ -242,7 +242,7 @@ def findDocType(ocrData):
         for i, item in enumerate(ocrData):
             text.append(re.sub(regExp, "", item["text"]))
             strText = ",".join(str(x) for x in text)
-            if i == 20:
+            if i == 19:
                 break
 
         strText = strText.lower()
@@ -252,7 +252,7 @@ def findDocType(ocrData):
 
             if ratio > maxNum:
                 maxNum = ratio
-                doctype = rows["docType"]
+                docType = rows["docType"]
                 docTopType = rows["docTopType"]
 
         if maxNum > 0.1:
@@ -325,6 +325,7 @@ def splitLabel(ocrData):
 
                         dic["location"] = dicLoc
                         dic["text"] = i
+                        dic["originText"] = i
                         ocrData.append(dic)
 
         ocrData = sortArrLocation(ocrData)
@@ -420,11 +421,11 @@ if __name__ == '__main__':
             # Y축정렬
             ocrData = sortArrLocation(ocrData)
 
-            # doctype 추출 similarity - 임교진
-            docTopType, docType, maxNum = findDocType(ocrData)
-
             # 레이블 분리 모듈 - 임교진
             ocrData = splitLabel(ocrData)
+
+            # doctype 추출 similarity - 임교진
+            docTopType, docType, maxNum = findDocType(ocrData)
 
             # Y축 데이터 X축 데이터 추출
             ocrData = compareLabel(ocrData)

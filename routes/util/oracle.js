@@ -4735,7 +4735,7 @@ exports.selectDocStatus = function (req, done) {
     });
 };
 
-exports.selectDocumentCategory = function (req, done) {
+exports.selectDocName = function (req, done) {
     return new Promise(async function (resolve, reject) {
         let conn;
         let param;
