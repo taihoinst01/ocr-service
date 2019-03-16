@@ -409,11 +409,9 @@ if __name__ == '__main__':
 
         for item in fileNames:
             # image resize 기능 펑션으로 만들어 호출해서 쓸 것
+            imgResize(upload_path + item)
             if ext == ".tif":
                 item = item[:item.rfind(".")] + '.jpg'
-
-            imgResize(upload_path + item)
-
             # noise reduce line delete 기능 연결 - skip
 
             # MS ocr api 호출
