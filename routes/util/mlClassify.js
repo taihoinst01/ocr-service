@@ -185,15 +185,26 @@ function findEntry(req,docTypeVal, docTopTypeVal, done) {
                 
                 //console.log("before : "+req.data[j].text + " X : "+mappingSid[1] + " Y : "+mappingSid[2]);
 
-                for (var k in labelTrainRows)
+                if(labelTrainRows.length > 0)
                 {
-                    if(mappingSid[1] == labelTrainRows[k].LOCATION_X && mappingSid[2] == labelTrainRows[k].LOCATION_Y )
+                    for (var k in labelTrainRows)
                     {
-                        // console.log("after : "+req.data[j].text + " X : "+mappingSid[1] + " Y : "+mappingSid[2]);
-                        // console.log(mappingSid[1] +" || "+ trainRows[k].LOCATION_X);
-                        // console.log(mappingSid[2] +" || "+ trainRows[k].LOCATION_Y);
-                        req.data[j]["colLbl"] = labelTrainRows[k].CLASS;
+                        if(mappingSid[1] == labelTrainRows[k].LOCATION_X && mappingSid[2] == labelTrainRows[k].LOCATION_Y )
+                        {
+                            // console.log("after : "+req.data[j].text + " X : "+mappingSid[1] + " Y : "+mappingSid[2]);
+                            // console.log(mappingSid[1] +" || "+ trainRows[k].LOCATION_X);
+                            // console.log(mappingSid[2] +" || "+ trainRows[k].LOCATION_Y);
+                            req.data[j]["colLbl"] = labelTrainRows[k].CLASS;
+                        }
+                        else
+                        {
+                            req.data[j]["colLbl"] = -1;
+                        }
                     }
+                }
+                else
+                {
+                    req.data[j]["colLbl"] = -1;
                 }
             }
             retData["docCategory"] = req.docCategory;

@@ -4873,10 +4873,10 @@ exports.selectTrainDataList = function (req, done) {
 		
 		try {
 			conn = await oracledb.getConnection(dbConfig);
-            let query = "SELECT CLASS, DOCTYPE, OCR_TEXT, OCR_TEXT_X, OCR_TEXT_Y FROM TBL_NEW_BATCH_COLUMN_MAPPING WHERE SEQNUM = 65 AND DOCTYPE =:DOCTYPE ";
+            let query = "SELECT CLASS, DOCTYPE, OCR_TEXT, OCR_TEXT_X, OCR_TEXT_Y FROM TBL_NEW_BATCH_COLUMN_MAPPING WHERE DOCTYPE = '"+req+"' ";
             //console.log("DOCTYPE : "+req);
-			let result = await conn.execute(query,req);
-            console.log("result.rows");
+			let result = await conn.execute(query);
+            console.log("selectTrainDataList.rows");
             console.log(result.rows);
 			return done(null, result.rows);
 		} catch (err) { // catches errors in getConnection and the query
