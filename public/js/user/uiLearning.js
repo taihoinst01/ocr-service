@@ -1969,7 +1969,7 @@ function uiLayerHtml(data) {
     fn_initUiTraining(); // 레이어 초기화
     fn_uiDocTopType(data.data[0].docCategory); // Top Type select box 생성
 	$('#docName').html(data.data[0].docCategory.DOCNAME);
-	$('#docPredictionScore').html(data.data[0].docCategory.DOCSCORE * 100);
+	$('#docPredictionScore').html(Math.floor(data.data[0].docCategory.DOCSCORE * 100));
 	$('#docPredictionScore').append('%');
 
 	if ($('#docPredictionScore').val() >= 90) {

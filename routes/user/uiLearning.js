@@ -101,6 +101,8 @@ function uiLearnTraining_new(filepath, callback) {
             {
                 retData = sync.await(mlclassify.classify(resPyArr[i], sync.defer()));
                 var labelData = sync.await(oracle.selectIcrLabelDef(retData.docCategory.DOCTOPTYPE, sync.defer()));
+                var docName = sync.await(oracle.selectDocumentCategory(retData.docCategory.DOCTYPE, sync.defer()));
+                retData.docCategory.DOCNAME = docName[0].DOCNAME;
                 retData.labelData = labelData.rows;
                 retData.fileinfo = { filepath: "C:/ICR/uploads/"+resPyArr[i].fileName };
                 retDataList.push(retData);

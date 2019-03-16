@@ -439,7 +439,7 @@ if __name__ == '__main__':
 
             obj = {}
             obj["fileName"] = item
-            obj["docCategory"] = {"DOCTYPE":docType, "DOCTOPTYPE": docTopType, "SCORE": maxNum}
+            obj["docCategory"] = {"DOCTYPE":docType, "DOCTOPTYPE": docTopType, "DOCSCORE": maxNum}
             obj["data"] = ocrData
 
             retResult.append(obj)
