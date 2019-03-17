@@ -219,7 +219,7 @@ def similar(a, b):
 
 def findDocType(ocrData):
     try:
-        docTypType = 0
+        docTopType = 0
         docType = 0
         text = []
         maxNum = 0
@@ -348,42 +348,55 @@ def imgResize(filename):
 
         FIX_LONG = 2970
         FIX_SHORT = 2100
+        filenames = []
 
-        img = cv2.imread(filename)
-        height, width = img.shape[:2]
-        imagetype = "hori"
-        # 배율
-        magnify = 1
-        if width - height > 0:
-            iimagetype = "hori"
-            if (width / height) > (FIX_LONG / FIX_SHORT):
-                magnify = round((FIX_LONG / width) - 0.005, 2)
+        imgs = cv2.imreadmulti(filename)[1]
+        index = 0
+
+        for i in range(0,len(imgs)):
+
+            img = imgs[i]
+            height, width = img.shape[:2]
+            imagetype = "hori"
+            # 배율
+            magnify = 1
+            if width - height > 0:
+                imagetype = "hori"
+                if (width / height) > (FIX_LONG / FIX_SHORT):
+                    magnify = round((FIX_LONG / width) - 0.005, 2)
+                else:
+                    magnify = round((FIX_SHORT / height) - 0.005, 2)
             else:
-                magnify = round((FIX_SHORT / height) - 0.005, 2)
-        else:
-            imagetype = "vert"
-            if (height / width) > (FIX_LONG / FIX_SHORT):
-                magnify = round((FIX_LONG / height) - 0.005, 2)
+                imagetype = "vert"
+                if (height / width) > (FIX_LONG / FIX_SHORT):
+                    magnify = round((FIX_LONG / height) - 0.005, 2)
+                else:
+                    magnify = round((FIX_SHORT / width) - 0.005, 2)
+
+            # 확대, 축소
+            img = cv2.resize(img, dsize=(0, 0), fx=magnify, fy=magnify, interpolation=cv2.INTER_LINEAR)
+            height, width = img.shape[:2]
+            # 여백 생성
+            if imagetype == "hori":
+                img = cv2.copyMakeBorder(img, 0, FIX_SHORT - height, 0, FIX_LONG - width, cv2.BORDER_CONSTANT,
+                                         value=[255, 255, 255])
             else:
-                magnify = round((FIX_SHORT / width) - 0.005, 2)
+                img = cv2.copyMakeBorder(img, 0, FIX_LONG - height, 0, FIX_SHORT - width, cv2.BORDER_CONSTANT,
+                                         value=[255, 255, 255])
 
-        # 확대, 축소
-        img = cv2.resize(img, dsize=(0, 0), fx=magnify, fy=magnify, interpolation=cv2.INTER_LINEAR)
-        height, width = img.shape[:2]
-        # 여백 생성
-        if imagetype == "hori":
-            img = cv2.copyMakeBorder(img, 0, FIX_SHORT - height, 0, FIX_LONG - width, cv2.BORDER_CONSTANT,
-                                     value=[255, 255, 255])
-        else:
-            img = cv2.copyMakeBorder(img, 0, FIX_LONG - height, 0, FIX_SHORT - width, cv2.BORDER_CONSTANT,
-                                     value=[255, 255, 255])
+            ext = findExt(filename)
 
-        ext = findExt(filename)
+            if ext.lower() == '.tif':
+                name = filename[:filename.rfind(".")]
+                name = "%s-%d.jpg" % (name, index)
+                cv2.imwrite(name, img)
+                filenames.append(name)
+                index = index + 1
+            else:
+                cv2.imwrite(filename, img)
+                filenames.append(filename)
 
-        if ext == '.tif':
-            filename = filename[:filename.rfind(".")] + '.jpg'
-
-        cv2.imwrite(filename,img)
+        return filenames
 
     except Exception as ex:
         raise Exception(
@@ -392,6 +405,37 @@ def imgResize(filename):
 def findExt(fileName):
     ext = fileName[fileName.rfind("."):]
     return ext
+
+def pyOcr(item):
+    # MS ocr api 호출
+    ocrData = get_Ocr_Info(item)
+
+    # Y축정렬
+    ocrData = sortArrLocation(ocrData)
+
+    # 레이블 분리 모듈 - 임교진
+    ocrData = splitLabel(ocrData)
+
+    # doctype 추출 similarity - 임교진
+    docTopType, docType, maxNum = findDocType(ocrData)
+
+    # Y축 데이터 X축 데이터 추출
+    ocrData = compareLabel(ocrData)
+
+    # label 추출 MS ML 호출
+    labelData = findColByML(ocrData)
+    # entry 추출
+    entryData = findColByML(ocrData)
+
+    # entry 추출
+    ocrData = findEntry(ocrData)
+
+    obj = {}
+    obj["fileName"] = item[item.rfind("/")+1:]
+    obj["docCategory"] = {"DOCTYPE": docType, "DOCTOPTYPE": docTopType, "SCORE": maxNum}
+    obj["data"] = ocrData
+
+    return obj
 
 if __name__ == '__main__':
     try:
@@ -405,45 +449,15 @@ if __name__ == '__main__':
         ext = findExt(fileName)
         if ext == ".pdf":
             fileNames = convertPdfToImage(upload_path, fileName)
+            for item in fileNames:
+                imgResize(upload_path + item)
+                obj = pyOcr(upload_path + item)
+                retResult.append(obj)
         else:
-            fileNames = [fileName]
-
-        for item in fileNames:
-            # image resize 기능 펑션으로 만들어 호출해서 쓸 것
-            imgResize(upload_path + item)
-            if ext == ".tif":
-                item = item[:item.rfind(".")] + '.jpg'
-            # noise reduce line delete 기능 연결 - skip
-
-            # MS ocr api 호출
-            ocrData = get_Ocr_Info(upload_path + item)
-
-            # Y축정렬
-            ocrData = sortArrLocation(ocrData)
-
-            # 레이블 분리 모듈 - 임교진
-            ocrData = splitLabel(ocrData)
-
-            # doctype 추출 similarity - 임교진
-            docTopType, docType, maxNum = findDocType(ocrData)
-
-            # Y축 데이터 X축 데이터 추출
-            ocrData = compareLabel(ocrData)
-
-            # label 추출 MS ML 호출
-            labelData = findColByML(ocrData)
-            # entry 추출
-            entryData = findColByML(ocrData)
-
-            # entry 추출
-            ocrData = findEntry(ocrData)
-
-            obj = {}
-            obj["fileName"] = item
-            obj["docCategory"] = {"DOCTYPE":docType, "DOCTOPTYPE": docTopType, "DOCSCORE": maxNum}
-            obj["data"] = ocrData
-
-            retResult.append(obj)
+            fileNames = imgResize(upload_path + fileName)
+            for item in fileNames:
+                obj = pyOcr(item)
+                retResult.append(obj)
 
         result = re.sub('None', "null", json.dumps(retResult, ensure_ascii=False))
         print(base64.b64encode(result.encode('utf-8')))
