@@ -417,16 +417,16 @@ var imgOcr = function(fileInfoList) {
                 }
 
                 // imgThumbnail
-                for(var i = 0; i < fileInfoList.length; i++) {
+                for (var i = 0; i < trainResultList.length; i++) {
                     if(i == 0) {
                         appendThumbnailHtml += '<li class="on">';
                     } else {
                         appendThumbnailHtml += '<li>';
                     }
-                    appendThumbnailHtml += '<div class="box_img"><i><img src="/img/' + nvl(fileInfoList[i].convertFileName) + '" ' +
-                            'class="thumb-img" title="' + nvl(fileInfoList[i].convertFileName) + '"></i>' +
+                    appendThumbnailHtml += '<div class="box_img"><i><img src="/img/' + nvl(trainResultList[i].fileName) + '" ' +
+                            'class="thumb-img" title="' + nvl(trainResultList[i].fileName) + '"></i>' +
                             '</div>' +
-                            '<span>' + nvl(fileInfoList[i].convertFileName) + '</span>' +
+                            '<span>' + nvl(trainResultList[i].fileName) + '</span>' +
                             '</li> ';
                 }
 
@@ -438,7 +438,7 @@ var imgOcr = function(fileInfoList) {
                         mainImgHtml += '</div>';
                         mainImgHtml += '</div>';
                 $('#div_invoice_view_image').html(mainImgHtml);
-                $('#mainImage').css('background-image', 'url("/img/' + fileInfoList[0].convertFileName + '")');
+                $('#mainImage').css('background-image', 'url("/img/' + trainResultList[0].fileName + '")');
                 $("#ul_image").empty().append(appendThumbnailHtml);
                 $('#multiRecordTblTbody').append(appendMultiRecordHtml);
                 checkDocLabelDef(docLabelDefList);

@@ -22,6 +22,7 @@ var pythonConfig = require(appRoot + '/config/pythonConfig');
 var PythonShell = require('python-shell');
 var transPantternVar = require('./transPattern');
 var propertiesConfig = require(appRoot + '/config/propertiesConfig.js');
+var mlclassify = require('../util/mlClassify.js');
 var Step = require('step');
 
 var insertTextClassification = queryConfig.uiLearningConfig.insertTextClassification;
@@ -158,6 +159,106 @@ var fnSearchDocumentImageList = function (req, res) {
  * FILE UPLOAD
  ****************************************************************************************/
 router.post('/uploadFile', upload.any(), function (req, res) {
+    sync.fiber(function () {
+        var files = req.files;
+        var convertedImagePath = propertiesConfig.filepath.uploadsPath;
+        var fileInfoList = [];
+        var status;
+        var trainResultList;
+        try {
+
+            for (var i = 0; i < files.length; i++) {
+
+                console.time("file upload & convert");
+                var fileObj = files[i];
+                var fileExt = fileObj.originalname.substring(fileObj.originalname.lastIndexOf(".") + 1, fileObj.originalname.length);
+
+                if (fileExt.toLowerCase() === 'tif' || fileExt.toLowerCase() === 'jpg') {
+                    var fileItem = {
+                        imgId: new Date().isoNum(8) + "" + Math.floor(Math.random() * 9999999) + 1000000,
+                        filePath: fileObj.path.replace(/\\/gi, '/'),
+                        oriFileName: fileObj.originalname,
+                        convertedFilePath: convertedImagePath.replace(/\\/gi, '/'),
+                        convertFileName: fileObj.originalname.substring(0, fileObj.originalname.lastIndexOf(".")) + '.jpg',
+                        fileExt: fileExt,
+                        fileSize: fileObj.size,
+                        contentType: fileObj.mimetype
+                    };
+                    fileInfoList.push(fileItem);
+
+                    var ifile = convertedImagePath + fileObj.originalname;
+                    var ofile = convertedImagePath + fileObj.originalname.substring(0, fileObj.originalname.lastIndexOf(".")) + '.jpg';
+                } else if (fileExt.toLowerCase() === 'png') {
+                    var fileItem = {
+                        imgId: new Date().isoNum(8) + "" + Math.floor(Math.random() * 9999999) + 1000000,
+                        filePath: fileObj.path.replace(/\\/gi, '/'),
+                        oriFileName: fileObj.originalname,
+                        convertedFilePath: convertedImagePath.replace(/\\/gi, '/'),
+                        convertFileName: fileObj.originalname.substring(0, fileObj.originalname.lastIndexOf(".")) + '.png',
+                        fileExt: fileExt,
+                        fileSize: fileObj.size,
+                        contentType: fileObj.mimetype
+                    };
+                    fileInfoList.push(fileItem);
+
+                    var ifile = convertedImagePath + fileObj.originalname;
+                    var ofile = convertedImagePath + fileObj.originalname.substring(0, fileObj.originalname.lastIndexOf(".")) + '.png';
+                } else if (fileExt.toLowerCase() === 'docx' || fileExt.toLowerCase() === 'doc'
+                    || fileExt.toLowerCase() === 'xlsx' || fileExt.toLowerCase() === 'xls'
+                    || fileExt.toLowerCase() === 'pptx' || fileExt.toLowerCase() === 'ppt'
+                    || fileExt.toLowerCase() === 'pdf') {
+
+                    var ifile = convertedImagePath + fileObj.originalname;
+                    var ofile = convertedImagePath + fileObj.originalname.substring(0, fileObj.originalname.lastIndexOf(".")) + '.pdf';
+
+                    var convertPdf = '';
+
+                    //file decription 운영 경로
+                    //execSync('java -jar C:/ICR/app/source/module/DrmDec.jar "' + ifile + '"');
+
+                    //file convert MsOffice to Pdf
+                    if (!(fileExt.toLowerCase() === 'pdf')) {
+                        //convertPdf = execSync('"C:/Program Files/LibreOffice/program/python.exe" C:/ICR/app/source/module/unoconv/unoconv.py -f pdf -o "' + ofile + '" "' + ifile + '"');  //운영
+                        convertPdf = execSync('"C:/Program Files/LibreOffice/program/python.exe" C:/projectWork/ocrService/module/unoconv/unoconv.py -f pdf -o "' + ofile + '" "' + ifile + '"');
+                    }
+
+                    ifile = convertedImagePath + fileObj.originalname.substring(0, fileObj.originalname.lastIndexOf(".")) + '.pdf';
+                    ofile = convertedImagePath + fileObj.originalname.substring(0, fileObj.originalname.lastIndexOf(".")) + '.png';
+
+                    //file convert Pdf to Png
+                    if (convertPdf || fileExt.toLowerCase() === 'pdf') {
+                        var fileItem = {
+                            imgId: new Date().isoNum(8) + "" + Math.floor(Math.random() * 9999999) + 1000000,
+                            filePath: fileObj.path.replace(/\\/gi, '/'),
+                            oriFileName: fileObj.originalname,
+                            convertedFilePath: convertedImagePath.replace(/\\/gi, '/'),
+                            convertFileName: fileObj.originalname.substring(0, fileObj.originalname.lastIndexOf(".")) + '.png',
+                            fileExt: fileExt,
+                            fileSize: fileObj.size,
+                            contentType: fileObj.mimetype,
+                            imgCount: 1
+                        };
+
+                        fileInfoList.push(fileItem);
+
+                    } else {
+                        throw new Error("pdf convert fail");
+                    }
+                }
+                console.timeEnd("file upload & convert");
+            }
+            console.log('upload suceess');
+            status = 200;
+        } catch (err) {
+            status = 500;
+            console.log(err);
+        } finally {
+            res.send({ 'status': status, 'fileInfoList': fileInfoList });
+        }
+    });
+});
+
+router.post('/uploadFile_old', upload.any(), function (req, res) {
     sync.fiber(function () {
         var files = req.files;
         var convertedImagePath = propertiesConfig.filepath.uploadsPath;
@@ -331,6 +432,57 @@ router.post('/uploadFile', upload.any(), function (req, res) {
 });
 
 router.post('/imgOcr', function (req, res) {
+    sync.fiber(function () {
+        var trainResultList = [];
+        var status;
+        var fileInfoList = req.body.fileInfoList;
+        var docLabelDefList;
+        var docAnswerDataList;
+        try {
+
+            pythonConfig.columnMappingOptions.args = [];
+            pythonConfig.columnMappingOptions.args.push(fileInfoList[0].filePath);
+            var resPyStr = sync.await(PythonShell.run('pyOcr.py', pythonConfig.columnMappingOptions, sync.defer()));
+            var testStr = resPyStr[0].replace('b', '');
+            testStr = testStr.replace(/'/g, '');
+            var decode = new Buffer(testStr, 'base64').toString('utf-8');
+            var resPyArr = JSON.parse(decode);
+            var retData = {};
+            var retDataList = [];
+            for (var i in resPyArr) {
+                retData = sync.await(mlclassify.classify(resPyArr[i], sync.defer()));
+                var labelData = sync.await(oracle.selectIcrLabelDef(retData.docCategory.DOCTOPTYPE, sync.defer()));
+                var docName = sync.await(oracle.selectDocName(retData.docCategory.DOCTYPE, sync.defer()));
+                retData.docCategory.DOCNAME = docName[0].DOCNAME;
+                retData.labelData = labelData.rows;
+                retData.fileName = resPyArr[i].fileName;
+                retDataList.push(retData);
+            }
+
+            // tbl_icr_label_def 조회
+            var docToptype = retDataList[0].docCategory.DOCTOPTYPE;
+            docLabelDefList = sync.await(oracle.selectDocLabelDefList(([docToptype]), sync.defer()));
+            //console.log(docLabelDefList);
+
+            // tbl_batch_po_answer_data 조회 docTotptye, filename
+            //var filename = req.fileInfoList[0].oriFileName
+            docAnswerDataList = sync.await(oracle.selectAnswerData(({ 'docToptype': docToptype }), sync.defer()));
+
+            status = 200;
+
+        } catch (e) {
+            status = 500;
+            console.log(e);
+        } finally {
+            res.send({ 'status': status, 'trainResultList': retDataList, 'docLabelDefList': docLabelDefList, 'docAnswerDataList': docAnswerDataList });
+        }
+
+
+    });
+});
+
+
+router.post('/imgOcr_old', function (req, res) {
     sync.fiber(function () {
         var trainResultList = [];
         var status;
