@@ -41,6 +41,7 @@ const upload = multer({
             var tempName = new Date().isoNum(14) + "" + Math.floor(Math.random() * 99);
 
             file.originalname = "tempFileName" + "_" + tempName + "." + fileExt;
+            //file.originalname = fileName + "_" + tempName + "." + fileExt;
 
             cb(null, file.originalname);
         }

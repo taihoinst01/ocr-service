@@ -97,8 +97,12 @@ function uiLearnTraining_new(filepath, callback) {
             var resPyArr = JSON.parse(decode);
             var retData = {};
             var retDataList = [];
-            for (var i in resPyArr)
-            {
+            var docCategory = {};
+            for (var i in resPyArr) {
+                if (i == 0) {
+                    docCategory = resPyArr[i].docCategory;
+                }
+                resPyArr[i].docCategory = docCategory;
                 retData = sync.await(mlclassify.classify(resPyArr[i], sync.defer()));
                 var labelData = sync.await(oracle.selectIcrLabelDef(retData.docCategory.DOCTOPTYPE, sync.defer()));
                 var docName = sync.await(oracle.selectDocName(retData.docCategory.DOCTYPE, sync.defer()));

@@ -432,7 +432,7 @@ def pyOcr(item):
 
     obj = {}
     obj["fileName"] = item[item.rfind("/")+1:]
-    obj["docCategory"] = {"DOCTYPE": docType, "DOCTOPTYPE": docTopType, "SCORE": maxNum}
+    obj["docCategory"] = {"DOCTYPE": docType, "DOCTOPTYPE": docTopType, "DOCSCORE": maxNum}
     obj["data"] = ocrData
 
     return obj
