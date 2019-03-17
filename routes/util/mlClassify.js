@@ -32,16 +32,18 @@ module.exports = {
 			try {
                 //var retDataList =new Array();
                 // mappingSid 추출
+                var retReq = req;
                 req = sync.await(getMappingSid(req, sync.defer()));
                 if(req.docCategory.DOCTOPTYPE == 0)
                 {
                     var docTypes = sync.await(refindDocTopType(req, sync.defer()));
-                    if (docTypes[1] != 0)
-                    {
+                    if (docTypes[1] != 0) {
                         // mappingSid 추출
                         req = sync.await(getMappingSid(req, sync.defer()));
                         // 가변영역추출
-                        req = sync.await(findEntry(req,docTypes[0],docTypes[1], sync.defer()));
+                        req = sync.await(findEntry(req, docTypes[0], docTypes[1], sync.defer()));
+                    } else {
+                        req = retReq;
                     }
                 }
                 else
