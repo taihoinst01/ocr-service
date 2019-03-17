@@ -108,18 +108,22 @@ function refindDocTopType(req, done) {
                     break;
                 }
             }
-
-            strText = text.substring(0, text.length -1).toLowerCase();
-            for(var i in docTypeList)
+            console.log(text.length +" |||| "+text);
+            if(text.length > 0)
             {
-                var ratio = similar(strText, docTypeList[i].DATA);
-                if(ratio > maxNum)
+                strText = text.substring(0, text.length -1).toLowerCase();
+                for(var i in docTypeList)
                 {
-                    maxNum = ratio;
-                    docType = docTypeList[i].DOCTYPE;
-                    docTopType = docTypeList[i].DOCTOPTYPE;
+                    var ratio = similar(strText, docTypeList[i].DATA);
+                    if(ratio > maxNum)
+                    {
+                        maxNum = ratio;
+                        docType = docTypeList[i].DOCTYPE;
+                        docTopType = docTypeList[i].DOCTOPTYPE;
+                    }
                 }
             }
+            
 		} catch (e) {
 			console.log(e);
 		} finally {
