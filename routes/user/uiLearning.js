@@ -80,7 +80,7 @@ router.post('/uiLearnTraining', function (req, res) {
         
         for (var i=0; i<uiData.length; i++) {
             //두연작업중
-            //correctUiData = sync.await(correctEntry(uiData[i], sync.defer()));
+            //correctUiData = sync.await(correctEntryFnc(uiData[i], sync.defer()));
         }
         res.send({ data: correctUiData });
         /*
@@ -94,30 +94,36 @@ router.post('/uiLearnTraining', function (req, res) {
     });
 });
 
-function correctEntry(uiInputData, callback) {
+function correctEntryFnc(uiInputData, callback) {
     sync.fiber(function () {
-
-        var docTypeJson;
-        var entryJson;
-        var inputDataArr = uiInputData.data;
-        for (var i=0; i<inputDataArr.length; i++) {
-            docTypeJson = correctEntry.pantos[uiInputData.docCategory.DOCTYPE];
-            if (typeof docTypeJson != 'undefined') {
-                entryJson = docTypeJson[inputDataArr[i].entryLbl];
-                if (typeof entryJson != 'undefined') {
-                    var ocrText = inputDataArr[i].originText;
-                    var correctText = '';
-                    for (var j=0; j<ocrText.length; j++) {
-                        if (typeof entryJson[ocrText[j]] !='undefined') {
-                            correctText += entryJson[ocrText[j]];
-                        } else {
-                            correctText += ocrText[j];
+        try{ 
+            var docTypeJson;
+            var entryJson;
+            var inputDataArr = uiInputData.data;
+            for (var i=0; i<inputDataArr.length; i++) {
+                docTypeJson = correctEntry.pantos[uiInputData.docCategory.DOCTYPE];
+                if (typeof docTypeJson != 'undefined') {
+                    entryJson = docTypeJson[inputDataArr[i].entryLbl];
+                    if (typeof entryJson != 'undefined') {
+                        var ocrText = inputDataArr[i].originText;
+                        var correctText = '';
+                        for (var j=0; j<ocrText.length; j++) {
+                            if (typeof entryJson[ocrText[j]] !='undefined') {
+                                correctText += entryJson[ocrText[j]];
+                            } else {
+                                correctText += ocrText[j];
+                            }
                         }
+                        inputDataArr[i].text = correctText;
                     }
-                    inputDataArr[i].text = correctText;
                 }
             }
+            callback(null, uiInputData);
+        } catch (e) {
+            console.log(e);
+            callback(null, uiInputData);
         }
+        
     });
 }
 
