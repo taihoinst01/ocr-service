@@ -107,6 +107,14 @@ function correctEntryFnc(uiInputData, callback) {
                     if (typeof entryJson != 'undefined') {
                         var ocrText = inputDataArr[i].originText;
                         var correctText = '';
+                        Object.keys(entryJson).forEach(function(objKey){
+                            console.log(objKey + ' - ' + entryJson[objKey]);
+                            if (ocrText.indexOf(objKey) != -1) {
+                                ocrText.replace(objKey, entryJson[objKey]);
+                            }
+                        });
+
+
                         for (var j=0; j<ocrText.length; j++) {
                             if (typeof entryJson[ocrText[j]] !='undefined') {
                                 correctText += entryJson[ocrText[j]];
