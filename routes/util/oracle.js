@@ -4892,3 +4892,26 @@ exports.selectTrainDataList = function (req, done) {
 		}
 	});
 };
+
+exports.selectIcrSymspell = function (req, done) {
+	return new Promise(async function (resolve, reject) {
+		let conn;
+		
+		try {
+			conn = await oracledb.getConnection(dbConfig);
+            let query = "SELECT KEYWORD, FREQUENCY, ICRWORD FROM TBL_ICR_SYMSPELL";
+			let result = await conn.execute(query);
+			return done(null, result.rows);
+		} catch (err) { // catches errors in getConnection and the query
+			reject(err);
+		} finally {
+			if (conn) {   // the conn assignment worked, must release
+				try {
+					await conn.release();
+				} catch (e) {
+					console.error(e);
+				}
+			}
+		}
+	});
+};

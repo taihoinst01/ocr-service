@@ -33,6 +33,8 @@ module.exports = {
                 //var retDataList =new Array();
                 // mappingSid 추출
                 var retReq = req;
+
+                req = sync.await(editOcrTextTypos(req, sync.defer())); //ocrtext 오타수정
                 req = sync.await(getMappingSid(req, sync.defer()));
                 if(req.docCategory.DOCTOPTYPE == 0)
                 {
@@ -63,6 +65,35 @@ module.exports = {
 	}
 };
 
+// ocrtext 오타수정
+function editOcrTextTypos(req, done) {
+	sync.fiber(function () {
+		try {
+
+            var symspellList = sync.await(oracle.selectIcrSymspell(null, sync.defer()));
+            var symspellListLength = symspellList.length;
+            var ocrData = req.data;
+            var ocrDataLength = ocrData.length;
+            //var reqDataLength = req.data.length;
+            for(var i = 0; i < symspellListLength; i++) {
+                var dbIcrWord = symspellList[i].ICRWORD;
+                var dbKeyWord = symspellList[i].KEYWORD; 
+                for(var j = 0; j < ocrDataLength; j++) {
+                    var ocrText =  ocrData[j].originText;
+                    if(dbIcrWord == ocrText) {
+                        ocrData[j].text = dbKeyWord;
+                    }
+                }
+            }
+			
+		} catch (e) {
+			console.log(e);
+		} finally {
+			return done(null, req);
+		}
+
+	});
+}
 
 function getMappingSid(req, done) {
 	sync.fiber(function () {
