@@ -18,6 +18,9 @@ var ui = require('../util/ui.js');
 var transPantternVar = require('./transPattern');
 var batch = require('../util/batch.js');
 var ocrUtil = require('../util/ocr.js');
+
+var correctEntry = require(appRoot + '/config/correctEntry.js');
+
 const upload = multer({
     storage: multer.diskStorage({
         destination: function (req, file, cb) {
@@ -71,9 +74,15 @@ router.post('/uiLearnTraining', function (req, res) {
     sync.fiber(function () {
         var filepath = req.body.fileInfo.filePath;
         var uiData;
-
+        var correctUiData;
         uiData = sync.await(uiLearnTraining_new(filepath, sync.defer()));
-        res.send({ data: uiData });
+
+        
+        for (var i=0; i<uiData.length; i++) {
+            //두연작업중
+            //correctUiData = sync.await(correctEntry(uiData[i], sync.defer()));
+        }
+        res.send({ data: correctUiData });
         /*
         for (var i = 0; i < filepath.length; i++) {
             //uiData = sync.await(batchLearnTraining(filepath[i], "LEARN_Y", sync.defer()));
@@ -84,6 +93,33 @@ router.post('/uiLearnTraining', function (req, res) {
         */
     });
 });
+
+function correctEntry(uiInputData, callback) {
+    sync.fiber(function () {
+
+        var docTypeJson;
+        var entryJson;
+        var inputDataArr = uiInputData.data;
+        for (var i=0; i<inputDataArr.length; i++) {
+            docTypeJson = correctEntry.pantos[uiInputData.docCategory.DOCTYPE];
+            if (typeof docTypeJson != 'undefined') {
+                entryJson = docTypeJson[inputDataArr[i].entryLbl];
+                if (typeof entryJson != 'undefined') {
+                    var ocrText = inputDataArr[i].originText;
+                    var correctText = '';
+                    for (var j=0; j<ocrText.length; j++) {
+                        if (typeof entryJson[ocrText[j]] !='undefined') {
+                            correctText += entryJson[ocrText[j]];
+                        } else {
+                            correctText += ocrText[j];
+                        }
+                    }
+                    inputDataArr[i].text = correctText;
+                }
+            }
+        }
+    });
+}
 
 function uiLearnTraining_new(filepath, callback) {
     sync.fiber(function () {
