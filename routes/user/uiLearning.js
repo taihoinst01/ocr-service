@@ -19,6 +19,7 @@ var transPantternVar = require('./transPattern');
 var batch = require('../util/batch.js');
 var ocrUtil = require('../util/ocr.js');
 
+var ocrJs = require('../util/ocr.js');
 var correctEntry = require(appRoot + '/config/correctEntry.js');
 
 const upload = multer({
@@ -80,9 +81,10 @@ router.post('/uiLearnTraining', function (req, res) {
         
         for (var i=0; i<uiData.length; i++) {
             //두연작업중
-            //correctUiData = sync.await(correctEntryFnc(uiData[i], sync.defer()));
+            console.log(' correctEntryFnc gogo ');
+            uiData[i] = sync.await(ocrJs.correctEntryFnc(uiData[i], sync.defer()));
         }
-        res.send({ data: correctUiData });
+        res.send({ data: uiData });
         /*
         for (var i = 0; i < filepath.length; i++) {
             //uiData = sync.await(batchLearnTraining(filepath[i], "LEARN_Y", sync.defer()));
@@ -93,7 +95,8 @@ router.post('/uiLearnTraining', function (req, res) {
         */
     });
 });
-
+/*
+ocr.js로 옮김
 function correctEntryFnc(uiInputData, callback) {
     sync.fiber(function () {
         try{ 
@@ -101,31 +104,31 @@ function correctEntryFnc(uiInputData, callback) {
             var entryJson;
             var inputDataArr = uiInputData.data;
             for (var i=0; i<inputDataArr.length; i++) {
-                docTypeJson = correctEntry.pantos[uiInputData.docCategory.DOCTYPE];
+                docTypeJson = correctEntry.pantos[uiInputData.docCategory.DOCTOPTYPE];
+                console.log(' docTypeJson ---  ' + docTypeJson);
                 if (typeof docTypeJson != 'undefined') {
+                    console.log(' inputDataArr[i].entryLbl ---  ' + inputDataArr[i].entryLbl);
                     entryJson = docTypeJson[inputDataArr[i].entryLbl];
+                    //console.log(' entryJson ---  ' + entryJson.toString());
                     if (typeof entryJson != 'undefined') {
                         var ocrText = inputDataArr[i].originText;
                         var correctText = '';
                         Object.keys(entryJson).forEach(function(objKey){
                             console.log(objKey + ' - ' + entryJson[objKey]);
                             if (ocrText.indexOf(objKey) != -1) {
-                                ocrText.replace(objKey, entryJson[objKey]);
+                                console.log('before' + ocrText);
+                                //ocrText = ocrText.split(objKey).join(entryJson[objKey]);
+                                
+		                        var regEx = new RegExp(objKey, "g");
+                                ocrText = ocrText.replace(regEx, entryJson[objKey]);
+                                inputDataArr[i].text = ocrText;
+                                console.log('after' + ocrText );
                             }
                         });
-
-
-                        for (var j=0; j<ocrText.length; j++) {
-                            if (typeof entryJson[ocrText[j]] !='undefined') {
-                                correctText += entryJson[ocrText[j]];
-                            } else {
-                                correctText += ocrText[j];
-                            }
-                        }
-                        inputDataArr[i].text = correctText;
                     }
                 }
             }
+            uiInputData.data = inputDataArr;
             callback(null, uiInputData);
         } catch (e) {
             console.log(e);
@@ -134,7 +137,7 @@ function correctEntryFnc(uiInputData, callback) {
         
     });
 }
-
+*/
 function uiLearnTraining_new(filepath, callback) {
     sync.fiber(function () {
         try{

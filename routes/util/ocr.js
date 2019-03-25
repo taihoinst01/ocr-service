@@ -12,6 +12,7 @@ var queryConfig = require(appRoot + '/config/queryConfig.js');
 var commonDB = require(appRoot + '/public/js/common.db.js');
 var commonUtil = require(appRoot + '/public/js/common.util.js');
 var oracle = require('../util/oracle.js');
+var correctEntry = require(appRoot + '/config/correctEntry.js');
 
 const defaults = {
     encoding: 'utf8',
@@ -225,3 +226,45 @@ function ocrParsing(body) {
         return data;
     }
 }
+
+
+
+exports.correctEntryFnc = function (uiInputData, done) {
+    return new Promise(async function (resolve, reject) {
+        try{ 
+            var docTypeJson;
+            var entryJson;
+            var inputDataArr = uiInputData.data;
+            for (var i=0; i<inputDataArr.length; i++) {
+                docTypeJson = correctEntry.pantos[uiInputData.docCategory.DOCTOPTYPE];
+                console.log(' docTypeJson ---  ' + docTypeJson);
+                if (typeof docTypeJson != 'undefined') {
+                    console.log(' inputDataArr[i].entryLbl ---  ' + inputDataArr[i].entryLbl);
+                    entryJson = docTypeJson[inputDataArr[i].entryLbl];
+                    //console.log(' entryJson ---  ' + entryJson.toString());
+                    if (typeof entryJson != 'undefined') {
+                        var ocrText = inputDataArr[i].originText;
+                        var correctText = '';
+                        Object.keys(entryJson).forEach(function(objKey){
+                            console.log(objKey + ' - ' + entryJson[objKey]);
+                            if (ocrText.indexOf(objKey) != -1) {
+                                console.log('before' + ocrText);
+                                //ocrText = ocrText.split(objKey).join(entryJson[objKey]);
+                                
+		                        var regEx = new RegExp(objKey, "g");
+                                ocrText = ocrText.replace(regEx, entryJson[objKey]);
+                                inputDataArr[i].text = ocrText;
+                                console.log('after' + ocrText );
+                            }
+                        });
+                    }
+                }
+            }
+            uiInputData.data = inputDataArr;
+            return done(null, uiInputData);
+        } catch (e) {
+            console.log(e);
+            return done(null, uiInputData);
+        }
+    });
+};

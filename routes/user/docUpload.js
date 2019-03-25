@@ -25,6 +25,10 @@ var propertiesConfig = require(appRoot + '/config/propertiesConfig.js');
 var mlclassify = require('../util/mlClassify.js');
 var Step = require('step');
 
+
+var ocrJs = require('../util/ocr.js');
+var correctEntry = require(appRoot + '/config/correctEntry.js');
+
 var insertTextClassification = queryConfig.uiLearningConfig.insertTextClassification;
 var insertLabelMapping = queryConfig.uiLearningConfig.insertLabelMapping;
 var selectLabel = queryConfig.uiLearningConfig.selectLabel;
@@ -462,6 +466,8 @@ router.post('/imgOcr', function (req, res) {
                 retData.docCategory.DOCNAME = docName[0].DOCNAME;
                 retData.labelData = labelData.rows;
                 retData.fileName = resPyArr[i].fileName;
+
+                retData = sync.await(ocrJs.correctEntryFnc(retData, sync.defer()));
                 retDataList.push(retData);
             }
 
