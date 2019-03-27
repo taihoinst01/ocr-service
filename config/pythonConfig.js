@@ -27,6 +27,7 @@ var columnMappingOptions = {
     encoding: 'utf-8',
     args: []
 };
+
 module.exports = {
     typoOptions: typoOptions,
     formLabelMappingOptions: formLabelMappingOptions,

@@ -1267,7 +1267,7 @@ router.post('/selectLikeDocCategory', function (req, res) {
 // 문서양식매핑
 router.post('/insertDoctypeMapping', function (req, res) {
     var returnObj;
-
+    
     var data = {
         imgId: req.body.imgId,
         filepath: req.body.filepath,
@@ -1278,9 +1278,33 @@ router.post('/insertDoctypeMapping', function (req, res) {
 
     sync.fiber(function () {
         try {
+            var regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi;
             let data = req.body;
             returnObj = sync.await(batch.insertDoctypeMapping(data, sync.defer()));
-           
+            
+            var  cnt = 0;
+            var sentences = "";
+            for (var i in returnObj.docSentenceList)
+            {
+                sentences = sentences + returnObj.docSentenceList[i].text.replace(regExp,"") + ",";
+                cnt ++;
+                if(cnt == 20) {break;}
+            }
+            sentences = sentences.substring(0, sentences.length -1);
+            sentences = sentences+"||"+returnObj.docType+"||"+returnObj.docTopType;
+
+            pythonConfig.columnMappingOptions.args = [];
+            pythonConfig.columnMappingOptions.args.push(sentences);
+            // pythonConfig.documentSentenceOptions.args.push(returnObj.docTopType);
+            // pythonConfig.documentSentenceOptions.args.push(returnObj.docType);
+            // pythonConfig.documentSentenceOptions.args.push(returnObj.docSentenceList);
+
+            console.log("pythonConfig.documentSentenceOptions");
+            console.log(pythonConfig.columnMappingOptions);
+            console.log("pythonConfig.documentSentenceOptions");
+
+            var retResult = sync.await(PythonShell.run('docSentenceClassify.py', pythonConfig.columnMappingOptions, sync.defer()));
+            console.log(retResult);
         } catch (e) {
             console.log(e);
             returnObj = { code: 500, message: e };
