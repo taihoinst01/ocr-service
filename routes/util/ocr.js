@@ -237,9 +237,9 @@ exports.correctEntryFnc = function (uiInputData, done) {
             var inputDataArr = uiInputData.data;
             for (var i=0; i<inputDataArr.length; i++) {
                 docTypeJson = correctEntry.pantos[uiInputData.docCategory.DOCTOPTYPE];
-                console.log(' docTypeJson ---  ' + docTypeJson);
+                //console.log(' docTypeJson ---  ' + docTypeJson);
                 if (typeof docTypeJson != 'undefined') {
-                    console.log(' inputDataArr[i].entryLbl ---  ' + inputDataArr[i].entryLbl);
+                    //console.log(' inputDataArr[i].entryLbl ---  ' + inputDataArr[i].entryLbl);
                     entryJson = docTypeJson[inputDataArr[i].entryLbl];
                     //console.log(' entryJson ---  ' + entryJson.toString());
                     if (typeof entryJson != 'undefined') {
