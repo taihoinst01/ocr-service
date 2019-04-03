@@ -268,3 +268,58 @@ exports.correctEntryFnc = function (uiInputData, done) {
         }
     });
 };
+
+// [POST] linux server icrRest
+exports.icrRest = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        var filepath = req;
+        var filename = filepath.slice(filepath.lastIndexOf("/") + 1);
+        try {
+            var formData = {
+                file: {
+                    value: fs.createReadStream(filepath),
+                    options: {
+                        filename: filename,
+                    }
+                }
+            };
+            console.time("icrRest Time");
+            request.post({ url: propertiesConfig.icrRest.serverUrl + '/fileUpload', formData: formData }, function (err, httpRes, body) {
+                if (err) res.send({ 'code': 500, 'error': err });
+                // let binaryData = new Buffer(body, 'base64').toString('binary');
+                // fs.writeFile(propertiesConfig.filepath.uploadsPath, binaryData, 'binary' , function(){
+                //     if(err) console.log(err);
+                //     console.log("save imgFile");
+                // })
+                console.timeEnd("icrRest Time");
+                return done(null, body);
+            }) 
+        } catch (err) {
+            reject(err);
+        } finally {
+        }
+    });
+};
+
+// [POST] linux server icrRestimage download
+exports.downloadRestSaveImg = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        var filename = req;
+        try {
+            console.time("downloadRestSaveImg Time");
+            request.get({ url: propertiesConfig.icrRest.serverUrl + '/fileDown?fileName=' + filename}, function (err, httpRes, body) {
+                if (err) return done(null, err);
+                let binaryData = new Buffer(body, 'base64').toString('binary');
+                fs.writeFile(propertiesConfig.filepath.uploadsPath + filename, binaryData, 'binary', function() {
+                    if (err) throw err
+                    console.log('File saved.')
+                })
+                console.timeEnd("downloadRestSaveImg Time");
+                return done(null, null);
+            }) 
+        } catch (err) {
+            reject(err);
+        } finally {
+        }
+    });
+};

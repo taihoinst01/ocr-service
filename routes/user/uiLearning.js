@@ -13,6 +13,7 @@ var logger = require('../util/logger');
 var sync = require('../util/sync.js');
 var oracle = require('../util/oracle.js');
 var pythonConfig = require(appRoot + '/config/pythonConfig');
+var propertiesConfig = require(appRoot + '/config/propertiesConfig.js');
 var PythonShell = require('python-shell');
 var ui = require('../util/ui.js');
 var transPantternVar = require('./transPattern');
@@ -140,18 +141,21 @@ function correctEntryFnc(uiInputData, callback) {
 */
 function uiLearnTraining_new(filepath, callback) {
     sync.fiber(function () {
-        try{
-            pythonConfig.columnMappingOptions.args = [];
-            pythonConfig.columnMappingOptions.args.push(filepath);
-            var resPyStr = sync.await(PythonShell.run('pyOcr.py', pythonConfig.columnMappingOptions, sync.defer()));
-            var testStr = resPyStr[0].replace('b', '');
-            testStr = testStr.replace(/'/g, '');
-            var decode = new Buffer(testStr, 'base64').toString('utf-8');
-            var resPyArr = JSON.parse(decode);
+        try{        
+            var icrRestResult = sync.await(ocrUtil.icrRest(filepath, sync.defer()));
+            //pythonConfig.columnMappingOptions.args = [];
+            //pythonConfig.columnMappingOptions.args.push(filepath);
+            //var resPyStr = sync.await(PythonShell.run('pyOcr.py', pythonConfig.columnMappingOptions, sync.defer()));
+            
+            //var testStr = resPyStr[0].replace('b', '');
+            //testStr = testStr.replace(/'/g, '');
+            //var decode = new Buffer(testStr, 'base64').toString('utf-8');
+            var resPyArr = JSON.parse(icrRestResult);
             var retData = {};
             var retDataList = [];
             var docCategory = {};
             for (var i in resPyArr) {
+                sync.await(ocrUtil.downloadRestSaveImg(resPyArr[i].fileName, sync.defer()));
                 if (i == 0) {
                     docCategory = resPyArr[i].docCategory;
                 }

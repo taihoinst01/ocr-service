@@ -12,6 +12,7 @@ var docPopImagesCurrentCount = 1; // 문서조회팝업 이미지 현재 카운�
 var docType = '';
 var currentImgCount = 0;
 var modifyData = []; // UI 수정할 데이터 
+var progressId;
 
 $(function () {
 

@@ -5,6 +5,9 @@ var propertiesConfig = {
     proxy: {
         serverUrl: 'http://210.109.27.111:8888'
     },
+    icrRest: {
+        serverUrl: 'http://52.141.34.200:5000'
+    },
     uiLearning: {
 
     },
