@@ -220,7 +220,9 @@ function fn_selectDocLabelDefList(docToptype) {
 			'</td>' +
 			'<td><button class="btn btn_delete" style="display: inline-block;">Delete</button></td>' +
 			'</tr>';
-		$('#tbody_docList').empty().append(appendDocListHtml);
+		$('#tbody_docList').html(appendDocListHtml);
+		$('.docTable2').mCustomScrollbar('destroy');
+		$('.newDocEdit').show();
 	}
 }
 
