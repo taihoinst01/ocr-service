@@ -12,6 +12,7 @@ var sync = require('../util/sync.js');
 var fs = require('fs');
 var PythonShell = require('python-shell');
 var pythonConfig = require(appRoot + '/config/pythonConfig');
+var localRequest = require('sync-request');
 
 /***************************************************************
  * Router
@@ -65,6 +66,7 @@ router.post('/updateTxt', function (req, res) {
         //     fs.writeFileSync('ml/ColumnMapping/splitLabel.txt', resultText, 'utf8');
         // }
         if(newText.length > 0) {
+            sync.await(insertSplitData(JSON.stringify(newText),sync.defer()));
             pythonConfig.columnMappingOptions.args = [];
             pythonConfig.columnMappingOptions.args.push(JSON.stringify(newText));
             var resPyStr = sync.await(PythonShell.run('pySplitLabel.py', pythonConfig.columnMappingOptions, sync.defer()));
@@ -101,5 +103,24 @@ router.post('/selectDocLabelDefList', function (req, res) {
         res.send(returnObj);
     });
 });
+
+function insertSplitData(req, done) {
+    return new Promise(async function (resolve, reject) {
+        try {
+            
+            var res = localRequest('POST', 'http://52.141.34.200:5000/insertSplitData', {
+                headers:{'content-type':'application/json'},
+                json:{sentence:req}
+            });
+            var resJson = res.getBody('utf8');
+            return done(null, resJson);
+        } catch (err) {
+            console.log(err);
+            return done(null, 'error');
+        } finally {
+
+        }
+    });   
+};
 
 module.exports = router;
