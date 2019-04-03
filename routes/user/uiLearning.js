@@ -1293,6 +1293,8 @@ router.post('/insertDoctypeMapping', function (req, res) {
             sentences = sentences.substring(0, sentences.length -1);
             sentences = sentences+"||"+returnObj.docType+"||"+returnObj.docTopType;
 
+            sync.await(insertDocSentence(sentences,sync.defer()));
+
             pythonConfig.columnMappingOptions.args = [];
             pythonConfig.columnMappingOptions.args.push(sentences);
             // pythonConfig.documentSentenceOptions.args.push(returnObj.docTopType);
@@ -1314,6 +1316,27 @@ router.post('/insertDoctypeMapping', function (req, res) {
     });
 });
 
+function insertDocSentence(sentences, done) {
+    return new Promise(async function (resolve, reject) {
+        try {
+            
+            var res = localRequest('POST', 'http://52.141.34.200:5000/insertDocSentence', {
+                headers:{'content-type':'application/x-www-form-urlencoded'},
+                body: 'sentence='+sentences
+            });
+            var resJson = res.getBody('utf8');
+            //pharsedOcrJson = ocrJson(resJson.regions);
+            //var resJson = ocrParsing(res.getBody('utf8'));
+
+            return done(null, resJson);
+        } catch (err) {
+            console.log(err);
+            return done(null, 'error');
+        } finally {
+
+        }
+    });   
+};
 
 router.post('/selectIcrLabelDef', function (req, res) {
     var returnObj;
