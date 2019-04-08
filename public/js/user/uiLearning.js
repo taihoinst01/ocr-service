@@ -103,27 +103,17 @@ function popUpRunEvent() {
 
 
 		if (layer4Data.data.length > 20) {
-
 			for (var i = 0; i < 20; i++) {
-
-				//console.log(layer4Data.data[i].originText);
-				docSentenceList.push({ "text": layer4Data.data[i].originText })
-				docSentence = docSentence + layer4Data.data[i].originText;
+				docSentenceList.push({ "text": layer4Data.data[i].text })
+				docSentence = docSentence + layer4Data.data[i].text;
 			}
 		}
 		else {
 			for (var i = 0; i < layer4Data.data.length; i++) {
-
-				//console.log(layer4Data.data[i].originText);
-				docSentenceList.push({ "text": layer4Data.data[i].originText })
-				docSentence = docSentence + layer4Data.data[i].originText;
+				docSentenceList.push({ "text": layer4Data.data[i].text })
+				docSentence = docSentence + layer4Data.data[i].text;
 			}
 		}
-
-		//console.log(docSentenceList);
-		//console.log(docSentence);
-
-
 
         var param = {
             imgId: $('#docPopImgId').val(),
@@ -135,9 +125,7 @@ function popUpRunEvent() {
 			docSentenceList: docSentenceList 
 		}
 		//console.log("param : " + param.imgId + " @@ " + param.filepath + " @@ " + param.docName + " @@ " + param.radioType + " @@ " + param.docTopType);
-		//console.log(layer4Data);
-
-		
+		// console.log(layer4Data);
 
         $.ajax({
             url: '/uiLearning/insertDoctypeMapping',
