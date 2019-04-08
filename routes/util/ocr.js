@@ -284,13 +284,9 @@ exports.icrRest = function (req, done) {
                 }
             };
             console.time("icrRest Time");
+
             request.post({ url: propertiesConfig.icrRest.serverUrl + '/fileUpload', formData: formData }, function (err, httpRes, body) {
                 if (err) res.send({ 'code': 500, 'error': err });
-                // let binaryData = new Buffer(body, 'base64').toString('binary');
-                // fs.writeFile(propertiesConfig.filepath.uploadsPath, binaryData, 'binary' , function(){
-                //     if(err) console.log(err);
-                //     console.log("save imgFile");
-                // })
                 console.timeEnd("icrRest Time");
                 return done(null, body);
             }) 
