@@ -12,7 +12,6 @@ var docPopImagesCurrentCount = 1; // 문서조회팝업 이미지 현재 카운�
 var docType = '';
 var currentImgCount = 0;
 var modifyData = []; // UI 수정할 데이터 
-var progressId;
 
 $(function () {
 
@@ -30,6 +29,12 @@ $(function () {
 function init() {
     $('.button_control').attr('disabled', true);
     //layer_open('layer1');
+
+    $('#searchDocCategoryKeyword').keydown(function (key) {
+        if (key.keyCode == 13) {
+            $('#searchDocCategoryBtn').click();
+        }
+    });
 }
 
 function docPopRadioEvent() {
@@ -149,6 +154,8 @@ function popUpRunEvent() {
                 // 해당 로우 화면상 테이블에서 삭제
                 endProgressBar(progressId);
                 var rowNum = $('#batchListRowNum').val();
+                $('#docType').val(data.docType);
+                $('#docTopType').val(data.docTopType);
                 //$('#leftRowNum_' + rowNum).find('td:eq(2) a').html(data.docName);
                 //$('#leftRowNum_' + rowNum).find('td:eq(2) input[name=docType]').val(data.docType);
                 $('#docName').html(data.docName);
@@ -231,6 +238,7 @@ function popUpRunEvent() {
 function popUpSearchDocCategory() {
     $('#searchDocCategoryBtn').click(function () {
         var keyword = $('#searchDocCategoryKeyword').val().replace(/ /gi, '');
+        var docTopType = $('#uiDocTopType').val();
 
         if (keyword) {
             $('#docSearchResultImg_thumbCount').hide();
@@ -243,7 +251,7 @@ function popUpSearchDocCategory() {
                 url: '/uiLearning/selectLikeDocCategory',
                 type: 'post',
                 datatype: 'json',
-                data: JSON.stringify({ 'keyword': keyword }),
+                data: JSON.stringify({ 'keyword': keyword, 'docTopType': docTopType }),
                 contentType: 'application/json; charset=UTF-8',
                 success: function (data) {
                     data = data.data;
@@ -253,6 +261,7 @@ function popUpSearchDocCategory() {
                     $('.button_control10').attr('disabled', true);
                     docPopImagesCurrentCount = 1;
                     if (data.length == 0) {
+                        $('#searchResultDocName').val('검색 결과가 없습니다.');
                         return false;
                     } else {
                         /**
@@ -473,7 +482,7 @@ function processImage(fileInfo) {
         beforeSend: function (jqXHR) {
             jqXHR.setRequestHeader('Content-Type', 'application/json');
         },
-        async: false,
+        //async: false,
         type: 'POST',
         data: JSON.stringify({ 'fileInfo': fileInfo })
     }).success(function (data) {
@@ -1401,6 +1410,8 @@ function uiTrainEvent() {
 function modifyTextData() {
     var beforeData = [modifyData];
     var afterData = {};
+    var predLabelData = [];
+    var predEntryData = [];
     afterData.data = [];
     beforeData = beforeData.slice(0);
 
@@ -1417,16 +1428,25 @@ function modifyTextData() {
     $('#textResultTbl > dl').each(function (index, el) {
         var location = $(el).find('label').children().eq(1).val();
         var text = $(el).find('label').children().eq(0).val();
-        var colLbl = $(el).find('select').find('option:selected').val();
-        afterData.data.push({ 'location': location, 'text': text, 'colLbl': colLbl });
+        var colType = $(el).find('select').eq(0).find('option:selected').val();
+        var colLbl = $(el).find('select').eq(1).find('option:selected').val();
+        afterData.data.push({ 'location': location, 'text': text, 'colLbl': colLbl, 'colType': colType });
     });
+
+    beforeData.docCategory.DOCTYPE = ($('#docType').val() != '') ? Number($('#docType').val()) : beforeData.docCategory.DOCTYPE;
+    beforeData.docCategory.DOCTOPTYPE = ($('#docTopType').val() != '') ? Number($('#docTopType').val()) : beforeData.docCategory.DOCTOPTYPE;
+    var predLabelData = predLabel(beforeData, afterData);
+    var predEntryData = predEntry(beforeData, afterData);
 
     // find an array of data with the same filename
     $.ajax({
         url: '/common/modifyBatchUiTextData',
         type: 'post',
         datatype: "json",
-        data: JSON.stringify({ 'beforeData': beforeData, 'afterData': afterData }),
+        data: JSON.stringify({
+            'beforeData': beforeData, 'afterData': afterData,
+            'predLabelData': predLabelData, 'predEntryData': predEntryData
+        }),
         contentType: 'application/json; charset=UTF-8',
         beforeSend: function () {
             $("#progressMsgTitle").html("retrieving learn data...");
@@ -1440,6 +1460,195 @@ function modifyTextData() {
             console.log(err);
         }
     });
+
+}
+
+function predLabel(beforeData, afterData) {
+    var ocrData = afterData.data;
+    var dbInsertData = []; // DB insert json array
+
+    for (var i in ocrData) {
+        if (ocrData[i].colType == 'L' && ocrData[i].colLbl && ocrData[i].colLbl != -1) { // label
+            var insertItem = {};
+            insertItem.docType = beforeData.docCategory.DOCTYPE;
+            insertItem.location = ocrData[i].location;
+            insertItem.ocrText = ocrData[i].text;
+            insertItem.class = ocrData[i].colLbl;
+            insertItem.leftText = scanTextFromLabel(ocrData, ocrData[i], "LEFT");
+            insertItem.downText = scanTextFromLabel(ocrData, ocrData[i], "DOWN");
+            dbInsertData.push(insertItem);
+        }
+    }
+
+    return dbInsertData;
+}
+
+function scanTextFromLabel(ocrData, target, type) {
+    var returnObj = ''
+    var minDist = 3000;
+    if (type == 'LEFT') {
+        var yPadding = 0;
+        var targetLoc = target.location.split(",");
+        var targetLeftTopLoc = Number(targetLoc[1]) - yPadding; // 좌상단 y좌표
+        var targetLeftBottomLoc = Number(targetLoc[1]) + Number(targetLoc[3]) + yPadding; // 좌하단 y좌표
+        var targetXPoint = Number(targetLoc[0]); // x좌표 기준점
+        var targetYPoint = Number(targetLoc[1]) + (Number(targetLoc[3]) / 2); // y좌표 기준점
+
+        for (var i in ocrData) {
+            var itemLoc = ocrData[i].location.split(",");
+            var itemXPoint = Number(itemLoc[0]) + Number(itemLoc[2]);
+            var itemYPoint = Number(itemLoc[1]) + (Number(itemLoc[3]) / 2);
+            if (target != ocrData[i] && itemYPoint >= targetLeftTopLoc && itemYPoint <= targetLeftBottomLoc && itemXPoint < targetXPoint) {
+                var dx = targetXPoint - itemXPoint;
+                var dy = targetYPoint - itemYPoint;
+                var currentDist = Math.sqrt((dx * dx) + (dy * dy));
+                if (currentDist < minDist) {
+                    minDist = currentDist;
+                    returnObj = ocrData[i].text;
+                }
+            }
+        }
+    } else if (type == 'DOWN') {
+        var xPadding = 0;
+        var targetLoc = target.location.split(",");
+        var targetLeftTopLoc = Number(targetLoc[0]) - xPadding; // 좌상단 x좌표
+        var targetRightTopLoc = Number(targetLoc[0]) + Number(targetLoc[2]) + xPadding; // 우상단 x좌표
+        var targetXPoint = Number(targetLoc[0]) + (Number(targetLoc[2]) / 2); // x좌표 기준점
+        var targetYPoint = Number(targetLoc[1]) + Number(targetLoc[3]); // y좌표 기준점
+
+        for (var i in ocrData) {
+            var itemLoc = ocrData[i].location.split(",");
+            var itemXPoint = Number(itemLoc[0]) + (Number(itemLoc[2]) / 2);
+            var itemYPoint = Number(itemLoc[1]);
+            if (target != ocrData[i] && itemXPoint >= targetLeftTopLoc && itemXPoint <= targetRightTopLoc && itemYPoint > targetYPoint) {
+                var dx = targetXPoint - itemXPoint;
+                var dy = targetYPoint - itemYPoint;
+                var currentDist = Math.sqrt((dx * dx) + (dy * dy));
+                if (currentDist < minDist) {
+                    minDist = currentDist;
+                    returnObj = ocrData[i].text;
+                }
+            }
+        }
+    }
+
+    if (returnObj == '') returnObj = null;
+    else returnObj = returnObj.replace(/ /g, "");
+
+    return returnObj;
+}
+
+function predEntry(beforeData, afterData) {
+    var ocrData = afterData.data;
+    var dbInsertData = []; // DB insert json array
+
+    for (var i in ocrData) {
+        if (ocrData[i].colType == 'E') { // entry            
+            var insertItem = {};
+            insertItem.docType = beforeData.docCategory.DOCTYPE;
+            insertItem.location = ocrData[i].location;
+            insertItem.ocrText = ocrData[i].text;
+            insertItem.class = ocrData[i].colLbl;
+            insertItem = scanTextFromEntry(ocrData, ocrData[i], insertItem, "LEFT");
+            insertItem = scanTextFromEntry(ocrData, ocrData[i], insertItem, "UP");
+            insertItem = scanTextFromEntry(ocrData, ocrData[i], insertItem, "DIAGONAL");
+            dbInsertData.push(insertItem);
+        }
+    }
+    return dbInsertData;
+}
+
+function scanTextFromEntry(ocrData, target, insertItem, type) {
+    var resultObj = {};
+    var minDist = 3000;
+    if (type == 'LEFT') {
+        var yPadding = 0;
+        var targetLoc = target.location.split(",");
+        var targetLeftTopLoc = Number(targetLoc[1]) - yPadding; // 좌상단 y좌표
+        var targetLeftBottomLoc = Number(targetLoc[1]) + Number(targetLoc[3]) + yPadding; // 좌하단 y좌표
+        var targetXPoint = Number(targetLoc[0]); // x좌표 기준점
+        var targetYPoint = Number(targetLoc[1]) + (Number(targetLoc[3]) / 2); // y좌표 기준점
+
+        for (var i in ocrData) {
+            var itemLoc = ocrData[i].location.split(",");
+            var itemXPoint = Number(itemLoc[0]) + Number(itemLoc[2]);
+            var itemYPoint = Number(itemLoc[1]) + (Number(itemLoc[3]) / 2);
+            if (target != ocrData[i] && itemYPoint >= targetLeftTopLoc && itemYPoint <= targetLeftBottomLoc && itemXPoint < targetXPoint) {
+                var dx = targetXPoint - itemXPoint;
+                var dy = targetYPoint - itemYPoint;
+                var currentDist = Math.sqrt((dx * dx) + (dy * dy));
+                if (currentDist < minDist && (ocrData[i].colType == 'L' && ocrData[i].colLbl && ocrData[i].colLbl != -1 && ocrData[i].colLbl != 380)) {
+                    minDist = currentDist;
+                    resultObj.text = ocrData[i].text;
+                    resultObj.xLoc = itemXPoint - targetXPoint;
+                    resultObj.yLoc = itemYPoint - targetYPoint;
+                }
+            }
+        }
+
+        insertItem.leftLabel = (resultObj.text != undefined) ? resultObj.text.replace(/ /g, "") : null;
+        insertItem.leftLocX = (resultObj.xLoc != undefined) ? resultObj.xLoc : null;
+        insertItem.leftLocY = (resultObj.yLoc != undefined) ? resultObj.yLoc : null;
+    } else if (type == 'UP') {
+        var xPadding = 0;
+        var targetLoc = target.location.split(",");
+        var targetLeftTopLoc = Number(targetLoc[0]) - xPadding; // 좌상단 x좌표
+        var targetRightTopLoc = Number(targetLoc[0]) + Number(targetLoc[2]) + xPadding; // 우상단 x좌표
+        var targetXPoint = Number(targetLoc[0]) + (Number(targetLoc[2]) / 2); // x좌표 기준점
+        var targetYPoint = Number(targetLoc[1]); // y좌표 기준점
+
+        for (var i in ocrData) {
+            var itemLoc = ocrData[i].location.split(",");
+            var itemXPoint = Number(itemLoc[0]) + (Number(itemLoc[2]) / 2);
+            var itemYPoint = Number(itemLoc[1]) + Number(itemLoc[3]);
+            if (target != ocrData[i] && itemXPoint >= targetLeftTopLoc && itemXPoint <= targetRightTopLoc && itemYPoint < targetYPoint) {
+                var dx = targetXPoint - itemXPoint;
+                var dy = targetYPoint - itemYPoint;
+                var currentDist = Math.sqrt((dx * dx) + (dy * dy));
+                if (currentDist < minDist && (ocrData[i].colType == 'L' && ocrData[i].colLbl && ocrData[i].colLbl != -1 && ocrData[i].colLbl != 380)) {
+                    minDist = currentDist;
+                    resultObj.text = ocrData[i].text;
+                    resultObj.xLoc = itemXPoint - targetXPoint;
+                    resultObj.yLoc = itemYPoint - targetYPoint;
+                }
+            }
+        }
+
+        insertItem.upLabel = (resultObj.text != undefined) ? resultObj.text.replace(/ /g, "") : null;
+        insertItem.upLocX = (resultObj.xLoc != undefined) ? resultObj.xLoc : null;
+        insertItem.upLocY = (resultObj.yLoc != undefined) ? resultObj.yLoc : null;
+    } else if (type == 'DIAGONAL') {
+        var xPadding = 0;
+        var yPadding = 0;
+        var targetLoc = target.location.split(",");
+        var targetLeftTopXLoc = Number(targetLoc[0]) + xPadding; // 좌상단 x좌표
+        var targetLeftTopYLoc = Number(targetLoc[1]) + yPadding; // 좌상단 y좌표
+        var targetXPoint = Number(targetLoc[0]); // x좌표 기준점
+        var targetYPoint = Number(targetLoc[1]); // y좌표 기준점
+
+        for (var i in ocrData) {
+            var itemLoc = ocrData[i].location.split(",");
+            var itemXPoint = Number(itemLoc[0]) + Number(itemLoc[2]);
+            var itemYPoint = Number(itemLoc[1]) + Number(itemLoc[3]);
+            if (target != ocrData[i] && itemXPoint < targetLeftTopXLoc && itemYPoint < targetLeftTopYLoc) {
+                var dx = targetXPoint - itemXPoint;
+                var dy = targetYPoint - itemYPoint;
+                var currentDist = Math.sqrt((dx * dx) + (dy * dy));
+                if (currentDist < minDist && (ocrData[i].colType == 'L' && ocrData[i].colLbl && ocrData[i].colLbl != -1 && ocrData[i].colLbl != 380)) {
+                    minDist = currentDist;
+                    resultObj.text = ocrData[i].text;
+                    resultObj.xLoc = itemXPoint - targetXPoint;
+                    resultObj.yLoc = itemYPoint - targetYPoint;
+                }
+            }
+        }
+
+        insertItem.diagonalLabel = (resultObj.text != undefined) ? resultObj.text.replace(/ /g, "") : null;
+        insertItem.diagonalLocX = (resultObj.xLoc != undefined) ? resultObj.xLoc : null;
+        insertItem.diagonalLocY = (resultObj.yLoc != undefined) ? resultObj.yLoc : null;
+    }
+
+    return insertItem;
 }
 
 function makeTrainingData() {
@@ -1864,7 +2073,7 @@ function fn_viewDoctypePop(obj) {
 	//$('#div_view_image').empty().append(appendPngHtml);
 	$('#originImgDiv').empty().append(appendPngHtml);
 	$('#mlPredictionDocName').val(mlDocName);
-	$('#mlPredictionPercent').val(mlPercent);
+    $('#mlPredictionPercent').val($('#docPredictionScore').text()); 
 	//$('#mlData').val(data);
 	$('#imgNumIpt').val(1);
 	$('#imgTotalCnt').html(1);
@@ -1958,6 +2167,18 @@ function appendSelOptionHtml(targetColumn, columns, docTopType) {
     return selectHTML;
 }
 
+function appendSelOptionHtmlFromLabel(type) {
+
+    var selectHTML = '<select class="docLabel">';
+    selectHTML += '<option value="U">Unknown</option>';
+    if (type == 'L') selectHTML += '<option value="L" selected>Label</option>';
+    else selectHTML += '<option value="L">Label</option>';
+    if (type == 'E') selectHTML += '<option value="E" selected>Entry</option>';
+    else selectHTML += '<option value="E">Entry</option>';
+    selectHTML += '</select>';
+
+    return selectHTML;
+}
 // UI 레이어 화면 구성 함수
 function uiLayerHtml(data) {
     var mlData = data.data[0].data;
@@ -2101,12 +2322,15 @@ function uiLayerHtml(data) {
                 tblTag += '<input type="hidden" value="' + filePath + '" />';
                 tblTag += '</label>';
                 tblTag += '</dt>';
-                tblTag += '<dd>';
+                tblTag += '<dd class="columnSelect" style="width:20.9% !important;">';
+                tblTag += appendSelOptionHtmlFromLabel('E');
+                tblTag += '</dd>';
+                tblTag += '<dd style="width:0.1% !important;">';
                 tblTag += '<input type="checkbox" style="display:none" class="entryChk" checked>';
                 tblTag += '</dd>';
                 tblTag += '<dd class="columnSelect" style="display:none">';
                 tblTag += '</dd>';
-                tblTag += '<dd class="entrySelect">';
+                tblTag += '<dd class="entrySelect" style="width:27% !important;">';
                 tblTag += appendSelOptionHtml((mlData[i].entryLbl + '') ? mlData[i].entryLbl : 999, labelData, docToptype);
                 tblTag += '</dd>';
                 tblTag += '</dl>';
@@ -2119,10 +2343,13 @@ function uiLayerHtml(data) {
                 tblSortTag += '<input type="hidden" value="' + filePath + '" />';
                 tblSortTag += '</label>';
                 tblSortTag += '</dt>';
-                tblSortTag += '<dd>';
+                tblSortTag += '<dd class="columnSelect" style="width:20.9% !important;">';
+                tblSortTag += appendSelOptionHtmlFromLabel('L');
+                tblSortTag += '</dd>';
+                tblSortTag += '<dd style="width:0.1% !important;">';
                 tblSortTag += '';
                 tblSortTag += '</dd>';
-                tblSortTag += '<dd class="columnSelect">';
+                tblSortTag += '<dd class="columnSelect" style="width:27% !important;">';
                 tblSortTag += appendSelOptionHtml((mlData[i].colLbl + '') ? mlData[i].colLbl : 999, labelData, docToptype);
                 tblSortTag += '</dd>';
                 tblSortTag += '<dd class="entrySelect" style="display:none">';
@@ -2137,10 +2364,13 @@ function uiLayerHtml(data) {
                 tblSortTag += '<input type="hidden" value="' + filePath + '" />';
                 tblSortTag += '</label>';
                 tblSortTag += '</dt>';
-                tblSortTag += '<dd>';
+                tblSortTag += '<dd class="columnSelect" style="width:20.9% !important;">';
+                tblSortTag += appendSelOptionHtmlFromLabel();
+                tblSortTag += '</dd>';
+                tblSortTag += '<dd style="width:0.1% !important;">';
                 tblSortTag += '';
                 tblSortTag += '</dd>';
-                tblSortTag += '<dd class="columnSelect">';
+                tblSortTag += '<dd class="columnSelect" style="width:27% !important;">';
                 tblSortTag += appendSelOptionHtml((mlData[i].colLbl + '') ? mlData[i].colLbl : 999, labelData, docToptype);
                 tblSortTag += '</dd>';
                 tblSortTag += '<dd class="entrySelect" style="display:none">';
@@ -2196,8 +2426,13 @@ $(document).on('change', '#uiDocTopType', function(){
                 for(var i = 0; i < labelList.length; i++) {
                     appendSelectOptionHtml += '<option value="' + labelList[i].SEQNUM + '">' + labelList[i].ENGNM + '</option>';
                 }
-                $('.docLabel').empty().append(appendSelectOptionHtml);
+                var appendSelectLEOptionHtml = '<option value="U">Unknown</option>';
+                appendSelectLEOptionHtml += '<option value="L">Label</option>';
+                appendSelectLEOptionHtml += '<option value="E">Entry</option>';
 
+                $('.docLabel:even').empty().append(appendSelectLEOptionHtml);
+                $('.docLabel:odd').empty().append(appendSelectOptionHtml);
+                $('#docTopType').val($('#uiDocTopType').val());
             } else {
                 fn_alert('alert', data.message);
             }

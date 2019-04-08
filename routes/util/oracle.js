@@ -506,9 +506,9 @@ exports.insertBatchColumnMapping = function (req, docTopType, before, done) {
 
 
            var ocrData = req.inputOcrData;
-            if (req.isLabel) {
+            if (req.colType == 'L') {
                 await conn.execute(insertNewSqlLabelText, [ocrData[0]+"", ocrData[1], ocrData[2], ocrData[3], ocrData[4], ocrData[5], ocrData[6], ocrData[7], ocrData[8], ocrData[9], ocrData[10], ocrData[11], ocrData[12]]);
-            } else {
+            } else if (req.colType == 'E') {
                 await conn.execute(insertNewSqlText, [req.colLbl+"", ocrData[0]+"", ocrData[1], ocrData[2], ocrData[3]
                 //, ocrData[5], ocrData[6], ocrData[7], ocrData[8], ocrData[9], ocrData[10], ocrData[11], ocrData[12]
                 //, ocrData[13], ocrData[14], ocrData[15], ocrData[16], ocrData[17]
@@ -2788,14 +2788,14 @@ exports.insertNewDocument = function (req, done) {
     });
 };
 
-exports.selectDocumentCategory = function (req, done) {
+exports.selectDocumentCategory = function (req, docTopType, done) {
     return new Promise(async function (resolve, reject) {
         let conn;
         let result;
 
         try {
             conn = await oracledb.getConnection(dbConfig);
-            result = await conn.execute(queryConfig.batchLearningConfig.selectDocumentCategory, [req]);          
+            result = await conn.execute(queryConfig.batchLearningConfig.selectDocumentCategory, [req, docTopType]);          
 
             return done(null, result);
         } catch (err) { // catches errors in getConnection and the query
@@ -4823,7 +4823,7 @@ exports.selectDocIdLabelDefList = function (req, done) {
 		try {
 			conn = await oracledb.getConnection(dbConfig);
             let query = 'select SEQNUM, DOCID, KORNM, ENGNM, LABELTYPE, AMOUNT, VALID, STATUS, ESSENTIALVAL from tbl_icr_label_def where docid = :docid ';
-            console.log(req);
+            //console.log(req);
 			let result = await conn.execute(query, req);
 			
 			return done(null, result.rows);
@@ -4850,8 +4850,8 @@ exports.selectLabelTrainDataList = function (req, done) {
             let query = "SELECT OCR_TEXT, LOCATION_X, LOCATION_Y, CLASS FROM TBL_NEW_BATCH_LABEL_MAPPING WHERE DOCTYPE =:DOCTYPE ";
             //console.log("DOCTYPE : "+req);
 			let result = await conn.execute(query,req);
-            console.log("result.rows");
-            console.log(result.rows);
+            //console.log("result.rows");
+            //console.log(result.rows);
 			return done(null, result.rows);
 		} catch (err) { // catches errors in getConnection and the query
 			reject(err);
@@ -4876,8 +4876,8 @@ exports.selectTrainDataList = function (req, done) {
             let query = "SELECT CLASS, DOCTYPE, OCR_TEXT, OCR_TEXT_X, OCR_TEXT_Y FROM TBL_NEW_BATCH_COLUMN_MAPPING WHERE DOCTYPE = '"+req+"' ";
             //console.log("DOCTYPE : "+req);
 			let result = await conn.execute(query);
-            console.log("selectTrainDataList.rows");
-            console.log(result.rows);
+            //console.log("selectTrainDataList.rows");
+            //console.log(result.rows);
 			return done(null, result.rows);
 		} catch (err) { // catches errors in getConnection and the query
 			reject(err);
@@ -4914,4 +4914,89 @@ exports.selectIcrSymspell = function (req, done) {
 			}
 		}
 	});
+};
+
+exports.insertPredLabelMapping = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+
+        try {
+            /* CASE
+            1. unknown -> label : label mapping table insert
+            2. entry -> label : entry mapping table status 1 update, label mapping table insert
+            */
+            conn = await oracledb.getConnection(dbConfig);
+            let query = "SELECT DOCTYPE, LOCATION, OCRTEXT FROM TBL_PRED_ENTRY_MAPPING WHERE STATUS = '0'";
+            let result = await conn.execute(query);
+            let entryQuery = "UPDATE TBL_PRED_ENTRY_MAPPING SET STATUS = '1' WHERE docType = :docType and location = :location and ocrText = :ocrText";
+
+            query = "INSERT INTO TBL_PRED_LABEL_MAPPING(SEQNUM, DOCTYPE, LOCATION, OCRTEXT, CLASS, REGDATE, LEFTTEXT, DOWNTEXT, STATUS) VALUES " +
+                "(SEQ_PRED_LABEL_MAPPING.NEXTVAL, :docType, :location, :ocrText, :class, sysdate, :leftText, :downText, '0')";
+            for (var i in req) {
+                for (var j in result.rows) {
+                    if (req[i].docType == result.rows[j].DOCTYPE && req[i].location == result.rows[j].LOCATION && req[i].ocrText == result.rows[j].OCRTEXT) {
+                        await conn.execute(entryQuery, [req[i].docType, req[i].location, req[i].ocrText]);
+                        break;
+                    }
+                }
+                await conn.execute(query, [req[i].docType, req[i].location, req[i].ocrText, req[i].class, req[i].leftText, req[i].downText]);
+            }
+            return done(null, null);
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
+};
+
+exports.insertPredEntryMapping = function (req, done) {
+    return new Promise(async function (resolve, reject) {
+        let conn;
+
+        try {
+            /* CASE
+            1. unknown -> entry : label mapping table insert
+            2. label -> entry : label mapping table status 1 update, entry mapping table insert
+            */
+            conn = await oracledb.getConnection(dbConfig);
+            let query = "SELECT DOCTYPE, LOCATION, OCRTEXT FROM TBL_PRED_LABEL_MAPPING WHERE STATUS = '0'";
+            let result = await conn.execute(query);
+            let labelQuery = "UPDATE TBL_PRED_LABEL_MAPPING SET STATUS = '1' WHERE docType = :docType and location = :location and ocrText = :ocrText";
+
+            query = "INSERT INTO TBL_PRED_ENTRY_MAPPING(SEQNUM, DOCTYPE, LOCATION, OCRTEXT" +
+                ", CLASS, REGDATE, LEFTLABEL, LEFTLOCX, LEFTLOCY, UPLABEL, UPLOCX, UPLOCY" +
+                ", DIAGONALLABEL, DIAGONALLOCX, DIAGONALLOCY, STATUS) VALUES " +
+                "(SEQ_PRED_ENTRY_MAPPING.NEXTVAL, :docType, :location, :ocrText, :class, sysdate, :leftLabel, :leftLocX, :leftLocY" +
+                ", :upLabel, :upLocX, :upLocY, :diagonalLabel, :diagonalLocX, :diagonaltLocY, '0')";
+            for (var i in req) {
+                for (var j in result.rows) {
+                    if (req[i].docType == result.rows[j].DOCTYPE && req[i].location == result.rows[j].LOCATION && req[i].ocrText == result.rows[j].OCRTEXT) {
+                        await conn.execute(labelQuery, [req[i].docType, req[i].location, req[i].ocrText]);
+                        break;
+                    }
+                }
+                await conn.execute(query, [req[i].docType, req[i].location, req[i].ocrText, req[i].class,
+                    req[i].leftLabel, req[i].leftLocX, req[i].leftLocY, req[i].upLabel, req[i].upLocX, req[i].upLocY,
+                    req[i].diagonalLabel, req[i].diagonalLocX, req[i].diagonaltLocY]);
+            }
+            return done(null, null);
+        } catch (err) { // catches errors in getConnection and the query
+            reject(err);
+        } finally {
+            if (conn) {   // the conn assignment worked, must release
+                try {
+                    await conn.release();
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+    });
 };
