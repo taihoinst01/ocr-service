@@ -13,7 +13,6 @@ var logger = require('../util/logger');
 var sync = require('../util/sync.js');
 var oracle = require('../util/oracle.js');
 var pythonConfig = require(appRoot + '/config/pythonConfig');
-var propertiesConfig = require(appRoot + '/config/propertiesConfig.js');
 var PythonShell = require('python-shell');
 var ui = require('../util/ui.js');
 var transPantternVar = require('./transPattern');
@@ -79,12 +78,11 @@ router.post('/uiLearnTraining', function (req, res) {
         var correctUiData;
         uiData = sync.await(uiLearnTraining_new(filepath, sync.defer()));
 
-        
+        /* 오타수정
         for (var i=0; i<uiData.length; i++) {
-            //두연작업중
-            console.log(' correctEntryFnc gogo ');
             uiData[i] = sync.await(ocrJs.correctEntryFnc(uiData[i], sync.defer()));
         }
+        */
         res.send({ data: uiData });
         /*
         for (var i = 0; i < filepath.length; i++) {
@@ -141,34 +139,39 @@ function correctEntryFnc(uiInputData, callback) {
 */
 function uiLearnTraining_new(filepath, callback) {
     sync.fiber(function () {
-        try{        
-            var icrRestResult = sync.await(ocrUtil.icrRest(filepath, sync.defer()));
-            //pythonConfig.columnMappingOptions.args = [];
-            //pythonConfig.columnMappingOptions.args.push(filepath);
-            //var resPyStr = sync.await(PythonShell.run('pyOcr.py', pythonConfig.columnMappingOptions, sync.defer()));
-            
-            //var testStr = resPyStr[0].replace('b', '');
-            //testStr = testStr.replace(/'/g, '');
-            //var decode = new Buffer(testStr, 'base64').toString('utf-8');
-            var resPyArr = JSON.parse(icrRestResult);
+        try{
+            pythonConfig.columnMappingOptions.args = [];
+            pythonConfig.columnMappingOptions.args.push(filepath);
+            var resPyStr = sync.await(PythonShell.run('pyOcr.py', pythonConfig.columnMappingOptions, sync.defer()));
+            var testStr = resPyStr[0].replace('b', '');
+            testStr = testStr.replace(/'/g, '');
+            var decode = Buffer.from(testStr, 'base64').toString('utf-8');
+            var resPyArr = JSON.parse(decode);
             var retData = {};
             var retDataList = [];
             var docCategory = {};
             for (var i in resPyArr) {
-                sync.await(ocrUtil.downloadRestSaveImg(resPyArr[i].fileName, sync.defer()));
                 if (i == 0) {
                     docCategory = resPyArr[i].docCategory;
                 }
                 resPyArr[i].docCategory = docCategory;
-                retData = sync.await(mlclassify.classify(resPyArr[i], sync.defer()));
+                retData = sync.await(mlclassify.classify(resPyArr[i], sync.defer())); // 오타수정 및 엔트리 추출
                 var labelData = sync.await(oracle.selectIcrLabelDef(retData.docCategory.DOCTOPTYPE, sync.defer()));
                 var docName = sync.await(oracle.selectDocName(retData.docCategory.DOCTYPE, sync.defer()));
-                retData.docCategory.DOCNAME = docName[0].DOCNAME;
+
+				if (docName.length != 0) {
+					retData.docCategory.DOCNAME = docName[0].DOCNAME;
+				}
+				else {
+					retData.docCategory.DOCNAME = "unKnown";
+				}
+
+				
                 retData.labelData = labelData.rows;
                 retData.fileinfo = { filepath: "C:/ICR/uploads/"+resPyArr[i].fileName };
                 retDataList.push(retData);
             }
-            console.log(retDataList);
+            //console.log(retDataList);
             // resPyArr = sync.await(transPantternVar.trans(resPyArr, sync.defer()));
 
             // retData = resPyArr;
@@ -1249,11 +1252,12 @@ router.post('/selectClassificationSt', function (req, res) {
 
 router.post('/selectLikeDocCategory', function (req, res) {
     var keyword = '%' + req.body.keyword + '%';
+    var docTopType = req.body.docTopType;
     var returnObj;
 
     sync.fiber(function () {
         try {
-            var result = sync.await(oracle.selectDocumentCategory(keyword, sync.defer()));
+            var result = sync.await(oracle.selectDocumentCategory(keyword, docTopType, sync.defer()));
             if (result.rows) {
                 returnObj = { data : result.rows };
             } else {
@@ -1270,77 +1274,52 @@ router.post('/selectLikeDocCategory', function (req, res) {
 
 // 문서양식매핑
 router.post('/insertDoctypeMapping', function (req, res) {
-    var returnObj;
-    
-    var data = {
-        imgId: req.body.imgId,
-        filepath: req.body.filepath,
-        docName: req.body.docName,
-        radioType: req.body.radioType,
-        textList: req.body.textList
-    }
+	var returnObj;
 
-    sync.fiber(function () {
-        try {
-            var regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi;
-            let data = req.body;
-            returnObj = sync.await(batch.insertDoctypeMapping(data, sync.defer()));
-            
-            var  cnt = 0;
-            var sentences = "";
-            for (var i in returnObj.docSentenceList)
-            {
-                sentences = sentences + returnObj.docSentenceList[i].text.replace(regExp,"") + ",";
-                cnt ++;
-                if(cnt == 20) {break;}
-            }
-            sentences = sentences.substring(0, sentences.length -1);
-            sentences = sentences+"||"+returnObj.docType+"||"+returnObj.docTopType;
+	var data = {
+		imgId: req.body.imgId,
+		filepath: req.body.filepath,
+		docName: req.body.docName,
+		radioType: req.body.radioType,
+		textList: req.body.textList
+	}
 
-            sync.await(insertDocSentence(sentences,sync.defer()));
+	sync.fiber(function () {
+		try {
+			var regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&?\\\=\(\'\"]/gi;
+			let data = req.body;
+			returnObj = sync.await(batch.insertDoctypeMapping(data, sync.defer()));
 
-            pythonConfig.columnMappingOptions.args = [];
-            pythonConfig.columnMappingOptions.args.push(sentences);
-            // pythonConfig.documentSentenceOptions.args.push(returnObj.docTopType);
-            // pythonConfig.documentSentenceOptions.args.push(returnObj.docType);
-            // pythonConfig.documentSentenceOptions.args.push(returnObj.docSentenceList);
+			var cnt = 0;
+			var sentences = "";
+			for (var i in returnObj.docSentenceList) {
+				sentences = sentences + returnObj.docSentenceList[i].text.replace(regExp, "") + ",";
+				cnt++;
+				if (cnt == 20) { break; }
+			}
+			sentences = sentences.substring(0, sentences.length - 1);
+			sentences = sentences + "||" + returnObj.docType + "||" + returnObj.docTopType;
 
-            console.log("pythonConfig.documentSentenceOptions");
-            console.log(pythonConfig.columnMappingOptions);
-            console.log("pythonConfig.documentSentenceOptions");
 
-            var retResult = sync.await(PythonShell.run('docSentenceClassify.py', pythonConfig.columnMappingOptions, sync.defer()));
-            console.log(retResult);
-        } catch (e) {
-            console.log(e);
-            returnObj = { code: 500, message: e };
-        } finally {
-            res.send(returnObj);
-        }
-    });
+			var encode = Buffer.from(sentences).toString("base64");
+			pythonConfig.columnMappingOptions.args = [];
+			pythonConfig.columnMappingOptions.args.push(encode);
+
+			//console.log("pythonConfig.documentSentenceOptions");
+			//console.log(pythonConfig.columnMappingOptions);
+			//console.log("pythonConfig.documentSentenceOptions");
+
+			var retResult = sync.await(PythonShell.run('docSentenceClassify.py', pythonConfig.columnMappingOptions, sync.defer()));
+			//console.log(retResult);
+		} catch (e) {
+			console.log(e);
+			returnObj = { code: 500, message: e };
+		} finally {
+			res.send(returnObj);
+		}
+	});
 });
 
-function insertDocSentence(sentences, done) {
-    return new Promise(async function (resolve, reject) {
-        try {
-            
-            var res = localRequest('POST', 'http://52.141.34.200:5000/insertDocSentence', {
-                headers:{'content-type':'application/x-www-form-urlencoded'},
-                body: 'sentence='+sentences
-            });
-            var resJson = res.getBody('utf8');
-            //pharsedOcrJson = ocrJson(resJson.regions);
-            //var resJson = ocrParsing(res.getBody('utf8'));
-
-            return done(null, resJson);
-        } catch (err) {
-            console.log(err);
-            return done(null, 'error');
-        } finally {
-
-        }
-    });   
-};
 
 router.post('/selectIcrLabelDef', function (req, res) {
     var returnObj;
