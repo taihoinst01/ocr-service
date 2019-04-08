@@ -538,7 +538,7 @@ var batchLearningConfig = {
             TBL_DOCUMENT_CATEGORY
          WHERE
             LOWER(DOCNAME) LIKE LOWER(:docName)
-         AND DOCTYPE != 0 AND DOCTYPE != 1 `,
+         AND DOCTYPE != 0 AND DOCTYPE != 1 AND DOCTOPTYPE = :docTopType`,
     selectDocType:
         `SELECT
             SEQNUM, DOCNAME, DOCTYPE, SAMPLEIMAGEPATH
