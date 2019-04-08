@@ -1,4 +1,5 @@
-﻿'use strict';
+﻿    
+'use strict';
 var express = require('express');
 var fs = require('fs');
 var multer = require("multer");
@@ -13,6 +14,7 @@ var logger = require('../util/logger');
 var sync = require('../util/sync.js');
 var oracle = require('../util/oracle.js');
 var pythonConfig = require(appRoot + '/config/pythonConfig');
+var propertiesConfig = require(appRoot + '/config/propertiesConfig.js');
 var PythonShell = require('python-shell');
 var ui = require('../util/ui.js');
 var transPantternVar = require('./transPattern');
@@ -339,22 +341,17 @@ router.post('/uiLearnTraining', function (req, res) {
             pythonConfig.columnMappingOptions.args.push(JSON.stringify(ocrData));
             var resPyStr = sync.await(PythonShell.run('uiClassify.py', pythonConfig.columnMappingOptions, sync.defer()));
             var resPyArr = JSON.parse(resPyStr[0]);
-
             resPyArr = sync.await(transPantternVar.trans(resPyArr, sync.defer()));
-
             var colMappingList = sync.await(oracle.selectColumn(req, sync.defer()));
             var entryMappingList = sync.await(oracle.selectEntryMappingCls(req, sync.defer()));
-
             console.timeEnd("mlTime");
             returnObj = { code: 200, 'fileName': fileName, 'data': resPyArr, 'column': colMappingList, 'entryMappingList': entryMappingList };
         } catch (e) {
             console.log(resPyStr);
             returnObj = { 'code':500, 'message': e };
-
         } finally {
             res.send(returnObj);
         }
-
     });
 });
 */
@@ -592,19 +589,13 @@ router.post('/searchDBColumns', function (req, res) {
 /*
 // db컬럼명 조회
 router.post('/searchDBColumns', function (req, res) {
-
     var fileName = req.body.fileName;
     var data = req.body.data;
-
     typoSentenceEval(data, function (result1) {
-
         domainDictionaryEval(result1, function (result2) {
-
             textClassificationEval(result2, function (result3) {
-
                 labelMappingEval(result3, function (result4) {
                     console.log(result4);
-
                     commonDB.reqQuery(selectColumn, function(rows, req, res) {
                         res.send({ 'fileName': fileName, 'data': result4, 'column': rows});
                     }, req, res);
@@ -663,15 +654,12 @@ router.post('/uploadFile', upload.any(), function (req, res) {
     for (var i = 0; i < files.length; i++) {
         var ifile = appRoot + '\\' + files[i].path;
         var ofile = appRoot + '\\' + files[i].path.split('.')[0] + '.jpg';
-
         if (files[i].originalname.split('.')[1].toLowerCase() === 'tif' ||
             files[i].originalname.split('.')[1].toLowerCase() === 'tiff') {
             execSync('module\\imageMagick\\convert.exe -quiet -density 800x800 ' + ifile + ' ' + ofile);
             convertType = files[i].originalname.split('.')[1].toLowerCase();
         } else {
-
         }
-
         if (endCount === files.length - 1) { // 모든 파일 변환이 완료되면
             if (convertType === 'tif') {
                 try {
@@ -685,11 +673,9 @@ router.post('/uploadFile', upload.any(), function (req, res) {
                 var j = 0;
                 var isStop = false;
                 while (!isStop) {
-
                 }
             }           
         }
-
         endCount++;
     }
     */
@@ -932,75 +918,59 @@ function textLabelTrain(data) {
                             updText += textSplit[j] + ' ';
                         }
                         updText.slice(0, -1);
-
                         var domainText = [];
                         domainText.push(textSplit[0]);
                         domainText.push(updText);
-
                         for (var ts = 0; ts < domainText.length; ts++) {
-
                             for (os; os < originSplit.length; os++) {
                                 if (ts == 1) {
                                     var insDicCond = [];
-
                                     //originword
                                     insDicCond.push(originSplit[os]);
-
                                     //frontword
                                     if (os == 0) {
                                         insDicCond.push("<<N>>");
                                     } else {
                                         insDicCond.push(originSplit[os - 1]);
                                     }
-
                                     //correctedword
                                     if (osNext == os) {
                                         insDicCond.push(domainText[ts]);
                                     } else {
                                         insDicCond.push("<<N>>");
                                     }
-
                                     //rearword
                                     if (os == originSplit.length - 1) {
                                         insDicCond.push("<<N>>");
                                     } else {
                                         insDicCond.push(originSplit[os + 1]);
                                     }
-
                                     let insDomainDicRes = await conn.execute(insertDomainDic, insDicCond);
-
                                 } else if (domainText[ts].toLowerCase() != originSplit[os].toLowerCase()) {
                                     var insDicCond = [];
-
                                     //originword
                                     insDicCond.push(originSplit[os]);
-
                                     //frontword
                                     if (os == 0) {
                                         insDicCond.push("<<N>>");
                                     } else {
                                         insDicCond.push(originSplit[os - 1]);
                                     }
-
                                     //correctedword
                                     insDicCond.push("<<N>>");
-
                                     //rearword
                                     if (os == originSplit.length - 1) {
                                         insDicCond.push("<<N>>");
                                     } else {
                                         insDicCond.push(originSplit[os + 1]);
                                     }
-
                                     let insDomainDicRes = await conn.execute(insertDomainDic, insDicCond);
-
                                 } else {
                                     os++;
                                     osNext = os;
                                     break;
                                 }
                             }
-
                         }
                         */
                     }
@@ -1274,52 +1244,77 @@ router.post('/selectLikeDocCategory', function (req, res) {
 
 // 문서양식매핑
 router.post('/insertDoctypeMapping', function (req, res) {
-	var returnObj;
+    var returnObj;
+    
+    var data = {
+        imgId: req.body.imgId,
+        filepath: req.body.filepath,
+        docName: req.body.docName,
+        radioType: req.body.radioType,
+        textList: req.body.textList
+    }
 
-	var data = {
-		imgId: req.body.imgId,
-		filepath: req.body.filepath,
-		docName: req.body.docName,
-		radioType: req.body.radioType,
-		textList: req.body.textList
-	}
+    sync.fiber(function () {
+        try {
+            var regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi;
+            let data = req.body;
+            returnObj = sync.await(batch.insertDoctypeMapping(data, sync.defer()));
+            
+            var  cnt = 0;
+            var sentences = "";
+            for (var i in returnObj.docSentenceList)
+            {
+                sentences = sentences + returnObj.docSentenceList[i].text.replace(regExp,"") + ",";
+                cnt ++;
+                if(cnt == 20) {break;}
+            }
+            sentences = sentences.substring(0, sentences.length -1);
+            sentences = sentences+"||"+returnObj.docType+"||"+returnObj.docTopType;
 
-	sync.fiber(function () {
-		try {
-			var regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&?\\\=\(\'\"]/gi;
-			let data = req.body;
-			returnObj = sync.await(batch.insertDoctypeMapping(data, sync.defer()));
+            sync.await(insertDocSentence(sentences,sync.defer()));
 
-			var cnt = 0;
-			var sentences = "";
-			for (var i in returnObj.docSentenceList) {
-				sentences = sentences + returnObj.docSentenceList[i].text.replace(regExp, "") + ",";
-				cnt++;
-				if (cnt == 20) { break; }
-			}
-			sentences = sentences.substring(0, sentences.length - 1);
-			sentences = sentences + "||" + returnObj.docType + "||" + returnObj.docTopType;
+            pythonConfig.columnMappingOptions.args = [];
+            pythonConfig.columnMappingOptions.args.push(sentences);
+            // pythonConfig.documentSentenceOptions.args.push(returnObj.docTopType);
+            // pythonConfig.documentSentenceOptions.args.push(returnObj.docType);
+            // pythonConfig.documentSentenceOptions.args.push(returnObj.docSentenceList);
 
+            console.log("pythonConfig.documentSentenceOptions");
+            console.log(pythonConfig.columnMappingOptions);
+            console.log("pythonConfig.documentSentenceOptions");
 
-			var encode = Buffer.from(sentences).toString("base64");
-			pythonConfig.columnMappingOptions.args = [];
-			pythonConfig.columnMappingOptions.args.push(encode);
-
-			//console.log("pythonConfig.documentSentenceOptions");
-			//console.log(pythonConfig.columnMappingOptions);
-			//console.log("pythonConfig.documentSentenceOptions");
-
-			var retResult = sync.await(PythonShell.run('docSentenceClassify.py', pythonConfig.columnMappingOptions, sync.defer()));
-			//console.log(retResult);
-		} catch (e) {
-			console.log(e);
-			returnObj = { code: 500, message: e };
-		} finally {
-			res.send(returnObj);
-		}
-	});
+            var retResult = sync.await(PythonShell.run('docSentenceClassify.py', pythonConfig.columnMappingOptions, sync.defer()));
+            console.log(retResult);
+        } catch (e) {
+            console.log(e);
+            returnObj = { code: 500, message: e };
+        } finally {
+            res.send(returnObj);
+        }
+    });
 });
 
+function insertDocSentence(sentences, done) {
+    return new Promise(async function (resolve, reject) {
+        try {
+            
+            var res = localRequest('POST', 'http://52.141.34.200:5000/insertDocSentence', {
+                headers:{'content-type':'application/x-www-form-urlencoded'},
+                body: 'sentence='+sentences
+            });
+            var resJson = res.getBody('utf8');
+            //pharsedOcrJson = ocrJson(resJson.regions);
+            //var resJson = ocrParsing(res.getBody('utf8'));
+
+            return done(null, resJson);
+        } catch (err) {
+            console.log(err);
+            return done(null, 'error');
+        } finally {
+
+        }
+    });   
+};
 
 router.post('/selectIcrLabelDef', function (req, res) {
     var returnObj;
