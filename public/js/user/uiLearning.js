@@ -98,7 +98,6 @@ function popUpRunEvent() {
 
 
 		if (layer4Data.data.length > 20) {
-
 			for (var i = 0; i < 20; i++) {
 				docSentenceList.push({ "text": layer4Data.data[i].text })
 				docSentence = docSentence + layer4Data.data[i].text;
@@ -111,12 +110,6 @@ function popUpRunEvent() {
 			}
 		}
 
-        console.log("doc info start ------------------------");
-		console.log(docSentenceList);
-		console.log(docSentence);
-        console.log("doc info end ------------------------");
-
-
         var param = {
             imgId: $('#docPopImgId').val(),
             filepath: $('#docPopImgPath').val(),
@@ -127,10 +120,7 @@ function popUpRunEvent() {
 			docSentenceList: docSentenceList 
 		}
 		//console.log("param : " + param.imgId + " @@ " + param.filepath + " @@ " + param.docName + " @@ " + param.radioType + " @@ " + param.docTopType);
-        console.log("param start---------------------------------");
-		console.log(layer4Data);
-		console.log(param);
-        console.log("param end---------------------------------");
+		// console.log(layer4Data);
 
         $.ajax({
             url: '/uiLearning/insertDoctypeMapping',
