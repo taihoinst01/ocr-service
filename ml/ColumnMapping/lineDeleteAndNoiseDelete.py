@@ -89,7 +89,7 @@ def main(argv):
     horizontal2 = cv.dilate(horizontal2, horizontalDilateStructure)
     # show_wait_destroy("horizontal1", horizontal2)
     horizontal = cv.bitwise_not(horizontal)
-    horizontal = cv.add(horizontal, horizontal2)
+    horizontal = cv.add(gray, horizontal2)
     # show_wait_destroy("horizontal1", horizontal)
     rows = vertical.shape[0]
     verticalsize = rows / 20
@@ -100,11 +100,6 @@ def main(argv):
     vertical = cv.erode(vertical, verticalStructure)
     vertical = cv.dilate(vertical, verticalDilateStructure)
     horizontal = cv.add(horizontal, vertical)
-
-    #otsu 알고리즘 노이즈 제거 처리
-    img_blur = cv.GaussianBlur(horizontal, (5, 5), 0)
-    ret, horizontal = cv.threshold(img_blur, 0, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
-    #fastNI 알고리즘 노이즈 제거 처리 otsu 가 성능이 안나올경우 사용
 
     imwrite(argv[0], horizontal)
     print("fileConvert Success")
