@@ -1,4 +1,4 @@
-﻿    
+﻿
 'use strict';
 var express = require('express');
 var fs = require('fs');
@@ -141,39 +141,34 @@ function correctEntryFnc(uiInputData, callback) {
 */
 function uiLearnTraining_new(filepath, callback) {
     sync.fiber(function () {
-        try{
-            pythonConfig.columnMappingOptions.args = [];
-            pythonConfig.columnMappingOptions.args.push(filepath);
-            var resPyStr = sync.await(PythonShell.run('pyOcr.py', pythonConfig.columnMappingOptions, sync.defer()));
-            var testStr = resPyStr[0].replace('b', '');
-            testStr = testStr.replace(/'/g, '');
-            var decode = Buffer.from(testStr, 'base64').toString('utf-8');
-            var resPyArr = JSON.parse(decode);
+        try{        
+            var icrRestResult = sync.await(ocrUtil.icrRest(filepath, sync.defer()));
+            //pythonConfig.columnMappingOptions.args = [];
+            //pythonConfig.columnMappingOptions.args.push(filepath);
+            //var resPyStr = sync.await(PythonShell.run('pyOcr.py', pythonConfig.columnMappingOptions, sync.defer()));
+            
+            //var testStr = resPyStr[0].replace('b', '');
+            //testStr = testStr.replace(/'/g, '');
+            //var decode = new Buffer(testStr, 'base64').toString('utf-8');
+            var resPyArr = JSON.parse(icrRestResult);
             var retData = {};
             var retDataList = [];
             var docCategory = {};
             for (var i in resPyArr) {
+                sync.await(ocrUtil.downloadRestSaveImg(resPyArr[i].fileName, sync.defer()));
                 if (i == 0) {
                     docCategory = resPyArr[i].docCategory;
                 }
                 resPyArr[i].docCategory = docCategory;
-                retData = sync.await(mlclassify.classify(resPyArr[i], sync.defer())); // 오타수정 및 엔트리 추출
+                retData = sync.await(mlclassify.classify(resPyArr[i], sync.defer()));
                 var labelData = sync.await(oracle.selectIcrLabelDef(retData.docCategory.DOCTOPTYPE, sync.defer()));
                 var docName = sync.await(oracle.selectDocName(retData.docCategory.DOCTYPE, sync.defer()));
-
-				if (docName.length != 0) {
-					retData.docCategory.DOCNAME = docName[0].DOCNAME;
-				}
-				else {
-					retData.docCategory.DOCNAME = "unKnown";
-				}
-
-				
+                retData.docCategory.DOCNAME = docName[0].DOCNAME;
                 retData.labelData = labelData.rows;
                 retData.fileinfo = { filepath: "C:/ICR/uploads/"+resPyArr[i].fileName };
                 retDataList.push(retData);
             }
-            //console.log(retDataList);
+            console.log(retDataList);
             // resPyArr = sync.await(transPantternVar.trans(resPyArr, sync.defer()));
 
             // retData = resPyArr;
