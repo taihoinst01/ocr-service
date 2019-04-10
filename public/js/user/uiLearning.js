@@ -1418,7 +1418,8 @@ function modifyTextData() {
         var text = $(el).find('label').children().eq(0).val();
         var colType = $(el).find('select').eq(0).find('option:selected').val();
         var colLbl = $(el).find('select').eq(1).find('option:selected').val();
-        afterData.data.push({ 'location': location, 'text': text, 'colLbl': colLbl, 'colType': colType });
+        var colLblText = $(el).find('select').eq(1).find('option:selected').text();
+        afterData.data.push({ 'location': location, 'text': text, 'colLbl': colLbl, 'colLblText':colLblText, 'colType': colType });
     });
 
     beforeData.docCategory.DOCTYPE = ($('#docType').val() != '') ? Number($('#docType').val()) : beforeData.docCategory.DOCTYPE;
