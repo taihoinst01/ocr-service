@@ -21,6 +21,7 @@ const xlsx = require('xlsx');
 const async = require("async");
 var oracle = require('../util/oracle.js');
 var sync = require('../util/sync.js');
+var localRequest = require('sync-request');
 
 const upload = multer({
     storage: multer.diskStorage({
@@ -532,6 +533,7 @@ router.post('/modifyBatchUiTextData', function (req, res) {
     var docTopType = beforeData.docCategory.DOCTOPTYPE;
     var docType = beforeData.docCategory.DOCTYPE;
     var returnObj;
+    var labelColArr = [];
     sync.fiber(function () {
         try {
 
@@ -555,13 +557,23 @@ router.post('/modifyBatchUiTextData', function (req, res) {
                             var yData = [];
                             var xData = [];
                             var seqNum;
+
                             var labelData = sync.await(oracle.selectIcrLabelDef(docTopType, sync.defer()));
+
+                            //python rest api column dyyoo
+                            var labelObj = afterData.data[i];
+                            labelObj['docType'] = docType;
+                            labelColArr.push(labelObj);
+                            //sync.await(insertLabelCol(labelObj,sync.defer()));
+
                             var isLabel = false;
                             for (var inc=0; inc<labelData.rows.length; inc++) {
+                                /*
                                 if (labelData.rows[inc].ENGNM == 'LabelTest') {
                                     seqNum = labelData.rows[inc].SEQNUM;
                                     break;
                                 }
+                                */
                             }
                             if (seqNum == afterData.data[i].colLbl) {
                                 isLabel = true;
@@ -645,6 +657,19 @@ router.post('/modifyBatchUiTextData', function (req, res) {
                     }
                 }
             }
+            if (labelColArr.length >0) {
+
+                for(var i=0; i<labelColArr.length; i++) {
+                    for (var j=i; j<labelColArr.length; j++) {
+                        if (i!=j && labelColArr[i].colLbl == labelColArr[j].colLbl) {
+                            labelColArr[i].text = labelColArr[i].text + ' ' + labelColArr[j].text;
+                            labelColArr.splice(j, 1);
+                            j--;
+                        }
+                    }
+                }
+                sync.await(insertLabelCol(JSON.stringify(labelColArr),sync.defer()));
+            }
 
             returnObj = { code: 200, message: 'modify textData success' };
 
@@ -656,6 +681,24 @@ router.post('/modifyBatchUiTextData', function (req, res) {
         }
     });
 });
+
+function insertLabelCol(value, done) {
+    return new Promise(async function (resolve, reject) {
+        try {
+            var res = localRequest('POST', 'http://52.141.34.200:5000/insertLabelCol', {
+                headers:{'content-type':'application/json'},
+                json:{value:value}
+            });
+            var resJson = res.getBody('utf8');
+            return done(null, resJson);
+        } catch (err) {
+            console.log(err);
+            return done(null, 'error');
+        } finally {
+
+        }
+    });   
+};
 
 function insertEntry(req, done) {
     return new Promise(async function (resolve, reject) {
