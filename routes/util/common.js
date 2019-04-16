@@ -646,12 +646,6 @@ router.post('/modifyBatchUiTextData', function (req, res) {
                             beforeData.data[j].yData = afterData.data[i].yData = yData;
                             beforeData.data[j].xData = afterData.data[i].xData = xData;
 
-                            
-                            
-                            
-                            //return false;
-
-
                             sync.await(oracle.insertBatchColumnMapping(afterData.data[i], docType, beforeData.data[j], sync.defer()));
                         }
                     }
@@ -672,8 +666,14 @@ router.post('/modifyBatchUiTextData', function (req, res) {
                 sync.await(insertLabelCol(JSON.stringify(labelColArr),sync.defer()));
             }
             
-            // entry에 대한 좌측 Text와 상단 Text 유무여부 파악
-            locationSearch(beforeData);
+            // entry에 대한 좌측 Text와 상단 Text 유무여부 파악 start
+            var labelEntArr = []; 
+            labelEntArr = locationSearch(afterData);
+
+            if (labelEntArr.length > 0) {
+                sync.await(insertEntry(JSON.stringify(labelEntArr),sync.defer()));
+            }
+            // entry에 대한 좌측 Text와 상단 Text 유무여부 파악 end
 
             returnObj = { code: 200, message: 'modify textData success' };
 
@@ -755,12 +755,12 @@ function bottomCheck(loc1, loc2, num) {
 // entry에 대한 좌측 Text와 상단 Text 유무여부 파악
 function locationSearch(req) {
     
-    // var resultArr = [];
+    var resultArr = [];
+
     for(var i in req.data) {
         var colLblNum = req.data[i].colLbl;
 
-        if(colLblNum == undefined ) {
-            // var resultObj = {};
+        if(colLblNum != -1 ) {
             var leftTextData = [];
             var upTextData = [];
     
@@ -801,25 +801,18 @@ function locationSearch(req) {
                 }
     
             }
-            // resultObj["text"] = req.data[i].text;
-            // resultObj["left"] = leftTextData;
-            // resultObj["up"] = upTextData;
-            
-            // resultArr.push(resultObj);
     
-            var resultStr = nearLocationArr(leftTextData, upTextData);
-            if (resultStr.length > 0) {
-                sync.await(insertEntry(JSON.stringify(resultStr),sync.defer()));
+            var resultStr = nearLocationArr(leftTextData, upTextData, colLblNum);
+            if(resultStr.length > 0) {
+                resultArr.push(resultStr);
             }
         }
     }
-    // console.log("resultArr : ");
-    // console.log(resultArr);
-    // console.log("====================");
+    return resultArr;
 }
 
 // 해당 entry에 대한 근접 좌표값 정의 (최대 3개)
-function nearLocationArr (leftArr, upArr) {
+function nearLocationArr (leftArr, upArr, colLblNum) {
     var resultStr = "";
 
     if(leftArr.length > 0) {
@@ -857,8 +850,11 @@ function nearLocationArr (leftArr, upArr) {
         resultStr += upArr[j].locationY + " ";
     }
 
-    resultStr.trim();
-    
+    resultStr = resultStr.trim();
+
+    if(leftArr.length > 0 || upArr.length > 0) {
+        resultStr += "," + colLblNum;
+    }
     // console.log("결과 문자열 start ----------");
     // console.log(resultStr);
 
