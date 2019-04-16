@@ -168,7 +168,7 @@ function uiLearnTraining_new(filepath, callback) {
                 retData.fileinfo = { filepath: "C:/ICR/uploads/"+resPyArr[i].fileName };
                 retDataList.push(retData);
             }
-            console.log(retDataList);
+            // console.log(retDataList);
             // resPyArr = sync.await(transPantternVar.trans(resPyArr, sync.defer()));
 
             // retData = resPyArr;
@@ -178,6 +178,10 @@ function uiLearnTraining_new(filepath, callback) {
             //var labelData = sync.await(oracle.selectIcrLabelDef(retData.docCategory.DOCTOPTYPE, sync.defer()));
             //retData.labelData = labelData.rows;
             //retDataList["labelData"] = labelData.rows;
+
+            // entry에 대한 좌측 Text와 상단 Text 유무여부 파악
+            locationSearch(retData);
+
             callback(null, retDataList);
 
         } catch (e) {
@@ -186,6 +190,120 @@ function uiLearnTraining_new(filepath, callback) {
         }
 
     });
+}
+
+// entry에 대한 좌측 Text와 상단 Text 유무여부 파악
+function locationSearch(req) {
+    
+    // var resultArr = [];
+    for(var i in req.data) {
+        var colLblNum = req.data[i].colLbl;
+
+        if(colLblNum == undefined ) {
+            // var resultObj = {};
+            var leftTextData = [];
+            var upTextData = [];
+    
+            var locationA = req.data[i].location.split(",");
+    
+            for(var j in req.data) {
+                var leftObj = {};
+                var upObj = {};
+
+                var locationB = req.data[j].location.split(",");
+    
+                //left
+                if(((parseInt(locationA[1]) <= parseInt(locationB[1]) && 
+                    (parseInt(locationA[1]) + parseInt(locationA[3]) >= parseInt(locationB[1]))) ||
+                    (parseInt(locationA[1]) <= (parseInt(locationB[1]) + parseInt(locationB[3])) && 
+                    (parseInt(locationA[1]) + parseInt(locationA[3]) >= (parseInt(locationB[1]) + parseInt(locationB[3])))))
+                    && parseInt(locationA[0]) > parseInt(locationB[0])) {
+                    leftObj["text"] = req.data[j].text;
+                    leftObj["locationX"] = parseInt(locationB[0]);
+                    leftObj["locationY"] = parseInt(locationB[1]);
+                    leftObj["defX"] = Math.abs(parseInt(locationA[0]) - parseInt(locationB[0]));
+                    leftObj["defY"] = Math.abs(parseInt(locationA[1]) - parseInt(locationB[1]));
+                    leftTextData.push(leftObj);
+                }
+    
+                //up
+                if(((parseInt(locationA[0]) <= parseInt(locationB[0]) && 
+                    (parseInt(locationA[0]) + parseInt(locationA[2]) >= parseInt(locationB[0]))) ||
+                    (parseInt(locationA[0]) <= (parseInt(locationB[0]) + parseInt(locationB[2])) && 
+                    (parseInt(locationA[0]) + parseInt(locationA[2]) >= (parseInt(locationB[0]) + parseInt(locationB[2])))))
+                    && parseInt(locationA[1]) > parseInt(locationB[1])) {
+                    upObj["text"] = req.data[j].text;
+                    upObj["locationX"] = parseInt(locationB[0]);
+                    upObj["locationY"] = parseInt(locationB[1]);
+                    upObj["defX"] = Math.abs(parseInt(locationA[0]) - parseInt(locationB[0]));
+                    upObj["defY"] = Math.abs(parseInt(locationA[1]) - parseInt(locationB[1]));
+                    upTextData.push(upObj);
+                }
+    
+            }
+            // resultObj["text"] = req.data[i].text;
+            // resultObj["left"] = leftTextData;
+            // resultObj["up"] = upTextData;
+            
+            // resultArr.push(resultObj);
+    
+            var resultStr = nearLocationArr(leftTextData, upTextData);
+            // if (resultStr.length > 0) {
+            //     sync.await(insertSplitData(JSON.stringify(resultStr),sync.defer()));
+            // }
+    
+        }
+    }
+    // console.log("resultArr : ");
+    // console.log(resultArr);
+    // console.log("====================");
+}
+
+// 해당 entry에 대한 근접 좌표값 정의 (최대 3개)
+function nearLocationArr (leftArr, upArr) {
+    var resultStr = "";
+
+    if(leftArr.length > 0) {
+        leftArr.sort(function(a, b) {
+            return a.defX < b.defX ? -1 : a.defX > b.defX ? 1 : 0; 
+        });
+    } 
+    if(upArr.length > 0) {
+        upArr.sort(function(a, b) {
+            return a.defY < b.defY ? -1 : a.defY > b.defY ? 1 : 0; 
+        });
+    }
+
+    if(leftArr.length > 3) {
+        for(var i=leftArr.length; i<=3; i--) {
+            leftArr.pop();
+        }
+    }
+
+    if(upArr.length > 3) {
+        for(var j=upArr.length; j<=3; j--) {
+            upArr.pop();
+        }
+    }
+    
+    for(var i=0; i<leftArr.length; i++) {
+        resultStr += leftArr[i].text + " ";
+        resultStr += leftArr[i].locationX + " ";
+        resultStr += leftArr[i].locationY + " ";
+    }
+
+    for(var j=0; j<upArr.length; j++) {
+        resultStr += upArr[j].text + " ";
+        resultStr += upArr[j].locationX + " ";
+        resultStr += upArr[j].locationY + " ";
+    }
+
+    resultStr.trim();
+    
+    // console.log("결과 문자열 start ----------");
+    // console.log(resultStr);
+
+    return resultStr;
 }
 
 function uiLearnTraining(filepath, callback) {
