@@ -657,6 +657,25 @@ router.post('/modifyBatchUiTextData', function (req, res) {
     });
 });
 
+function insertEntry(req, done) {
+    return new Promise(async function (resolve, reject) {
+        try {
+            
+            var res = localRequest('POST', 'http://52.141.34.200:5000/insertSplitData', {
+                headers:{'content-type':'application/json'},
+                json:{entry:req}
+            });
+            var resJson = res.getBody('utf8');
+            return done(null, resJson);
+        } catch (err) {
+            console.log(err);
+            return done(null, 'error');
+        } finally {
+
+        }
+    });   
+};
+
 function locationCheck(loc1, loc2, plus, minus, islabel) {
     if (islabel == 'label') {
         if (minus < (loc2 - loc1) && (loc2 - loc1) < plus) {
