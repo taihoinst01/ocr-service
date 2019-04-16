@@ -1293,7 +1293,7 @@ function insertDocSentence(sentences, done) {
     return new Promise(async function (resolve, reject) {
         try {
             
-            var res = localRequest('POST', 'http://52.141.34.200:5000/insertDocSentence', {
+            var res = request('POST', 'http://52.141.34.200:5000/insertDocSentence', {
                 headers:{'content-type':'application/x-www-form-urlencoded'},
                 body: 'sentence='+sentences
             });
