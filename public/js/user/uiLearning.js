@@ -2302,6 +2302,12 @@ function uiLayerHtml(data) {
 
         //tblSortTag = '';
         for (var i in mlData) {
+            /*
+            //for test
+            if (mlData[i].colLbl != -1 && typeof mlData[i].colLbl != "undefined") {
+                console.log(mlData[i].colLbl);
+            }
+            */
             if (mlData[i].entryLbl > 0) {
                 tblTag += '<dl>';
                 tblTag += '<dt onclick="zoomImg(this,' + "'" + filePath + "'" + ')">';
