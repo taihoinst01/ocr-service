@@ -646,8 +646,8 @@ router.post('/modifyBatchUiTextData', function (req, res) {
                                 }
                             }
 
-                            console.log(yData);
-                            console.log(xData);
+                            // console.log(yData);
+                            // console.log(xData);
                             beforeData.data[j].inputOcrData = afterData.data[i].inputOcrData = inputOcrData;
                             beforeData.data[j].yData = afterData.data[i].yData = yData;
                             beforeData.data[j].xData = afterData.data[i].xData = xData;
@@ -764,10 +764,19 @@ function locationSearch(beforeData, afterData) {
     var resultArr = [];
 
     for(var i in afterData.data) {
-        var docTypeNum = afterData.data[i].docType;
         var entryType = afterData.data[i].colType
+        var changedEntryCheck = false;
 
-        if(entryType == "E" && docTypeNum == undefined) {
+        for(var k in beforeData.data) {
+            if(afterData.data[i].location == beforeData.data[k].location) {
+                if(beforeData.data[k].entryLbl != -1) {
+                    changedEntryCheck = true;
+                    break;
+                }
+            }
+        }
+
+        if(entryType == "E" && changedEntryCheck == false) {
             var leftTextData = [];
             var upTextData = [];
     
@@ -847,25 +856,24 @@ function nearLocationArr (leftArr, upArr, data) {
 
     var location = data.location.split(",");
 
-    resultStr += data.text + " ";
-    resultStr += location[0] + " ";
-    resultStr += location[1] + " ";
-    
-    for(var i=0; i<leftArr.length; i++) {
-        resultStr += leftArr[i].text + " ";
-        resultStr += leftArr[i].locationX + " ";
-        resultStr += leftArr[i].locationY + " ";
-    }
-
-    for(var j=0; j<upArr.length; j++) {
-        resultStr += upArr[j].text + " ";
-        resultStr += upArr[j].locationX + " ";
-        resultStr += upArr[j].locationY + " ";
-    }
-
-    resultStr = resultStr.trim();
-
     if(leftArr.length > 0 || upArr.length > 0) {
+        resultStr += data.text + " ";
+        resultStr += location[0] + " ";
+        resultStr += location[1] + " ";
+    
+        for(var i=0; i<leftArr.length; i++) {
+            resultStr += leftArr[i].text + " ";
+            resultStr += leftArr[i].locationX + " ";
+            resultStr += leftArr[i].locationY + " ";
+        }
+
+        for(var j=0; j<upArr.length; j++) {
+            resultStr += upArr[j].text + " ";
+            resultStr += upArr[j].locationX + " ";
+            resultStr += upArr[j].locationY + " ";
+        }
+
+        resultStr = resultStr.trim();
         resultStr += "," + data.colLbl;
     }
     // console.log("결과 문자열 start ----------");
