@@ -668,7 +668,7 @@ router.post('/modifyBatchUiTextData', function (req, res) {
             
             // entry에 대한 좌측 Text와 상단 Text 유무여부 파악 start
             var labelEntArr = []; 
-            labelEntArr = locationSearch(afterData);
+            labelEntArr = locationSearch(beforeData, afterData);
 
             if (labelEntArr.length > 0) {
                 sync.await(insertEntry(JSON.stringify(labelEntArr),sync.defer()));
@@ -753,24 +753,25 @@ function bottomCheck(loc1, loc2, num) {
 }
 
 // entry에 대한 좌측 Text와 상단 Text 유무여부 파악
-function locationSearch(req) {
+function locationSearch(beforeData, afterData) {
     
     var resultArr = [];
 
-    for(var i in req.data) {
-        var colLblNum = req.data[i].colLbl;
+    for(var i in afterData.data) {
+        var docTypeNum = afterData.data[i].docType;
+        var entryType = afterData.data[i].colType
 
-        if(colLblNum != -1 ) {
+        if(entryType == "E" && docTypeNum == undefined) {
             var leftTextData = [];
             var upTextData = [];
     
-            var locationA = req.data[i].location.split(",");
+            var locationA = afterData.data[i].location.split(",");
     
-            for(var j in req.data) {
+            for(var j in beforeData.data) {
                 var leftObj = {};
                 var upObj = {};
 
-                var locationB = req.data[j].location.split(",");
+                var locationB = beforeData.data[j].location.split(",");
     
                 //left
                 if(((parseInt(locationA[1]) <= parseInt(locationB[1]) && 
@@ -778,7 +779,7 @@ function locationSearch(req) {
                     (parseInt(locationA[1]) <= (parseInt(locationB[1]) + parseInt(locationB[3])) && 
                     (parseInt(locationA[1]) + parseInt(locationA[3]) >= (parseInt(locationB[1]) + parseInt(locationB[3])))))
                     && parseInt(locationA[0]) > parseInt(locationB[0])) {
-                    leftObj["text"] = req.data[j].text;
+                    leftObj["text"] = beforeData.data[j].text;
                     leftObj["locationX"] = parseInt(locationB[0]);
                     leftObj["locationY"] = parseInt(locationB[1]);
                     leftObj["defX"] = Math.abs(parseInt(locationA[0]) - parseInt(locationB[0]));
@@ -792,7 +793,7 @@ function locationSearch(req) {
                     (parseInt(locationA[0]) <= (parseInt(locationB[0]) + parseInt(locationB[2])) && 
                     (parseInt(locationA[0]) + parseInt(locationA[2]) >= (parseInt(locationB[0]) + parseInt(locationB[2])))))
                     && parseInt(locationA[1]) > parseInt(locationB[1])) {
-                    upObj["text"] = req.data[j].text;
+                    upObj["text"] = beforeData.data[j].text;
                     upObj["locationX"] = parseInt(locationB[0]);
                     upObj["locationY"] = parseInt(locationB[1]);
                     upObj["defX"] = Math.abs(parseInt(locationA[0]) - parseInt(locationB[0]));
@@ -802,7 +803,7 @@ function locationSearch(req) {
     
             }
     
-            var resultStr = nearLocationArr(leftTextData, upTextData, colLblNum);
+            var resultStr = nearLocationArr(leftTextData, upTextData, afterData.data[i]);
             if(resultStr.length > 0) {
                 resultArr.push(resultStr);
             }
@@ -812,7 +813,7 @@ function locationSearch(req) {
 }
 
 // 해당 entry에 대한 근접 좌표값 정의 (최대 3개)
-function nearLocationArr (leftArr, upArr, colLblNum) {
+function nearLocationArr (leftArr, upArr, data) {
     var resultStr = "";
 
     if(leftArr.length > 0) {
@@ -837,6 +838,12 @@ function nearLocationArr (leftArr, upArr, colLblNum) {
             upArr.pop();
         }
     }
+
+    var location = data.location.split(",");
+
+    resultStr += data.text + " ";
+    resultStr += location[0] + " ";
+    resultStr += location[1] + " ";
     
     for(var i=0; i<leftArr.length; i++) {
         resultStr += leftArr[i].text + " ";
@@ -853,7 +860,7 @@ function nearLocationArr (leftArr, upArr, colLblNum) {
     resultStr = resultStr.trim();
 
     if(leftArr.length > 0 || upArr.length > 0) {
-        resultStr += "," + colLblNum;
+        resultStr += "," + data.colLbl;
     }
     // console.log("결과 문자열 start ----------");
     // console.log(resultStr);
