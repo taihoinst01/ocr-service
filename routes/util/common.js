@@ -551,7 +551,16 @@ router.post('/modifyBatchUiTextData', function (req, res) {
                             sync.await(oracle.insertOcrSymsSingle(beforeData.data[j], sync.defer()));
                         }
                         afterData.data[i].sid = sync.await(oracle.selectSid(beforeData.data[j], sync.defer()));
+
                         //라벨이 변경된 경우만 트레이닝 insert
+                        if (afterData.data[i].colLbl != beforeData.data[j].entryLbl && afterData.data[i].colType == 'L') {
+                            //python rest api column dyyoo
+                            var labelObj = afterData.data[i];
+                            labelObj['docType'] = docType;
+                            labelColArr.push(labelObj);
+                        }
+
+
                         if ((afterData.data[i].colLbl != beforeData.data[j].colLbl && beforeData.data[j].colLbl >= -1) || (beforeData.data[j].entryLbl != afterData.data[i].colLbl && beforeData.data[j].entryLbl > 0)) {
                             var itemLoc = beforeData.data[j].location.split(",");
                             var yData = [];
@@ -560,11 +569,8 @@ router.post('/modifyBatchUiTextData', function (req, res) {
 
                             var labelData = sync.await(oracle.selectIcrLabelDef(docTopType, sync.defer()));
 
-                            //python rest api column dyyoo
-                            var labelObj = afterData.data[i];
-                            labelObj['docType'] = docType;
-                            labelColArr.push(labelObj);
                             //sync.await(insertLabelCol(labelObj,sync.defer()));
+                            
 
                             var isLabel = false;
                             for (var inc=0; inc<labelData.rows.length; inc++) {
