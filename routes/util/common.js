@@ -856,11 +856,11 @@ function nearLocationArr (leftArr, upArr, data) {
 
     var location = data.location.split(",");
 
+    resultStr += data.text + " ";
+    resultStr += location[0] + " ";
+    resultStr += location[1] + " ";
+
     if(leftArr.length > 0 || upArr.length > 0) {
-        resultStr += data.text + " ";
-        resultStr += location[0] + " ";
-        resultStr += location[1] + " ";
-    
         for(var i=0; i<leftArr.length; i++) {
             resultStr += leftArr[i].text + " ";
             resultStr += leftArr[i].locationX + " ";
@@ -872,10 +872,9 @@ function nearLocationArr (leftArr, upArr, data) {
             resultStr += upArr[j].locationX + " ";
             resultStr += upArr[j].locationY + " ";
         }
-
-        resultStr = resultStr.trim();
-        resultStr += "," + data.colLbl;
     }
+    resultStr = resultStr.trim();
+    resultStr += "," + data.colLbl;
     // console.log("결과 문자열 start ----------");
     // console.log(resultStr);
 
