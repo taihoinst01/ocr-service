@@ -830,6 +830,7 @@ function locationSearch(beforeData, afterData) {
 // 해당 entry에 대한 근접 좌표값 정의 (최대 3개)
 function nearLocationArr (leftArr, upArr, data) {
     var resultStr = "";
+    var text = "";
 
     if(leftArr.length > 0) {
         leftArr.sort(function(a, b) {
@@ -856,7 +857,13 @@ function nearLocationArr (leftArr, upArr, data) {
 
     var location = data.location.split(",");
 
-    resultStr += data.text + " ";
+    if(data.text.indexOf(",") != -1) {
+        text = data.text.replace(",", "");
+    } else {
+        text = data.text;
+    }
+
+    resultStr += text + " ";
     resultStr += location[0] + " ";
     resultStr += location[1] + " ";
 
