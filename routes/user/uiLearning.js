@@ -161,8 +161,35 @@ function uiLearnTraining_new(filepath, callback) {
                 }
                 resPyArr[i].docCategory = docCategory;
                 retData = sync.await(mlclassify.classify(resPyArr[i], sync.defer()));
+
                 var labelML = sync.await(labelEval(retData.data, sync.defer()));
-                //var entryML = sync.await(entryEval(retData.data, sync.defer()));
+                labelML = labelML.replace(/'/gi, "\"");
+                var labelMLData = JSON.parse(labelML);
+
+                var entryML = sync.await(entryEval(retData.data, sync.defer()));
+                entryML = entryML.replace(/'/gi, "\"");
+                var entryMLData = JSON.parse(entryML);
+
+                for(var j in retData.data) {
+                    if(Number(retData.data[j].colLbl) == -1 || retData.data[j].colLbl == undefined) {
+                        for(var k in labelMLData) {
+                            if(retData.data[j].location == labelMLData[k].location) {
+                                retData.data[j]["colLbl"] = labelMLData[k].colLbl;
+                                break;
+                            }
+                        }
+                    }
+
+                    if(Number(retData.data[j].entryLbl) == -1 || retData.data[j].entryLbl == undefined) {
+                        for(var k in entryMLData) {
+                            if(retData.data[j].location == entryMLData[k].location) {
+                                retData.data[j]["entryLbl"] = entryMLData[k].entryLbl;
+                                break;
+                            }
+                        }
+                    }
+                }
+
                 var labelData = sync.await(oracle.selectIcrLabelDef(retData.docCategory.DOCTOPTYPE, sync.defer()));
                 var docName = sync.await(oracle.selectDocName(retData.docCategory.DOCTYPE, sync.defer()));
                 retData.docCategory.DOCNAME = docName[0].DOCNAME;
