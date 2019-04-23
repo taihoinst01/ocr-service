@@ -154,6 +154,7 @@ function uiLearnTraining_new(filepath, callback) {
             var retData = {};
             var retDataList = [];
             var docCategory = {};
+            var tempData = [];
             for (var i in resPyArr) {
                 sync.await(ocrUtil.downloadRestSaveImg(resPyArr[i].fileName, sync.defer()));
                 if (i == 0) {
@@ -162,11 +163,18 @@ function uiLearnTraining_new(filepath, callback) {
                 resPyArr[i].docCategory = docCategory;
                 retData = sync.await(mlclassify.classify(resPyArr[i], sync.defer()));
 
-                var labelML = sync.await(labelEval(retData.data, sync.defer()));
+                for(var j in retData.data) {
+                    if(retData.data[j].entryLbl > 0 || retData.data[j].colLbl > 0) {
+                    } else {
+                        tempData.push(retData.data[j]);
+                    }
+                }
+
+                var labelML = sync.await(labelEval(tempData, sync.defer()));
                 labelML = labelML.replace(/'/gi, "\"");
                 var labelMLData = JSON.parse(labelML);
 
-                var entryML = sync.await(entryEval(retData.data, sync.defer()));
+                var entryML = sync.await(entryEval(tempData, sync.defer()));
                 entryML = entryML.replace(/'/gi, "\"");
                 var entryMLData = JSON.parse(entryML);
 
