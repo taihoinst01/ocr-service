@@ -161,6 +161,8 @@ function uiLearnTraining_new(filepath, callback) {
                 }
                 resPyArr[i].docCategory = docCategory;
                 retData = sync.await(mlclassify.classify(resPyArr[i], sync.defer()));
+                var labelML = sync.await(labelEval(retData.data, sync.defer()));
+                //var entryML = sync.await(entryEval(retData.data, sync.defer()));
                 var labelData = sync.await(oracle.selectIcrLabelDef(retData.docCategory.DOCTOPTYPE, sync.defer()));
                 var docName = sync.await(oracle.selectDocName(retData.docCategory.DOCTYPE, sync.defer()));
                 retData.docCategory.DOCNAME = docName[0].DOCNAME;
@@ -188,6 +190,50 @@ function uiLearnTraining_new(filepath, callback) {
 
     });
 }
+
+function entryEval(data, done) {
+    return new Promise(async function (resolve, reject) {
+        try {
+            
+            var res = request('POST', 'http://52.141.34.200:5000/entryEval', {
+                headers:{'content-type':'application/x-www-form-urlencoded'},
+                body: 'ocrData='+ JSON.stringify(data)
+            });
+            var resJson = res.getBody('utf8');
+            //pharsedOcrJson = ocrJson(resJson.regions);
+            //var resJson = ocrParsing(res.getBody('utf8'));
+
+            return done(null, resJson);
+        } catch (err) {
+            console.log(err);
+            return done(null, 'error');
+        } finally {
+
+        }
+    });   
+};
+
+function labelEval(data, done) {
+    return new Promise(async function (resolve, reject) {
+        try {
+            
+            var res = request('POST', 'http://52.141.34.200:5000/labelEval', {
+                headers:{'content-type':'application/x-www-form-urlencoded'},
+                body: 'ocrData='+ JSON.stringify(data)
+            });
+            var resJson = res.getBody('utf8');
+            //pharsedOcrJson = ocrJson(resJson.regions);
+            //var resJson = ocrParsing(res.getBody('utf8'));
+
+            return done(null, resJson);
+        } catch (err) {
+            console.log(err);
+            return done(null, 'error');
+        } finally {
+
+        }
+    });   
+};
 
 function uiLearnTraining(filepath, callback) {
     sync.fiber(function () {
