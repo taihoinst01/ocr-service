@@ -164,6 +164,16 @@ function uiLearnTraining_new(filepath, callback) {
                 retData = sync.await(mlclassify.classify(resPyArr[i], sync.defer()));
 
                 for(var j in retData.data) {
+                    if(retData.data[j].text.indexOf("\'") > -1 || retData.data[j].xData.indexOf("\'") > -1 || retData.data[j].yData.indexOf("\'") > -1 ||
+                       retData.data[j].text.indexOf("\"") > -1 || retData.data[j].xData.indexOf("\"") > -1 || retData.data[j].yData.indexOf("\"") > -1) {
+                        retData.data[j].text = retData.data[j].text.replace(/'/gi, "");
+                        retData.data[j].xData = retData.data[j].xData.replace(/'/gi, "");
+                        retData.data[j].yData = retData.data[j].yData.replace(/'/gi, "");
+                        retData.data[j].text = retData.data[j].text.replace(/"/gi, "");
+                        retData.data[j].xData = retData.data[j].xData.replace(/"/gi, "");
+                        retData.data[j].yData = retData.data[j].yData.replace(/"/gi, "");
+                    }
+
                     if(retData.data[j].entryLbl > 0 || retData.data[j].colLbl > 0) {
                     } else {
                         tempData.push(retData.data[j]);
@@ -205,16 +215,6 @@ function uiLearnTraining_new(filepath, callback) {
                 retData.fileinfo = { filepath: "C:/ICR/uploads/"+resPyArr[i].fileName };
                 retDataList.push(retData);
             }
-            // console.log(retDataList);
-            // resPyArr = sync.await(transPantternVar.trans(resPyArr, sync.defer()));
-
-            // retData = resPyArr;
-            // var labelData = sync.await(oracle.selectIcrLabelDef(retData.docCategory.DOCTOPTYPE, sync.defer()));
-            // retData.labelData = labelData.rows;
-            //retDataList.push(retData);
-            //var labelData = sync.await(oracle.selectIcrLabelDef(retData.docCategory.DOCTOPTYPE, sync.defer()));
-            //retData.labelData = labelData.rows;
-            //retDataList["labelData"] = labelData.rows;
 
             callback(null, retDataList);
 
