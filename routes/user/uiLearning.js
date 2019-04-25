@@ -165,13 +165,17 @@ function uiLearnTraining_new(filepath, callback) {
 
                 for(var j in retData.data) {
                     if(retData.data[j].text.indexOf("\'") > -1 || retData.data[j].xData.indexOf("\'") > -1 || retData.data[j].yData.indexOf("\'") > -1 ||
-                       retData.data[j].text.indexOf("\"") > -1 || retData.data[j].xData.indexOf("\"") > -1 || retData.data[j].yData.indexOf("\"") > -1) {
+                       retData.data[j].text.indexOf("\"") > -1 || retData.data[j].xData.indexOf("\"") > -1 || retData.data[j].yData.indexOf("\"") > -1 ||
+                       retData.data[j].text.indexOf("\&") > -1 || retData.data[j].xData.indexOf("\&") > -1 || retData.data[j].yData.indexOf("\&") > -1) {
                         retData.data[j].text = retData.data[j].text.replace(/'/gi, "");
                         retData.data[j].xData = retData.data[j].xData.replace(/'/gi, "");
                         retData.data[j].yData = retData.data[j].yData.replace(/'/gi, "");
                         retData.data[j].text = retData.data[j].text.replace(/"/gi, "");
                         retData.data[j].xData = retData.data[j].xData.replace(/"/gi, "");
                         retData.data[j].yData = retData.data[j].yData.replace(/"/gi, "");
+                        retData.data[j].text = retData.data[j].text.replace(/&/gi, "");
+                        retData.data[j].xData = retData.data[j].xData.replace(/&/gi, "");
+                        retData.data[j].yData = retData.data[j].yData.replace(/&/gi, "");
                     }
 
                     if(retData.data[j].entryLbl > 0 || retData.data[j].colLbl > 0) {
